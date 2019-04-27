@@ -1,0 +1,192 @@
+<?php 		
+		include ('../utiles/funciones.php');
+		sec_session_start();
+		require("../../parametrosbasedatosfc.php");
+		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		
+		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+
+		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
+		if ($mysqli->connect_errno) 
+		{
+
+    			//echo "Lo sentimos, este sitio web está experimentando problemas.";
+
+    			// Algo que no se debería de hacer en un sitio público, aunque este ejemplo lo mostrará
+    			// de todas formas, es imprimir información relacionada con errores de MySQL -- se podría registrar
+    			//echo "Error: Fallo al conectarse a MySQL debido a: \n";
+    			//echo "Errno: " . $mysqli->connect_errno . "\n";
+    			//echo "Error: " . $mysqli->connect_error . "\n";
+				header('Location:../login.php?error_l=9');
+				return;
+		}
+		
+		$usuario=$_POST["usuario"];
+
+		$nombre=$_POST["nombre"];
+		$apellido=$_POST["apellido"];
+		$tipoDocumento=$_POST["tipoDocumento"];
+		$documento=$_POST["documento"];
+		$email=$_POST["email"];
+		$perfil=$_POST["perfil"];
+		$sucursal=$_POST["sucursal"];
+		$nclaveu=$_POST["claveu"];
+		
+		$calle=$_POST["calle"];
+		$nroCalle=$_POST["nroCalle"];
+		$provincia=$_POST["provincia"];
+		$localidad=$_POST["localidad"];
+		$departamento=$_POST["departamento"];
+		$piso=$_POST["piso"];
+		$codigoPostal=$_POST["codigoPostal"];
+		$entreCalle1=$_POST["entreCalle1"];
+		$entreCalle2=$_POST["entreCalle2"];
+		
+		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
+		$piso = !empty($piso) ? "$piso" : "NULL";
+		$codigoPostal = !empty($codigoPostal) ? "'$codigoPostal'" : "NULL";
+		$entreCalle1 = !empty($entreCalle1) ? "'$entreCalle1'" : "NULL";
+		$entreCalle2 = !empty($entreCalle2) ? "'$entreCalle2'" : "NULL";		
+				
+		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		{
+			$stmt->bind_param('s', $usuario);
+			$stmt->execute();    
+			$stmt->store_result();
+		
+			$totR = $stmt->num_rows;
+
+			if($totR > 0)
+			{
+				echo translate('Msg_User_Exist',$GLOBALS['lang']);
+				return;
+			}
+			else
+			{				
+				$mysqli->autocommit(FALSE);
+				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+				
+				if(!$mysqli->query("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES ('".$calle."',".$nroCalle.",".$provincia.",'".$localidad."',".$departamento.",".$piso.",".$codigoPostal.",".$entreCalle1.",".$entreCalle2.")"))
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;
+				}
+				else
+				{
+					$idDomicilioUser = $mysqli->insert_id;
+				}	
+
+				$date_registro = date("YmdHis");
+				$date_registro2 = date("Y-m-d H:i:s");					
+				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
+
+				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',4,'".$valor_log_user."')"))
+				{
+					echo $mysqli->error;
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;
+				}				
+								
+				if (strlen($nclaveu) != 128)
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;	
+				}
+				
+				$saltu = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+				$clavefu = hash('sha512', $nclaveu . $saltu);	
+				
+				if(!$mysqli->query("INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado,clave,salt) VALUES('".$usuario."','".$nombre."','".$apellido."',".$tipoDocumento.",'".$documento."','".$email."',".$perfil.",".$sucursal.",'".translate('State_User',$GLOBALS['lang'])."','".$clavefu."','".$saltu."')"))
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;
+				}
+				else
+				{
+					if(!$mysqli->query("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES ('".$usuario."',".$idDomicilioUser.")"))
+					{
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}					
+				}
+	
+				$date_registro = date("YmdHis");
+				$date_registro2 = date("Y-m-d H:i:s");
+				$valor_log_user = "INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado) VALUES(".$usuario.",".$nombre.",".$apellido.",".$tipoDocumento.",".$documento.",".$email.",".$perfil.",".$sucursal.",".translate('State_User',$GLOBALS['lang']).")";
+					
+				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',8,'".$valor_log_user."')"))
+				{
+					echo $mysqli->error;
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;
+				}
+										
+				$mysqli->commit();
+				$mysqli->autocommit(TRUE);
+				
+				if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id"))
+				{
+					$stmt->execute();    
+					$stmt->store_result();
+					
+					$stmt->bind_result($id_user_a, $user_name_a, $user_surname_a, $user_document_a, $user_perfil_a, $user_sucursal_a, $user_state_a);				
+										
+					$array[0] = array();
+					$posicion = 0;
+					while($stmt->fetch())
+					{
+						$array[$posicion]['usuario'] = $id_user_a;
+						$array[$posicion]['nombre'] = $user_name_a;
+						$array[$posicion]['apellido'] = $user_surname_a;
+						$array[$posicion]['documento'] = $user_document_a;
+						$array[$posicion]['perfil'] = $user_perfil_a;
+						$array[$posicion]['sucursal'] = $user_sucursal_a;
+						$array[$posicion]['estado'] = $user_state_a;
+						
+						if($id_user_a != 'admin_sys')
+						{
+							if($user_state_a == translate('State_User',$GLOBALS['lang'])) $array[$posicion]['acciones'] = '<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Disable_User',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Disabled_User',$GLOBALS['lang']).'\',\''.$id_user.'\')"><i class="fas fa-user-slash"></i></button>&nbsp;&nbsp;&nbsp;<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_User',$GLOBALS['lang']).'" onclick="modificarUsuario(\''.$id_user_a.'\')"><i class="fas fa-user-edit"></i></button>';
+							else $array[$posicion]['acciones'] = '<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Enable_User',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Disabled_User',$GLOBALS['lang']).'\',\''.$id_user.'\')"><i class="fas fa-user-plus"></i></button>&nbsp;&nbsp;&nbsp;<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_User',$GLOBALS['lang']).'" onclick="modificarUsuario(\''.$id_user_a.'\')"><i class="fas fa-user-edit"></i></button>';
+						}						
+						else $array[$posicion]['acciones'] = '---';
+						
+						$posicion++;
+					}
+					
+					echo translate('Msg_New_User_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
+				}
+				else 
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;	
+				}
+				
+				$stmt->free_result();
+				$stmt->close();
+				return;				
+				
+			}
+
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+?>

@@ -1,0 +1,215 @@
+body {
+    background: #456;
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+    left: 0;
+    line-height: 200px;
+    margin-top: -100px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+    color:white;
+}
+
+#img_loader
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:50%;
+}
+
+#img_loader_2
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:33px;
+    margin-left:88%;
+}
+
+#img_loader_3
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:125px;
+    margin-left:65%;
+}
+
+#img_loader_4
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:125px;
+    margin-left:65%;
+}
+
+#img_loader_5
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:85px;
+    margin-left:85%;
+}
+
+#img_loader_6
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:68px;
+    margin-left:89%;
+}
+
+#img_loader_7
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:40px;
+    margin-left:71%;
+}
+
+#img_loader_8
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:50%;
+}
+
+
+#img_loader_9
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:85px;
+    margin-left:48%;
+}
+
+#mensajeError
+{
+    background-image: url("../images/errorDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#mensajeAtencion
+{
+    background-image: url("../images/informationDialog.png");
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#mensajeOK
+{
+    background-image: url("../images/okDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#confirmacionAccion
+{
+    background-image: url("../images/alertDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+.ui-tooltip-content::after, .ui-tooltip-content::before {
+	content: "";
+	position: absolute;
+	border-style: solid;
+	display: block;
+	left: 40%;
+}
+.ui-tooltip-content::before {
+	bottom: -10px;
+	border-color: #AAA transparent;
+	border-width: 10px 10px 0;
+}
+.ui-tooltip-content::after {
+	bottom: -7px;
+	border-color: white transparent;
+	border-width: 10px 10px 0;
+}
+
+#panel-title-header
+{
+     background: #0259A1; 
+     color:white;
+}
+
+.dropdown-menu .border-top
+{
+   border-top: 2px dotted #ccc;
+}
