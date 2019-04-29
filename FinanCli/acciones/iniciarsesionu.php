@@ -59,8 +59,7 @@
 		
 		
 		if($cclave == 1 || $cclave == 2 || $cclave == 11 || $cclave == 12 || $cclave == 13 ||$cusuario == 1 || $cusuario == 2 || $cclave == 3 || $cclave == -1)
-		{
-			
+		{			
 			if($cusuario == 1)
 			{ 
 				header('Location:../login.php?error_l=1');

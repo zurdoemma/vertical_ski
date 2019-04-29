@@ -86,7 +86,7 @@
 		echo '				<div class="form-group form-inline">';
 		//echo '					<label class="control-label" for="sucursalesasignadasc">'.translate('Lbl_Asignated_Tenders',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="sucursalesasignadasc">';
-		echo '						<select class="form-control" multiple="multiple" name="boot-multiselect-sucursales-asignadas" id="boot-multiselect-sucursales-asignadas" >';			 
+		echo '						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.translate('Lbl_Asignated_Tenders',$GLOBALS['lang']).'</br><select class="form-control" multiple="multiple" name="boot-multiselect-sucursales-asignadas" id="boot-multiselect-sucursales-asignadas" >';			 
 										while($stmt2->fetch())
 										{
 											echo '<option value="'.$id_sucursal_asignada.'">'.$nombre_sucursal_asignada.'</option>';
@@ -94,14 +94,14 @@
 		echo '						</select>';
 		echo '					</div>';
 		echo '					<div class="form-group" id="desasignarsucursal">';
-		echo '						&nbsp;&nbsp;<button type="button" class="btn" title="'.translate('Lbl_Unassign_Tenders',$GLOBALS['lang']).'" onclick="desasignarSucursales();"><i class="fas fa-minus"></i></button>';
+		echo '						</br>&nbsp;&nbsp;<button type="button" class="btn" title="'.translate('Lbl_Unassign_Tenders',$GLOBALS['lang']).'" onclick="desasignarSucursales();"><i class="fas fa-minus"></i></button>';
 		echo '					</div>';
 		echo '					<div class="form-group" id="asignarsucursal">';
-		echo '						&nbsp;<button type="button" class="btn" title="'.translate('Lbl_Assign_Tenders',$GLOBALS['lang']).'" onclick="asignarSucursales();"><i class="fas fa-plus"></i></button>';
+		echo '						</br>&nbsp;<button type="button" class="btn" title="'.translate('Lbl_Assign_Tenders',$GLOBALS['lang']).'" onclick="asignarSucursales();"><i class="fas fa-plus"></i></button>';
 		echo '					</div>';		
 		//echo '					<label class="control-label" for="sucursalesnoasignadasc">'.translate('Lbl_Not_Asignated_Tenders',$GLOBALS['lang']).':</label>';				
 		echo '					<div class="form-group" id="sucursalesnoasignadasc">';
-		echo '						&nbsp;&nbsp;<select class="form-control" multiple="multiple" name="boot-multiselect-sucursales-activas" id="boot-multiselect-sucursales-activas" >';			 
+		echo '						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.translate('Lbl_Tenders_Available',$GLOBALS['lang']).'</br>&nbsp;&nbsp;<select class="form-control" multiple="multiple" name="boot-multiselect-sucursales-activas" id="boot-multiselect-sucursales-activas" >';			 
 										while($stmt3->fetch())
 										{
 											echo '<option value="'.$id_sucursal_no_asignada.'">'.$nombre_sucursal_no_asignada.'</option>';

@@ -5,22 +5,25 @@ $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 
 if($_GET['result_ok'] == 1)
 { 
-	sec_session_start($_SESSION['username']);
+	sec_session_restart();
  	$username = $_SESSION['username'];
 	
 	// Desconfigura todos los valores de sesión.
 	$_SESSION = array();
  
-	// Obtiene los parámetros de sesión.
-	$params = session_get_cookie_params();
- 
-	// Borra el cookie actual.
-	setcookie(session_name('sec_session_id_'.$_SESSION['username']),
-        	'', time() - 42000, 
-        	$params["path"], 
-        	$params["domain"], 
-        	$params["secure"], 
-        	$params["httponly"]);
+ 	if(phpversion() < '7.1.0')
+	{
+		// Obtiene los parámetros de sesión.
+		$params = session_get_cookie_params();
+	 
+		// Borra el cookie actual.
+		setcookie(session_name('sec_session_id'),
+				'', time() - 42000, 
+				$params["path"], 
+				$params["domain"], 
+				$params["secure"], 
+				$params["httponly"]);
+	}
  
 	// Destruye sesión. 
 	session_destroy();
@@ -38,22 +41,25 @@ if($_GET['result_ok'] == 1)
 
 if (verificar_usuario($mysqli))
 {
-	sec_session_start($_SESSION['username']);
+	sec_session_restart();
 	$username = $_SESSION['username'];
 	
 	// Desconfigura todos los valores de sesión.
 	$_SESSION = array();
  
-	// Obtiene los parámetros de sesión.
-	$params = session_get_cookie_params();
- 
-	// Borra el cookie actual.
-	setcookie(session_name('sec_session_id_'.$_SESSION['username']),
-        	'', time() - 42000, 
-        	$params["path"], 
-        	$params["domain"], 
-        	$params["secure"], 
-        	$params["httponly"]);
+  	if(phpversion() < '7.1.0')
+	{
+		// Obtiene los parámetros de sesión.
+		$params = session_get_cookie_params();
+	 
+		// Borra el cookie actual.
+		setcookie(session_name('sec_session_id'),
+				'', time() - 42000, 
+				$params["path"], 
+				$params["domain"], 
+				$params["secure"], 
+				$params["httponly"]);
+	}
  
 	// Destruye sesión. 
 	session_destroy();
