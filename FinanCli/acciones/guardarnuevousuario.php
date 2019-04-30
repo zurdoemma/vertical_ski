@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,26 +23,26 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 
-		$nombre=$_POST["nombre"];
-		$apellido=$_POST["apellido"];
-		$tipoDocumento=$_POST["tipoDocumento"];
-		$documento=$_POST["documento"];
-		$email=$_POST["email"];
-		$perfil=$_POST["perfil"];
-		$sucursal=$_POST["sucursal"];
-		$nclaveu=$_POST["claveu"];
+		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
+		$apellido=htmlspecialchars($_POST["apellido"], ENT_QUOTES, 'UTF-8');
+		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+		$email=htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+		$perfil=htmlspecialchars($_POST["perfil"], ENT_QUOTES, 'UTF-8');
+		$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+		$nclaveu=htmlspecialchars($_POST["claveu"], ENT_QUOTES, 'UTF-8');
 		
-		$calle=$_POST["calle"];
-		$nroCalle=$_POST["nroCalle"];
-		$provincia=$_POST["provincia"];
-		$localidad=$_POST["localidad"];
-		$departamento=$_POST["departamento"];
-		$piso=$_POST["piso"];
-		$codigoPostal=$_POST["codigoPostal"];
-		$entreCalle1=$_POST["entreCalle1"];
-		$entreCalle2=$_POST["entreCalle2"];
+		$calle=htmlspecialchars($_POST["calle"], ENT_QUOTES, 'UTF-8');
+		$nroCalle=htmlspecialchars($_POST["nroCalle"], ENT_QUOTES, 'UTF-8');
+		$provincia=htmlspecialchars($_POST["provincia"], ENT_QUOTES, 'UTF-8');
+		$localidad=htmlspecialchars($_POST["localidad"], ENT_QUOTES, 'UTF-8');
+		$departamento=htmlspecialchars($_POST["departamento"], ENT_QUOTES, 'UTF-8');
+		$piso=htmlspecialchars($_POST["piso"], ENT_QUOTES, 'UTF-8');
+		$codigoPostal=htmlspecialchars($_POST["codigoPostal"], ENT_QUOTES, 'UTF-8');
+		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
+		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
 		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
 		$piso = !empty($piso) ? "$piso" : "NULL";
@@ -67,7 +68,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$mysqli->query("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES ('".$calle."',".$nroCalle.",".$provincia.",'".$localidad."',".$departamento.",".$piso.",".$codigoPostal.",".$entreCalle1.",".$entreCalle2.")"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -77,14 +78,23 @@
 				}
 				else
 				{
-					$idDomicilioUser = $mysqli->insert_id;
+					$stmt10->bind_param('siississs', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
+					else $idDomicilioUser = $mysqli->insert_id;
 				}	
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',4,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -92,6 +102,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 4;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}				
 								
 				if (strlen($nclaveu) != 128)
@@ -103,9 +127,9 @@
 				$saltu = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
 				$clavefu = hash('sha512', $nclaveu . $saltu);	
 				
-				if(!$mysqli->query("INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado,clave,salt) VALUES('".$usuario."','".$nombre."','".$apellido."',".$tipoDocumento.",'".$documento."','".$email."',".$perfil.",".$sucursal.",'".translate('State_User',$GLOBALS['lang'])."','".$clavefu."','".$saltu."')"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado,clave,salt) VALUES(?,?,?,?,?,?,?,?,?,?,?)"))
 				{
-					echo $mysqli->error;
+					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
@@ -113,21 +137,43 @@
 				}
 				else
 				{
-					if(!$mysqli->query("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES ('".$usuario."',".$idDomicilioUser.")"))
+					$stmt10->bind_param('sssissiisss', $usuario, $nombre, $apellido, $tipoDocumento, $documento, $email, $perfil, $sucursal, translate('State_User',$GLOBALS['lang']), $clavefu, $saltu);
+					if(!$stmt10->execute())
+					{
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
+					
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
 					{
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
 						return;
-					}					
+					}
+					else
+					{
+						$stmt10->bind_param('si', $usuario, $idDomicilioUser);
+						if(!$stmt10->execute())
+						{	
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;					
+						}					
+					}
 				}
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
 				$valor_log_user = "INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado) VALUES(".$usuario.",".$nombre.",".$apellido.",".$tipoDocumento.",".$documento.",".$email.",".$perfil.",".$sucursal.",".translate('State_User',$GLOBALS['lang']).")";
 					
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',8,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -135,6 +181,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 8;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

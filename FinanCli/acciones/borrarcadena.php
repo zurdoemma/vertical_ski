@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,7 +23,7 @@
 				return;
 		}
 		
-		$idCadena=$_POST["idCadena"];
+		$idCadena=htmlspecialchars ($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 				
 		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM finan_cli.cadena c WHERE c.id = ?"))
 		{
@@ -74,7 +75,7 @@
 				
 				$stmt->bind_result($id_cadena, $cadena_razon_social, $cadena_cuit_cuil, $cadena_email, $cadena_telefono, $cadena_nombre_fantasia);
 				
-				if(!$mysqli->query("DELETE FROM finan_cli.cadena WHERE id = ".$idCadena))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.cadena WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -82,6 +83,19 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$stmt10->bind_param('i', $idCadena);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 	
 				$date_registro = date("YmdHis");
@@ -89,7 +103,7 @@
 				$stmt->fetch();
 				$valor_log_user = "DELETE finan_cli.cadena --> id: ".$id_cadena." - Razon Social: ".$cadena_razon_social." - CUIT o CUIL: ".$cadena_cuit_cuil." - Email: ".$cadena_email." - Nombre de Fantasia: ".$cadena_nombre_fantasia;
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',14,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -98,6 +112,20 @@
 					$stmt->close();
 					return;
 				}
+				else
+				{
+					$motivo = 14;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
+				}				
 										
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);

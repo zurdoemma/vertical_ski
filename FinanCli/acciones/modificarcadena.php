@@ -3,6 +3,7 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
 		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
@@ -22,7 +23,7 @@
 				return;
 		}
 		
-		$idCadena=$_POST["idCadena"];
+		$idCadena=htmlspecialchars($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 
 		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM finan_cli.cadena c WHERE c.id = ?"))
 		{

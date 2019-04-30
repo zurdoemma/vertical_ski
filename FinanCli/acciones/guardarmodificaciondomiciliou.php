@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,18 +23,18 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 
-		$idDomicilio=$_POST["idDomicilio"];
-		$calle=$_POST["calle"];
-		$nroCalle=$_POST["nroCalle"];
-		$provincia=$_POST["provincia"];
-		$localidad=$_POST["localidad"];
-		$departamento=$_POST["departamento"];
-		$piso=$_POST["piso"];
-		$codigoPostal=$_POST["codigoPostal"];
-		$entreCalle1=$_POST["entreCalle1"];
-		$entreCalle2=$_POST["entreCalle2"];
+		$idDomicilio=htmlspecialchars($_POST["idDomicilio"], ENT_QUOTES, 'UTF-8');
+		$calle=htmlspecialchars($_POST["calle"], ENT_QUOTES, 'UTF-8');
+		$nroCalle=htmlspecialchars($_POST["nroCalle"], ENT_QUOTES, 'UTF-8');
+		$provincia=htmlspecialchars($_POST["provincia"], ENT_QUOTES, 'UTF-8');
+		$localidad=htmlspecialchars($_POST["localidad"], ENT_QUOTES, 'UTF-8');
+		$departamento=htmlspecialchars($_POST["departamento"], ENT_QUOTES, 'UTF-8');
+		$piso=htmlspecialchars($_POST["piso"], ENT_QUOTES, 'UTF-8');
+		$codigoPostal=htmlspecialchars($_POST["codigoPostal"], ENT_QUOTES, 'UTF-8');
+		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
+		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
 		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
 		$piso = !empty($piso) ? "$piso" : "NULL";
@@ -65,13 +66,25 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$mysqli->query("UPDATE finan_cli.domicilio SET calle = '".$calle."', nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = '".$localidad."', departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2." WHERE id =".$idDomicilio))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.domicilio SET calle = '".$calle."', nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = '".$localidad."', departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2." WHERE id =".$idDomicilio))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$stmt10->bind_param('siississsi', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2, $idDomicilio);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 	
 				$date_registro = date("YmdHis");
@@ -80,7 +93,7 @@
 				$stmt->fetch();
 				$valor_log_user = "ANTERIOR: id = ".$id_domicilio_user.", calle = ".$user_dom_calle.", nro_calle = ".$user_dom_nro_calle.", provincia = ".$user_dom_provincia.", localidad = ".$user_dom_localidad.", departamento = ".$user_dom_departamento.", piso = ".$user_dom_piso.", codigo_postal = ".$user_dom_codigo_postal.", entre_calle_1 = ".$user_entre_calle_1.", entre_calle_2 = ".$user_entre_calle_2."  -- "."NUEVO: UPDATE finan_cli.domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".str_replace('\'','',$departamento).", piso = ".$piso.", codigo_postal = ".str_replace('\'','',$codigoPostal).", entre_calle_1 = ".str_replace('\'','',$entreCalle1).", entre_calle_2 = ".str_replace('\'','',$entreCalle2)." WHERE id =".$idDomicilio;
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',6,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -88,6 +101,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 6;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

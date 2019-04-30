@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,7 +23,7 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];	
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 
 		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.tipo_documento, u.documento, u.email, u.id_perfil, u.id_sucursal, u.clave  FROM finan_cli.usuario u WHERE id LIKE(?)"))
 		{

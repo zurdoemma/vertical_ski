@@ -2,6 +2,7 @@
 include ('../utiles/funciones.php');
 require("../../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+mysqli_set_charset($mysqli,"utf8");
 
 if($_GET['result_ok'] == 1)
 { 
@@ -30,10 +31,18 @@ if($_GET['result_ok'] == 1)
 
 	$date_registro = date("YmdHis");
 	$date_registro2 = date("Y-m-d H:i:s");
-	if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('$username','$date_registro',2,'".translate('Msg_Log_Out',$GLOBALS['lang']).$date_registro2."')"))
+	if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 	{
 		printf("Error: %s\n", $mysqli->error);
-	}	
+	}
+	else
+	{
+		$stmt10->bind_param('ssis', $username, $date_registro, 2, translate('Msg_Log_Out',$GLOBALS['lang']).$date_registro2);
+		if(!$stmt10->execute())
+		{
+			printf("Error: %s\n", $mysqli->error);
+		}
+	}
 	
 	header ('Location:../login.php?result_ok=1');
 	return;

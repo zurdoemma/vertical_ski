@@ -1,7 +1,8 @@
 <?php 		
 		include ('../utiles/funciones.php');
 		require("../../parametrosbasedatosfc.php");
-		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);		
+		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");		
 		if (verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
@@ -19,8 +20,8 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];	
-		$clave=$_POST["p2"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
+		$clave=htmlspecialchars($_POST["p2"], ENT_QUOTES, 'UTF-8');
 
 		$cusuario = 5;
 		$cclave = 5;

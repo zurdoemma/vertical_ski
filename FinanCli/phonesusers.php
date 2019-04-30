@@ -2,9 +2,10 @@
 include ('./utiles/funciones.php');
 require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php');}
-if(empty($_GET['usuario'])){header('Location:./sinautorizacion.php');}
+if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');}
+if(empty(htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8'))){header('Location:./sinautorizacion.php?activauto=1');}
 include("./menu/menu.php");
 
 if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
@@ -562,7 +563,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						<?php
 							if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM finan_cli.telefono t, finan_cli.usuario u, finan_cli.tipo_telefono tt, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
 							{
-								$stmt->bind_param('s', $_GET['usuario']);
+								$stmt->bind_param('s', htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8'));
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 

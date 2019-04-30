@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,8 +23,8 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];
-		$idTelefono=$_POST["id_telefono"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
+		$idTelefono=htmlspecialchars($_POST["id_telefono"], ENT_QUOTES, 'UTF-8');
 				
 		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND u.id = ut.id_usuario AND t.id = ut.id_telefono AND t.id = ?"))
 		{
@@ -47,7 +48,7 @@
 								
 				$stmt->bind_result($id_telefono_user, $user_tipo_telefono, $user_numero_telefono);
 				
-				if(!$mysqli->query("DELETE FROM finan_cli.usuario_x_telefono WHERE id_usuario = '".$usuario."' AND id_telefono = ".$idTelefono))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.usuario_x_telefono WHERE id_usuario = ? AND id_telefono = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -57,7 +58,17 @@
 				}
 				else
 				{
-					if(!$mysqli->query("DELETE FROM finan_cli.telefono WHERE id = ".$idTelefono))
+					$stmt10->bind_param('si', $usuario, $idTelefono);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
+					
+					if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.telefono WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -66,6 +77,18 @@
 						$stmt->close();
 						return;
 					}
+					else
+					{
+						$stmt10->bind_param('i', $idTelefono);
+						if(!$stmt10->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}						
+					}
 				}	
 
 				$date_registro = date("YmdHis");
@@ -73,7 +96,7 @@
 				$stmt->fetch();
 				$valor_log_user = "DELETE finan_cli.telefono --> id: ".$id_telefono_user." - Tipo Telefono: ".$user_tipo_telefono." - Nro. Telefono: ".$user_numero_telefono;
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',11,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -81,6 +104,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 11;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

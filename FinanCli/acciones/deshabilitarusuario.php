@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,7 +23,7 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];	
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 
 		if($stmt = $mysqli->prepare("SELECT id, estado FROM finan_cli.usuario WHERE id LIKE(?)"))
 		{
@@ -81,7 +82,7 @@
 						$valor_log_user = str_replace("%2",$date_registro2,$valor_log_user);
 						$valor_log_user = str_replace("%3",$_SESSION['username'],$valor_log_user);
 						
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',3,'".$valor_log_user."')";
+						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,3,?)";
 					}
 					else
 					{
@@ -90,16 +91,30 @@
 						$valor_log_user = str_replace("%2",$date_registro2,$valor_log_user);
 						$valor_log_user = str_replace("%3",$_SESSION['username'],$valor_log_user);	
 
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',9,'".$valor_log_user."')";						
+						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,9,?)";						
 					}
 
-					if(!$mysqli->query($insertLEUF))
+					if(!$stmt = $mysqli->prepare($insertLEUF))
 					{
 						echo $mysqli->error;
+						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
 						return;
+					}
+					else
+					{
+						$stmt->bind_param('sss', $_SESSION['username'], $date_registro, $valor_log_user);
+						if(!$stmt->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}
 					}
 											
 					$mysqli->commit();

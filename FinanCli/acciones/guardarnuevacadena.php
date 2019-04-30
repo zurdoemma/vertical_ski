@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,11 +23,11 @@
 				return;
 		}
 		
-		$razonSocial=$_POST["razonSocial"];
-		$cuitCuil=$_POST["cuitCuil"];
-		$email=$_POST["email"];
-		$telefono=$_POST["telefono"];
-		$nombreFantasia=$_POST["nombreFantasia"];
+		$razonSocial=htmlspecialchars($_POST["razonSocial"], ENT_QUOTES, 'UTF-8');
+		$cuitCuil=htmlspecialchars($_POST["cuitCuil"], ENT_QUOTES, 'UTF-8');
+		$email=htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+		$telefono=htmlspecialchars($_POST["telefono"], ENT_QUOTES, 'UTF-8');
+		$nombreFantasia=htmlspecialchars($_POST["nombreFantasia"], ENT_QUOTES, 'UTF-8');
 		
 		$email = !empty($email) ? "'$email'" : "NULL";
 		$telefono = !empty($telefono) ? "$telefono" : "NULL";		
@@ -49,20 +50,32 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$mysqli->query("INSERT INTO finan_cli.cadena(razon_social,cuit_cuil,email,telefono,nombre_fantasia) VALUES ('".$razonSocial."',".$cuitCuil.",".$email.",".$telefono.",'".$nombreFantasia."')"))
+				if(!$stmt10 = $mysqli->query("INSERT INTO finan_cli.cadena(razon_social,cuit_cuil,email,telefono,nombre_fantasia) VALUES (?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
 					return;
-				}	
+				}
+				else 
+				{
+					$stmt10->bind_param('sisis', $razonSocial, $cuitCuil, $email, $telefono, $nombreFantasia);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}						
+				}
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$valor_log_user = "INSERT INTO finan_cli.cadena(razon_social,cuit_cuil,email,telefono,nombre_fantasia) VALUES (".$razonSocial.",".$cuitCuil.",".str_replace('\'','',$email).",".str_replace('\'','',$telefono).",".$nombreFantasia.")";
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',13,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -70,6 +83,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 13;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

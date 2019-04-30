@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,12 +23,12 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 
-		$idTelefono=$_POST["idTelefono"];
-		$prefijoTelefono=$_POST["prefijoTelefono"];
-		$nroTelefono=$_POST["nroTelefono"];
-		$tipoTelefono=$_POST["tipoTelefono"];	
+		$idTelefono=htmlspecialchars($_POST["idTelefono"], ENT_QUOTES, 'UTF-8');
+		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
+		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
+		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');	
 
 		if($_SESSION['username'] != $usuario)
 		{
@@ -53,13 +54,25 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$mysqli->query("UPDATE finan_cli.telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono)." WHERE id =".$idTelefono))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$stmt10->bind_param('iiii', $tipoTelefono, $prefijoTelefono.$nroTelefono, strlen($prefijoTelefono), $idTelefono);
+					if(!$stmt10->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 	
 				$date_registro = date("YmdHis");
@@ -68,7 +81,7 @@
 				$stmt->fetch();
 				$valor_log_user = "ANTERIOR: id = ".$id_telefono_user.", tipo_telefono = ".$user_tipo_telefono.", numero = ".$user_numero_telefono.", digitos_prefijo = ".$user_digitos_prefijo."  -- "."NUEVO: UPDATE finan_cli.telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono)." WHERE id =".$idTelefono;
 
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',12,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -76,6 +89,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 12;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

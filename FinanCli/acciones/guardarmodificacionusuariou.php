@@ -3,9 +3,10 @@
 		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php');}
+		if (!verificar_permisos_usuario()){header('Location:../sinautorizacion.php?activauto=1');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,15 +23,15 @@
 				return;
 		}
 		
-		$usuario=$_POST["usuario"];
+		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 
-		$nombre=$_POST["nombre"];
-		$apellido=$_POST["apellido"];
-		$tipoDocumento=$_POST["tipoDocumento"];
-		$documento=$_POST["documento"];
-		$email=$_POST["email"];
-		$claveactu = $_POST["claveac"];
-		$nclaveu=$_POST["claveu"];
+		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
+		$apellido=htmlspecialchars($_POST["apellido"], ENT_QUOTES, 'UTF-8');
+		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+		$email=htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+		$claveactu = htmlspecialchars($_POST["claveac"], ENT_QUOTES, 'UTF-8');
+		$nclaveu=htmlspecialchars($_POST["claveu"], ENT_QUOTES, 'UTF-8');
 				
 		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, u.clave, u.salt FROM finan_cli.usuario u, finan_cli.tipo_documento td WHERE u.tipo_documento = td.id AND u.id LIKE(?)"))
 		{
@@ -87,7 +88,7 @@
 					$saltu = $user_salt;
 				}
 				
-				if(!$mysqli->query("UPDATE finan_cli.usuario SET nombre = '".$nombre."', apellido = '".$apellido."', tipo_documento = ".$tipoDocumento.", documento = '".$documento."', email = '".$email."', clave = '".$clavefu."', salt = '".$saltu."' WHERE id ='".$usuario."'"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.usuario SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, clave = ?, salt = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -95,13 +96,25 @@
 					$stmt->close();
 					return;
 				}
+				else
+				{
+					$stmt10->bind_param('ssisssss', $nombre, $apellido, $tipoDocumento, $documento, $email, $clavefu, $saltu, $usuario);
+					if(!$stmt10->execute())
+					{						
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}						
+				}
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
 				if(empty($nclaveu)) $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email." WHERE id =".$usuario;
 				else $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", clave =".$clavefu.", salt =".$saltu." WHERE id =".$usuario;
 					
-				if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',7,'".$valor_log_user."')"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -109,6 +122,20 @@
 					$stmt->free_result();
 					$stmt->close();
 					return;
+				}
+				else
+				{
+					$motivo = 7;
+					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
 				}
 										
 				$mysqli->commit();

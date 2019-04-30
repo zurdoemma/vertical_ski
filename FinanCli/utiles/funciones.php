@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 
 function verificar_usuario($mysqli)
 {
@@ -11,10 +11,20 @@ function verificar_usuario($mysqli)
 	{		
 		$date_registro = date("YmdHis");
 		$date_registro2 = date("Y-m-d H:i:s");
-
-		if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('".$_SESSION['username']."','$date_registro',15,'".translate('Msg_Close_Sesion_Time_Expired_Db',$GLOBALS['lang']).$date_registro2."')"))
+					
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 		{
 			printf("Error: %s\n", $mysqli->error);
+		}
+		else
+		{
+			$motivo = 15;
+			$parComp = translate('Msg_Close_Sesion_Time_Expired_Db',$GLOBALS['lang']).$date_registro2;
+			$stmt10->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $parComp);
+			if(!$stmt10->execute())
+			{
+				printf("Error: %s\n", $mysqli->error);
+			}
 		}
 	
 		$_SESSION = array();
@@ -50,7 +60,6 @@ function verificar_usuario($mysqli)
 
 function verificar_permisos_admin()
 {
-	sec_session_restart();
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1)
 	{
@@ -61,7 +70,6 @@ function verificar_permisos_admin()
 
 function verificar_permisos_usuario()
 {
-	sec_session_restart();
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 2 || $_SESSION["permisos"] == 3)
 	{
@@ -72,7 +80,6 @@ function verificar_permisos_usuario()
 
 function verificar_permisos_supervisor()
 {
-	sec_session_restart();
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 2)
 	{
@@ -98,6 +105,10 @@ function sec_session_start()
 			exit();
 		}
 	}
+	
+	ini_set('session.use_strict_mode',1);
+	ini_set('session.hash_function', sha512);
+	session_cache_limiter('nocache');
     // Obtiene los params de los cookies actuales.
     $cookieParams = session_get_cookie_params();
     session_set_cookie_params($cookieParams["lifetime"],
@@ -126,7 +137,10 @@ function sec_session_restart()
 			header("Location: ../sesionusuario.php");
 			exit();
 		}
-	
+		
+		ini_set('session.use_strict_mode',1);
+		ini_set('session.hash_function', sha512);
+			
 		// Obtiene los params de los cookies actuales.
 		$cookieParams = session_get_cookie_params();
 		session_set_cookie_params($cookieParams["lifetime"],
@@ -135,6 +149,8 @@ function sec_session_restart()
 			$secure,
 			$httponly);
 	}
+	session_cache_limiter('nocache');
+		
     // Configura el nombre de sesión al configurado arriba.
     if(phpversion() < '7.1.0') session_name($session_name);
     session_start(); 	
@@ -237,10 +253,21 @@ function login($usuario, $password, $mysqli) {
 					$_SESSION['LAST_ACTIVITY'] = time();
 					$date_registro = date("YmdHis");
 					$date_registro2 = date("Y-m-d H:i:s");
-					if(!$mysqli->query("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES ('$username','$date_registro',1,'".translate('Msg_Log_In',$GLOBALS['lang']).$date_registro2."')"))
+
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						printf("Error: %s\n", $mysqli->error);
 					}
+					else
+					{
+						$motivo = 1;
+						$parComp2 = translate('Msg_Log_In',$GLOBALS['lang']).$date_registro2;
+						$stmt10->bind_param('ssis', $username, $date_registro, $motivo, $parComp2);
+						if(!$stmt10->execute())
+						{
+							printf("Error: %s\n", $mysqli->error);
+						}
+					}					
 					
 					// Inicio de sesión exitoso
 					return 0;
@@ -251,9 +278,17 @@ function login($usuario, $password, $mysqli) {
 					// Se graba este intento en la base de datos.
 					$now = time();
 					$ip_con = $_SERVER['REMOTE_ADDR'];
-					if(!$mysqli->query("INSERT INTO finan_cli.login_attempts(usuario, time, ip_conexion) VALUES ('$usuario', '$now', '$ip_con')"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.login_attempts(usuario, time, ip_conexion) VALUES (?,?,?)"))
 					{
 						printf("Error: %s\n", $mysqli->error);
+					}
+					else
+					{
+						$stmt10->bind_param('sss', $usuario, $now, $ip_con);
+						if(!$stmt10->execute())
+						{
+							printf("Error: %s\n", $mysqli->error);
+						}
 					}
 
 					return 2;
@@ -274,7 +309,6 @@ function login_check($mysqli) {
     
 	if (isset($_SESSION['username'], $_SESSION['login_string'])) 
 	{
- 
 		$login_string = $_SESSION['login_string'];
         $username = $_SESSION['username'];
  
