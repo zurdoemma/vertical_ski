@@ -35,11 +35,11 @@
 		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
 		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
-		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
+		$departamento = !empty($departamento) ? "$departamento" : "---";
 		$piso = !empty($piso) ? "$piso" : "NULL";
-		$codigoPostal = !empty($codigoPostal) ? "'$codigoPostal'" : "NULL";
-		$entreCalle1 = !empty($entreCalle1) ? "'$entreCalle1'" : "NULL";
-		$entreCalle2 = !empty($entreCalle2) ? "'$entreCalle2'" : "NULL";		
+		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
+		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
 		
 		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
 		{
@@ -123,6 +123,7 @@
 						$stmt->close();
 						return;
 					}
+					$idDomicilioI = $mysqli->insert_id;
 					
 					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
 					{
@@ -135,7 +136,7 @@
 					}
 					else
 					{
-						$stmt10->bind_param('si', $usuario, $mysqli->insert_id);
+						$stmt10->bind_param('si', $usuario, $idDomicilioI);
 						if(!$stmt10->execute())
 						{
 							echo $mysqli->error;

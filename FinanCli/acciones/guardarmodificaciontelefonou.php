@@ -64,7 +64,9 @@
 				}
 				else
 				{
-					$stmt10->bind_param('iiii', $tipoTelefono, $prefijoTelefono.$nroTelefono, strlen($prefijoTelefono), $idTelefono);
+					$numTelFinU = $prefijoTelefono.$nroTelefono;
+					$cantPrefiFN = strlen($prefijoTelefono);
+					$stmt10->bind_param('iiii', $tipoTelefono, $numTelFinU, $cantPrefiFN, $idTelefono);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;

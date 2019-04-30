@@ -36,11 +36,11 @@
 		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
 		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
-		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
+		$departamento = !empty($departamento) ? "$departamento" : "---";
 		$piso = !empty($piso) ? "$piso" : "NULL";
-		$codigoPostal = !empty($codigoPostal) ? "'$codigoPostal'" : "NULL";
-		$entreCalle1 = !empty($entreCalle1) ? "'$entreCalle1'" : "NULL";
-		$entreCalle2 = !empty($entreCalle2) ? "'$entreCalle2'" : "NULL";		
+		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
+		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
 		
 		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE ud.id_usuario = u.id AND ud.id_domicilio = d.id AND d.id_provincia = p.id AND u.id LIKE(?) AND d.id = ?"))
 		{
@@ -66,7 +66,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.domicilio SET calle = '".$calle."', nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = '".$localidad."', departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2." WHERE id =".$idDomicilio))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.domicilio SET calle = ?, nro_calle = ?, id_provincia = ?, localidad = ?, departamento = ?, piso = ?, codigo_postal = ?, entre_calle_1 = ?, entre_calle_2 = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -91,7 +91,7 @@
 				$date_registro2 = date("Y-m-d H:i:s");
 				$stmt->bind_result($id_domicilio_user, $user_dom_calle, $user_dom_nro_calle, $user_dom_provincia, $user_dom_localidad, $user_dom_departamento, $user_dom_piso, $user_dom_codigo_postal, $user_entre_calle_1, $user_entre_calle_2);				
 				$stmt->fetch();
-				$valor_log_user = "ANTERIOR: id = ".$id_domicilio_user.", calle = ".$user_dom_calle.", nro_calle = ".$user_dom_nro_calle.", provincia = ".$user_dom_provincia.", localidad = ".$user_dom_localidad.", departamento = ".$user_dom_departamento.", piso = ".$user_dom_piso.", codigo_postal = ".$user_dom_codigo_postal.", entre_calle_1 = ".$user_entre_calle_1.", entre_calle_2 = ".$user_entre_calle_2."  -- "."NUEVO: UPDATE finan_cli.domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".str_replace('\'','',$departamento).", piso = ".$piso.", codigo_postal = ".str_replace('\'','',$codigoPostal).", entre_calle_1 = ".str_replace('\'','',$entreCalle1).", entre_calle_2 = ".str_replace('\'','',$entreCalle2)." WHERE id =".$idDomicilio;
+				$valor_log_user = "ANTERIOR: id = ".$id_domicilio_user.", calle = ".$user_dom_calle.", nro_calle = ".$user_dom_nro_calle.", provincia = ".$user_dom_provincia.", localidad = ".$user_dom_localidad.", departamento = ".(!empty($user_dom_departamento) ? "$user_dom_departamento" : "NULL").", piso = ".(!empty($user_dom_piso) ? "$user_dom_piso" : "NULL").", codigo_postal = ".(!empty($user_dom_codigo_postal) ? "$user_dom_codigo_postal" : "NULL").", entre_calle_1 = ".(!empty($user_entre_calle_1) ? "$user_entre_calle_1" : "NULL").", entre_calle_2 = ".(!empty($user_entre_calle_2) ? "$user_entre_calle_2" : "NULL")."  -- "."NUEVO: UPDATE finan_cli.domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", id_provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".str_replace('\'','',$departamento).", piso = ".$piso.", codigo_postal = ".str_replace('\'','',$codigoPostal).", entre_calle_1 = ".str_replace('\'','',$entreCalle1).", entre_calle_2 = ".str_replace('\'','',$entreCalle2)." WHERE id =".$idDomicilio;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

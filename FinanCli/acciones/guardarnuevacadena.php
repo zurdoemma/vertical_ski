@@ -29,7 +29,7 @@
 		$telefono=htmlspecialchars($_POST["telefono"], ENT_QUOTES, 'UTF-8');
 		$nombreFantasia=htmlspecialchars($_POST["nombreFantasia"], ENT_QUOTES, 'UTF-8');
 		
-		$email = !empty($email) ? "'$email'" : "NULL";
+		$email = !empty($email) ? "$email" : "---";
 		$telefono = !empty($telefono) ? "$telefono" : "NULL";		
 		
 		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c WHERE c.razon_social LIKE(?)"))
@@ -50,7 +50,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->query("INSERT INTO finan_cli.cadena(razon_social,cuit_cuil,email,telefono,nombre_fantasia) VALUES (?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.cadena(razon_social,cuit_cuil,email,telefono,nombre_fantasia) VALUES (?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);

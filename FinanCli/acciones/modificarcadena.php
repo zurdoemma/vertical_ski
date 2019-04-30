@@ -76,7 +76,7 @@
 		echo '				<div class="form-group form-inline">';							
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="telefonochain">'.translate('Lbl_Phone_Chain',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="telefonochain">';
-		echo '						<input title="'.translate('Msg_A_Phone_Chain_Must_Enter_A_Whole',$GLOBALS['lang']).'" class="form-control input-sm" id="telefonochaini" name="telefonochaini" type="text" maxlength="20" value="'.$cadena_telefono.'" />';
+		echo '						<input title="'.translate('Msg_A_Phone_Chain_Must_Enter_A_Whole',$GLOBALS['lang']).'" class="form-control input-sm" id="telefonochaini" name="telefonochaini" type="text" maxlength="20" value="'.(!empty($cadena_telefono) ? "$cadena_telefono" : "").'" />';
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="nombrefantasiachain">'.translate('Lbl_Fantasy_Name_Chain',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="nombrefantasiachain">';

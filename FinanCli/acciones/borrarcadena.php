@@ -101,7 +101,7 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.cadena --> id: ".$id_cadena." - Razon Social: ".$cadena_razon_social." - CUIT o CUIL: ".$cadena_cuit_cuil." - Email: ".$cadena_email." - Nombre de Fantasia: ".$cadena_nombre_fantasia;
+				$valor_log_user = "DELETE finan_cli.cadena --> id: ".$id_cadena." - Razon Social: ".$cadena_razon_social." - CUIT o CUIL: ".$cadena_cuit_cuil." - Email: ".$cadena_email." - Telefono: ".(!empty($cadena_telefono) ? "$cadena_telefono" : "---")." - Nombre de Fantasia: ".$cadena_nombre_fantasia;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

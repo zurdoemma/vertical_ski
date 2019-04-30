@@ -36,11 +36,11 @@
 		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
 		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
-		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
+		$departamento = !empty($departamento) ? "$departamento" : "---";
 		$piso = !empty($piso) ? "$piso" : "NULL";
-		$codigoPostal = !empty($codigoPostal) ? "'$codigoPostal'" : "NULL";
-		$entreCalle1 = !empty($entreCalle1) ? "'$entreCalle1'" : "NULL";
-		$entreCalle2 = !empty($entreCalle2) ? "'$entreCalle2'" : "NULL";		
+		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
+		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
 		
 		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE ud.id_usuario = u.id AND ud.id_domicilio = d.id AND d.id_provincia = p.id AND u.id LIKE(?) AND d.id = ?"))
 		{

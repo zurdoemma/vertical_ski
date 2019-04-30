@@ -26,7 +26,7 @@
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 		$idDomicilio=htmlspecialchars($_POST["id_domicilio"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio AND d.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio AND d.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idDomicilio);
 			$stmt->execute();    
@@ -99,7 +99,7 @@
 				echo '					</div>';
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domfloorm">'.translate('Lbl_Floor',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="domfloorm">';
-				echo '						<input title="'.translate('Msg_A_Floor_Number_Must_Enter_A_Whole',$GLOBALS['lang']).'" class="form-control input-sm" id="domfloormi" name="domfloormi" type="text" maxlength="11" value="'.$user_dom_piso.'" />';
+				echo '						<input title="'.translate('Msg_A_Floor_Number_Must_Enter_A_Whole',$GLOBALS['lang']).'" class="form-control input-sm" id="domfloormi" name="domfloormi" type="text" maxlength="11" value="'.(!empty($user_dom_piso) ? "$user_dom_piso" : "").'" />';
 				echo '					</div>';				
 				echo '				</div>';
 				echo '				<div class="form-group form-inline">';

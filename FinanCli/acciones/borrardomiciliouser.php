@@ -115,7 +115,7 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_user." - Calle: ".$user_dom_calle." - Nro. Calle: ".$user_dom_nro_calle." - Provincia: ".$user_dom_provincia." - Localidad: ".$user_dom_localidad." - Departamento: ".$user_dom_departamento." - Piso: ".$user_dom_piso." - Codigo Postal: ".$user_dom_codigo_postal." - Entre Calle 1: ".$user_entre_calle_1 - "Entre Calle 2: ".$user_entre_calle_2;
+				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_user." - Calle: ".$user_dom_calle." - Nro. Calle: ".$user_dom_nro_calle." - Provincia: ".$user_dom_provincia." - Localidad: ".$user_dom_localidad." - Departamento: ".(!empty($user_dom_departamento) ? "$user_dom_departamento" : "---")." - Piso: ".(!empty($user_dom_piso) ? "$user_dom_piso" : "---")." - Codigo Postal: ".(!empty($user_dom_codigo_postal) ? "$user_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($user_entre_calle_1) ? "$user_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($user_entre_calle_2) ? "$user_entre_calle_2" : "---");
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

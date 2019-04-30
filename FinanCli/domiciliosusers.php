@@ -635,7 +635,8 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						<?php
 							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.domicilio d, finan_cli.usuario u, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE u.id LIKE(?) AND p.id = d.id_provincia AND ud.id_usuario = u.id AND ud.id_domicilio = d.id")) 
 							{
-								$stmt->bind_param('s', htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8'));
+								$usuarioP = htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8');
+								$stmt->bind_param('s', $usuarioP);
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 

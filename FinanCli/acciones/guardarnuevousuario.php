@@ -44,11 +44,11 @@
 		$entreCalle1=htmlspecialchars($_POST["entreCalle1"], ENT_QUOTES, 'UTF-8');
 		$entreCalle2=htmlspecialchars($_POST["entreCalle2"], ENT_QUOTES, 'UTF-8');
 		
-		$departamento = !empty($departamento) ? "'$departamento'" : "NULL";
+		$departamento = !empty($departamento) ? "$departamento" : "---";
 		$piso = !empty($piso) ? "$piso" : "NULL";
-		$codigoPostal = !empty($codigoPostal) ? "'$codigoPostal'" : "NULL";
-		$entreCalle1 = !empty($entreCalle1) ? "'$entreCalle1'" : "NULL";
-		$entreCalle2 = !empty($entreCalle2) ? "'$entreCalle2'" : "NULL";		
+		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
+		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
 				
 		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
 		{
@@ -137,7 +137,8 @@
 				}
 				else
 				{
-					$stmt10->bind_param('sssissiisss', $usuario, $nombre, $apellido, $tipoDocumento, $documento, $email, $perfil, $sucursal, translate('State_User',$GLOBALS['lang']), $clavefu, $saltu);
+					$estUI = translate('State_User',$GLOBALS['lang']);
+					$stmt10->bind_param('sssissiisss', $usuario, $nombre, $apellido, $tipoDocumento, $documento, $email, $perfil, $sucursal, $estUI, $clavefu, $saltu);
 					if(!$stmt10->execute())
 					{
 						$mysqli->rollback();

@@ -59,6 +59,32 @@
 					$stmt3->bind_result($cantidad_telefonos);
 					$stmt3->fetch();
 					
+					if($stmt4 = $mysqli->prepare("SELECT t.id FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id AND t.numero = ?"))
+					{
+						$numTelFinCo = $prefijoTelefono.$nroTelefono;
+						$stmt4->bind_param('si', $usuario, $numTelFinCo);
+						$stmt4->execute();    
+						$stmt4->store_result();
+						
+						$totR4 = $stmt4->num_rows;
+
+						if($totR4 > 0)
+						{
+							echo translate('Msg_Phone_Exist',$GLOBALS['lang']);
+							return;
+						}						
+						
+						$stmt4->free_result();
+						$stmt4->close();
+					}
+					else 
+					{
+						$stmt3->free_result();
+						$stmt3->close();
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;							
+					}					
+					
 					if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 					{
 						$stmt2->execute();    
@@ -108,7 +134,9 @@
 				}
 				else
 				{
-					$stmt10->bind_param('iii', $tipoTelefono, $prefijoTelefono.$nroTelefonom, strlen($prefijoTelefono));
+					$numTelFinI = $prefijoTelefono.$nroTelefono;
+					$cantPrefiFN = strlen($prefijoTelefono);
+					$stmt10->bind_param('iii', $tipoTelefono, $numTelFinI, $cantPrefiFN);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -117,6 +145,7 @@
 						$stmt->close();
 						return;
 					}						
+					$idTelefonoG = $mysqli->insert_id;
 					
 					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_telefono(id_usuario,id_telefono) VALUES (?,?)"))
 					{
@@ -129,7 +158,7 @@
 					}
 					else
 					{
-						$stmt10->bind_param('si', $usuario, $mysqli->insert_id);
+						$stmt10->bind_param('si', $usuario, $idTelefonoG);
 						if(!$stmt10->execute())
 						{
 							echo $mysqli->error;

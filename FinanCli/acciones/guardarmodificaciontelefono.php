@@ -45,10 +45,38 @@
 			}
 			else
 			{
+				if($stmt4 = $mysqli->prepare("SELECT t.id FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id AND t.numero = ?"))
+				{
+					$numTelFinCo = $prefijoTelefono.$nroTelefono;
+					$stmt4->bind_param('si', $usuario, $numTelFinCo);
+					$stmt4->execute();    
+					$stmt4->store_result();
+					
+					$totR4 = $stmt4->num_rows;
+
+					$stmt4->bind_result($id_telefono_user_con_r);				
+					$stmt4->fetch();
+					if($totR4 > 0 && $id_telefono_user_con_r != $idTelefono)
+					{
+						echo translate('Msg_Phone_Exist',$GLOBALS['lang']);
+						return;
+					}						
+					
+					$stmt4->free_result();
+					$stmt4->close();
+				}
+				else 
+				{
+					$stmt->free_result();
+					$stmt->close();
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;							
+				}				
+				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->query("UPDATE finan_cli.telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -58,7 +86,9 @@
 				}
 				else
 				{
-					$stmt10->bind_param('iiii', $tipoTelefono, $prefijoTelefono.$nroTelefono, strlen($prefijoTelefono), $idTelefono);
+					$numTelFinU = $prefijoTelefono.$nroTelefono;
+					$cantPrefiFN = strlen($prefijoTelefono);
+					$stmt10->bind_param('iiii', $tipoTelefono, $numTelFinU, $cantPrefiFN, $idTelefono);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
