@@ -138,7 +138,21 @@ h1 {
     width:55px;
     height:55px;
     margin-top:85px;
-    margin-left:48%;
+    margin-left:70%;
+}
+
+#img_loader_10
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:287px;
+    margin-left:46%;
 }
 
 #mensajeError

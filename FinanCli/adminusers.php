@@ -4,8 +4,8 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 
-if (!verificar_usuario($mysqli)){header('Location:./login.php');}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');}
+if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
+if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>

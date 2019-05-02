@@ -2,7 +2,7 @@
 include ('utiles/funciones.php');
 require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
-if(!isset($_GET['activauto'])){header('Location:/FinanCli/login.php');}
+if(!isset($_GET['activauto'])){header('Location:/FinanCli/login.php');return;}
 include("menu/menu.php");
 ?>
 <!doctype html>

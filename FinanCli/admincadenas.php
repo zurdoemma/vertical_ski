@@ -3,8 +3,8 @@ include ('./utiles/funciones.php');
 require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
-if (!verificar_usuario($mysqli)){header('Location:./login.php');}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');}
+if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
+if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>
@@ -123,14 +123,14 @@ include("./menu/menu.php");
 		{
 			var urlmtc = "./acciones/versucursalescadena.php";
 			var tagmtc = $("<div id='dialogmodtenderchain'></div>");
-			$('#img_loader_5').show();
+			$('#img_loader_10').show();
 			
 			$.ajax({
 				url: urlmtc,
 				method: "POST",
 				data: { idCadena: cadena },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_5').hide();
+					$('#img_loader_10').hide();
 					tagmtc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -156,13 +156,11 @@ include("./menu/menu.php");
 						includeSelectAllOption: true,
 						buttonWidth: 190,
 						enableFiltering: true
-					});
-					
-					$('#clearSucu').html('<i class="fa fa-eye-slash"></i>');					
+					});					
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_5').hide();
+					$('#img_loader_10').hide();
 				}
 			});
 
@@ -170,6 +168,44 @@ include("./menu/menu.php");
 			
 		}
     </script>
+	
+	<script type="text/javascript">
+		function guardarSucursalesCadena(idCadena)
+		{
+			var sucursales = "";
+			$("#boot-multiselect-sucursales-asignadas > option").each(function(){
+			   if(!sucursales) sucursales = this.value;
+			   else sucursales = sucursales+","+this.value;   
+			});
+
+			var urlmtsc = "./acciones/guardarsucursalescadena.php";
+			$('#img_loader_10').show();
+			
+			$.ajax({
+				url: urlmtsc,
+				method: "POST",
+				data: { idCadena: idCadena, idSucursales: sucursales },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_10').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Save_Assign_Tenders_To_Chain_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
+						$('#dialogmodtenderchain').dialog('close');
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
+					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_10').hide();
+				}
+			});
+
+
+			
+		}
+    </script>	
 	
 	<script type="text/javascript">
 		function modificarCadena(cadena, razonSocial)
@@ -360,14 +396,14 @@ include("./menu/menu.php");
 			}
 			
 			var urlgmu = "./acciones/guardarmodificacioncadena.php";
-			$('#img_loader_2').show();
+			$('#img_loader_9').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
 				data: { idCadena: cadena, razonSocial: $( "#razonsocialchaini" ).val(), cuitCuil: $( "#cuitcuilchaini" ).val(), email: $( "#emailchaini" ).val(), telefono: $( "#telefonochaini" ).val(), nombreFantasia: $( "#nombrefantasiachaini" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_2').hide();
+					$('#img_loader_9').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Chain_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -382,7 +418,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_2').hide();
+					$('#img_loader_9').hide();
 				}
 			});				
 			
@@ -684,6 +720,10 @@ include("./menu/menu.php");
 							buttons: {
 									"<?php echo translate('Lbl_OK',$GLOBALS['lang']);?>": function() {
 											$("#okDialog").dialog('close');
+											if(mensaje.indexOf('<?php echo translate('Msg_Save_Assign_Tenders_To_Chain_OK',$GLOBALS['lang']);?>') != -1)
+											{
+												$('#dialogmodtenderchain').dialog('close');
+											}
 									}
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");

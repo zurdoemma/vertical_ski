@@ -1,12 +1,11 @@
 <?php 		
 		include ('../utiles/funciones.php');
-		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 		mysqli_set_charset($mysqli,"utf8");
 		
-		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');}
+		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -56,8 +55,8 @@
 		echo '			<h3 class="panel-title">'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_5"></div>';
-		echo '			<form id="formulariomu" role="form">';
+		echo '			<div id="img_loader_9"></div>';
+		echo '			<form id="formulariomc" role="form">';
 		echo '				<div class="form-group form-inline">';
 		echo '					<input class="form-control input-sm" id="idchaini" name="idchaini" type="text" maxlength="11" value="'.$id_cadena.'" style="display:none;" />';		
 		echo '					<label class="control-label" for="razonsocialchain">'.translate('Lbl_Business Name_Chain',$GLOBALS['lang']).':</label>';
@@ -89,7 +88,7 @@
 		echo '				</div>';	
 		echo '				<div class="form-group form-inline">';				
 		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelar" id="btnCancelar" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogmodchain\').dialog(\'close\');" style="margin-left:10px;" />';
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargar" id="btnCargar" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarModificacionCadena(document.getElementById(\'formulariomu\',\''.$id_cadena.'\'));"/>';										
+		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargar" id="btnCargar" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarModificacionCadena(document.getElementById(\'formulariomc\'),\''.$id_cadena.'\');"/>';										
 		echo '				</div>';				
 		echo '			</form>';
 		echo '		</div>';

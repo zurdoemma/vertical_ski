@@ -3,8 +3,8 @@ include ('./utiles/funciones.php');
 require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
-if (!verificar_usuario($mysqli)){header('Location:./login.php');}
-if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activauto=1');}
+if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
+if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
 if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))

@@ -1,12 +1,11 @@
 <?php 		
 		include ('../utiles/funciones.php');
-		sec_session_start();
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 		mysqli_set_charset($mysqli,"utf8");
 		
-		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');}
+		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
+		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -82,7 +81,7 @@
 		echo '			<h3 class="panel-title">'.translate('Lbl_Asignation_Tenders_X_Chain',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body" style="min-height:300px;">';
-		echo '			<div id="img_loader_9"></div>';
+		echo '			<div id="img_loader_10"></div>';
 		echo '			<form id="formulariomscu" role="form">';
 		echo '				<div class="form-group form-inline">';
 		//echo '					<label class="control-label" for="sucursalesasignadasc">'.translate('Lbl_Asignated_Tenders',$GLOBALS['lang']).':</label>';
@@ -112,7 +111,7 @@
 		echo '				</div>';	
 		echo '				<div class="form-group form-inline" style="margin-top:50%">';				
 		echo '					<input type="button" class="btn btn-primary pull-right pull-bottom" name="btnCancelar" id="btnCancelar" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogmodtenderchain\').dialog(\'close\');" style="margin-left:10px;" />';
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargar" id="btnCargar" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarModificacionCadena(document.getElementById(\'formulariomu\',\''.$id_cadena.'\'));"/>';										
+		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargar" id="btnCargar" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarSucursalesCadena(\''.$idCadena.'\');"/>';										
 		echo '				</div>';				
 		echo '			</form>';
 		echo '		</div>';

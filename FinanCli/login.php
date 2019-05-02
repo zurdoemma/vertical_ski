@@ -4,7 +4,10 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 if(empty($_GET['result_ok']) || empty($_SESSION['username'])) 
 {
-	if (verificar_usuario($mysqli)){header('Location:sesionusuario.php');}
+	if(empty($_GET['result_ok'])) 
+	{
+		if (verificar_usuario($mysqli)){header('Location:sesionusuario.php');return;}
+	}
 }
 ?>
 <!doctype html>

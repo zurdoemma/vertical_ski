@@ -64,52 +64,62 @@
 			if($cusuario == 1)
 			{ 
 				header('Location:../login.php?error_l=1');
+				return;
 				//echo'<font color="#FF0000">&nbsp;*El usuario no puede estar vacio</font>';
 			}
 			if($cusuario == 2) 
 			{
 				header('Location:../login.php?error_l=2');
+				return;
 				//echo'<font color="#FF0000">&nbsp;*El usuario es incorrecto</font>';
 			}
 			if($cclave == 1 && $cusuario == 0) 
 			{
 				header('Location:../login.php?error_l=3&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*La clave no puede estar vacia&nbsp;&nbsp;</font>';
 			}	
 			if($cclave == 2 && $cusuario == 0) 
 			{
 				header('Location:../login.php?error_l=4&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*La clave es incorrecta&nbsp;&nbsp;</font>';
 			}
 			if($cclave == 3 && $cusuario == 0) 
 			{
 				header('Location:../login.php?error_l=5&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*El usuario se encuentra bloqueado&nbsp;&nbsp;</font>';
 			}
 			if($cclave == -1 && $cusuario == 0)
 			{ 
 				header('Location:../login.php?error_l=6&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
 			}
 			if($cclave == 11 && $cusuario == 0)
 			{ 
 				header('Location:../login.php?error_l=11&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
 			}
 			if($cclave == 12 && $cusuario == 0)
 			{ 
 				header('Location:../login.php?error_l=12&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
 			}
 			if($cclave == 13 && $cusuario == 0)
 			{ 
 				header('Location:../login.php?error_l=13&usuario_el='.$usuario);
+				return;
 				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
 			}			
 		}
 		else
 		{		
 			header('Location:../sesionusuario.php');
+			return;
 			//echo'<p>Bienvenido usuario:&nbsp;' . $usuario;
 			//echo'&nbsp;&nbsp;&nbsp;<a href="sesionusuario.php" title="sesion" target="_self">Ir a pagina principal</a></p>'; 
 		}

@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 
 function verificar_usuario($mysqli)
 {
@@ -8,45 +8,9 @@ function verificar_usuario($mysqli)
 	
 	//comprobar expiración sesión usuario
 	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $GLOBALS['time_expire_sesion'])) 
-	{		
-		$date_registro = date("YmdHis");
-		$date_registro2 = date("Y-m-d H:i:s");
-					
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
-		{
-			printf("Error: %s\n", $mysqli->error);
-		}
-		else
-		{
-			$motivo = 15;
-			$parComp = translate('Msg_Close_Sesion_Time_Expired_Db',$GLOBALS['lang']).$date_registro2;
-			$stmt10->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $parComp);
-			if(!$stmt10->execute())
-			{
-				printf("Error: %s\n", $mysqli->error);
-			}
-		}
-	
-		$_SESSION = array();
-	 
-		if(phpversion() < '7.1.0')
-		{
-			// Obtiene los parámetros de sesión.
-			$params = session_get_cookie_params();
-		 
-			// Borra el cookie actual.
-			setcookie(session_name(),
-					'', time() - 42000, 
-					$params["path"], 
-					$params["domain"], 
-					$params["secure"], 
-					$params["httponly"]);
-		}
-	 
-		// Destruye sesión. 
-		session_destroy();
-		
-		return false;
+	{			
+		header('Location:/FinanCli/acciones/salir.php?expired_session=200');
+		return;
 	}	
 	else if(isset($_SESSION['username'])) $_SESSION['LAST_ACTIVITY'] = time(); 
 	

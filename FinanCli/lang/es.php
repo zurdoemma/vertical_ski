@@ -152,6 +152,7 @@
 		'Msg_Modify_Chain_OK' => 'La cadena se modifico correctamente!!',
 		'Msg_New_Chain_OK' => 'La nueva cadena se registro correctamente!!',
 		'Msg_Remove_Chain_OK' => 'La cadena se eliminó correctamente!!',
+		'Msg_Save_Assign_Tenders_To_Chain_OK' => 'Las sucursales se asignaron/desasignaron a la cadena correctamente!!',		
 		'Lbl_Business Name_Chain' => 'Razon Social',
 		'Lbl_CUIT_CUIL_Chain' => 'CUIT o CUIL',
 		'Lbl_Fantasy_Name_Chain' => 'Nombre de Fantasía',	
@@ -180,6 +181,24 @@
 		'Lbl_Unassign_Tenders' => 'Desasignar Sucursales',
 		'Lbl_Information' => 'Atención',
 		'Lbl_Assign_Tenders_select' => 'Debe seleccionar por lo menos una sucursal a asignar!!',
-		'Lbl_Unassign_Tenders_select' => 'Debe seleccionar por lo menos una sucursal para desasignar!!'		
+		'Lbl_Unassign_Tenders_select' => 'Debe seleccionar por lo menos una sucursal para desasignar!!',
+		'Lbl_New_Tender' => 'Nueva Sucursal',
+		'Lbl_Code_Tender' => 'Codigo',
+		'Lbl_Name_Tender' => 'Nombre',
+		'Lbl_Email_Tender' => 'Email',		
+		'Lbl_Chain_Tender' => 'Cadena',
+		'Lbl_Actions_Tender' => 'Acciones Sucursal',
+		'Msg_Remove_Tender' => 'Eliminar Sucursal',
+		'Msg_Confirm_Action_Removed_Tender' => 'Esta seguro que desea borrar la sucursal: ',
+		'Msg_Edit_Tender' => 'Modificar Sucursal',
+		'Msg_Modify_Tender_OK' => 'La sucursal se modifico correctamente!!',
+		'Msg_New_Tender_OK' => 'La nueva sucursal se registro correctamente!!',
+		'Msg_Remove_Tender_OK' => 'La sucursal se eliminó correctamente!!',
+		'Msg_A_Name_Tender_Must_Enter' => 'Debe ingresar un nombre de sucursal',
+		'Msg_A_Code_Tender_Must_Enter' => 'Debe ingresar un codigo de sucursal',
+		'Msg_A_Code_Tender_Must_Enter_A_Whole' => 'El codigo de sucursal debe ser un numero',
+		'Msg_A_Tender_Email_Invalid' => 'El email ingresado es inválido',
+		'Msg_Tender_Exist' => 'La sucursal ingresada ya existe!!',		
+		'Lbl_Select_Chain_Tender_None' => 'Ninguna'
 	);
 ?>
