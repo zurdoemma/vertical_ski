@@ -3,7 +3,7 @@
 		require("../../parametrosbasedatosfc.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 		mysqli_set_charset($mysqli,"utf8");		
-		if (verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
+		//if (verificar_usuario($mysqli)){header('Location:../sesionusuario.php');}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 

@@ -1,10 +1,10 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp\www\pls_config.php';
+include_once 'c:\wamp64\www\pls_config.php';
 
 function verificar_usuario($mysqli)
 {
-	sec_session_restart();
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
 	
 	//comprobar expiración sesión usuario
 	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $GLOBALS['time_expire_sesion'])) 
@@ -60,6 +60,7 @@ function verificar_usuario($mysqli)
 
 function verificar_permisos_admin()
 {
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start(); 
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1)
 	{
@@ -70,6 +71,7 @@ function verificar_permisos_admin()
 
 function verificar_permisos_usuario()
 {
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 2 || $_SESSION["permisos"] == 3)
 	{
@@ -80,6 +82,7 @@ function verificar_permisos_usuario()
 
 function verificar_permisos_supervisor()
 {
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
 	//comprobar la existencia del usuario
 	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 2)
 	{
@@ -96,19 +99,34 @@ function sec_session_start()
     // Esto detiene que JavaScript sea capaz de acceder a la identificación de la sesión.
     $httponly = true;
 	
+	// Obliga a las sesiones a solo utilizar cookies.
+	if (ini_set('session.use_only_cookies', 1) === FALSE) 
+	{
+		header("Location: ../sesionusuario.php");
+		exit();
+	}
+
+	if(ini_set('session.use_strict_mode',1) === FALSE)
+	{
+		header("Location: ../sesionusuario.php");
+		exit();		
+	}
+	
 	if(phpversion() < '7.1.0')
 	{
-		// Obliga a las sesiones a solo utilizar cookies.
-		if (ini_set('session.use_only_cookies', 1) === FALSE) 
+		if(ini_set('session.hash_function', sha512) === FALSE)
 		{
 			header("Location: ../sesionusuario.php");
-			exit();
+			exit();		
 		}
 	}
 	
-	ini_set('session.use_strict_mode',1);
-	ini_set('session.hash_function', sha512);
-	session_cache_limiter('nocache');
+	if(session_cache_limiter('nocache') === FALSE)
+	{
+		header("Location: ../sesionusuario.php");
+		exit();
+	}
+	
     // Obtiene los params de los cookies actuales.
     $cookieParams = session_get_cookie_params();
     session_set_cookie_params($cookieParams["lifetime"],
@@ -116,44 +134,10 @@ function sec_session_start()
         $cookieParams["domain"], 
         $secure,
         $httponly);
+	
     // Configura el nombre de sesión al configurado arriba.
     session_name($session_name);
     session_start();	
-    session_regenerate_id();    
-}
-
-function sec_session_restart() 
-{	
-	$session_name = 'sec_session_id';   
-    $secure = SECURE;
-    // Esto detiene que JavaScript sea capaz de acceder a la identificación de la sesión.
-    $httponly = true;
-	
-	if(phpversion() < '7.1.0')
-	{
-		// Obliga a las sesiones a solo utilizar cookies.
-		if (ini_set('session.use_only_cookies', 1) === FALSE) 
-		{
-			header("Location: ../sesionusuario.php");
-			exit();
-		}
-		
-		ini_set('session.use_strict_mode',1);
-		ini_set('session.hash_function', sha512);
-			
-		// Obtiene los params de los cookies actuales.
-		$cookieParams = session_get_cookie_params();
-		session_set_cookie_params($cookieParams["lifetime"],
-			$cookieParams["path"], 
-			$cookieParams["domain"], 
-			$secure,
-			$httponly);
-	}
-	session_cache_limiter('nocache');
-		
-    // Configura el nombre de sesión al configurado arriba.
-    if(phpversion() < '7.1.0') session_name($session_name);
-    session_start(); 	
     session_regenerate_id();   
 }
 

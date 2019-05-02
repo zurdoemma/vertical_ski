@@ -6,7 +6,7 @@ mysqli_set_charset($mysqli,"utf8");
 
 if($_GET['result_ok'] == 1)
 { 
-	sec_session_restart();
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
  	$username = $_SESSION['username'];
 	
 	// Desconfigura todos los valores de sesión.
@@ -50,7 +50,7 @@ if($_GET['result_ok'] == 1)
 
 if (verificar_usuario($mysqli))
 {
-	sec_session_restart();
+	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
 	$username = $_SESSION['username'];
 	
 	// Desconfigura todos los valores de sesión.
