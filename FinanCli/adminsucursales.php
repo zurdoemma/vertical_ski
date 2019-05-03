@@ -84,7 +84,7 @@ include("./menu/menu.php");
 		function modificarSucursal(sucursal, nombre)
 		{
 			var urla = "./acciones/modificarsucursal.php";
-			var tag = $("<div id='dialogmodtender'></div>");
+			var tag = $("<div id='dialogmodifytender'></div>");
 			$('#img_loader').show();
 			
 			$.ajax({
@@ -99,7 +99,7 @@ include("./menu/menu.php");
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Msg_Edit_Tender',$GLOBALS['lang']);?>: "+razonSocial,
+					  title: "<?php echo translate('Msg_Edit_Tender',$GLOBALS['lang']);?>: "+nombre,
 					  autoResize:true,
 							close: function(){
 									tag.dialog('destroy').remove()
@@ -394,7 +394,7 @@ include("./menu/menu.php");
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialogmodtender').dialog('close');
+						$('#dialogmodifytender').dialog('close');
 						$('#tableadmintenderst').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
@@ -722,6 +722,26 @@ include("./menu/menu.php");
 				$('#nombretenderni').focus();	
 			}
 		}
+    </script>
+
+	<script type="text/javascript">
+		function verDomicilioU()
+		{
+			if(!$('#mostrarDomicilioCarga').is(':visible'))
+			{
+				$('#mostrarDomicilioCarga').show();
+				$('#btnCargaDomicilioU').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaDomicilioU').html('<i class="fa fa-eye-slash"></i>');
+				$('#callei').focus();
+			}
+			else
+			{
+				$('#mostrarDomicilioCarga').hide();
+				$('#btnCargaDomicilioU').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaDomicilioU').html('<i class="fa fa-eye"></i>');
+				$('#nombretenderi').focus();	
+			}
+		}
     </script>	
 	
 	<script type="text/javascript">
@@ -902,7 +922,7 @@ include("./menu/menu.php");
 									echo '<td>'.$nombre_tender.'</td>';
 									echo '<td>'.$nombre_cadena_tender.'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}

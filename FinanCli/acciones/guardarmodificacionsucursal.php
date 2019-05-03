@@ -22,6 +22,8 @@
 				return;
 		}
 		
+		$idSucursal=htmlspecialchars($_POST["idSucursal"], ENT_QUOTES, 'UTF-8');
+		
 		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
 		$codigo=htmlspecialchars($_POST["codigo"], ENT_QUOTES, 'UTF-8');
 		$email=htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
@@ -29,6 +31,8 @@
 
 		if($cadena == -1) $cadena = "NULL";
 		$email = !empty($email) ? "$email" : "---";
+		
+		$idDomicilio=htmlspecialchars($_POST["idDomicilio"], ENT_QUOTES, 'UTF-8');
 		
 		$calle=htmlspecialchars($_POST["calle"], ENT_QUOTES, 'UTF-8');
 		$nroCalle=htmlspecialchars($_POST["nroCalle"], ENT_QUOTES, 'UTF-8');
@@ -45,8 +49,14 @@
 		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
 		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
 		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
-				
-		if($stmt = $mysqli->prepare("SELECT s.id FROM finan_cli.sucursal s WHERE s.codigo = ?"))
+		
+		if(empty($idSucursal) || empty($idDomicilio))
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}	
+		
+		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.email, s.id_cadena, d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2  FROM finan_cli.sucursal s, finan_cli.domicilio d, finan_cli.provincia p WHERE s.id_domicilio = d.id AND d.id_provincia = p.id AND s.codigo = ?"))
 		{
 			$stmt->bind_param('i', $codigo);
 			$stmt->execute();    
@@ -54,7 +64,7 @@
 		
 			$totR = $stmt->num_rows;
 
-			if($totR > 0)
+			if($totR > 1)
 			{
 				echo translate('Msg_Tender_Exist',$GLOBALS['lang']);
 				return;
@@ -64,7 +74,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.domicilio SET calle = ?, nro_calle = ?, id_provincia = ?, localidad = ?, departamento = ?, piso = ?, codigo_postal = ?, entre_calle_1 = ?, entre_calle_2 = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -74,7 +84,7 @@
 				}
 				else
 				{
-					$stmt10->bind_param('siississs', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2);
+					$stmt10->bind_param('siississsi', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2, $idDomicilio);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -83,14 +93,16 @@
 						$stmt->close();
 						return;						
 					}
-					else $idDomicilioTender = $mysqli->insert_id;
 				}	
 
+				$stmt->bind_result($id_tende_a, $codigo_tender_a, $nombre_tender_a, $email_tender_a, $cadena_tender_a, $id_domicilio_tender_a, $calle_tender_a, $nro_calle_tender_a, $provincia_tender_a, $localidad_ternder_a, $departamento_tender_a, $piso_tender_a, $codigo_postal_tender_a, $entre_calle1_tender_a, $entre_calle2_tender_a);
+				$stmt->fetch();
+				
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
+				$valor_log_user = "ANTERIOR: UPDATE finan_cli.domicilio SET calle = ".$calle_tender_a.", nro_calle = ".$nro_calle_tender_a.", provincia = ".$provincia_tender_a.", localidad = ".(!empty($localidad_ternder_a) ? "$localidad_ternder_a" : "---").", departamento = ".(!empty($departamento_tender_a) ? "$departamento_tender_a" : "---").", piso = ".(!empty($piso_tender_a) ? "$piso_tender_a" : "---").", codigo_postal = ".(!empty($codigo_postal_tender_a) ? "$codigo_postal_tender_a" : "---").", entre_calle_1 = ".(!empty($entre_calle1_tender_a) ? "$entre_calle1_tender_a" : "---").", entre_calle_2 = ".(!empty($entre_calle2_tender_a) ? "$entre_calle2_tender_a" : "---")." -- NUEVO: UPDATE finan_cli.domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt12 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -101,9 +113,9 @@
 				}
 				else
 				{
-					$motivo = 22;
-					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
-					if(!$stmt->execute())
+					$motivo = 23;
+					$stmt12->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+					if(!$stmt12->execute())
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -114,8 +126,8 @@
 					}
 				}				
 				
-				if($cadena == "NULL") $insertSucu = "INSERT INTO finan_cli.sucursal (nombre,codigo,email,id_domicilio) VALUES(?,?,?,?)";
-				else $insertSucu = "INSERT INTO finan_cli.sucursal (nombre,codigo,email,id_cadena,id_domicilio) VALUES(?,?,?,?,?)";
+				if($cadena == "NULL") $insertSucu = "UPDATE finan_cli.sucursal SET nombre = ?, codigo = ?, email = ?, id_domicilio = ?, id_cadena = NULL WHERE id = ?";
+				else $insertSucu = "UPDATE finan_cli.sucursal SET nombre = ?, codigo = ?, email = ?, id_cadena = ?, id_domicilio = ? WHERE id = ?";
 				if(!$stmt10 = $mysqli->prepare($insertSucu))
 				{
 					echo $mysqli->error;
@@ -127,8 +139,8 @@
 				}
 				else
 				{
-					if($cadena == "NULL") $stmt10->bind_param('sisi', $nombre, $codigo, $email, $idDomicilioTender);
-					else $stmt10->bind_param('sisii', $nombre, $codigo, $email, $cadena, $idDomicilioTender);
+					if($cadena == "NULL") $stmt10->bind_param('sisii', $nombre, $codigo, $email, $idDomicilio, $idSucursal);
+					else $stmt10->bind_param('sisiii', $nombre, $codigo, $email, $cadena, $idDomicilio, $idSucursal);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error.$cadena;
@@ -142,7 +154,7 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				$valor_log_user = "INSERT INTO finan_cli.sucursal (nombre,codigo,email,id_cadena,id_domicilio) VALUES(".$nombre.",".$codigo.",".$email.",".$cadena.",".$idDomicilioTender.")";
+				$valor_log_user = "ANTERIOR: UPDATE finan_cli.sucursal SET id = ".$idSucursal.", nombre = ".$nombre_tender_a." codigo = ".$codigo_tender_a.", email = ".(!empty($email_tender_a) ? "$email_tender_a" : "---").", id_cadena = ".(!empty($cadena_tender_a) ? "$cadena_tender_a" : "---").", id_domicilio = ".$idDomicilio." -- NUEVO: UPDATE finan_cli.sucursal SET nombre = ".$nombre." codigo = ".$codigo.", email = ".$email.", id_cadena = ".$cadena.", id_domicilio = ".$idDomicilio;
 					
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
@@ -155,7 +167,7 @@
 				}
 				else
 				{
-					$motivo = 19;
+					$motivo = 24;
 					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
 					if(!$stmt->execute())
 					{
@@ -191,7 +203,7 @@
 						$posicion++;
 					}
 					
-					echo translate('Msg_New_Tender_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
+					echo translate('Msg_Modify_Tender_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
 				}
 				else 
 				{

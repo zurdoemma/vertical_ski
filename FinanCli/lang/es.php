@@ -199,6 +199,10 @@
 		'Msg_A_Code_Tender_Must_Enter_A_Whole' => 'El codigo de sucursal debe ser un numero',
 		'Msg_A_Tender_Email_Invalid' => 'El email ingresado es inválido',
 		'Msg_Tender_Exist' => 'La sucursal ingresada ya existe!!',		
-		'Lbl_Select_Chain_Tender_None' => 'Ninguna'
+		'Lbl_Select_Chain_Tender_None' => 'Ninguna',
+		'Msg_Tender_Not_Exist' => 'La sucursal seleccionada, no existe.',
+		'Msg_Tender_Not_Remove_Because_Associated_Chain' => 'No se puede borrar la sucursal porque esta asociada a una cadena!!',
+		'Msg_Tender_Not_Remove_Because_Associated_User' => 'No se puede borrar la sucursal porque esta asociada a uno o mas usuarios!!',
+		'Msg_Tender_Not_Remove_Because_Associated_Credit' => 'No se puede borrar la sucursal porque esta asociada a uno o mas creditos!!'	
 	);
 ?>
