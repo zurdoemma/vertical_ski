@@ -101,7 +101,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#nrocallei" ).val()))
+				if (isNaN($( "#nrocallei" ).val()) || $( "#nrocallei" ).val() % 1 != 0)
 				{
 					$('#nrocallei').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -161,7 +161,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			
 			if($( "#domfloori" ).val().length != 0)
 			{
-				if (isNaN($( "#domfloori" ).val()))
+				if (isNaN($( "#domfloori" ).val()) || $( "#domfloori" ).val() % 1 != 0)
 				{
 					$(function() {
 						$( "#domfloori" ).tooltip({
@@ -269,7 +269,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#nrocallemi" ).val()))
+				if (isNaN($( "#nrocallemi" ).val()) || $( "#nrocallemi" ).val() % 1 != 0)
 				{
 					$('#nrocallemi').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -329,7 +329,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			
 			if($( "#domfloormi" ).val().length != 0)
 			{
-				if (isNaN($( "#domfloormi" ).val()))
+				if (isNaN($( "#domfloormi" ).val()) || $( "#domfloormi" ).val() % 1 != 0)
 				{
 					$(function() {
 						$( "#domfloormi" ).tooltip({

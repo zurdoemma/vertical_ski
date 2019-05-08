@@ -850,7 +850,7 @@ include("./menu/menu.php");
 			}
 			else 
 			{
-				if (isNaN($( "#nrocallei" ).val()))
+				if (isNaN($( "#nrocallei" ).val()) || $( "#nrocallei" ).val() % 1 != 0)
 				{
 					$('#nrocallei').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -910,7 +910,7 @@ include("./menu/menu.php");
 			
 			if($( "#domfloori" ).val().length != 0)
 			{
-				if (isNaN($( "#domfloori" ).val()))
+				if (isNaN($( "#domfloori" ).val()) || $( "#domfloori" ).val() % 1 != 0)
 				{
 					$(function() {
 						$( "#domfloori" ).tooltip({

@@ -73,7 +73,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#prefijotelefonoi" ).val()))
+				if (isNaN($( "#prefijotelefonoi" ).val()) || $( "#prefijotelefonoi" ).val() % 1 != 0)
 				{
 					$('#prefijotelefonoi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -120,7 +120,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#nrotelefonoi" ).val()))
+				if (isNaN($( "#nrotelefonoi" ).val()) || $( "#nrotelefonoi" ).val() % 1 != 0)
 				{
 					$('#nrotelefonoi').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -199,7 +199,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#prefijotelefonomi" ).val()))
+				if (isNaN($( "#prefijotelefonomi" ).val()) || $( "#prefijotelefonomi" ).val() % 1 != 0)
 				{
 					$('#prefijotelefonomi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {
@@ -246,7 +246,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 			}
 			else 
 			{
-				if (isNaN($( "#nrotelefonomi" ).val()))
+				if (isNaN($( "#nrotelefonomi" ).val()) || $( "#nrotelefonomi" ).val() % 1 != 0)
 				{
 					$('#nrotelefonomi').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
 					$(function() {

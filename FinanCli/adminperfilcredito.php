@@ -13,7 +13,7 @@ include("./menu/menu.php");
 	<meta charset="UTF-8">
 	
 	<link rel="shortcut icon" href="./images/iconoFinanCli.png" >
-	<title><?php echo translate('Lbl_Chains',$GLOBALS['lang']); ?></title>
+	<title><?php echo translate('Lbl_Profile_Credit',$GLOBALS['lang']); ?></title>
 	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
@@ -40,37 +40,39 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/extensions/export/bootstrap-table-export.js" ></script>
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
-	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>	
+	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
+	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>	
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
 	<script type="text/javascript">
-		function nuevaCadena()
+		function nuevoPerfilCredito()
 		{
-			var urlnc = "./acciones/nuevacadena.php";
-			var tagnc = $("<div id='dialognewchain'></div>");
+			var urlnpc = "./acciones/nuevoperfilcredito.php";
+			var tagnpc = $("<div id='dialognewprofilecredit'></div>");
 			$('#img_loader_5').show();
 			
 			$.ajax({
-				url: urlnc,
+				url: urlnpc,
 				method: "POST",
 				data: {},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
-					tagnc.html(dataresponse).dialog({
+					tagnpc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Lbl_New_Chain',$GLOBALS['lang']);?>",
+					  title: "<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>",
 					  autoResize:true,
 							close: function(){
-									tagnc.dialog('destroy').remove()
+									tagnpc.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-					tagnc.dialog('open');
+					tagnpc.dialog('open');
+					$('#montomaximoprofilecreditni').maskNumber();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -79,145 +81,18 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
-	
+			
 	<script type="text/javascript">
-		function asignarSucursales()
+		function modificarPerfilCredito(perfilcredito, nombre)
 		{
-			var pasoS = 0;
-			$.each($("#boot-multiselect-sucursales-activas option:selected"), function()
-			{
-				pasoS = 1;
-				
-				$("#boot-multiselect-sucursales-asignadas").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
-				$(this).remove();
-				
-				$("#boot-multiselect-sucursales-asignadas").multiselect('rebuild');
-				$("#boot-multiselect-sucursales-activas").multiselect('rebuild');
-			});	
-			
-			if(pasoS == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Assign_Tenders_select',$GLOBALS['lang']);?>');
-		}
-    </script>
-	
-	<script type="text/javascript">
-		function desasignarSucursales()
-		{
-			var pasoS2 = 0;
-			$.each($("#boot-multiselect-sucursales-asignadas option:selected"), function()
-			{
-				pasoS2 = 1;
-				
-				$("#boot-multiselect-sucursales-activas").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
-				$(this).remove();
-				
-				$("#boot-multiselect-sucursales-asignadas").multiselect('rebuild');
-				$("#boot-multiselect-sucursales-activas").multiselect('rebuild');
-			});	
-			
-			if(pasoS2 == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Unassign_Tenders_select',$GLOBALS['lang']);?>');
-		}
-    </script>	
-
-	<script type="text/javascript">
-		function verSucursalesCadena(cadena, razonSocial)
-		{
-			var urlmtc = "./acciones/versucursalescadena.php";
-			var tagmtc = $("<div id='dialogmodtenderchain'></div>");
-			$('#img_loader_10').show();
-			
-			$.ajax({
-				url: urlmtc,
-				method: "POST",
-				data: { idCadena: cadena },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_10').hide();
-					tagmtc.html(dataresponse).dialog({
-					  show: "blind",
-					  hide: "explode",
-					  height: "auto",
-					  width: "auto",					  
-					  modal: true, 
-					  title: "<?php echo translate('Lbl_View_Tenders_X_Chain',$GLOBALS['lang']);?>: "+razonSocial,
-					  autoResize:true,
-							close: function(){
-									tagmtc.dialog('destroy').remove()
-							}
-					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-					
-					tagmtc.dialog('open');
-					
-					$('#boot-multiselect-sucursales-activas').multiselect({
-						includeSelectAllOption: true,
-						buttonWidth: 190,
-						enableFiltering: true
-					});
-					
-					$('#boot-multiselect-sucursales-asignadas').multiselect({
-						includeSelectAllOption: true,
-						buttonWidth: 190,
-						enableFiltering: true
-					});					
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_10').hide();
-				}
-			});
-
-
-			
-		}
-    </script>
-	
-	<script type="text/javascript">
-		function guardarSucursalesCadena(idCadena)
-		{
-			var sucursales = "";
-			$("#boot-multiselect-sucursales-asignadas > option").each(function(){
-			   if(!sucursales) sucursales = this.value;
-			   else sucursales = sucursales+","+this.value;   
-			});
-
-			var urlmtsc = "./acciones/guardarsucursalescadena.php";
-			$('#img_loader_10').show();
-			
-			$.ajax({
-				url: urlmtsc,
-				method: "POST",
-				data: { idCadena: idCadena, idSucursales: sucursales },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_10').hide();
-					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Save_Assign_Tenders_To_Chain_OK',$GLOBALS['lang']);?>') != -1)
-					{
-						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
-						$('#dialogmodtenderchain').dialog('close');
-					}
-					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
-					
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_10').hide();
-				}
-			});
-
-
-			
-		}
-    </script>	
-	
-	<script type="text/javascript">
-		function modificarCadena(cadena, razonSocial)
-		{
-			var urla = "./acciones/modificarcadena.php";
-			var tag = $("<div id='dialogmodchain'></div>");
+			var urla = "./acciones/modificarperfilcredito.php";
+			var tag = $("<div id='dialogmodifyprofilecredit'></div>");
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urla,
 				method: "POST",
-				data: { idCadena: cadena },
+				data: { idPerfilCredito: perfilcredito },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					tag.html(dataresponse).dialog({
@@ -226,32 +101,30 @@ include("./menu/menu.php");
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Msg_Edit_Chain',$GLOBALS['lang']);?>: "+razonSocial,
+					  title: "<?php echo translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']);?>: "+nombre,
 					  autoResize:true,
 							close: function(){
 									tag.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 					tag.dialog('open');
+					$('#montomaximoprofilecrediti').maskNumber();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
 			});
-
-
-			
 		}
     </script>
 	
 	<script type="text/javascript">
-		function guardarModificacionCadena(formulariod, cadena)
+		function guardarModificacionPerfilCredito(formulariod, perfilcredito)
 		{
-			if($( "#razonsocialchaini" ).val().length == 0)
+			if($( "#nombreprofilecrediti" ).val().length == 0)
 			{
 				$(function() {
-					$( "#razonsocialchaini" ).tooltip({
+					$( "#nombreprofilecrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -259,13 +132,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#razonsocialchaini" ).focus();
+				$( "#nombreprofilecrediti" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#razonsocialchaini" ).tooltip({
+					$( "#nombreprofilecrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -273,13 +146,42 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#razonsocialchaini" ).tooltip('destroy');
+				$( "#nombreprofilecrediti" ).tooltip('destroy');
+			}
+												
+			if($( "#descripcionprofilecrediti" ).val().length == 0)
+			{
+				$(function() {
+					$( "#descripcionprofilecrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#descripcionprofilecrediti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#descripcionprofilecrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#descripcionprofilecrediti" ).tooltip('destroy');
 			}
 			
-			if($( "#cuitcuilchaini" ).val().length == 0)
+			if($( "#montomaximoprofilecrediti" ).val().length == 0)
 			{
+				$('#montomaximoprofilecrediti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#cuitcuilchaini" ).tooltip({
+					$( "#montomaximoprofilecrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -287,13 +189,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#cuitcuilchaini" ).focus();
+				$( "#montomaximoprofilecrediti" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#cuitcuilchaini" ).tooltip({
+					$( "#montomaximoprofilecrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -301,75 +203,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#cuitcuilchaini" ).tooltip('destroy');
-			}
-
-			if($( "#nombrefantasiachaini" ).val().length == 0)
-			{
-				$(function() {
-					$( "#nombrefantasiachaini" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nombrefantasiachaini" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#nombrefantasiachaini" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#nombrefantasiachaini" ).tooltip('destroy');
-			}
-
+				$( "#montomaximoprofilecrediti" ).tooltip('destroy');
+			}			
 			
-			if($( "#emailchaini" ).val().length != 0)
-			{						
-				if(!caracteresCorreoValido($( "#emailchaini" ).val()))
-				{
-					$(function() {
-						$( "#emailchaini" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#emailchaini" ).focus();
-					return;				
-				}
-				else
-				{
-					$(function() {
-						$( "#emailchaini" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});				
-					$( "#emailchaini" ).tooltip('destroy');				
-				}
-			}				
-
-			if($( "#telefonochaini" ).val().length != 0)
+			if($( "#montomaximoprofilecrediti" ).val().length != 0)
 			{			
-				if (isNaN($( "#telefonochaini" ).val()) || $( "#telefonochaini" ).val() % 1 != 0)
+				if (isNaN($( "#montomaximoprofilecrediti" ).val().replace(",","")))
 				{
+					$('#montomaximoprofilecrediti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#telefonochaini" ).tooltip({
+						$( "#montomaximoprofilecrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -377,13 +220,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#telefonochaini" ).focus();
+					$( "#montomaximoprofilecrediti" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#telefonochaini" ).tooltip({
+						$( "#montomaximoprofilecrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -391,48 +234,46 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#telefonochaini" ).tooltip('destroy');
+					$( "#montomaximoprofilecrediti" ).tooltip('destroy');
 				}
-			}
+			}			
 			
-			var urlgmu = "./acciones/guardarmodificacioncadena.php";
-			$('#img_loader_9').show();
+			var urlgmu = "./acciones/guardarmodificacionperfilcredito.php";
+			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idCadena: cadena, razonSocial: $( "#razonsocialchaini" ).val(), cuitCuil: $( "#cuitcuilchaini" ).val(), email: $( "#emailchaini" ).val(), telefono: $( "#telefonochaini" ).val(), nombreFantasia: $( "#nombrefantasiachaini" ).val() },
+				data: { idPerfilCredito: perfilcredito, nombre: $( "#nombreprofilecrediti" ).val(), descripcion: $( "#descripcionprofilecrediti" ).val(), montoMaximo: (($( "#montomaximoprofilecrediti" ).val().replace(",",""))*100.00) },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_9').hide();
+					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Chain_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialogmodchain').dialog('close');
-						$('#tableadminchainst').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialogmodifyprofilecredit').dialog('close');
+						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_9').hide();
+					$('#img_loader_11').hide();
 				}
 			});				
-			
-			
 		}			
 	</script>
 	
 	<script type="text/javascript">
-		function guardarNuevaCadena(formulariod)
+		function guardarNuevoPerfilCredito(formulariod)
 		{
-			if($( "#razonsocialchainni" ).val().length == 0)
+			if($( "#nombreprofilecreditni" ).val().length == 0)
 			{
 				$(function() {
-					$( "#razonsocialchainni" ).tooltip({
+					$( "#nombreprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -440,13 +281,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#razonsocialchainni" ).focus();
+				$( "#nombreprofilecreditni" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#razonsocialchainni" ).tooltip({
+					$( "#nombreprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -454,14 +295,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#razonsocialchainni" ).tooltip('destroy');
+				$( "#nombreprofilecreditni" ).tooltip('destroy');
 			}
-			
-			if($( "#cuitcuilchainni" ).val().length == 0)
+												
+			if($( "#descripcionprofilecreditni" ).val().length == 0)
 			{
-				$('#cuitcuilchainni').prop('title', '<?php echo translate('Msg_A_CUIT_CUIL_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#cuitcuilchainni" ).tooltip({
+					$( "#descripcionprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -469,13 +309,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#cuitcuilchainni" ).focus();
+				$( "#descripcionprofilecreditni" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#cuitcuilchainni" ).tooltip({
+					$( "#descripcionprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -483,14 +323,14 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#cuitcuilchainni" ).tooltip('destroy');
+				$( "#descripcionprofilecreditni" ).tooltip('destroy');
 			}
 			
-			if (isNaN($( "#cuitcuilchainni" ).val()) || $( "#cuitcuilchainni" ).val() % 1 != 0)
+			if($( "#montomaximoprofilecreditni" ).val().length == 0)
 			{
-				$('#cuitcuilchainni').prop('title', '<?php echo translate('Msg_A_CUIT_CUIL_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+				$('#montomaximoprofilecreditni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#cuitcuilchainni" ).tooltip({
+					$( "#montomaximoprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -498,89 +338,30 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#cuitcuilchainni" ).focus();
+				$( "#montomaximoprofilecreditni" ).focus();
 				return;
 			}
-			else
+			else 
 			{
 				$(function() {
-					$( "#cuitcuilchainni" ).tooltip({
+					$( "#montomaximoprofilecreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
 						  collision: "none"
 					   }
 					});
-				});					
-				$( "#cuitcuilchainni" ).tooltip('destroy');
+				});				
+				$( "#montomaximoprofilecreditni" ).tooltip('destroy');
 			}			
-
-			if($( "#nombrefantasiachainni" ).val().length == 0)
-			{
-				$(function() {
-					$( "#nombrefantasiachainni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nombrefantasiachainni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#nombrefantasiachainni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#nombrefantasiachainni" ).tooltip('destroy');
-			}
-
 			
-			if($( "#emailchainni" ).val().length != 0)
-			{						
-				if(!caracteresCorreoValido($( "#emailchainni" ).val()))
-				{
-					$(function() {
-						$( "#emailchainni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#emailchainni" ).focus();
-					return;				
-				}
-				else
-				{
-					$(function() {
-						$( "#emailchainni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});				
-					$( "#emailchainni" ).tooltip('destroy');				
-				}
-			}				
-
-			if($( "#telefonochainni" ).val().length != 0)
+			if($( "#montomaximoprofilecreditni" ).val().length != 0)
 			{			
-				if (isNaN($( "#telefonochainni" ).val()) || $( "#telefonochainni" ).val() % 1 != 0)
+				if (isNaN($( "#montomaximoprofilecreditni" ).val().replace(",","")))
 				{
+					$('#montomaximoprofilecreditni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#telefonochainni" ).tooltip({
+						$( "#montomaximoprofilecreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -588,13 +369,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#telefonochainni" ).focus();
+					$( "#montomaximoprofilecreditni" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#telefonochainni" ).tooltip({
+						$( "#montomaximoprofilecreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -602,61 +383,58 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#telefonochainni" ).tooltip('destroy');
+					$( "#montomaximoprofilecreditni" ).tooltip('destroy');
 				}
-			}
-		
-			
-			var urlggnu = "./acciones/guardarnuevacadena.php";
-			$('#img_loader_5').show();
+			}			
+						
+			var urlggnu = "./acciones/guardarnuevoperfilcredito.php";
+			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { razonSocial: $( "#razonsocialchainni" ).val(), cuitCuil: $( "#cuitcuilchainni" ).val(), email: $( "#emailchainni" ).val(), telefono: $( "#telefonochainni" ).val(), nombreFantasia: $( "#nombrefantasiachainni" ).val() },
+				data: { nombre: $( "#nombreprofilecreditni" ).val(), descripcion: $( "#descripcionprofilecreditni" ).val(), montoMaximo: (($( "#montomaximoprofilecreditni" ).val().replace(",",""))*100.00) },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_5').hide();
+					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_New_Chain_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialognewchain').dialog('close');
-						$('#tableadminchainst').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialognewprofilecredit').dialog('close');
+						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_5').hide();
+					$('#img_loader_11').hide();
 				}
-			});				
-			
-			
+			});
 		}			
 	</script>
-	
+		
 	<script type="text/javascript">
-		function borrar_cadena(cadena)
+		function borrar_perfil_credito(perfilcredito)
 		{
-			var urlrdu = "./acciones/borrarcadena.php";
+			var urlrdu = "./acciones/borrarperfilcredito.php";
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlrdu,
 				method: "POST",
-				data: { idCadena: cadena },
+				data: { idPerfilCredito: perfilcredito },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Chain_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#tableadminchainst').bootstrapTable('load',JSON.parse(datTable));
+						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -720,10 +498,6 @@ include("./menu/menu.php");
 							buttons: {
 									"<?php echo translate('Lbl_OK',$GLOBALS['lang']);?>": function() {
 											$("#okDialog").dialog('close');
-											if(mensaje.indexOf('<?php echo translate('Msg_Save_Assign_Tenders_To_Chain_OK',$GLOBALS['lang']);?>') != -1)
-											{
-												$('#dialogmodtenderchain').dialog('close');
-											}
 									}
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
@@ -731,7 +505,7 @@ include("./menu/menu.php");
 		}
     </script>	
 	<script type="text/javascript">
-		function confirmar_accion(titulo, mensaje, cadena, razonsocial)
+		function confirmar_accion(titulo, mensaje, perfilcredito, nombre)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -745,7 +519,7 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										
-										borrar_cadena(cadena);                                                      
+										borrar_perfil_credito(perfilcredito);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -754,7 +528,7 @@ include("./menu/menu.php");
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+razonsocial+"?</div>");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
 				$('#img_loader').hide();
 		}
 	</script>	
@@ -783,44 +557,44 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Chains',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title"><?php echo translate('Lbl_Profile_Credit',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaCadena();" title="<?php echo translate('Lbl_New_Chain',$GLOBALS['lang']);?>" ><i class="fas fa-plus-circle"></i></button>
+				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPerfilCredito();" title="<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
-			<div id="tablaadminchains" class="table-responsive">
-				<table id="tableadminchainst" data-classes="table table-hover table-condensed"
-				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('Lbl_Chains',$GLOBALS['lang']); ?>"}'
+			<div id="tablaadminprofilescredit" class="table-responsive">
+				<table id="tableadminprofilescreditt" data-classes="table table-hover table-condensed"
+				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Profile_Credit',$GLOBALS['lang']); ?>"}'
 				   data-export-types="['excel','pdf','csv','txt']"
 				   data-search="true" data-search-align="left" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
-							<th class="col-xs-1 text-center" data-field="razonsocial" data-sortable="true"><?php echo translate('Lbl_Business Name_Chain',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="cuitcuil" data-sortable="true"><?php echo translate('Lbl_CUIT_CUIL_Chain',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="nombrefantasia" data-sortable="true"><?php echo translate('Lbl_Fantasy_Name_Chain',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Chain',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Profile_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="descripcion" data-sortable="true"><?php echo translate('Lbl_Description_Profile_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="montomaximo" data-sortable="true"><?php echo translate('Lbl_Limit_Amount_Profile_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Profile_Credit',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.nombre_fantasia FROM finan_cli.cadena c ORDER BY c.id")) 
+							if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 
 								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_chain, $razon_social_chain, $cuit_cuil_chain, $nombre_fantasia_chain);
+								$stmt->bind_result($id_profile_credit, $name_profile_credit, $description_profile_credit, $limit_amount_profile_credit);
 								
 								while($stmt->fetch())
 								{		
 									echo '<tr>';
-									echo '<td>'.$razon_social_chain.'</td>';
-									echo '<td>'.$cuit_cuil_chain.'</td>';
-									echo '<td>'.$nombre_fantasia_chain.'</td>';
+									echo '<td>'.$name_profile_credit.'</td>';
+									echo '<td>'.$description_profile_credit.'</td>';
+									echo '<td>$'.number_format(($limit_amount_profile_credit/100.00),2).'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Chain',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Chain',$GLOBALS['lang']).'\',\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-unlink"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Profile_Credit',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Profile_Credit',$GLOBALS['lang']).'\',\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']).'" onclick="modificarPerfilCredito(\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}
@@ -843,8 +617,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		$(function () 
 		{
-			$('#tableadminchainst').bootstrapTable({locale:'es-AR'});
-			  
+			$('#tableadminprofilescreditt').bootstrapTable({locale:'es-AR'});
 		});
 	</script>	
 </body>
