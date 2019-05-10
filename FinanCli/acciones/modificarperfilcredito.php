@@ -68,11 +68,17 @@
 		echo '					</div>';						
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="creditplansxprofile">'.translate('Lbl_View_Credit_Plan_X_Profile',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id=creditplansxprofile">';
+		echo '						<button type="button" class="btn" title="'.translate('Msg_View_Credit_Plan_X_Profile',$GLOBALS['lang']).'" onclick="verPlanesCredito(\''.$id_perfil_credito.'\',\''.$nombre_perfil_credito.'\');"><i class="fa fa-eye"></i></button>';
+		echo '					</div>';		
+		echo '				</div>';		
+		echo '				<div class="form-group form-inline">';
 		echo '					<label class="control-label" for="descripcionprofilecredit">'.translate('Lbl_Description_Profile_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="descripcionprofilecredit">';
 		echo '						<textarea rows="5" cols="67" title="'.translate('Msg_A_Description_Profile_Credit_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="descripcionprofilecrediti" name="descripcionprofilecrediti" type="text" maxlength="500" >'.$descripcion_perfil_credito.'</textarea>';
 		echo '					</div>';		
-		echo '				</div>';			
+		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';				
 		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarPC" id="btnCancelarPC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogmodifyprofilecredit\').dialog(\'close\');" style="margin-left:10px;" />';
 		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarPC" id="btnCargarPC" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarModificacionPerfilCredito(document.getElementById(\'formulariompc\'),\''.$id_perfil_credito.'\');"/>';										

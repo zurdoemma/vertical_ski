@@ -45,9 +45,9 @@
 		echo '					<div class="form-group" id="interesfijoplancreditn">';
 		echo '						<input title="'.translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="interesfijoplancreditni" name="interesfijoplancreditni" type="text" maxlength="11" />';
 		echo '					</div>';
-		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="diferimientocuotaplancreditn">'.translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']).':</label>';
-		echo '					<div class="form-group" id="diferimientocuotaplancreditn">';
-		echo '						<select class="form-control input-sm" name="diferimientocuotaplancreditni" id="diferimientocuotaplancreditni" style="width:190px;">';			 
+		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodiferimientocuotasplancreditn">'.translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="tipodiferimientocuotasplancreditn">';
+		echo '						<select class="form-control input-sm" name="tipodiferimientocuotasplancreditni" id="tipodiferimientocuotasplancreditni" style="width:190px;">';			 
 										if ($stmt = $mysqli->prepare("SELECT id, valor FROM finan_cli.parametros WHERE nombre LIKE 'tipo_diferimiento_cuota_%'")) 
 										{ 
 											$stmt->execute();    

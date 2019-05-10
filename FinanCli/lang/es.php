@@ -170,6 +170,7 @@
 		'Msg_A_Chain_Exist' => 'La cadena ya existe!!',
 		'Msg_Chain_Not_Exist' => 'La cadena seleccionada, no existe.',
 		'Msg_Chain_Not_Remove_Because_Associated_Tender' => 'No se puede borrar la cadena porque esta asociada a una o mas sucursales!!',
+		'Msg_Chain_Not_Remove_Because_Associated_Credit_Plan' => 'No se puede borrar la cadena porque esta asociada a una o mas planes de credito!!',
 		'Lbl_View_Tenders_Chain' => 'Ver Sucursales',
 		'Lbl_View_Tenders_X_Chain' => 'Sucursales de Cadena',
 		'Lbl_Asignation_Tenders_X_Chain' => 'Asignación de Sucursales',	
@@ -225,6 +226,14 @@
 		'Msg_Profile_Credit_Not_Exist' => 'El perfil de credito seleccionado, no existe.',
 		'Msg_Profile_Credit_Not_Remove_Because_Associated_Client' => 'No se puede borrar el perfil porque esta asociado a uno o mas clientes!!',
 		'Msg_Profile_Credit_Not_Remove_Because_Associated_Plan_Credit' => 'No se puede borrar el perfil porque esta asociado a uno o mas planes!!',
+		'Lbl_Assign_Credit_Plans_Select' => 'Debe seleccionar por lo menos un plan a asignar!!',
+		'Lbl_Unassign_Credit_Plans_Select' => 'Debe seleccionar por lo menos un plan para desasignar!!',
+		'Lbl_View_Credit_Plan_X_Profile_2' => 'Planes X Perfil de Credito',
+		'Lbl_Asignated_Credit_Plans' => 'Planes Asignados',
+		'Lbl_Credit_Plans_Available' => 'Planes Disponibles',
+		'Lbl_Assign_Credit_Plan' => 'Asignar Plan',
+		'Lbl_Unassign_Credit_Plan' => 'Desasignar Plan',		
+		'Msg_Save_Assign_Credit_Plans_To_Profile_OK' => 'Los planes se asignaron/desasignaron al perfil de credito correctamente!!',		
 		'Lbl_Credit_Plan' => 'Plan de Credito',
 		'Lbl_New_Credit_Plan' => 'Nuevo Plan de Credito',
 		'Msg_Edit_Credit_Plan' => 'Modificar Plan de Credito',
@@ -246,6 +255,13 @@
 		'Msg_Remove_Credit_Plan' => 'Eliminar Plan de Credito',
 		'Msg_Confirm_Action_Removed_Credit_Plan' => 'Esta seguro que desea borrar el plan de credito: ',
 		'Msg_Edit_Credit_Plan' => 'Modificar Plan de Credito',
-		'Msg_A_Name_Credit_Plan_Must_Enter' => 'Debe ingresar el nombre'
+		'Msg_A_Name_Credit_Plan_Must_Enter' => 'Debe ingresar el nombre',
+		'Msg_A_Credit_Plan_Exist' => 'El plan de credito ya existe!!',
+		'Msg_A_Credit_Plan_Not_Exist' => 'El plan de credito seleccionado, no existe!!',		
+		'Msg_Quota_Limit_Exceeded_Credit_Plan' => 'La cantidad de cuotas excede el limite maximo permitido',
+		'Msg_Credit_Plan_Not_Remove_Because_Associated_Credit' => 'No se puede borrar el plan porque esta asociado a uno o mas creditos!!',
+		'Msg_Profile_Credit_Not_Remove_Because_Associated_Profile_Credit' => 'No se puede borrar el plan porque esta asociado a uno o mas perfiles de credito!!',
+		'Msg_View_Credit_Plan_X_Profile' => 'Ver Planes de Credito',
+		'Lbl_View_Credit_Plan_X_Profile' => 'Planes'		
 	);
 ?>

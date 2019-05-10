@@ -66,7 +66,36 @@
 					$stmt->close();
 					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 					return;	
-				}					
+				}
+
+				if($stmt3 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.plan_credito pc WHERE c.id = pc.id_cadena AND c.id = ?"))
+				{
+					$stmt3->bind_param('i', $idCadena);
+					$stmt3->execute();    
+					$stmt3->store_result();
+				
+					$totR2 = $stmt3->num_rows;
+
+					if($totR2 > 0)
+					{
+						$stmt3->free_result();
+						$stmt3->close();
+						echo translate('Msg_Chain_Not_Remove_Because_Associated_Tender',$GLOBALS['lang']);
+						return;
+					}
+					
+					$stmt3->free_result();
+					$stmt3->close();
+				}
+				else	
+				{
+					$stmt2->free_result();
+					$stmt2->close();
+					$stmt->free_result();
+					$stmt->close();
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;	
+				}				
 				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);

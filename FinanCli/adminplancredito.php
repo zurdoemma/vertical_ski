@@ -694,17 +694,17 @@ include("./menu/menu.php");
 				   data-search="true" data-search-align="left" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
-							<th class="col-xs-1 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Credit_Plan',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="cantidadcuotas" data-sortable="true"><?php echo translate('Lbl_Amount_Fees_Credit_Plan',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="interesfijo" data-sortable="true"><?php echo translate('Lbl_Fixed_Interest_Credit_Plan',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="diferimientocuotas" data-sortable="true"><?php echo translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="cantidadcuotas" data-sortable="true"><?php echo translate('Lbl_Amount_Fees_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="interesfijo" data-sortable="true"><?php echo translate('Lbl_Fixed_Interest_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="diferimientocuotas" data-sortable="true"><?php echo translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']);?></th>
 							<th class="col-xs-2 text-center" data-field="cadena" data-sortable="true"><?php echo translate('Lbl_Chain_Credit_Plan',$GLOBALS['lang']);?></th>
 							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Credit_Plan',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.nombre FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id")) 
+							if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id ORDER BY pc.cantidad_cuotas")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();

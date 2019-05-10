@@ -81,6 +81,127 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
+	
+	<script type="text/javascript">
+		function asignarPlanesCredito()
+		{
+			var pasoS = 0;
+			$.each($("#boot-multiselect-planes-activos option:selected"), function()
+			{
+				pasoS = 1;
+				
+				$("#boot-multiselect-planes-asignados").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
+				$(this).remove();
+				
+				$("#boot-multiselect-planes-asignados").multiselect('rebuild');
+				$("#boot-multiselect-planes-activos").multiselect('rebuild');
+			});	
+			
+			if(pasoS == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Assign_Credit_Plans_Select',$GLOBALS['lang']);?>');
+		}
+    </script>
+	
+	<script type="text/javascript">
+		function desasignarPlanesCredito()
+		{
+			var pasoS2 = 0;
+			$.each($("#boot-multiselect-planes-asignados option:selected"), function()
+			{
+				pasoS2 = 1;
+				
+				$("#boot-multiselect-planes-activos").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
+				$(this).remove();
+				
+				$("#boot-multiselect-planes-asignados").multiselect('rebuild');
+				$("#boot-multiselect-planes-activos").multiselect('rebuild');
+			});	
+			
+			if(pasoS2 == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Unassign_Credit_Plans_Select',$GLOBALS['lang']);?>');
+		}
+    </script>	
+
+	<script type="text/javascript">
+		function verPlanesCredito(perfilCredito, nombre)
+		{
+			var urlmtc = "./acciones/verplanescredito.php";
+			var tagmtc = $("<div id='dialogmodcreditplanxprofile'></div>");
+			$('#img_loader_10').show();
+			
+			$.ajax({
+				url: urlmtc,
+				method: "POST",
+				data: { idPerfilCredito: perfilCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_10').hide();
+					tagmtc.html(dataresponse).dialog({
+					  show: "blind",
+					  hide: "explode",
+					  height: "auto",
+					  width: "auto",					  
+					  modal: true, 
+					  title: "<?php echo translate('Lbl_View_Credit_Plan_X_Profile_2',$GLOBALS['lang']);?>: "+nombre,
+					  autoResize:true,
+							close: function(){
+									tagmtc.dialog('destroy').remove()
+							}
+					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					tagmtc.dialog('open');
+					
+					$('#boot-multiselect-planes-activos').multiselect({
+						includeSelectAllOption: true,
+						buttonWidth: 190,
+						enableFiltering: true
+					});
+					
+					$('#boot-multiselect-planes-asignados').multiselect({
+						includeSelectAllOption: true,
+						buttonWidth: 190,
+						enableFiltering: true
+					});					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_10').hide();
+				}
+			});
+		}
+    </script>
+	
+	<script type="text/javascript">
+		function guardarPlanesCreditoPerfil(idPerfilCredito)
+		{
+			var planes = "";
+			$("#boot-multiselect-planes-asignados > option").each(function(){
+			   if(!planes) planes = this.value;
+			   else planes = planes+","+this.value;   
+			});
+
+			var urlmtsc = "./acciones/guardarplanesperfilcredito.php";
+			$('#img_loader_10').show();
+			
+			$.ajax({
+				url: urlmtsc,
+				method: "POST",
+				data: { idPerfilCredito: idPerfilCredito, idPlanes: planes },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_10').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Save_Assign_Credit_Plans_To_Profile_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
+						$('#dialogmodcreditplanxprofile').dialog('close');
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
+					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_10').hide();
+				}
+			});	
+		}
+    </script>	
 			
 	<script type="text/javascript">
 		function modificarPerfilCredito(perfilcredito, nombre)
