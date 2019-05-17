@@ -13,7 +13,7 @@ include("./menu/menu.php");
 	<meta charset="UTF-8">
 	
 	<link rel="shortcut icon" href="./images/iconoFinanCli.png" >
-	<title><?php echo translate('Lbl_Profile_Credit',$GLOBALS['lang']); ?></title>
+	<title><?php echo translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']); ?></title>
 	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
@@ -41,16 +41,15 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
-	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>	
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
 	<script type="text/javascript">
-		function nuevoPerfilCredito()
+		function nuevoInteresXMora()
 		{
-			var urlnpc = "./acciones/nuevoperfilcredito.php";
-			var tagnpc = $("<div id='dialognewprofilecredit'></div>");
+			var urlnpc = "./acciones/nuevointeresxmora.php";
+			var tagnpc = $("<div id='dialognewinteresxmora'></div>");
 			$('#img_loader_5').show();
 			
 			$.ajax({
@@ -71,14 +70,13 @@ include("./menu/menu.php");
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>",
+					  title: "<?php echo translate('Lbl_New_Interest_For_Late_Payment',$GLOBALS['lang']);?>",
 					  autoResize:true,
 							close: function(){
 									tagnpc.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 					tagnpc.dialog('open');
-					$('#montomaximoprofilecreditni').maskNumber();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -87,145 +85,18 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
-	
-	<script type="text/javascript">
-		function asignarPlanesCredito()
-		{
-			var pasoS = 0;
-			$.each($("#boot-multiselect-planes-activos option:selected"), function()
-			{
-				pasoS = 1;
-				
-				$("#boot-multiselect-planes-asignados").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
-				$(this).remove();
-				
-				$("#boot-multiselect-planes-asignados").multiselect('rebuild');
-				$("#boot-multiselect-planes-activos").multiselect('rebuild');
-			});	
-			
-			if(pasoS == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Assign_Credit_Plans_Select',$GLOBALS['lang']);?>');
-		}
-    </script>
-	
-	<script type="text/javascript">
-		function desasignarPlanesCredito()
-		{
-			var pasoS2 = 0;
-			$.each($("#boot-multiselect-planes-asignados option:selected"), function()
-			{
-				pasoS2 = 1;
-				
-				$("#boot-multiselect-planes-activos").append('<option value="'+$(this).val()+'">'+$(this).text()+'</option>');
-				$(this).remove();
-				
-				$("#boot-multiselect-planes-asignados").multiselect('rebuild');
-				$("#boot-multiselect-planes-activos").multiselect('rebuild');
-			});	
-			
-			if(pasoS2 == 0) mensaje_atencion('<?php echo translate('Lbl_Information',$GLOBALS['lang']);?>','<?php echo translate('Lbl_Unassign_Credit_Plans_Select',$GLOBALS['lang']);?>');
-		}
-    </script>	
-
-	<script type="text/javascript">
-		function verPlanesCredito(perfilCredito, nombre)
-		{
-			var urlmtc = "./acciones/verplanescredito.php";
-			var tagmtc = $("<div id='dialogmodcreditplanxprofile'></div>");
-			$('#img_loader_10').show();
-			
-			$.ajax({
-				url: urlmtc,
-				method: "POST",
-				data: { idPerfilCredito: perfilCredito },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_10').hide();
-					
-					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
-					{
-						window.location.replace("./login.php?result_ok=3");
-					}
-					
-					tagmtc.html(dataresponse).dialog({
-					  show: "blind",
-					  hide: "explode",
-					  height: "auto",
-					  width: "auto",					  
-					  modal: true, 
-					  title: "<?php echo translate('Lbl_View_Credit_Plan_X_Profile_2',$GLOBALS['lang']);?>: "+nombre,
-					  autoResize:true,
-							close: function(){
-									tagmtc.dialog('destroy').remove()
-							}
-					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-					
-					tagmtc.dialog('open');
-					
-					$('#boot-multiselect-planes-activos').multiselect({
-						includeSelectAllOption: true,
-						buttonWidth: 190,
-						enableFiltering: true
-					});
-					
-					$('#boot-multiselect-planes-asignados').multiselect({
-						includeSelectAllOption: true,
-						buttonWidth: 190,
-						enableFiltering: true
-					});					
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_10').hide();
-				}
-			});
-		}
-    </script>
-	
-	<script type="text/javascript">
-		function guardarPlanesCreditoPerfil(idPerfilCredito)
-		{
-			var planes = "";
-			$("#boot-multiselect-planes-asignados > option").each(function(){
-			   if(!planes) planes = this.value;
-			   else planes = planes+","+this.value;   
-			});
-
-			var urlmtsc = "./acciones/guardarplanesperfilcredito.php";
-			$('#img_loader_10').show();
-			
-			$.ajax({
-				url: urlmtsc,
-				method: "POST",
-				data: { idPerfilCredito: idPerfilCredito, idPlanes: planes },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_10').hide();
-					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Save_Assign_Credit_Plans_To_Profile_OK',$GLOBALS['lang']);?>') != -1)
-					{
-						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
-						$('#dialogmodcreditplanxprofile').dialog('close');
-					}
-					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
-					
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_10').hide();
-				}
-			});	
-		}
-    </script>	
 			
 	<script type="text/javascript">
-		function modificarPerfilCredito(perfilcredito, nombre)
+		function modificarInteresXMora(interesxmora)
 		{
-			var urla = "./acciones/modificarperfilcredito.php";
-			var tag = $("<div id='dialogmodifyprofilecredit'></div>");
+			var urla = "./acciones/modificarinteresxmora.php";
+			var tag = $("<div id='dialogmodifyinteresxmora'></div>");
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urla,
 				method: "POST",
-				data: { idPerfilCredito: perfilcredito },
+				data: { idInteresXMora: interesxmora },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -240,14 +111,13 @@ include("./menu/menu.php");
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']);?>: "+nombre,
+					  title: "<?php echo translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']);?>",
 					  autoResize:true,
 							close: function(){
 									tag.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 					tag.dialog('open');
-					$('#montomaximoprofilecrediti').maskNumber();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -258,12 +128,13 @@ include("./menu/menu.php");
     </script>
 	
 	<script type="text/javascript">
-		function guardarModificacionPerfilCredito(formulariod, perfilcredito)
-		{
-			if($( "#nombreprofilecrediti" ).val().length == 0)
+		function guardarModificacionInteresXMora(formulariod, interesxmora)
+		{			
+			if($( "#cantidaddiasinteresxmorai" ).val().length == 0)
 			{
+				$('#cantidaddiasinteresxmorai').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#nombreprofilecrediti" ).tooltip({
+					$( "#cantidaddiasinteresxmorai" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -271,13 +142,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#nombreprofilecrediti" ).focus();
+				$( "#cantidaddiasinteresxmorai" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#nombreprofilecrediti" ).tooltip({
+					$( "#cantidaddiasinteresxmorai" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -285,73 +156,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#nombreprofilecrediti" ).tooltip('destroy');
-			}
-												
-			if($( "#descripcionprofilecrediti" ).val().length == 0)
-			{
-				$(function() {
-					$( "#descripcionprofilecrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#descripcionprofilecrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#descripcionprofilecrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#descripcionprofilecrediti" ).tooltip('destroy');
-			}
-			
-			if($( "#montomaximoprofilecrediti" ).val().length == 0)
-			{
-				$('#montomaximoprofilecrediti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#montomaximoprofilecrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#montomaximoprofilecrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#montomaximoprofilecrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#montomaximoprofilecrediti" ).tooltip('destroy');
+				$( "#cantidaddiasinteresxmorai" ).tooltip('destroy');
 			}			
 			
-			if($( "#montomaximoprofilecrediti" ).val().length != 0)
+			if($( "#cantidaddiasinteresxmorai" ).val().length != 0)
 			{			
-				if (isNaN($( "#montomaximoprofilecrediti" ).val().replace(",","")))
+				if (isNaN($( "#cantidaddiasinteresxmorai" ).val()) || $( "#cantidaddiasinteresxmorai" ).val() % 1 != 0)
 				{
-					$('#montomaximoprofilecrediti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$('#cantidaddiasinteresxmorai').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#montomaximoprofilecrediti" ).tooltip({
+						$( "#cantidaddiasinteresxmorai" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -359,13 +173,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#montomaximoprofilecrediti" ).focus();
+					$( "#cantidaddiasinteresxmorai" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#montomaximoprofilecrediti" ).tooltip({
+						$( "#cantidaddiasinteresxmorai" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -373,27 +187,89 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#montomaximoprofilecrediti" ).tooltip('destroy');
+					$( "#cantidaddiasinteresxmorai" ).tooltip('destroy');
+				}
+			}
+
+
+			if($( "#interesxmorai" ).val().length == 0)
+			{
+				$('#interesxmorai').prop('title', '<?php echo translate('Msg_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#interesxmorai" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#interesxmorai" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#interesxmorai" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#interesxmorai" ).tooltip('destroy');
+			}			
+			
+			if($( "#interesxmorai" ).val().length != 0)
+			{			
+				if (isNaN($( "#interesxmorai" ).val()) || $( "#interesxmorai" ).val() % 1 != 0)
+				{
+					$('#interesxmorai').prop('title', '<?php echo translate('Msg_Interest_For_Late_Payment_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#interesxmorai" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#interesxmorai" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#interesxmorai" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#interesxmorai" ).tooltip('destroy');
 				}
 			}			
 			
-			var urlgmu = "./acciones/guardarmodificacionperfilcredito.php";
+			var urlgmu = "./acciones/guardarmodificacioninteresxmora.php";
 			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idPerfilCredito: perfilcredito, nombre: $( "#nombreprofilecrediti" ).val(), descripcion: $( "#descripcionprofilecrediti" ).val(), montoMaximo: (($( "#montomaximoprofilecrediti" ).val().replace(",",""))*100.00) },
+				data: { idInteresXMora: interesxmora, cantidadDias: $( "#cantidaddiasinteresxmorai" ).val(), interes: $( "#interesxmorai" ).val(), planCredito: $( "#plancreditointeresxmorai" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Interest_For_Late_Payment_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialogmodifyprofilecredit').dialog('close');
-						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialogmodifyinteresxmora').dialog('close');
+						$('#tableadmininteresxmorat').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -407,12 +283,13 @@ include("./menu/menu.php");
 	</script>
 	
 	<script type="text/javascript">
-		function guardarNuevoPerfilCredito(formulariod)
+		function guardarNuevoInteresXMora(formulariod)
 		{
-			if($( "#nombreprofilecreditni" ).val().length == 0)
+			if($( "#cantidaddiasinteresxmorani" ).val().length == 0)
 			{
+				$('#cantidaddiasinteresxmorani').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#nombreprofilecreditni" ).tooltip({
+					$( "#cantidaddiasinteresxmorani" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -420,13 +297,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#nombreprofilecreditni" ).focus();
+				$( "#cantidaddiasinteresxmorani" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#nombreprofilecreditni" ).tooltip({
+					$( "#cantidaddiasinteresxmorani" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -434,73 +311,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#nombreprofilecreditni" ).tooltip('destroy');
-			}
-												
-			if($( "#descripcionprofilecreditni" ).val().length == 0)
-			{
-				$(function() {
-					$( "#descripcionprofilecreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#descripcionprofilecreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#descripcionprofilecreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#descripcionprofilecreditni" ).tooltip('destroy');
-			}
-			
-			if($( "#montomaximoprofilecreditni" ).val().length == 0)
-			{
-				$('#montomaximoprofilecreditni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#montomaximoprofilecreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#montomaximoprofilecreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#montomaximoprofilecreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#montomaximoprofilecreditni" ).tooltip('destroy');
+				$( "#cantidaddiasinteresxmorani" ).tooltip('destroy');
 			}			
 			
-			if($( "#montomaximoprofilecreditni" ).val().length != 0)
+			if($( "#cantidaddiasinteresxmorani" ).val().length != 0)
 			{			
-				if (isNaN($( "#montomaximoprofilecreditni" ).val().replace(",","")))
+				if (isNaN($( "#cantidaddiasinteresxmorani" ).val()) || $( "#cantidaddiasinteresxmorani" ).val() % 1 != 0)
 				{
-					$('#montomaximoprofilecreditni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$('#cantidaddiasinteresxmorani').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#montomaximoprofilecreditni" ).tooltip({
+						$( "#cantidaddiasinteresxmorani" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -508,13 +328,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#montomaximoprofilecreditni" ).focus();
+					$( "#cantidaddiasinteresxmorani" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#montomaximoprofilecreditni" ).tooltip({
+						$( "#cantidaddiasinteresxmorani" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -522,27 +342,89 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#montomaximoprofilecreditni" ).tooltip('destroy');
+					$( "#cantidaddiasinteresxmorani" ).tooltip('destroy');
+				}
+			}
+
+
+			if($( "#interesxmorani" ).val().length == 0)
+			{
+				$('#interesxmorani').prop('title', '<?php echo translate('Msg_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#interesxmorani" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#interesxmorani" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#interesxmorani" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#interesxmorani" ).tooltip('destroy');
+			}			
+			
+			if($( "#interesxmorani" ).val().length != 0)
+			{			
+				if (isNaN($( "#interesxmorani" ).val()) || $( "#interesxmorani" ).val() % 1 != 0)
+				{
+					$('#interesxmorani').prop('title', '<?php echo translate('Msg_Interest_For_Late_Payment_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#interesxmorani" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#interesxmorani" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#interesxmorani" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#interesxmorani" ).tooltip('destroy');
 				}
 			}			
 						
-			var urlggnu = "./acciones/guardarnuevoperfilcredito.php";
+			var urlggnu = "./acciones/guardarnuevointeresxmora.php";
 			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { nombre: $( "#nombreprofilecreditni" ).val(), descripcion: $( "#descripcionprofilecreditni" ).val(), montoMaximo: (($( "#montomaximoprofilecreditni" ).val().replace(",",""))*100.00) },
+				data: { cantidadDias: $( "#cantidaddiasinteresxmorani" ).val(), interes: $( "#interesxmorani" ).val(), planCredito: $( "#plancreditointeresxmorani" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_New_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Interest_For_Late_Payment_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialognewprofilecredit').dialog('close');
-						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialognewinteresxmora').dialog('close');
+						$('#tableadmininteresxmorat').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -556,24 +438,24 @@ include("./menu/menu.php");
 	</script>
 		
 	<script type="text/javascript">
-		function borrar_perfil_credito(perfilcredito)
+		function borrar_interes_x_mora(interesxmora)
 		{
-			var urlrdu = "./acciones/borrarperfilcredito.php";
+			var urlrdu = "./acciones/borrarinteresxmora.php";
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlrdu,
 				method: "POST",
-				data: { idPerfilCredito: perfilcredito },
+				data: { idInteresXMora: interesxmora },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Interest_For_Late_Payment_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#tableadminprofilescreditt').bootstrapTable('load',JSON.parse(datTable));
+						$('#tableadmininteresxmorat').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -644,7 +526,7 @@ include("./menu/menu.php");
 		}
     </script>	
 	<script type="text/javascript">
-		function confirmar_accion(titulo, mensaje, perfilcredito, nombre)
+		function confirmar_accion(titulo, mensaje, interesxmora)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -658,7 +540,7 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										
-										borrar_perfil_credito(perfilcredito);                                                      
+										borrar_interes_x_mora(interesxmora);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -667,7 +549,7 @@ include("./menu/menu.php");
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
 		}
 	</script>	
@@ -696,44 +578,44 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Profile_Credit',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title"><?php echo translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPerfilCredito();" title="<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
+				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoInteresXMora();" title="<?php echo translate('Lbl_New_Interest_For_Late_Payment',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
-			<div id="tablaadminprofilescredit" class="table-responsive">
-				<table id="tableadminprofilescreditt" data-classes="table table-hover table-condensed"
-				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Profile_Credit',$GLOBALS['lang']); ?>"}'
+			<div id="tablaadmininteresxmora" class="table-responsive">
+				<table id="tableadmininteresxmorat" data-classes="table table-hover table-condensed"
+				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Interest_For_Late_Payment',$GLOBALS['lang']); ?>"}'
 				   data-export-types="['excel','pdf','csv','txt']"
 				   data-search="true" data-search-align="left" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
-							<th class="col-xs-1 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Profile_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="descripcion" data-sortable="true"><?php echo translate('Lbl_Description_Profile_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="montomaximo" data-sortable="true"><?php echo translate('Lbl_Limit_Amount_Profile_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Profile_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="cantidaddias" data-sortable="true"><?php echo translate('Lbl_Amount_Days_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="interes" data-sortable="true"><?php echo translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="plancredito" data-sortable="true"><?php echo translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc")) 
+							if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 
 								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_profile_credit, $name_profile_credit, $description_profile_credit, $limit_amount_profile_credit);
+								$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
 								
 								while($stmt->fetch())
 								{		
 									echo '<tr>';
-									echo '<td>'.$name_profile_credit.'</td>';
-									echo '<td>'.$description_profile_credit.'</td>';
-									echo '<td>$'.number_format(($limit_amount_profile_credit/100.00),2).'</td>';
+									echo '<td>'.$cantidad_dias_interes_x_mora.'</td>';
+									echo '<td>'.$interes_x_mora.'</td>';
+									echo '<td>'.$plan_credito_interes_x_mora.'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Profile_Credit',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Profile_Credit',$GLOBALS['lang']).'\',\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']).'" onclick="modificarPerfilCredito(\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}
@@ -756,7 +638,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		$(function () 
 		{
-			$('#tableadminprofilescreditt').bootstrapTable({locale:'es-AR'});
+			$('#tableadmininteresxmorat').bootstrapTable({locale:'es-AR'});
 		});
 	</script>	
 </body>

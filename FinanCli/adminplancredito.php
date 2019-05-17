@@ -58,6 +58,12 @@ include("./menu/menu.php");
 				data: {},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					tagnpc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -93,6 +99,12 @@ include("./menu/menu.php");
 				data: { idPlanCredito: plancredito },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					tag.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -680,7 +692,7 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Profile_Credit',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title"><?php echo translate('Lbl_Credit_Plan',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">

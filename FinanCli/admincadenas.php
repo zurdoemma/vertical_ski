@@ -58,6 +58,12 @@ include("./menu/menu.php");
 				data: {},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
 					tagnc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -131,6 +137,12 @@ include("./menu/menu.php");
 				data: { idCadena: cadena },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_10').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					tagmtc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -220,6 +232,12 @@ include("./menu/menu.php");
 				data: { idCadena: cadena },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					tag.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",

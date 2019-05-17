@@ -811,7 +811,12 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				data: { usuario: usuario },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
-				
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+									
 					if(dataresponse.indexOf('<?php echo str_replace("%1",$cantidad_domicilios_db,translate('Msg_Limit_Address_User',$GLOBALS['lang']));?>') != -1)
 					{
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -854,6 +859,12 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				data: { usuario: usuario, id_domicilio: idDomicilio },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					tagmd.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
@@ -1005,6 +1016,11 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_8').hide();
 					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					if(dataresponse.indexOf('<?php echo str_replace("%1",$cantidad_telefonos_db,translate('Msg_Limit_Phones_User',$GLOBALS['lang'])); ?>') != -1)
 					{
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -1200,6 +1216,11 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_8').hide();
 					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
 					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Phone_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
