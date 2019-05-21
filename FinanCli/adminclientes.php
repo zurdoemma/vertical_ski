@@ -19,7 +19,8 @@ include("./menu/menu.php");
 	<![endif]-->
 	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.op2.css" >
-	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >	
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-datetimepicker.css" >	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap-table.min.op2.css" >
 	<link rel="stylesheet" href="./css/fontawesome.min.css">
 	<link rel="stylesheet" href="./css/all.css">
@@ -30,7 +31,8 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/bootstrap.min.op2.js" ></script>
 	<script type="text/javascript" src="./js/jquery-ui.js"></script>
 	<script type="text/JavaScript" src="./js/bootstrap-multiselect.js" ></script>	
-	<script type="text/JavaScript" src="./js/moment.op2.js" ></script>	
+	<script type="text/JavaScript" src="./js/moment.op2.js" ></script>
+	<script type="text/JavaScript" src="./js/bootstrap-datetimepicker.js" ></script>	
 	<script type="text/JavaScript" src="./js/bootstrap-table.min.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/locale/bootstrap-table-es-AR.js" ></script>	
 	<script type="text/JavaScript" src="./js/extensions/export/FileSaver.min.js" ></script>	
@@ -76,6 +78,76 @@ include("./menu/menu.php");
 									tagnpc.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					var todayDate = new Date().getDate();
+					$("#datetimepickerfechanacimientoclientn").datetimepicker({
+							format: 'L',
+							locale: 'es',
+							viewMode: 'years',
+							minDate: new Date(new Date().setDate(todayDate - 40150)),
+							maxDate: new Date(new Date().setDate(todayDate + 0)),
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'bottom'}
+					});
+					
+					$( "#tipoclientni" ).change(function() 
+					{
+						if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+						{
+							$( "#tipodocumentoclientni" ).prop( "disabled", true );							
+							$( "#documentoni" ).prop( "disabled", true );
+							$( "#nombreclientni" ).prop( "disabled", true );
+							$( "#apellidoclientni" ).prop( "disabled", true );
+							$( "#fechanacimientoclientni" ).prop( "disabled", true );
+							$( "#cuitcuilclientni" ).prop( "disabled", true );
+							$( "#emailclientni" ).prop( "disabled", true );
+							$( "#montomaximoclientni" ).prop( "disabled", true );
+							$( "#perfilcreditoclientni" ).prop( "disabled", true );
+							$( "#observacionclientni" ).prop( "disabled", true );
+							
+							$('#mostrarDomicilioCargaN').hide();
+							$('#btnCargaDomicilioCN').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
+							$('#btnCargaDomicilioCN').html('<i class="fa fa-eye"></i>');
+							$( "#btnCargaDomicilioCN" ).prop( "disabled", true );
+							
+							$('#mostrarTelefonoCargaN').hide();
+							$('#btnCargaTelefonoCN').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
+							$('#btnCargaTelefonoCN').html('<i class="fas fa-phone"></i>');							
+							$( "#btnCargaTelefonoCN" ).prop( "disabled", true );
+							
+							$( "#btnCargarNS" ).prop( "disabled", true );
+
+							$( "#busquedatitular" ).show();
+							//$('#documentonbi').css({'box-shadow' : '0 0 3px #FF0000'});
+							//$('#documentonbi').css({'box-shadow' : '0 0 3px #00FF00'});
+							//$('#documentonbi').css({'box-shadow' : '0 0 3px #58ACFA'});
+							$('#documentonbi').focus();
+						}
+					    else
+						{
+							$( "#tipodocumentoclientni" ).prop( "disabled", false );							
+							$( "#documentoni" ).prop( "disabled", false );
+							$( "#nombreclientni" ).prop( "disabled", false );
+							$( "#apellidoclientni" ).prop( "disabled", false );
+							$( "#fechanacimientoclientni" ).prop( "disabled", false );
+							$( "#cuitcuilclientni" ).prop( "disabled", false );
+							$( "#emailclientni" ).prop( "disabled", false );
+							$( "#montomaximoclientni" ).prop( "disabled", false );
+							$( "#perfilcreditoclientni" ).prop( "disabled", false );
+							$( "#observacionclientni" ).prop( "disabled", false );
+							$( "#btnCargaDomicilioCN" ).prop( "disabled", false );							
+							$( "#btnCargaTelefonoCN" ).prop( "disabled", false );
+							$( "#btnCargarNS" ).prop( "disabled", false );
+
+							$( "#busquedatitular" ).hide();							
+						}
+					});
+
+					$('#documentonbi').focusout(function(){
+						validarExistenciaTitular($('#tipodocumentoclientnbi').val(),$('#documentonbi').val());
+					});					
+								
 					tagnpc.dialog('open');
 				},
 				error: function(request, errorcode, errortext){
@@ -85,7 +157,54 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
-			
+	
+	<script type="text/javascript">
+		function validarExistenciaTitular(tipoDoc, documento)
+		{
+			alert(tipoDoc + ' -- ' + documento);
+		}
+    </script>
+	
+	<script type="text/javascript">
+		function verDomicilioNC()
+		{
+			if(!$('#mostrarDomicilioCargaN').is(':visible'))
+			{
+				$('#mostrarDomicilioCargaN').show();
+				$('#btnCargaDomicilioCN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaDomicilioCN').html('<i class="fa fa-eye-slash"></i>');
+				$('#calleni').focus();
+			}
+			else
+			{
+				$('#mostrarDomicilioCargaN').hide();
+				$('#btnCargaDomicilioCN').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaDomicilioCN').html('<i class="fa fa-eye"></i>');
+				$('#tipoclientni').focus();	
+			}
+		}
+    </script>
+	
+	<script type="text/javascript">
+		function verTelefonoNC()
+		{
+			if(!$('#mostrarTelefonoCargaN').is(':visible'))
+			{
+				$('#mostrarTelefonoCargaN').show();
+				$('#btnCargaTelefonoCN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaTelefonoCN').html('<i class="fas fa-phone-slash"></i>');
+				$('#prefijotelefonoi').focus();
+			}
+			else
+			{
+				$('#mostrarTelefonoCargaN').hide();
+				$('#btnCargaTelefonoCN').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaTelefonoCN').html('<i class="fas fa-phone"></i>');
+				$('#tipoclientni').focus();	
+			}
+		}
+    </script>	
+	
 	<script type="text/javascript">
 		function modificarCliente(plancredito, nombre)
 		{
@@ -735,7 +854,8 @@ include("./menu/menu.php");
 									echo '<td>'.$state_client.'</td>';
 									echo '<td>'.$type_account_client.'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client_OK',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+									if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+									else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
 									echo '</tr>';
 								}
 							}
