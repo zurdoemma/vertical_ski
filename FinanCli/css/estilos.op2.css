@@ -165,8 +165,36 @@ h1 {
     background-repeat:no-repeat;
     width:55px;
     height:55px;
-    margin-top:167px;
+    margin-top:157px;
     margin-left:55%;
+}
+
+#img_loader_12
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:55%;
+}
+
+#img_loader_13
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:47%;
 }
 
 #mensajeError

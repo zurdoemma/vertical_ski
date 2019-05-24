@@ -7,7 +7,7 @@ if ($_SESSION["permisos"] == 1)
 }
 else
 {
-	$str = '[{"text":"'.translate('Home',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/sesionusuario.php", "title": "'.translate('Home',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_User',$GLOBALS['lang']).'", "href": "#", "title": "Usuario", "children": [{"text":"'.translate('Lbl_Edit_User',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/modificardatosusuario.php", "title": "'.translate('Lbl_Edit_User_2',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_Exit',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/acciones/salir.php", "title": "'.translate('Lbl_Exit',$GLOBALS['lang']).'", "class": "border-top"}]},{"text":"'.translate('Lbl_Clients',$GLOBALS['lang']).'", "href": "#", "title": "'.translate('Lbl_Clients',$GLOBALS['lang']).'", "children": [{"text":"'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/adminclientes.php", "title": "'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/gestiondeuda.php", "title": "'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'"}]},{"text":"'.translate('Lbl_Clients',$GLOBALS['lang']).'", "href": "#", "title": "'.translate('Lbl_Clients',$GLOBALS['lang']).'", "children": [{"text":"'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/adminclientes.php", "title": "'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/gestiondeuda.php", "title": "'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'"}]},{"text":"'.translate('Lbl_Credits',$GLOBALS['lang']).'", "href": "#", "title": "'.translate('Lbl_Credits',$GLOBALS['lang']).'", "children": [{"text":"'.translate('Lbl_Admin_Credits',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/admincreditos.php", "title": "'.translate('Lbl_Admin_Credits',$GLOBALS['lang']).'"}]}]';
+	$str = '[{"text":"'.translate('Home',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/sesionusuario.php", "title": "'.translate('Home',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_User',$GLOBALS['lang']).'", "href": "#", "title": "Usuario", "children": [{"text":"'.translate('Lbl_Edit_User',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/modificardatosusuario.php", "title": "'.translate('Lbl_Edit_User_2',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_Exit',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/acciones/salir.php", "title": "'.translate('Lbl_Exit',$GLOBALS['lang']).'", "class": "border-top"}]},{"text":"'.translate('Lbl_Clients',$GLOBALS['lang']).'", "href": "#", "title": "'.translate('Lbl_Clients',$GLOBALS['lang']).'", "children": [{"text":"'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/adminclientes.php", "title": "'.translate('Lbl_Admin_Clients',$GLOBALS['lang']).'"},{"text":"'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/gestiondeuda.php", "title": "'.translate('Lbl_Debt_Management',$GLOBALS['lang']).'"}]},{"text":"'.translate('Lbl_Credits',$GLOBALS['lang']).'", "href": "#", "title": "'.translate('Lbl_Credits',$GLOBALS['lang']).'", "children": [{"text":"'.translate('Lbl_Admin_Credits',$GLOBALS['lang']).'", "href": "https://10.147.26.26/FinanCli/admincreditos.php", "title": "'.translate('Lbl_Admin_Credits',$GLOBALS['lang']).'"}]}]';
 }
 $qMenu = new BootstrapMenu(array('data'=>$str));
 //$qMenu->setActiveItem('http://codeignitertutoriales.com');
@@ -25,7 +25,6 @@ $menu = substr_replace($menu, '<i class="fas fa-users-cog"></i>&nbsp;&nbsp;', (s
 $menu = substr_replace($menu, '<i class="fas fa-street-view"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Debt_Management',$GLOBALS['lang']),0)+1), 0);
 $menu = substr_replace($menu, '<i class="fas fa-credit-card"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Credits',$GLOBALS['lang']),0)+1), 0);
 $menu = substr_replace($menu, '<i class="fas fa-search-dollar"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Admin_Credits',$GLOBALS['lang']),0)+1), 0);
-$menu = substr_replace($menu, '<i class="fas fa-chart-line"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Reports_Credits',$GLOBALS['lang']),0)+1), 0);
 
 if ($_SESSION["permisos"] == 1)
 {
@@ -36,7 +35,7 @@ if ($_SESSION["permisos"] == 1)
 	$menu = substr_replace($menu, '<i class="far fa-address-card"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Profile_Credit',$GLOBALS['lang']),0)+1), 0);
 	$menu = substr_replace($menu, '<i class="fas fa-landmark"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Credit_Plan',$GLOBALS['lang']),0)+1), 0);
 	$menu = substr_replace($menu, '<i class="fas fa-funnel-dollar"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']),0)+1), 0);	
-
+	$menu = substr_replace($menu, '<i class="fas fa-chart-line"></i>&nbsp;&nbsp;', (strpos($menu,'>'.translate('Lbl_Reports_Credits',$GLOBALS['lang']),0)+1), 0);
 }
 
 ?>

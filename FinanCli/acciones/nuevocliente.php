@@ -28,8 +28,7 @@
 		echo '			<h3 class="panel-title">'.translate('Lbl_New_Client',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_5"></div>';
-		echo '			<form id="formularionu" role="form">';
+		echo '			<form id="formularionc" role="form">';
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipoclientn">'.translate('Lbl_Type_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipoclientn">';
@@ -40,7 +39,10 @@
 		echo '					</div>';
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';		
-		echo '					<div id="busquedatitular" style="display:none;">';		
+		echo '					<div id="busquedatitular" style="display:none;">';
+		echo '						<div class="form-group" id="tokenas" style="display:none;">';
+		echo '							<input class="form-control input-sm green-border" id="tokenasi" name="tokenasi" type="text" maxlength="128" />';
+		echo '						</div>';		
 		echo '						&nbsp;<label class="control-label" for="tipodocumentoclientnb">'.translate('Lbl_Type_Document_Client2',$GLOBALS['lang']).':</label>';
 		echo '						<div class="form-group" id="tipodocumentoclientnb">';
 		echo '							<select class="form-control input-sm" name="tipodocumentoclientnbi" id="tipodocumentoclientnbi" style="width:190px;">';			 
@@ -274,9 +276,10 @@
 		echo '					 </div>';		
 		echo '				 </div>';
 		echo '				</div>';		
-		echo '				<div class="form-group form-inline">';				
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarNS" id="btnCancelarNS" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialognewclient\').dialog(\'close\');" style="margin-left:10px;" />';
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarNS" id="btnCargarNS" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarNuevaSucursal(document.getElementById(\'formularionu\'));"/>';										
+		echo '				<div class="form-group form-inline">';
+		echo '					<div id="img_loader_12"></div>';		
+		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarNC" id="btnCancelarNC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialognewclient\').dialog(\'close\');" style="margin-left:10px;" />';
+		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarNC" id="btnCargarNC" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarNuevoCliente(document.getElementById(\'formularionc\'));"/>';										
 		echo '				</div>';				
 		echo '			</form>';
 		echo '		</div>';

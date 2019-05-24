@@ -347,7 +347,7 @@ include("./menu/menu.php");
 			
 			if($( "#montomaximoprofilecrediti" ).val().length != 0)
 			{			
-				if (isNaN($( "#montomaximoprofilecrediti" ).val().replace(",","")))
+				if (isNaN($( "#montomaximoprofilecrediti" ).val().replace(/,/g,"")))
 				{
 					$('#montomaximoprofilecrediti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
@@ -383,7 +383,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idPerfilCredito: perfilcredito, nombre: $( "#nombreprofilecrediti" ).val(), descripcion: $( "#descripcionprofilecrediti" ).val(), montoMaximo: (($( "#montomaximoprofilecrediti" ).val().replace(",",""))*100.00) },
+				data: { idPerfilCredito: perfilcredito, nombre: $( "#nombreprofilecrediti" ).val(), descripcion: $( "#descripcionprofilecrediti" ).val(), montoMaximo: (($( "#montomaximoprofilecrediti" ).val().replace(/,/g,""))*100.00) },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_11').hide();
 					
@@ -496,7 +496,7 @@ include("./menu/menu.php");
 			
 			if($( "#montomaximoprofilecreditni" ).val().length != 0)
 			{			
-				if (isNaN($( "#montomaximoprofilecreditni" ).val().replace(",","")))
+				if (isNaN($( "#montomaximoprofilecreditni" ).val().replace(/,/g,"")))
 				{
 					$('#montomaximoprofilecreditni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
@@ -532,7 +532,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { nombre: $( "#nombreprofilecreditni" ).val(), descripcion: $( "#descripcionprofilecreditni" ).val(), montoMaximo: (($( "#montomaximoprofilecreditni" ).val().replace(",",""))*100.00) },
+				data: { nombre: $( "#nombreprofilecreditni" ).val(), descripcion: $( "#descripcionprofilecreditni" ).val(), montoMaximo: (($( "#montomaximoprofilecreditni" ).val().replace(/,/g,""))*100.00) },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_11').hide();
 					

@@ -4,7 +4,7 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
+if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>
@@ -43,6 +43,7 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
+	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>	
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
@@ -95,6 +96,26 @@ include("./menu/menu.php");
 					{
 						if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 						{
+							$( "#documentoni" ).val("");
+							$( "#nombreclientni" ).val("");
+							$( "#apellidoclientni" ).val("");
+							$( "#fechanacimientoclientni" ).val("");
+							$( "#cuitcuilclientni" ).val("");
+							$( "#emailclientni" ).val("");
+							$( "#montomaximoclientni" ).val("");
+							$( "#observacionclientni" ).val("");
+							
+							$( "#calleni" ).val("");
+							$( "#nrocalleni" ).val("");
+							$( "#domlocalidadni" ).val("");
+							$( "#domfloorni" ).val("");
+							$( "#zipcodeni" ).val("");
+							$( "#entrecalle1ni" ).val("");
+							$( "#entrecalle2ni" ).val("");
+							$( "#domdepartamentoni" ).val("");							
+							$( "#prefijotelefonoi" ).val("");
+							$( "#nrotelefonoi" ).val("");							
+							
 							$( "#tipodocumentoclientni" ).prop( "disabled", true );							
 							$( "#documentoni" ).prop( "disabled", true );
 							$( "#nombreclientni" ).prop( "disabled", true );
@@ -116,16 +137,33 @@ include("./menu/menu.php");
 							$('#btnCargaTelefonoCN').html('<i class="fas fa-phone"></i>');							
 							$( "#btnCargaTelefonoCN" ).prop( "disabled", true );
 							
-							$( "#btnCargarNS" ).prop( "disabled", true );
+							$( "#btnCargarNC" ).prop( "disabled", true );
 
 							$( "#busquedatitular" ).show();
-							//$('#documentonbi').css({'box-shadow' : '0 0 3px #FF0000'});
-							//$('#documentonbi').css({'box-shadow' : '0 0 3px #00FF00'});
-							//$('#documentonbi').css({'box-shadow' : '0 0 3px #58ACFA'});
 							$('#documentonbi').focus();
 						}
 					    else
-						{
+						{							
+							$( "#documentoni" ).val("");
+							$( "#nombreclientni" ).val("");
+							$( "#apellidoclientni" ).val("");
+							$( "#fechanacimientoclientni" ).val("");
+							$( "#cuitcuilclientni" ).val("");
+							$( "#emailclientni" ).val("");
+							$( "#montomaximoclientni" ).val("");
+							$( "#observacionclientni" ).val("");
+
+							$( "#calleni" ).val("");
+							$( "#nrocalleni" ).val("");
+							$( "#domlocalidadni" ).val("");
+							$( "#domfloorni" ).val("");
+							$( "#zipcodeni" ).val("");
+							$( "#entrecalle1ni" ).val("");
+							$( "#entrecalle2ni" ).val("");
+							$( "#domdepartamentoni" ).val("");							
+							$( "#prefijotelefonoi" ).val("");
+							$( "#nrotelefonoi" ).val("");
+							
 							$( "#tipodocumentoclientni" ).prop( "disabled", false );							
 							$( "#documentoni" ).prop( "disabled", false );
 							$( "#nombreclientni" ).prop( "disabled", false );
@@ -138,17 +176,30 @@ include("./menu/menu.php");
 							$( "#observacionclientni" ).prop( "disabled", false );
 							$( "#btnCargaDomicilioCN" ).prop( "disabled", false );							
 							$( "#btnCargaTelefonoCN" ).prop( "disabled", false );
-							$( "#btnCargarNS" ).prop( "disabled", false );
+							$( "#btnCargarNC" ).prop( "disabled", false );
+							$('#documentonbi').prop( "disabled", false );
+							$('#tipodocumentoclientnbi').prop( "disabled", false );
 
-							$( "#busquedatitular" ).hide();							
+							$( "#busquedatitular" ).hide();
+							$('#documentonbi').css({'box-shadow' : '0 0 3px #0758DE'});
+							$('#documentonbi').prop('title', "<?php echo translate('Msg_A_Document_Client_Must_Enter',$GLOBALS['lang']);?>");
+							$('#tipodocumentoclientni').focus();
 						}
 					});
 
-					$('#documentonbi').focusout(function(){
-						validarExistenciaTitular($('#tipodocumentoclientnbi').val(),$('#documentonbi').val());
-					});					
+					$('#documentonbi').keypress(function(event){
+						var keycode = (event.keyCode ? event.keyCode : event.which);
+						if(keycode == '13'){
+							validarExistenciaTitular($('#tipodocumentoclientnbi').val(),$('#documentonbi').val()); 
+						}
+					});
+					
+					//$('#documentonbi').focusout(function(){
+					//	validarExistenciaTitular($('#tipodocumentoclientnbi').val(),$('#documentonbi').val());
+					//});					
 								
 					tagnpc.dialog('open');
+					$('#montomaximoclientni').maskNumber();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -161,7 +212,101 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function validarExistenciaTitular(tipoDoc, documento)
 		{
-			alert(tipoDoc + ' -- ' + documento);
+			$('#documentonbi').css({'box-shadow' : '0 0 3px #58ACFA'});
+			
+			if($('#documentonbi').val().length == 0)
+			{
+				$('#documentonbi').prop('title', '<?php echo translate('Msg_A_Document_Client_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$('#documentonbi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#documentonbi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#documentonbi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#documentonbi').tooltip('destroy');
+			}			
+			
+			var urlve = "./acciones/validarexistenciatitular.php";
+			$('#img_loader_12').show();
+			
+			$.ajax({
+				url: urlve,
+				method: "POST",
+				data: { tipoDocumento: tipoDoc, documento: documento },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_12').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_A_Client_Does_Not_Exist_As_A_Proprietor',$GLOBALS['lang']);?>') != -1)
+					{
+						mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>", dataresponse);
+						$('#documentonbi').css({'box-shadow' : '0 0 3px #FF0000'});
+						$('#documentonbi').prop('title', dataresponse);
+						$('#documentonbi').focus();
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_A_Client_Exist_As_A_Proprietor',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#documentonbi').css({'box-shadow' : '0 0 3px #00FF00'});
+							
+							$( "#tipodocumentoclientni" ).prop( "disabled", false );							
+							$( "#documentoni" ).prop( "disabled", false );
+							$( "#nombreclientni" ).prop( "disabled", false );
+							$( "#apellidoclientni" ).prop( "disabled", false );
+							$( "#fechanacimientoclientni" ).prop( "disabled", false );
+							$( "#cuitcuilclientni" ).prop( "disabled", false );
+							$( "#emailclientni" ).prop( "disabled", false );
+							$( "#montomaximoclientni" ).prop( "disabled", false );
+							$( "#perfilcreditoclientni" ).prop( "disabled", false );
+							$( "#observacionclientni" ).prop( "disabled", false );
+							$( "#btnCargaDomicilioCN" ).prop( "disabled", false );							
+							$( "#btnCargaTelefonoCN" ).prop( "disabled", false );
+							$( "#btnCargarNC" ).prop( "disabled", false );
+							
+							$('#documentonbi').prop( "disabled", true );
+							$('#tipodocumentoclientnbi').prop( "disabled", true );
+							$('#documentonbi').prop('title', dataresponse);
+							$('#tipodocumentoclientni').focus();
+						}
+						else 
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							$('#documentonbi').css({'box-shadow' : '0 0 3px #FF0000'});
+							$('#documentonbi').prop('title', dataresponse);
+							$('#documentonbi').focus();
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_12').hide();
+					$('#documentonbi').css({'box-shadow' : '0 0 3px #FF0000'});
+					$('#documentonbi').focus();
+				}
+			});
 		}
     </script>
 	
@@ -202,6 +347,734 @@ include("./menu/menu.php");
 				$('#btnCargaTelefonoCN').html('<i class="fas fa-phone"></i>');
 				$('#tipoclientni').focus();	
 			}
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarNuevoCliente(formulariod)
+		{
+			if($( "#documentoni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#documentoni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#documentoni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#documentoni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#documentoni" ).tooltip('destroy');
+			}
+												
+			if($( "#nombreclientni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#nombreclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#nombreclientni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#nombreclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#nombreclientni" ).tooltip('destroy');
+			}
+			
+			if($( "#apellidoclientni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#apellidoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#apellidoclientni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#apellidoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#apellidoclientni" ).tooltip('destroy');
+			}			
+			
+			if($( "#fechanacimientoclientni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#fechanacimientoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#fechanacimientoclientni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#fechanacimientoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#fechanacimientoclientni" ).tooltip('destroy');
+			}			
+						
+			if($( "#cuitcuilclientni" ).val().length != 0)
+			{			
+				if (isNaN($( "#cuitcuilclientni" ).val()) || $( "#cuitcuilclientni" ).val() % 1 != 0)
+				{
+					$('#cuitcuilclientni').prop('title', '<?php echo translate('Msg_A_Cuit_Cuil_Client_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#cuitcuilclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#cuitcuilclientni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#cuitcuilclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#cuitcuilclientni" ).tooltip('destroy');
+				}
+			}
+
+			if($( "#emailclientni" ).val().length != 0)
+			{			
+				if(!caracteresCorreoValido($( "#emailclientni" ).val()))
+				{
+					$('#emailclientni').prop('title', '<?php echo translate('Msg_A_User_Email_Invalid',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#emailclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#emailclientni" ).focus();
+					return;				
+				}
+				else
+				{
+					$(function() {
+						$( "#emailclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#emailclientni" ).tooltip('destroy');				
+				}
+			}
+			
+			if($( "#montomaximoclientni" ).val().length == 0)
+			{
+				$('#montomaximoclientni').prop('title', '<?php echo translate('Msg_A_Max_Amount_Client_Must_Enter',$GLOBALS['lang']);?>');	
+				$(function() {
+					$( "#montomaximoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#montomaximoclientni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#montomaximoclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#montomaximoclientni" ).tooltip('destroy');
+			}				
+			
+			if($( "#montomaximoclientni" ).val().length != 0)
+			{			
+				if (isNaN($( "#montomaximoclientni" ).val().replace(/,/g,"")))
+				{
+					$('#montomaximoclientni').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Client_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#montomaximoclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#montomaximoclientni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#montomaximoclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#montomaximoclientni" ).tooltip('destroy');
+				}
+			}
+
+			if(!$('#mostrarDomicilioCargaN').is(':visible'))
+			{
+				$('#mostrarDomicilioCargaN').show();
+				$('#btnCargaDomicilioCN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaDomicilioCN').html('<i class="fa fa-eye-slash"></i>');
+			}
+			
+			if($( "#calleni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#calleni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#calleni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#calleni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#calleni" ).tooltip('destroy');
+			}
+			
+			if($( "#nrocalleni" ).val().length == 0)
+			{
+				$('#nrocalleni').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#nrocalleni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#nrocalleni" ).focus();
+				return;
+			}
+			else 
+			{
+				if (isNaN($( "#nrocalleni" ).val()) || $( "#nrocalleni" ).val() % 1 != 0)
+				{
+					$('#nrocalleni').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#nrocalleni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#nrocalleni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#nrocalleni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#nrocalleni" ).tooltip('destroy');
+				}
+			}
+			
+			if($( "#domlocalidadni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#domlocalidadni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#domlocalidadni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#domlocalidadni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});					
+				$( "#domlocalidadni" ).tooltip('destroy');		
+			}
+			
+			if($( "#domfloorni" ).val().length != 0)
+			{
+				if (isNaN($( "#domfloorni" ).val()) || $( "#domfloorni" ).val() % 1 != 0)
+				{
+					$(function() {
+						$( "#domfloorni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#domfloorni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#domfloorni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#domfloorni" ).tooltip('destroy');
+				}					
+			}			
+
+			if(!$('#mostrarTelefonoCargaN').is(':visible'))
+			{
+				$('#mostrarTelefonoCargaN').show();
+				$('#btnCargaTelefonoCN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
+				$('#btnCargaTelefonoCN').html('<i class="fas fa-phone-slash"></i>');
+			}
+			
+			if($( "#prefijotelefonoi" ).val().length == 0)
+			{
+				$('#prefijotelefonoi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#prefijotelefonoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#prefijotelefonoi" ).focus();
+				return;
+			}
+			else 
+			{
+				if (isNaN($( "#prefijotelefonoi" ).val()) || $( "#prefijotelefonoi" ).val() % 1 != 0)
+				{
+					$('#prefijotelefonoi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#prefijotelefonoi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#prefijotelefonoi" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#prefijotelefonoi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#prefijotelefonoi" ).tooltip('destroy');
+				}
+			}
+			
+			if($( "#nrotelefonoi" ).val().length == 0)
+			{
+				$('#nrotelefonoi').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#nrotelefonoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#nrotelefonoi" ).focus();
+				return;
+			}
+			else 
+			{
+				if (isNaN($( "#nrotelefonoi" ).val()) || $( "#nrotelefonoi" ).val() % 1 != 0)
+				{
+					$('#nrotelefonoi').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#nrotelefonoi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#nrotelefonoi" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#nrotelefonoi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#nrotelefonoi" ).tooltip('destroy');
+				}
+			}			
+			
+			
+			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+			{
+				
+				if($( "#tipodocumentoclientnbi" ).val() == $( "#tipodocumentoclientni" ).val() && $( "#documentonbi" ).val() == $( "#documentoni" ).val())
+				{
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('The_Additional_Client_Can_Not_Have_The_Same_Type_And_Document_Number',$GLOBALS['lang']);?>");
+					$( "#documentoni" ).focus();
+					return;
+				}
+				
+				var urlvs = "./acciones/autorizaradicionalcliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlvs,
+					method: "POST",
+					data: {tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val()},
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_12').hide();
+						
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
+						{
+							guardarNuevoClienteFinal();
+							return;
+						}
+						else
+						{
+							if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Additional',$GLOBALS['lang']); ?>') != -1)
+							{
+								dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Additional',$GLOBALS['lang']); ?>","");
+								var tagas = $("<div id='dialogautorizacionadicional'></div>");
+								
+								tagas.html(dataresponse).dialog({
+								  show: "blind",
+								  hide: "explode",
+								  height: "auto",
+								  width: "auto",					  
+								  modal: true, 
+								  title: "<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>",
+								  autoResize:true,
+										close: function(){
+												tagas.dialog('destroy').remove()
+										}
+								}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+								tagas.dialog('open');
+							}
+							else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_12').hide();
+					}
+				});					
+			}
+			else
+			{
+				var urlggnc = "./acciones/guardarnuevocliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlggnc,
+					method: "POST",
+					data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_11').hide();
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+							var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+							
+							$('#dialognewcreditplan').dialog('close');
+							$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));
+							mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_11').hide();
+					}
+				});
+			}
+		}			
+	</script>
+
+	<script type="text/javascript">
+		function guardarNuevoClienteConSupervisor(formularionaac)
+		{
+			if($('#usuariosupervisorni').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorni').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorni').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorni').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorni').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorni').tooltip('destroy');
+			}			
+			
+			var urlas = "./acciones/verificarcredencialessupervisor.php";
+			$('#img_loader_13').show();
+			
+			
+			var p210 = document.createElement("input");
+		 			
+			formularionaac.appendChild(p210);
+			p210.name = "p210";
+			p210.type = "hidden";
+			
+			p210.value = hex_sha512(formularionaac.passwordsupervisorni.value);
+			
+			if(formularionaac.passwordsupervisorni.value == "") p210.value = "";
+			formularionaac.passwordsupervisorni.value = "";
+						
+			$.ajax({
+				url: urlas,
+				method: "POST",
+				data: { usuarioSupervisor: formularionaac.usuariosupervisorni.value, claveSupervisor: p210.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var tokenR = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#tokenasi').val(tokenR);
+						guardarNuevoClienteFinal();
+						return;
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorni').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorni').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorni').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarNuevoClienteFinal()
+		{			
+			var urlnc = "./acciones/guardarnuevocliente.php";
+			$('#img_loader_12').show();
+									
+			$.ajax({
+				url: urlnc,
+				method: "POST",
+				data: { documentoTitular: $( "#documentonb" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_12').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
+						return;
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_12').hide();
+				}
+			});
 		}
     </script>	
 	
@@ -457,219 +1330,7 @@ include("./menu/menu.php");
 			});				
 		}			
 	</script>
-	
-	<script type="text/javascript">
-		function guardarNuevoCliente(formulariod)
-		{
-			if($( "#nombreplancreditni" ).val().length == 0)
-			{
-				$(function() {
-					$( "#nombreplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nombreplancreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#nombreplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#nombreplancreditni" ).tooltip('destroy');
-			}
-												
-			if($( "#descripcionplancreditni" ).val().length == 0)
-			{
-				$(function() {
-					$( "#descripcionplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#descripcionplancreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#descripcionplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#descripcionplancreditni" ).tooltip('destroy');
-			}
 			
-			
-			if($( "#cantidadcuotasplancreditni" ).val().length == 0)
-			{
-				$('#cantidadcuotasplancreditni').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#cantidadcuotasplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#cantidadcuotasplancreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#cantidadcuotasplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#cantidadcuotasplancreditni" ).tooltip('destroy');
-			}			
-			
-			if($( "#cantidadcuotasplancreditni" ).val().length != 0)
-			{			
-				if (isNaN($( "#cantidadcuotasplancreditni" ).val()) || $( "#cantidadcuotasplancreditni" ).val() % 1 != 0)
-				{
-					$('#cantidadcuotasplancreditni').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
-					$(function() {
-						$( "#cantidadcuotasplancreditni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#cantidadcuotasplancreditni" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#cantidadcuotasplancreditni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});					
-					$( "#cantidadcuotasplancreditni" ).tooltip('destroy');
-				}
-			}
-
-
-			if($( "#interesfijoplancreditni" ).val().length == 0)
-			{
-				$('#interesfijoplancreditni').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#interesfijoplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#interesfijoplancreditni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#interesfijoplancreditni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#interesfijoplancreditni" ).tooltip('destroy');
-			}			
-			
-			if($( "#interesfijoplancreditni" ).val().length != 0)
-			{			
-				if (isNaN($( "#interesfijoplancreditni" ).val()) || $( "#interesfijoplancreditni" ).val() % 1 != 0)
-				{
-					$('#interesfijoplancreditni').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
-					$(function() {
-						$( "#interesfijoplancreditni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#interesfijoplancreditni" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#interesfijoplancreditni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});					
-					$( "#interesfijoplancreditni" ).tooltip('destroy');
-				}
-			}			
-						
-			var urlggnu = "./acciones/guardarnuevoplancredito.php";
-			$('#img_loader_11').show();
-			
-			$.ajax({
-				url: urlggnu,
-				method: "POST",
-				data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val() },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
-					
-					if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
-					{
-						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
-						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
-						
-						$('#dialognewcreditplan').dialog('close');
-						$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));
-						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
-					}
-					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
-				}
-			});
-		}			
-	</script>
-		
 	<script type="text/javascript">
 		function borrar_cliente(plancredito)
 		{
