@@ -833,6 +833,7 @@ include("./menu/menu.php");
 			}			
 			
 			
+			
 			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 			{
 				
@@ -849,7 +850,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlvs,
 					method: "POST",
-					data: {tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val()},
+					data: { tokenA: $( "#tokenasi" ).val(), tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val()},
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_12').hide();
 						
@@ -860,7 +861,7 @@ include("./menu/menu.php");
 						
 						if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 						{
-							guardarNuevoClienteFinal();
+							guardarNuevoClienteUC();
 							return;
 						}
 						else
@@ -896,32 +897,8 @@ include("./menu/menu.php");
 			}
 			else
 			{
-				var urlggnc = "./acciones/guardarnuevocliente.php";
-				$('#img_loader_12').show();
-				
-				$.ajax({
-					url: urlggnc,
-					method: "POST",
-					data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val() },
-					success: function(dataresponse, statustext, response){
-						$('#img_loader_11').hide();
-						
-						if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
-						{
-							var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
-							var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
-							
-							$('#dialognewcreditplan').dialog('close');
-							$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));
-							mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
-						}
-						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-					},
-					error: function(request, errorcode, errortext){
-						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-						$('#img_loader_11').hide();
-					}
-				});
+				guardarNuevoClienteUC();
+				return;				
 			}
 		}			
 	</script>
@@ -1018,7 +995,8 @@ include("./menu/menu.php");
 						var tokenR = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
 						$('#tokenasi').val(tokenR);
-						guardarNuevoClienteFinal();
+						$('#dialogautorizacionadicional').dialog('destroy').remove();
+						guardarNuevoClienteUC();
 						return;
 					}
 					else
@@ -1046,6 +1024,13 @@ include("./menu/menu.php");
     </script>
 
 	<script type="text/javascript">
+		function guardarNuevoClienteUC()
+		{
+			alert($('#validarclienteni').is(":checked") +' -- '+ $('#validarstatuscreditclienteni').is(":checked"));
+		}	
+	</script>	
+	
+	<script type="text/javascript">
 		function guardarNuevoClienteFinal()
 		{			
 			var urlnc = "./acciones/guardarnuevocliente.php";
@@ -1054,7 +1039,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { documentoTitular: $( "#documentonb" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
+				data: { documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					

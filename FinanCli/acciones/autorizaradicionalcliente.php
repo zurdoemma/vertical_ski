@@ -22,6 +22,8 @@
 				return;
 		}
 		
+		$tokenA=htmlspecialchars($_POST["tokenA"], ENT_QUOTES, 'UTF-8');
+				
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');	
 
@@ -118,6 +120,35 @@
 						echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']);
 						return;
 					}
+					
+					if(!empty($tokenA))
+					{
+						if($stmt5 = $mysqli->prepare("SELECT tac.id FROM finan_cli.token_adicional_cuenta tac WHERE tac.token = ? AND tac.tipo_documento = ? AND tac.documento = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
+						{
+							$date_registro_a_s = date("Ymd")."%";
+							$stmt5->bind_param('sisss', $tokenA, $tipoDocumento, $documento, $documentoTitular, $date_registro_a_s);
+							$stmt5->execute();    
+							$stmt5->store_result();
+						
+							$totR5 = $stmt5->num_rows;
+							
+							if($totR5 > 0)
+							{
+								echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']);
+								return;
+							}
+							
+							$stmt5->free_result();
+							$stmt5->close();
+							
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}
+					}
+					
 					
 					if($cantidad_adicionales_db >= $limite_adicionales_sin_supervisor)
 					{

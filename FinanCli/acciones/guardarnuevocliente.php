@@ -94,8 +94,10 @@
 						return;
 					}
 				}
+
 				
-				
+						echo 'OKKKKKKKKKKKKKKKK!!!!!';
+						return;
 				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);

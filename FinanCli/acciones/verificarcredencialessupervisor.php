@@ -60,7 +60,7 @@
 						$date_registro_a_s = date("YmdHis");						
 						$date_registro_a_s_b = date("Ymd")."%";
 						
-						if($stmt2 = $mysqli->prepare("SELECT tac.token FROM finan_cli.token_adicional_cuenta tac WHERE tac.tipo_documento = ? AND tac.documento = ? AND tac.tipo_documento_titular = ?, tac.documento_titular = ? AND tac.fecha like ?"))
+						if($stmt2 = $mysqli->prepare("SELECT tac.token FROM finan_cli.token_adicional_cuenta tac WHERE tac.tipo_documento = ? AND tac.documento = ? AND tac.tipo_documento_titular = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
 						{
 							$stmt2->bind_param('isiss', $tipoDocumento, $documento, $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s_b);
 							$stmt2->execute();    
