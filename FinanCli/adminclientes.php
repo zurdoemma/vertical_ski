@@ -1026,9 +1026,259 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarNuevoClienteUC()
 		{
-			alert($('#validarclienteni').is(":checked") +' -- '+ $('#validarstatuscreditclienteni').is(":checked"));
+			if($('#validarclienteni').is(":checked"))
+			{
+				var urlvc = "./acciones/validarcelularcliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlvc,
+					method: "POST",
+					data: { tokenVCC: $("#tokenvcci").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_12').hide();
+						
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>') != -1)
+						{
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>","");
+							var tagvcc = $("<div id='dialogvalidacioncelularcliente'></div>");
+							
+							tagvcc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Validation_Mobile_Client',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagvcc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagvcc.dialog('open');
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Only_Mobile_Phones_Can_Be_Validated',$GLOBALS['lang']); ?>') != -1)
+						{
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Mobile_Phones_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+						{
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
+						{
+							guardarNuevoClienteUC2();
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_12').hide();
+						return;
+					}
+				});				
+			}
+			else
+			{
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+			}		
 		}	
-	</script>	
+	</script>
+
+	<script type="text/javascript">
+		function guardarNuevoClienteUC2()
+		{
+			if($('#validarstatuscreditclienteni').is(":checked"))
+			{
+				alert("HASTA ACAA");
+			}
+			else
+			{
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 37);
+			}
+		}	
+	</script>
+
+	<script type="text/javascript">
+		function validar_cliente_supervisor(motivo)
+		{
+			var urlvcs = "./acciones/validacionclientesupervisor.php";
+			$('#img_loader_12').show();
+									
+			$.ajax({
+				url: urlvcs,
+				method: "POST",
+				data: { motivo: motivo, tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_12').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
+					{
+						if(motivo != 37) guardarNuevoClienteUC2();
+						else guardarNuevoClienteFinal();
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Client_Registration',$GLOBALS['lang']); ?>') != -1)
+						{
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Client_Registration',$GLOBALS['lang']); ?>","");
+							var tagarc = $("<div id='dialogautorizacionregistrocliente'></div>");
+							
+							tagarc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Authorize_Client_Registration',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagarc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagarc.dialog('open');
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+					}
+						
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_12').hide();
+				}
+			});			
+		}	
+	</script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorRegistroCliente(formularionacr, motivo)
+		{
+			if($('#usuariosupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn2i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn2i').tooltip('destroy');
+			}			
+			
+			var urlasrc = "./acciones/verificarcredencialessupervisorregistrocliente.php";
+			$('#img_loader_13').show();
+			
+			
+			var p211 = document.createElement("input");
+		 			
+			formularionacr.appendChild(p211);
+			p211.name = "p210";
+			p211.type = "hidden";
+			
+			p211.value = hex_sha512(formularionacr.passwordsupervisorn2i.value);
+			
+			if(formularionacr.passwordsupervisorn2i.value == "") p211.value = "";
+			formularionacr.passwordsupervisorn2i.value = "";
+						
+			$.ajax({
+				url: urlasrc,
+				method: "POST",
+				data: { motivo: motivo, usuarioSupervisor: formularionacr.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						if(motivo != 37) 
+						{
+							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
+							guardarNuevoClienteUC2();
+						}
+						else guardarNuevoClienteFinal();
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn2i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>	
 	
 	<script type="text/javascript">
 		function guardarNuevoClienteFinal()
@@ -1039,7 +1289,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
+				data: { validarCliente: $('#validarclienteni').is(":checked"), validarEstadoCrediticio: $('#validarstatuscreditclienteni').is(":checked"), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -1429,6 +1679,34 @@ include("./menu/menu.php");
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+
+	<script type="text/javascript">
+		function confirmar_accion_validar_cliente(titulo, mensaje, motivo)
+		{
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										validar_cliente_supervisor(motivo);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
 		}
 	</script>	

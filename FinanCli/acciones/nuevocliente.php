@@ -42,6 +42,12 @@
 		echo '					<div id="busquedatitular" style="display:none;">';
 		echo '						<div class="form-group" id="tokenas" style="display:none;">';
 		echo '							<input class="form-control input-sm green-border" id="tokenasi" name="tokenasi" type="text" maxlength="128" />';
+		echo '						</div>';
+		echo '						<div class="form-group" id="tokenvcc" style="display:none;">';
+		echo '							<input class="form-control input-sm green-border" id="tokenvcci" name="tokenvcci" type="text" maxlength="128" />';
+		echo '						</div>';
+		echo '						<div class="form-group" id="tokenvecc" style="display:none;">';
+		echo '							<input class="form-control input-sm green-border" id="tokenvecci" name="tokenvecci" type="text" maxlength="128" />';
 		echo '						</div>';		
 		echo '						&nbsp;<label class="control-label" for="tipodocumentoclientnb">'.translate('Lbl_Type_Document_Client2',$GLOBALS['lang']).':</label>';
 		echo '						<div class="form-group" id="tipodocumentoclientnb">';

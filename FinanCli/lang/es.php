@@ -348,6 +348,14 @@
 		'Msg_Supervisor_Not_OK' => 'El usuario o la clave son incorrectos',
 		'Msg_New_Client_OK' => 'El nuevo cliente se registro correctamente!!',
 		'Msg_Client_Holder_Is_Disabled' => 'El titular se encuentra deshabilitado!!',
-		'Msg_No_Additional_Authorization_By_Supervisor' => 'No se autorizo adicional por supervisor!!'		
+		'Msg_No_Additional_Authorization_By_Supervisor' => 'No se autorizo adicional por supervisor!!',	
+		'Msg_Validation_Mobile_Client_OK' => 'El mensaje de celular fue enviado correctamente!!',		
+		'Lbl_Validation_Mobile_Client' => 'Validación Celular',
+		'Msg_Only_Mobile_Phones_Can_Be_Validated' => 'Solo se pueden validar telefonos moviles!!',
+		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone' => 'Esta seguro de registrar el cliente sin validar el telefono?',
+		'Lbl_Authorize_Client_Registration' => 'Autorizar Registro Cliente',
+		'Msg_Must_Authorize_Client_Registration' => 'Debe autorizar registro de cliente',
+		'Msg_Mobile_Phones_Not_Validated' => 'No se pudo validar el telefono!!',
+		'Msg_Validation_Mobile_Is_Not_Necessary' => 'Ya se realizo validacion de telefono!!'		
 	);
 ?>

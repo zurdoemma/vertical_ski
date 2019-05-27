@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 
 function verificar_usuario($mysqli)
 {
