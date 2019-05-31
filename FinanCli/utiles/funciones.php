@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 include_once 'c:\wamp\www\pls_config.php';
+include('httpful.phar');
 
 function verificar_usuario($mysqli)
 {
@@ -366,5 +367,148 @@ function esc_url($url) {
 	{
         return $url;
     }
+}
+
+function envio_sms($from, $destination, $message)
+{
+	// Creo un array con los valores a enviar.
+	$postSMS = array();
+	$postSMS["token"]= $GLOBALS['token_envio_sms'];
+	$postSMS["from"]= $from;
+	$postSMS["destination"]= '0054'.$destination;
+	$postSMS["message"]= $message;
+
+	$envio_sms = curl_init($GLOBALS['url_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_POST, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_POSTFIELDS, $postSMS );
+	curl_setopt( $envio_sms, CURLOPT_RETURNTRANSFER, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYHOST, 0 );
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYPEER, 0 );
+
+	$respuesta_envio_sms = curl_exec( $envio_sms );
+	
+	if (curl_error($envio_sms)) 
+	{
+		$error_msg = curl_error($envio_sms);
+		return $error_msg;
+	}	
+	
+	if ($respuesta_envio_sms !== false)
+	{
+		$https_code_envio_sms = curl_getinfo( $envio_sms, CURLINFO_HTTP_CODE );
+		
+		switch($https_code_envio_sms)
+		{
+			case 103:
+				$msg_sms_ok = translate('Msg_Erroneous_Parameters',$GLOBALS['lang']);
+				break;
+				
+			case 109:
+				$msg_sms_ok = translate('Msg_Mandatory_Parameter_Omitted',$GLOBALS['lang']);
+				break;
+
+			case 200:
+				$msg_sms_ok = translate('Msg_Message_Sent_Succesfully',$GLOBALS['lang']);
+				break;
+
+			case 401:
+				$msg_sms_ok = translate('Msg_Unauthorized_Authentication_Error_Check_Token',$GLOBALS['lang']);
+				break;
+
+			case 402:
+				$msg_sms_ok = translate('Msg_Payment_Required_Insufficient_Balance_For_Sending_SMS',$GLOBALS['lang']);
+				break;
+
+			case 412:
+				$msg_sms_ok = translate('Msg_Precondition_Failed_Unrecognized_Error',$GLOBALS['lang']);
+				break;
+
+			case 404:
+				$msg_sms_ok = translate('Msg_Not_Found_SMS_ID_Sent',$GLOBALS['lang']);
+				break;
+
+			default:
+				$msg_sms_ok = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				break;				
+		}
+	}
+	else 
+	{		
+		return translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	}
+	curl_close( $envio_sms );
+	
+	return $msg_sms_ok;
+}
+
+function consultado_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $idGenero)
+{
+	$generoC = 'M';
+	if($idGenero == 2) $generoC = 'F';
+	
+	$consulta_estado_financiero_ws = curl_init($GLOBALS['url_consulta_estado_financiero'].$GLOBALS['usuario_servicio_consulta_estado_financiero'].'/'.$GLOBALS['clave_servicio_consulta_estado_financiero'].'/'.$documento.'/'.$generoC);
+	curl_setopt( $consulta_estado_financiero_ws, CURLOPT_RETURNTRANSFER, TRUE );
+	curl_setopt( $consulta_estado_financiero_ws, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+
+
+	$respuesta_consulta_estado_financiero_ws = curl_exec( $consulta_estado_financiero_ws );
+	
+	if (curl_error($consulta_estado_financiero_ws)) 
+	{
+		$msg_consulta = curl_error($consulta_estado_financiero_ws);
+		return $msg_consulta;
+	}
+		
+	if ($respuesta_consulta_estado_financiero_ws !== false)
+	{	
+		$https_code_consulta_estado_financiero_ws = curl_getinfo( $consulta_estado_financiero_ws, CURLINFO_HTTP_CODE );
+		
+		switch($https_code_consulta_estado_financiero_ws)
+		{
+			case 200:
+				$msg_consulta = translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']).$respuesta_consulta_estado_financiero_ws;
+				break;
+
+			default:
+				$msg_consulta = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				break;				
+		}
+	}
+	else
+	{
+		$msg_consulta = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	}
+	
+	return $msg_consulta;
+	/**
+	$response = \Httpful\Request::get($GLOBALS['url_consulta_estado_financiero'].$GLOBALS['usuario_servicio_consulta_estado_financiero'].'/'.$GLOBALS['clave_servicio_consulta_estado_financiero'].'/'.$documento.'/'.$generoC)
+	->expectsXml()
+	->send();
+	
+	if(!$response)
+	{
+		$msg_consulta = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	}
+	
+	switch($response->code)
+	{
+		case 200:
+			if(is_array($response->body))
+			{
+				$msg_consulta = translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']);
+			}
+			break;
+			
+		default:
+			$msg_consulta = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			break;				
+	}
+	
+	$doms = new \DOMDocument();
+    $doms->loadXML($response->raw_body);
+	 
+	return $msg_consulta.$dom->documentElement->textContent.$GLOBALS['url_consulta_estado_financiero'].$GLOBALS['usuario_servicio_consulta_estado_financiero'].'/'.$GLOBALS['clave_servicio_consulta_estado_financiero'].'/'.$documento.'/'.$generoC;
+	*/
 }
 ?>

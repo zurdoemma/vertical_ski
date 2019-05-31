@@ -25,7 +25,9 @@ include("./menu/menu.php");
 	<link rel="stylesheet" href="./css/fontawesome.min.css">
 	<link rel="stylesheet" href="./css/all.css">
 	<link rel="stylesheet" type="text/css" href="./css/jquery-ui.css">
-	<link rel="stylesheet" type="text/css" href="./css/bootstrap-multiselect.css">	
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-multiselect.css">
+	<link rel="stylesheet" href="./utiles/CodeMirror/lib/codemirror.css">
+	<link rel="stylesheet" href="./utiles/CodeMirror/addon/hint/show-hint.css">	
 	
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/JavaScript" src="./js/bootstrap.min.op2.js" ></script>
@@ -43,11 +45,30 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
-	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>	
+	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>
+	<script src="./utiles/CodeMirror/lib/codemirror.js"></script>
+	<script src="./utiles/CodeMirror/addon/hint/show-hint.js"></script>
+	<script src="./utiles/CodeMirror/addon/hint/xml-hint.js"></script>
+	<script src="./utiles/CodeMirror/mode/xml/xml.js"></script>	
+	<script src="./utiles/CodeMirror/addon/search/search.js"></script>
+	<script src="./utiles/CodeMirror/addon/search/searchcursor.js"></script>
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
+	<script type="text/javascript">	
+		function buscarTextoEstadoFinanciero(textob)
+		{	     
+			 var cursor = editorEF.getSearchCursor(textob , CodeMirror.Pos(editorEF.firstLine(), 0), {caseFold: true, multiline: true});
+			 if(cursor.find(false))
+			 { 
+				  var from = cursor.from();
+				  var to = cursor.to();
+				  editorEF.setSelection(CodeMirror.Pos(from.line, 0), to);
+				  editorEF.scrollIntoView({from: from, to: CodeMirror.Pos(to.line + 10, 0)});
+			 }
+		}
+	</script>	 
 	<script type="text/javascript">
 		function nuevoCliente()
 		{
@@ -465,8 +486,23 @@ include("./menu/menu.php");
 				$( "#fechanacimientoclientni" ).tooltip('destroy');
 			}			
 						
-			if($( "#cuitcuilclientni" ).val().length != 0)
-			{			
+			if($( "#cuitcuilclientni" ).val().length == 0)
+			{
+				$('#cuitcuilclientni').prop('title', '<?php echo translate('Msg_A_Cuit_Cuil_Client_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#cuitcuilclientni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#cuitcuilclientni" ).focus();
+				return;
+			}
+			else 
+			{
 				if (isNaN($( "#cuitcuilclientni" ).val()) || $( "#cuitcuilclientni" ).val() % 1 != 0)
 				{
 					$('#cuitcuilclientni').prop('title', '<?php echo translate('Msg_A_Cuit_Cuil_Client_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
@@ -495,7 +531,7 @@ include("./menu/menu.php");
 					});					
 					$( "#cuitcuilclientni" ).tooltip('destroy');
 				}
-			}
+			}			
 
 			if($( "#emailclientni" ).val().length != 0)
 			{			
@@ -1045,7 +1081,11 @@ include("./menu/menu.php");
 						
 						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>') != -1)
 						{
-							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>","");
+							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+							dataresponse = dataresponse.replace(tokenR+"=:=:=:","");
+							
+							$('#tokenvcci').val(tokenR);
 							var tagvcc = $("<div id='dialogvalidacioncelularcliente'></div>");
 							
 							tagvcc.html(dataresponse).dialog({
@@ -1064,11 +1104,11 @@ include("./menu/menu.php");
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Only_Mobile_Phones_Can_Be_Validated',$GLOBALS['lang']); ?>') != -1)
 						{
-							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Mobile_Phones_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
 						{
-							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
 						{
@@ -1086,21 +1126,142 @@ include("./menu/menu.php");
 			}
 			else
 			{
-				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
 			}		
 		}	
 	</script>
+	
+	<script type="text/javascript">
+		function verificarValidacionSMSAltaCliente(formulariovsms)
+		{
+			if($('#codigovalidsmsi').val().length == 0)
+			{
+				$(function() {
+					$('#codigovalidsmsi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#codigovalidsmsi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#codigovalidsmsi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#codigovalidsmsi').tooltip('destroy');
+			}
+
+			var urlavcsms = "./acciones/verificarcodigosmsregistrocliente.php";
+			$('#img_loader_14').show();
+				 									
+			$.ajax({
+				url: urlavcsms,
+				method: "POST",
+				data: { codigo: $('#codigovalidsmsi').val(), token: $( "#tokenvcci" ).val(), tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_14').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_SMS_Code_Validated_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogvalidacioncelularcliente').dialog('destroy').remove();
+						guardarNuevoClienteUC2();
+					}
+					else
+					{
+						$('#codigovalidsmsi').focus();
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#codigovalidsmsi').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_14').hide();
+				}
+			});
+		}
+    </script>	
 
 	<script type="text/javascript">
 		function guardarNuevoClienteUC2()
 		{
 			if($('#validarstatuscreditclienteni').is(":checked"))
 			{
-				alert("HASTA ACAA");
+				var urlvecc = "./acciones/validarestadocrediticiocliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlvecc,
+					method: "POST",
+					data: { tokenVECC: $("#tokenvecci").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), cuitCuil: $( "#cuitcuilclientni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), genero: $('#generoclientni').val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_12').hide();
+						
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']); ?>') != -1)
+						{
+							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+							dataresponse = dataresponse.replace(tokenR+"=:=:=:","");
+							
+							$('#tokenvecci').val(tokenR);
+							var tagvcc = $("<div id='dialogvalidacionestadocrediticiocliente'></div>");
+							
+							tagvcc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Validation_Credit_Status_Client',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagvcc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagvcc.dialog('open');
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+						{
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 37);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
+						{
+							guardarNuevoClienteFinal();
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_12').hide();
+						return;
+					}
+				});
 			}
 			else
 			{
-				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Authorize_Additional',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 37);
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 37);
 			}
 		}	
 	</script>
@@ -1289,7 +1450,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { validarCliente: $('#validarclienteni').is(":checked"), validarEstadoCrediticio: $('#validarstatuscreditclienteni').is(":checked"), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val()},
+				data: { validarCliente: $('#validarclienteni').is(":checked"), validarEstadoCrediticio: $('#validarstatuscreditclienteni').is(":checked"), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val(), genero: $('#generoclientni').val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -1741,6 +1902,7 @@ include("./menu/menu.php");
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
 				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCliente();" title="<?php echo translate('Lbl_New_Client',$GLOBALS['lang']);?>" ><i class="fas fa-id-card-alt"></i></button>
 			</div>
+			<textarea id="code" name="code"><?php echo consultado_estado_financiero_cliente(1, '87654321', '20876543215', 1) ?></textarea>
 			<div id="img_loader"></div>
 			<div id="tablaadminclient" class="table-responsive">
 				<table id="tableadminclientt" data-classes="table table-hover table-condensed"
@@ -1805,5 +1967,15 @@ include("./menu/menu.php");
 			$('#tableadminclientt').bootstrapTable({locale:'es-AR'});
 		});
 	</script>	
+	
+	<script type="text/javascript">
+      var editorEF = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: "xml",
+        lineNumbers: true,
+		readOnly: true
+      });
+	  
+	  buscarTextoEstadoFinanciero('write');
+    </script>	
 </body>
 </html>

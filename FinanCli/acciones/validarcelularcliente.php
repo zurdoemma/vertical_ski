@@ -60,7 +60,7 @@
 			return;
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND token = ? AND validado = 0"))
+		if($stmt = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 0"))
 		{
 			$date_registro_a_vcc = date("Ymd")."%";
 			$stmt->bind_param('isss', $tipoDocumento, $documento, $date_registro_a_vcc, $tokenVCC);
@@ -81,7 +81,7 @@
 			return;
 		}
 
-		if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND token = ? AND validado = 1"))
+		if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1"))
 		{
 			$date_registro_a_vcc = date("Ymd")."%";
 			$stmt2->bind_param('isss', $tipoDocumento, $documento, $date_registro_a_vcc, $tokenVCC);
@@ -102,46 +102,74 @@
 			return;
 		}
 		
-		$url_envio="https://apps.netelip.com/sms/api.php";
-		$from="prueba";
-		$destination="00543513827932";
-		$message="esto es una prueba desde la api";
+		$digits = 4;
+		$codigo_validacion_vcc = str_pad(rand(0, pow(10, $digits)-1), $digits, '0', STR_PAD_LEFT);		
+		$resultado_env = envio_sms(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $prefijoTelefono.$nroTelefono, translate('Msg_Client_Registration_Verification_Code',$GLOBALS['lang']).': '.$codigo_validacion_vcc);
 		
-		// Creo un array con los valores a enviar.
-		$postSMS = array();
-		$postSMS["token"]= $GLOBALS['token_envio_sms'];
-		$postSMS["from"]= $from;
-		$postSMS["destination"]= $destination;
-		$postSMS["message"]= $message;
-
-		$envio_prueba = curl_init($url_envio);
-		curl_setopt( $envio_prueba, CURLOPT_POST, TRUE );
-		curl_setopt( $envio_prueba, CURLOPT_POSTFIELDS, $postSMS );
-		curl_setopt( $envio_prueba, CURLOPT_RETURNTRANSFER, TRUE );
-		curl_setopt( $envio_prueba, CURLOPT_CAINFO, "C:\wamp\cacert.pem");
-		//curl_setopt( $envio_prueba, CURLOPT_SSL_VERIFYHOST, 0 );
-		//curl_setopt( $envio_prueba, CURLOPT_SSL_VERIFYPEER, 0 );
-
-		$respuesta_envio_prueba = curl_exec( $envio_prueba );
-		
-		if (curl_error($envio_prueba)) 
-		{
-			$error_msg = curl_error($envio_prueba);
-		}	
-		
-		if ($respuesta_envio_prueba !== false)
-		{
-			$https_code_envio_prueba = curl_getinfo( $envio_prueba, CURLINFO_HTTP_CODE );
-			echo $https_code_envio_prueba.'  -- Nada';
-			switch($https_code_envio_prueba)
+		if(translate('Msg_Message_Sent_Succesfully',$GLOBALS['lang']) == $resultado_env)
+		{			
+			$tokenVCe = md5(uniqid(rand(), true));
+			$tokenVCe = hash('sha512', $tokenVCe);
+			
+			$mysqli->autocommit(FALSE);
+			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+			
+			if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_validacion_celular(fecha,tipo_documento,documento,token,codigo,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
 			{
-				case 200:
-				echo "Mensaje enviado con exito";
-				break;
+				echo $mysqli->error;
+				$mysqli->autocommit(TRUE);
+				$stmt->free_result();
+				$stmt->close();
+				return;
+			}
+			else
+			{
+				$date_registro_a_vcc = date("YmdHis");
+				$validado_vcc = 0;
+				$stmt10->bind_param('sissssi', $date_registro_a_vcc, $tipoDocumento, $documento, $tokenVCe, $codigo_validacion_vcc, $_SESSION['username'], $validado_vcc);
+				if(!$stmt10->execute())
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;						
+				}
+									
+				$mysqli->commit();
+				$mysqli->autocommit(TRUE);
+				
+				echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenVCe.'=:=:=:';
+				echo '<div class="panel-group">';				
+				echo '	<div class="panel panel-default">';
+				echo '		<div id="panel-title-header" class="panel-heading">';
+				echo '			<h3 class="panel-title">'.translate('Lbl_Valid_Code_SMS',$GLOBALS['lang']).'</h3>';
+				echo ' 		</div>';
+				echo '		<div class="panel-body">';
+				echo '			<form id="formulariovsms" role="form">';		
+				echo '				<div class="form-group form-inline">';
+				echo '					<label class="control-label" for="codigovalidsms">'.translate('Lbl_Verification_Code_SMS',$GLOBALS['lang']).':</label>';
+				echo '					<div class="form-group" id="codigovalidsms">';
+				echo '						<input title="'.translate('Msg_Verification_Code_SMS_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="codigovalidsmsi" name="codigovalidsmsi" type="text" maxlength="4" />';
+				echo '					</div>';		
+				echo '				</div>';
+				echo '				<div class="form-group form-inline">';
+				echo '					<div id="img_loader_14"></div>';		
+				echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarVSMS" id="btnCancelarVSMS" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidacioncelularcliente\').dialog(\'close\');" style="margin-left:10px;" />';
+				echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarVSMS" id="btnValidarVSMS" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="verificarValidacionSMSAltaCliente(document.getElementById(\'formulariovsms\'));"/>';										
+				echo '				</div>';				
+				echo '			</form>';
+				echo '		</div>';
+				echo '	</div>';
+				echo '</div>';				
+				
+				
+				return;
 			}
 		}
-		else echo 'Nada -- Nada: '.$error_msg;
-		curl_close( $envio_prueba );
-		
-		return;
+		else
+		{
+			echo translate('Msg_Mobile_Phones_Not_Validated',$GLOBALS['lang']);
+			return;			
+		}
 ?>

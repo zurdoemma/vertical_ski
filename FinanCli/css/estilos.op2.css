@@ -197,6 +197,21 @@ h1 {
     margin-left:47%;
 }
 
+
+#img_loader_14
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:47%;
+}
+
 #mensajeError
 {
     background-image: url("../images/errorDialog.png");	

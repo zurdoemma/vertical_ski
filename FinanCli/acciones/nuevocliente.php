@@ -181,11 +181,34 @@
 		echo '						<button type="button" class="btn" id="btnCargaDomicilioCN" name="btnCargaDomicilioCN" title="'.translate('Lbl_New_Home_Address_User',$GLOBALS['lang']).'" onclick="verDomicilioNC();"><i class="fa fa-eye"></i></button>';
 		echo '						&nbsp;<button type="button" class="btn" id="btnCargaTelefonoCN" name="btnCargaTelefonoCN" title="'.translate('Lbl_New_Phone_Client',$GLOBALS['lang']).'" onclick="verTelefonoNC();"><i class="fas fa-phone"></i></button>';
 		echo '					</div>';
+		echo '				</div>';
+		echo '				<div class="form-group form-inline">';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="generoclientn">'.translate('Lbl_Gender_Client',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="generoclientn">';
+		echo '						<select class="form-control input-sm" name="generoclientni" id="generoclientni" style="width:190px;">';			 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.genero")) 
+										{ 
+											$stmt->execute();    
+											$stmt->store_result();
+									 
+											$stmt->bind_result($id_genero,$nombre_genero);
+											while($stmt->fetch())
+											{
+												echo '<option value="'.$id_genero.'">'.$nombre_genero.'</option>';
+											}
+										}
+										else  
+										{
+											echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+											return;			
+										}
+		echo '						</select>';
+		echo '					</div>';		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';
 		echo '					<label class="control-label" for="observacionclientn">'.translate('Lbl_Observations_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="observacionclientn">';
-		echo '						<textarea rows="5" cols="67" class="form-control input-sm" id="observacionclientni" name="observacionclientni" type="text" maxlength="500" />';
+		echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="observacionclientni" name="observacionclientni" type="text" maxlength="500" />';
 		echo '					</div>';		
 		echo '				</div>';				
 		echo '              <div id="mostrarDomicilioCargaN" style="display:none;"><hr />';
