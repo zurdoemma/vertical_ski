@@ -317,6 +317,7 @@
 		'Lbl_Format_Date_Birthday_Client' => 'dd/MM/yyyy',
 		'Lbl_Cuit_Cuil_Client' => 'CUIT/CUIL',	
 		'Lbl_Date_Birthday_Client' => 'Fecha de Nac.',
+		'Msg_A_Cuit_Cuil_Client_Must_Enter' => 'Debe ingresar un numero de CUIT o CUIL',
 		'Msg_A_Cuit_Cuil_Client_Must_Enter_A_Whole' => 'El numero de cuit o cuil debe ser entero',		
 		'Msg_A_Date_Birthday_Client_Must_Enter' => 'Debe ingresar una fecha de nacimiento',
 		'Lbl_Email_Client' => 'Email',
@@ -379,6 +380,9 @@
 		'Lbl_Confirmation_Action_Register_Client' => 'Confirmar',
 		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_Credit_Status' => 'Esta seguro de registrar el cliente sin validar el estado financiero?',
 		'Msg_Credit_Status_Client_Not_Validated' => 'No se pudo verificar el estado financiero del cliente!!',
-		'Msg_Financial_Statement_Was_Consulted_Successfully' => 'El estado financiero se consulto con exito'		
+		'Msg_Financial_Statement_Was_Consulted_Successfully' => 'El estado financiero se consulto con exito',
+		'Lbl_Result_Financial_Statement_Client' => 'Resultado Estado Financiero',
+		'Lbl_Search_Text_Statement_Client' => 'Buscar texto en estado financiero',
+		'Msg_Not_Supervisor_OK' => 'Se guardo registro de cliente sin supervisor'		
 	);
 ?>

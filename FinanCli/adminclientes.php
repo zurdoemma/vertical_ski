@@ -57,15 +57,18 @@ include("./menu/menu.php");
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
 	<script type="text/javascript">	
-		function buscarTextoEstadoFinanciero(textob)
+		function buscarTextoEstadoFinanciero()
 		{	     
-			 var cursor = editorEF.getSearchCursor(textob , CodeMirror.Pos(editorEF.firstLine(), 0), {caseFold: true, multiline: true});
-			 if(cursor.find(false))
-			 { 
-				  var from = cursor.from();
-				  var to = cursor.to();
-				  editorEF.setSelection(CodeMirror.Pos(from.line, 0), to);
-				  editorEF.scrollIntoView({from: from, to: CodeMirror.Pos(to.line + 10, 0)});
+			 if(editorEF != null)
+			 {
+				 var cursor = editorEF.getSearchCursor($('#buscartextoestadocrediticioclientei').val() , CodeMirror.Pos(editorEF.firstLine(), 0), {caseFold: true, multiline: true});
+				 if(cursor.find(false))
+				 { 
+					  var from = cursor.from();
+					  var to = cursor.to();
+					  editorEF.setSelection(CodeMirror.Pos(from.line, 0), to);
+					  editorEF.scrollIntoView({from: from, to: CodeMirror.Pos(to.line + 10, 0)});
+				 }
 			 }
 		}
 	</script>	 
@@ -1209,7 +1212,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlvecc,
 					method: "POST",
-					data: { tokenVECC: $("#tokenvecci").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), cuitCuil: $( "#cuitcuilclientni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), genero: $('#generoclientni').val() },
+					data: { tokenVECC: $("#tokenvecci").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), cuitCuil: $( "#cuitcuilclientni" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), genero: $('#generoclientni').val(), motivo: 37 },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_12').hide();
 						
@@ -1239,6 +1242,21 @@ include("./menu/menu.php");
 											tagvcc.dialog('destroy').remove()
 									}
 							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							
+						    editorEF = CodeMirror.fromTextArea(document.getElementById("resultadoestadofinancieroclientei"), {
+								mode: "xml",
+								lineNumbers: true,
+								readOnly: true
+							});
+							editorEF.setSize(650, 300);
+							
+							$('#buscartextoestadocrediticioclientei').keypress(function(event){
+								var keycode = (event.keyCode ? event.keyCode : event.which);
+								if(keycode == '13'){
+									buscarTextoEstadoFinanciero(); 
+								}
+							});							
+							
 							tagvcc.dialog('open');
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
@@ -1415,7 +1433,11 @@ include("./menu/menu.php");
 							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
 							guardarNuevoClienteUC2();
 						}
-						else guardarNuevoClienteFinal();
+						else 
+						{
+							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
+							guardarNuevoClienteFinal();
+						}
 					}
 					else
 					{
@@ -1431,6 +1453,185 @@ include("./menu/menu.php");
 						}					
 					}
 					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn2i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorEstadoFinancieroCliente(formulariocefc, motivo)
+		{
+			if($('#usuariosupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn3i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn3i').tooltip('destroy');
+			}			
+			
+			var urlasrc2 = "./acciones/verificarcredencialessupervisorregistrocliente.php";
+			$('#img_loader_13').show();
+			
+			
+			var p221 = document.createElement("input");
+		 			
+			formulariocefc.appendChild(p221);
+			p221.name = "p210";
+			p221.type = "hidden";
+			
+			p221.value = hex_sha512(formulariocefc.passwordsupervisorn3i.value);
+			
+			if(formulariocefc.passwordsupervisorn3i.value == "") p221.value = "";
+			formulariocefc.passwordsupervisorn3i.value = "";
+						
+			$.ajax({
+				url: urlasrc2,
+				method: "POST",
+				data: { motivo: motivo, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						if(motivo != 37) 
+						{
+							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
+							guardarNuevoClienteUC2();
+						}
+						else 
+						{
+							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
+							guardarNuevoClienteFinal();
+						}
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn3i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarSinSupervisorEstadoFinancieroCliente(motivo)
+		{				
+			var tipoDocumentoCEA = null;
+			var documentoCEA = null;
+			
+			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+			{
+				tipoDocumentoCEA = $( "#tipodocumentoclientnbi" ).val();
+				documentoCEA = $( "#documentonbi" ).val();
+			}
+			else
+			{
+				tipoDocumentoCEA = $( "#tipodocumentoclientni" ).val();
+				documentoCEA = $( "#documentoni" ).val();
+			}			
+			
+			var urlasrc3 = "./acciones/grabarregistroclientesinsupervisorestadofinanciero.php";
+			$('#img_loader_13').show();
+			
+			$.ajax({
+				url: urlasrc3,
+				method: "POST",
+				data: { motivo: motivo, tipoDocumento: tipoDocumentoCEA, documento: documentoCEA },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Not_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						if(motivo != 37) 
+						{
+							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
+							guardarNuevoClienteUC2();
+						}
+						else 
+						{
+							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
+							guardarNuevoClienteFinal();
+						}
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
 				},
 				error: function(request, errorcode, errortext){
 					$('#usuariosupervisorn2i').focus();
@@ -1902,7 +2103,6 @@ include("./menu/menu.php");
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
 				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCliente();" title="<?php echo translate('Lbl_New_Client',$GLOBALS['lang']);?>" ><i class="fas fa-id-card-alt"></i></button>
 			</div>
-			<textarea id="code" name="code"><?php echo consultado_estado_financiero_cliente(1, '87654321', '20876543215', 1) ?></textarea>
 			<div id="img_loader"></div>
 			<div id="tablaadminclient" class="table-responsive">
 				<table id="tableadminclientt" data-classes="table table-hover table-condensed"
@@ -1965,17 +2165,8 @@ include("./menu/menu.php");
 		$(function () 
 		{
 			$('#tableadminclientt').bootstrapTable({locale:'es-AR'});
+			var editorEF = null;
 		});
-	</script>	
-	
-	<script type="text/javascript">
-      var editorEF = CodeMirror.fromTextArea(document.getElementById("code"), {
-        mode: "xml",
-        lineNumbers: true,
-		readOnly: true
-      });
-	  
-	  buscarTextoEstadoFinanciero('write');
-    </script>	
+	</script>		
 </body>
 </html>

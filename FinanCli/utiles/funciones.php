@@ -442,7 +442,7 @@ function envio_sms($from, $destination, $message)
 	return $msg_sms_ok;
 }
 
-function consultado_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $idGenero)
+function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $idGenero)
 {
 	$generoC = 'M';
 	if($idGenero == 2) $generoC = 'F';
