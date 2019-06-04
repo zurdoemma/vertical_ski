@@ -31,8 +31,14 @@
 		$nombreFantasia=htmlspecialchars($_POST["nombreFantasia"], ENT_QUOTES, 'UTF-8');
 		
 		$email = !empty($email) ? "$email" : "---";
-		$telefono = !empty($telefono) ? "$telefono" : "NULL";		
-		
+		$telefono = !empty($telefono) ? "$telefono" : "NULL";
+
+		if($cuitCuil < 0 || $telefono < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+				
 		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCadena);

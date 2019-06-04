@@ -27,8 +27,14 @@
 		$idTelefono=htmlspecialchars($_POST["idTelefono"], ENT_QUOTES, 'UTF-8');
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
-		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');		
-		
+		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');
+
+		if($prefijoTelefono < 0 || $nroTelefono < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+				
 		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE ut.id_usuario = u.id AND ut.id_telefono = t.id AND u.id LIKE(?) AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);

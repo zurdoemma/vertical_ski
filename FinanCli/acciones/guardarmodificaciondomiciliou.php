@@ -39,7 +39,22 @@
 		$piso = !empty($piso) ? "$piso" : "NULL";
 		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
 		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
-		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";
+
+		if($nroCalle < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+		
+		if(!empty($piso))
+		{
+			if($piso < 0)
+			{
+				echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+				return;
+			}
+		}		
 		
 		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE ud.id_usuario = u.id AND ud.id_domicilio = d.id AND d.id_provincia = p.id AND u.id LIKE(?) AND d.id = ?"))
 		{

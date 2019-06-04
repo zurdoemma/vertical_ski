@@ -27,7 +27,13 @@
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
 		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');
-			
+		
+		if($prefijoTelefono < 0 || $nroTelefono < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+					
 		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);

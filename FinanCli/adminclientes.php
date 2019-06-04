@@ -1417,7 +1417,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlasrc,
 				method: "POST",
-				data: { motivo: motivo, usuarioSupervisor: formularionacr.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val() },
+				data: { motivo: motivo, usuarioSupervisor: formularionacr.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tokenECC2: '' },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1529,18 +1529,32 @@ include("./menu/menu.php");
 			var p221 = document.createElement("input");
 		 			
 			formulariocefc.appendChild(p221);
-			p221.name = "p210";
+			p221.name = "p221";
 			p221.type = "hidden";
 			
 			p221.value = hex_sha512(formulariocefc.passwordsupervisorn3i.value);
 			
 			if(formulariocefc.passwordsupervisorn3i.value == "") p221.value = "";
 			formulariocefc.passwordsupervisorn3i.value = "";
+			
+			var tipoDocumentoCEA2 = null;
+			var documentoCEA2 = null;
+			
+			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+			{
+				tipoDocumentoCEA2 = $( "#tipodocumentoclientnbi" ).val();
+				documentoCEA2 = $( "#documentonbi" ).val();
+			}
+			else
+			{
+				tipoDocumentoCEA2 = $( "#tipodocumentoclientni" ).val();
+				documentoCEA2 = $( "#documentoni" ).val();
+			}			
 						
 			$.ajax({
 				url: urlasrc2,
 				method: "POST",
-				data: { motivo: motivo, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val() },
+				data: { motivo: 38, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: tipoDocumentoCEA2, documento: documentoCEA2, tokenECC2: $('#tokenvecci').val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1609,7 +1623,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlasrc3,
 				method: "POST",
-				data: { motivo: motivo, tipoDocumento: tipoDocumentoCEA, documento: documentoCEA },
+				data: { motivo: motivo, tipoDocumento: tipoDocumentoCEA, documento: documentoCEA, tokenECC2: $('#tokenvecci').val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1634,7 +1648,6 @@ include("./menu/menu.php");
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
 				},
 				error: function(request, errorcode, errortext){
-					$('#usuariosupervisorn2i').focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
 				}
@@ -1651,7 +1664,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { validarCliente: $('#validarclienteni').is(":checked"), validarEstadoCrediticio: $('#validarstatuscreditclienteni').is(":checked"), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: $("#montomaximoclientni").val(), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val(), genero: $('#generoclientni').val()},
+				data: { tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: (($("#montomaximoclientni").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val(), genero: $('#generoclientni').val(), tokenVC: $( "#tokenvcci" ).val(), tokenVECC: $('#tokenvecci').val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -1662,8 +1675,8 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_New_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{
+						$('#dialognewclient').dialog('destroy').remove();
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
-						return;
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},

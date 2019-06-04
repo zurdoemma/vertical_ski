@@ -383,6 +383,13 @@
 		'Msg_Financial_Statement_Was_Consulted_Successfully' => 'El estado financiero se consulto con exito',
 		'Lbl_Result_Financial_Statement_Client' => 'Resultado Estado Financiero',
 		'Lbl_Search_Text_Statement_Client' => 'Buscar texto en estado financiero',
-		'Msg_Not_Supervisor_OK' => 'Se guardo registro de cliente sin supervisor'		
+		'Msg_Not_Supervisor_OK' => 'Se guardo registro de cliente sin supervisor',
+		'The_Client_Mobile_Phone_Was_Not_Correctly_Validated' => 'No se validó correctamente el celular del cliente!!',
+		'The_Client_Credit_Status_Was_Not_Correctly_Validated' => 'No se validó correctamente el estado financiero del cliente!!',
+		'Age_Not_Allowed_To_Register_Client_Holder' => 'Edad no permitida para registrar cliente titular!!',
+		'Age_Not_Allowed_To_Register_Additional_Client_Holder' => 'Edad no permitida para registrar cliente adicional!!',
+		'Negative_Numbers_Are_Not_Allowed' => 'No se permiten numeros negativos!!',
+		'Maximum_Amount_Not_Allowed' => 'Monto maximo no permitido!!',	
+		'Amount_Entered_Exceeds_The_Maximum_Amount_Allowed_For_The_Selected_Credit_Profile' => 'Monto ingresado supera el monto maximo permitido para el perfil de credito seleccionado!!'		
 	);
 ?>

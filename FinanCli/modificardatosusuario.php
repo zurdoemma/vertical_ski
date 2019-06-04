@@ -1588,7 +1588,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	</div>
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
-		  <div id="panel-title-header-2" class="panel-heading">
+		  <div id="panel-title-header" class="panel-heading">
 			<h3 class="panel-title"><?php echo translate('Lbl_Phones',$GLOBALS['lang']).': '.$_SESSION['username']; ?></h3>
 		  </div>
 		  <div id="apDiv2" class="panel-body">

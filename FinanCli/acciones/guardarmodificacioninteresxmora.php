@@ -28,6 +28,12 @@
 		$interesXMora=htmlspecialchars($_POST["interes"], ENT_QUOTES, 'UTF-8');
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
 		
+		if($cantidadDias < 0 || $interesXMora < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}		
+		
 		if($stmt = $mysqli->prepare("SELECT ixm.id FROM finan_cli.interes_x_mora ixm WHERE ixm.cantidad_dias = ? AND ixm.id_plan_credito = ? AND ixm.id <> ?"))
 		{
 			$stmt->bind_param('iii', $cantidadDias, $planCredito, $idInteresXMora);

@@ -35,6 +35,12 @@
 			return;						
 		}			
 		
+		if($prefijoTelefono < 0 || $nroTelefono < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}	
+		
 		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE ut.id_usuario = u.id AND ut.id_telefono = t.id AND u.id LIKE(?) AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);

@@ -28,6 +28,8 @@
 		
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+		
+		$tokenECC2=htmlspecialchars($_POST["tokenECC2"], ENT_QUOTES, 'UTF-8');
 				
 		if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM finan_cli.usuario WHERE id = ? AND id_perfil IN (1,3) LIMIT 1")) 
 		{
@@ -79,6 +81,32 @@
 								echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
 								return;						
 							}
+							
+							if($motivo == 37 || $motivo == 38)
+							{
+								if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
+								{
+									$mysqli->rollback();
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
+									return;
+								}
+								else
+								{
+									$stmt11->bind_param('iss', $tipoDocumento, $documento, $tokenECC2);
+									if(!$stmt11->execute())
+									{
+										$mysqli->rollback();
+										$mysqli->autocommit(TRUE);
+										$stmt->free_result();
+										$stmt->close();
+										echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
+										return;						
+									}
+								}
+							}								
 												
 							$mysqli->commit();
 							$mysqli->autocommit(TRUE);

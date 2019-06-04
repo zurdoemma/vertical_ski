@@ -26,88 +26,54 @@
 		
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+		$tokenECC2=htmlspecialchars($_POST["tokenECC2"], ENT_QUOTES, 'UTF-8');
 
-
-
-	    ssss
-		if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM finan_cli.usuario WHERE id = ? AND id_perfil IN (1,3) LIMIT 1")) 
+		$mysqli->autocommit(FALSE);
+		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+		
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
 		{
-			$stmt->bind_param('s', $usuarioSupervisor);  
-			$stmt->execute();   
-			$stmt->store_result();
-	 
-
-			$stmt->bind_result($user_id, $db_password, $salt, $permiso, $estado_user);
-			$stmt->fetch();
-	 
-			$password = hash('sha512', $claveSupervisor . $salt);
-			if ($stmt->num_rows == 1) 
-			{
-				if (checkbrute($user_id, $mysqli) == true) 
-				{
-					echo translate('Msg_Block_User',$GLOBALS['lang']);
-					return;
-				} 
-				else 
-				{
-					if(empty($estado_user) || $estado_user != translate('State_User',$GLOBALS['lang']))
-					{
-						echo translate('Msg_Disable_User',$GLOBALS['lang']);
-						return;
-					}
-					if ($db_password == $password) 
-					{
-						$mysqli->autocommit(FALSE);
-						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-						
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?)"))
-						{
-							$mysqli->autocommit(TRUE);
-							$stmt->free_result();
-							$stmt->close();
-							echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
-							return;
-						}
-						else
-						{
-							$date_registro_a_s_db = date("YmdHis");
-							$stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor);
-							if(!$stmt10->execute())
-							{
-								$mysqli->autocommit(TRUE);
-								$stmt->free_result();
-								$stmt->close();
-								echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
-								return;						
-							}
-												
-							$mysqli->commit();
-							$mysqli->autocommit(TRUE);
-							$stmt->free_result();
-							$stmt->close();
-								
-							echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);
-							return;							
-						}
-					}
-					else
-					{
-						echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
-						return;
-					}
-				}
-			}
-			else
-			{
-				echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
-				return;
-			}
+			$mysqli->autocommit(TRUE);
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
 		}
 		else
 		{
-			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-			return;				
+			$date_registro_a_s_db = date("YmdHis");
+			$stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+			if(!$stmt10->execute())
+			{
+				$mysqli->autocommit(TRUE);
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;						
+			}
+			
+			if($motivo == 37)
+			{
+				if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
+				{
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;
+				}
+				else
+				{
+					$stmt11->bind_param('iss', $tipoDocumento, $documento, $tokenECC2);
+					if(!$stmt11->execute())
+					{
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;						
+					}
+				}
+			}								
+								
+			$mysqli->commit();
+			$mysqli->autocommit(TRUE);
 		}
 		
+		echo translate('Msg_Not_Supervisor_OK',$GLOBALS['lang']);
 		return;
 ?>

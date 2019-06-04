@@ -27,6 +27,62 @@
 		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
 		$descripcion=htmlspecialchars($_POST["descripcion"], ENT_QUOTES, 'UTF-8');
 		$montoMaximo=htmlspecialchars($_POST["montoMaximo"], ENT_QUOTES, 'UTF-8');
+		
+		if($montoMaximo < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+				
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
+		{
+			$stmt41->execute();    
+			$stmt41->store_result();
+			
+			$totR41 = $stmt41->num_rows;
+
+			if($totR41 > 0)
+			{					
+				$stmt41->bind_result($monto_maximo_perfil_credito_db);
+				$stmt41->fetch();
+
+				if(($monto_maximo_perfil_credito_db*100) < $montoMaximo)
+				{
+					echo translate('Maximum_Amount_Not_Allowed',$GLOBALS['lang']);
+					return;
+				}
+			}
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_minimo_perfil_credito'"))
+		{
+			$stmt41->execute();    
+			$stmt41->store_result();
+			
+			$totR41 = $stmt41->num_rows;
+
+			if($totR41 > 0)
+			{					
+				$stmt41->bind_result($monto_minimo_perfil_credito_db);
+				$stmt41->fetch();
+
+				if(($monto_minimo_perfil_credito_db*100) > $montoMaximo)
+				{
+					echo translate('Maximum_Amount_Not_Allowed',$GLOBALS['lang']);
+					return;
+				}
+			}
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}		
 			
 		if($stmt2 = $mysqli->prepare("SELECT pc.id FROM finan_cli.perfil_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ?"))
 		{

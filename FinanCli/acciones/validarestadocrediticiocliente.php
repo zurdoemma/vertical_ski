@@ -59,7 +59,7 @@
 		{
 			if($stmt40 = $mysqli->prepare("SELECT c.cuil_cuit, c.id_genero FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 			{
-				$stmt40->bind_param('is', $tipoDocumento, $documento);
+				$stmt40->bind_param('is', $tipoDocumentoTitular, $documentoTitular);
 				$stmt40->execute();    
 				$stmt40->store_result();
 				
@@ -543,11 +543,12 @@
 						else
 						{
 						
-							if($stmt44 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ?"))
+							if($stmt44 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)"))
 							{
 								$date_registro_c_ecef = date("Ymd")."%";
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt44->bind_param('issi', $tipoDocumentoTitular, $documentoTitular, $date_registro_c_ecef, $motivo);
-								else $stmt44->bind_param('issi', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo);
+								$motivo2_u = 38;
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt44->bind_param('issii', $tipoDocumentoTitular, $documentoTitular, $date_registro_c_ecef, $motivo, $motivo2_u);
+								else $stmt44->bind_param('issii', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo, $motivo2_u);
 								$stmt44->execute();    
 								$stmt44->store_result();
 								

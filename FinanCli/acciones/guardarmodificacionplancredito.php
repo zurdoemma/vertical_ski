@@ -30,6 +30,12 @@
 		$interesFijo=htmlspecialchars($_POST["interesFijo"], ENT_QUOTES, 'UTF-8');
 		$tipoDiferimientoCuota=htmlspecialchars($_POST["tipoDiferimientoCuota"], ENT_QUOTES, 'UTF-8');
 		$cadena=htmlspecialchars($_POST["cadena"], ENT_QUOTES, 'UTF-8');
+		
+		if($cantidadCuotas < 0 || $interesFijo < 0)
+		{
+			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}		
 			
 		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ?"))
 		{
