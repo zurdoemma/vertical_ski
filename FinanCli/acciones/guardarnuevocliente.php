@@ -26,8 +26,8 @@
 		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
-		$apellido=htmlspecialchars($_POST["apellido"], ENT_QUOTES, 'UTF-8');
+		$nombres=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
+		$apellidos=htmlspecialchars($_POST["apellido"], ENT_QUOTES, 'UTF-8');
 		$fechaNacimiento=htmlspecialchars($_POST["fechaNacimiento"], ENT_QUOTES, 'UTF-8');
 		$cuitCuil=htmlspecialchars($_POST["cuitCuil"], ENT_QUOTES, 'UTF-8');
 		$email=htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
@@ -166,56 +166,6 @@
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 			return;
 		}
-
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_minimo_credito_cliente'"))
-		{
-			$stmt41->execute();    
-			$stmt41->store_result();
-			
-			$totR41 = $stmt41->num_rows;
-
-			if($totR41 > 0)
-			{					
-				$stmt41->bind_result($monto_minimo_permitido_cliente_db);
-				$stmt41->fetch();
-
-				if(($monto_minimo_permitido_cliente_db*100) > $montoMaximo)
-				{
-					echo translate('Maximum_Amount_Not_Allowed',$GLOBALS['lang']);
-					return;
-				}
-			}
-		}
-		else
-		{
-			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-			return;
-		}
-
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
-		{
-			$stmt41->execute();    
-			$stmt41->store_result();
-			
-			$totR41 = $stmt41->num_rows;
-
-			if($totR41 > 0)
-			{					
-				$stmt41->bind_result($monto_maximo_perfil_credito_db);
-				$stmt41->fetch();
-
-				if(($monto_maximo_perfil_credito_db*100) < $montoMaximo)
-				{
-					echo translate('Amount_Entered_Exceeds_The_Maximum_Amount_Allowed_For_The_Selected_Credit_Profile',$GLOBALS['lang']);
-					return;
-				}
-			}
-		}
-		else
-		{
-			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-			return;
-		}		
 		
 		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
@@ -312,7 +262,7 @@
 						
 				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 				{
-					if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+					if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit, c.id_perfil_credito, c.monto_maximo_credito FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 					{
 						$stmt40->bind_param('is', $tipoDocumentoTitular, $documentoTitular);
 						$stmt40->execute();    
@@ -322,11 +272,44 @@
 
 						if($totR40 > 0)
 						{
-							$stmt40->bind_result($id_cliente_titular, $cuit_cuil_titular);
+							$stmt40->bind_result($id_cliente_titular, $cuit_cuil_titular, $perfil_credito_titular, $monto_maximo_credito_titular);
 							$stmt40->fetch();
 							
 							$cuitCuilTitular = $cuit_cuil_titular;
 							$idClienteTitular = $id_cliente_titular;
+							$idPerfilCreditoTitular = $perfil_credito_titular; 
+							
+							if($montoMaximo > $monto_maximo_credito_titular)
+							{
+								echo translate('Msg_Maximum_Amount_Of_Credit_Of_The_Additional_Can_Not_Be_Greater_Than_The_Holder',$GLOBALS['lang']);
+								return;
+							}
+							
+							if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+							{
+								$stmt41->bind_param('i', $idPerfilCreditoTitular);
+								$stmt41->execute();    
+								$stmt41->store_result();
+								
+								$totR41 = $stmt41->num_rows;
+
+								if($totR41 > 0)
+								{					
+									$stmt41->bind_result($monto_maximo_perfil_c_db);
+									$stmt41->fetch();
+
+									if($monto_maximo_perfil_c_db < $montoMaximo)
+									{
+										echo translate('Msg_The_Maximum_Amount_Can_Not_Be_Greater_Than_The_Credit_Profile',$GLOBALS['lang']);
+										return;
+									}
+								}
+							}
+							else
+							{
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;
+							}							
 						}
 						else
 						{
@@ -339,6 +322,35 @@
 						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 						return;
 					}
+				}
+				else
+				{
+					if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+					{
+						$stmt41->bind_param('i', $perfilCredito);
+						$stmt41->execute();    
+						$stmt41->store_result();
+						
+						$totR41 = $stmt41->num_rows;
+
+						if($totR41 > 0)
+						{					
+							$stmt41->bind_result($monto_maximo_perfil_c_db);
+							$stmt41->fetch();
+
+							if($monto_maximo_perfil_c_db < $montoMaximo)
+							{
+								echo translate('Msg_The_Maximum_Amount_Can_Not_Be_Greater_Than_The_Credit_Profile',$GLOBALS['lang']);
+								return;
+							}
+						}
+					}
+					else
+					{
+						echo $mysqli->error;
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']).'ACAAA';
+						return;
+					}					
 				}
 		
 				if($stmt = $mysqli->prepare("SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1"))
@@ -361,13 +373,15 @@
 					return;
 				}
 				
-				if($stmt41 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)"))
+				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectEFCCIni = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+				else $selectEFCCIni = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
+				if($stmt41 = $mysqli->prepare($selectEFCCIni))
 				{
 					$motivoValidacionECC = 37;
 					$motivoValidacionECC2 = 38;
 					$date_registro_a_s = date("Ymd")."%";
-					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt41->bind_param('issi', $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2);
-					else $stmt41->bind_param('issi', $tipoDocumento, $documento, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2);
+					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt41->bind_param('issiiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2, $tipoDocumento, $documento);
+					else $stmt41->bind_param('issii', $tipoDocumento, $documento, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2);
 					$stmt41->execute();    
 					$stmt41->store_result();
 					
@@ -496,9 +510,11 @@
 					}
 				}
 				
-				
-				if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"))
+				if(empty($idClienteTitular) || $idClienteTitular == 0) $sqlInserClient = "INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				else $sqlInserClient = "INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				if(!$stmt20 = $mysqli->prepare($sqlInserClient))
 				{
+					echo $mysqli->error;
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
@@ -510,9 +526,15 @@
 					$date_registro_alta_cliente = date("YmdHis");
 					$fechaNacimiento = substr($fechaNacimiento, 6, 4).substr($fechaNacimiento, 3, 2).substr($fechaNacimiento, 0, 2).'000000';
 					$estado_cliente_ini = translate('State_User',$GLOBALS['lang']);
-					$stmt20->bind_param('isssissssisiii', $tipoDocumento, $documento, $nombres, $apellidos, $cuitCuil, $fechaNacimiento, $email, $date_registro_alta_cliente, $estado_cliente_ini, $idClienteTitular, $observaciones, $montoMaximo, $perfilCredito, $genero);
+					if(empty($idClienteTitular) || $idClienteTitular == 0) $stmt20->bind_param('isssisssssiii', $tipoDocumento, $documento, $nombres, $apellidos, $cuitCuil, $fechaNacimiento, $email, $date_registro_alta_cliente, $estado_cliente_ini, $observaciones, $montoMaximo, $perfilCredito, $genero);
+					else 
+					{
+						if(!empty($idPerfilCreditoTitular)) $stmt20->bind_param('isssissssisiii', $tipoDocumento, $documento, $nombres, $apellidos, $cuitCuil, $fechaNacimiento, $email, $date_registro_alta_cliente, $estado_cliente_ini, $idClienteTitular, $observaciones, $montoMaximo, $idPerfilCreditoTitular, $genero);
+						else $stmt20->bind_param('isssissssisiii', $tipoDocumento, $documento, $nombres, $apellidos, $cuitCuil, $fechaNacimiento, $email, $date_registro_alta_cliente, $estado_cliente_ini, $idClienteTitular, $observaciones, $montoMaximo, $perfilCredito, $genero);
+					}
 					if(!$stmt20->execute())
 					{
+						echo $mysqli->error;
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
@@ -522,6 +544,7 @@
 					
 					if(!$stmt21 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_domicilio(tipo_documento, documento, id_domicilio) VALUES (?,?,?)"))
 					{
+						echo $mysqli->error;
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
@@ -533,6 +556,7 @@
 						$stmt21->bind_param('isi', $tipoDocumento, $documento, $idDomicilioClient);
 						if(!$stmt21->execute())
 						{	
+							echo $mysqli->error;
 							$mysqli->rollback();
 							$mysqli->autocommit(TRUE);
 							$stmt->free_result();
@@ -543,6 +567,7 @@
 					
 					if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono) VALUES (?,?,?)"))
 					{
+						echo $mysqli->error;
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
@@ -554,6 +579,7 @@
 						$stmt22->bind_param('isi', $tipoDocumento, $documento, $idTelefonoClient);
 						if(!$stmt22->execute())
 						{	
+							echo $mysqli->error;
 							$mysqli->rollback();
 							$mysqli->autocommit(TRUE);
 							$stmt->free_result();
@@ -593,8 +619,39 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				echo translate('Msg_New_Client_OK',$GLOBALS['lang']);
-				return;				
+				
+				if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
+				{
+					$stmt->execute();    
+					$stmt->store_result();
+			 
+					$stmt->bind_result($id_client, $type_document_client, $document_client, $name_client, $surname_client, $state_client, $type_account_client);
+					
+					$array[0] = array();
+					$posicion = 0;
+					while($stmt->fetch())
+					{
+						$array[$posicion]['tipodocumento'] = $type_document_client;
+						$array[$posicion]['documento'] = $document_client;
+						$array[$posicion]['nombre'] = $name_client;
+						$array[$posicion]['apellido'] = $surname_client;
+						$array[$posicion]['estado'] = $state_client;
+						$array[$posicion]['tipocuenta'] = $type_account_client;
+						
+						if($state_client == translate('State_User',$GLOBALS['lang'])) $array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>';
+						else $array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>';
+						
+						$posicion++;
+					}
+					
+					echo translate('Msg_New_Client_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
+					return;
+				}
+				else 
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;	
+				}				
 			}
 		}
 		else

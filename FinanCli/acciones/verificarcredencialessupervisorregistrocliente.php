@@ -29,6 +29,12 @@
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
+		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
+		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
+
+		$tipoDocumentoAdicional=htmlspecialchars($_POST["tipoDocumentoAdicional"], ENT_QUOTES, 'UTF-8');
+		$documentoAdicional=htmlspecialchars($_POST["documentoAdicional"], ENT_QUOTES, 'UTF-8');		
+		
 		$tokenECC2=htmlspecialchars($_POST["tokenECC2"], ENT_QUOTES, 'UTF-8');
 				
 		if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM finan_cli.usuario WHERE id = ? AND id_perfil IN (1,3) LIMIT 1")) 
@@ -61,7 +67,9 @@
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?)"))
+						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?,?)";
+						else $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?)";
+						if(!$stmt10 = $mysqli->prepare($insertVCSRC))
 						{
 							$mysqli->autocommit(TRUE);
 							$stmt->free_result();
@@ -72,7 +80,12 @@
 						else
 						{
 							$date_registro_a_s_db = date("YmdHis");
-							$stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor);
+							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) 
+							{
+								if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisissis', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumentoAdicional, $documentoAdicional);
+								else $stmt10->bind_param('sisissis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumento, $documento);
+							}
+							else $stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor);
 							if(!$stmt10->execute())
 							{
 								$mysqli->autocommit(TRUE);

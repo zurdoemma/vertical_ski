@@ -26,12 +26,16 @@
 		
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+		$tipoDocumentoAdicional=htmlspecialchars($_POST["tipoDocumentoAdicional"], ENT_QUOTES, 'UTF-8');
+		$documentoAdicional=htmlspecialchars($_POST["documentoAdicional"], ENT_QUOTES, 'UTF-8');		
 		$tokenECC2=htmlspecialchars($_POST["tokenECC2"], ENT_QUOTES, 'UTF-8');
 
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
+		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
+		else $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+		if(!$stmt10 = $mysqli->prepare($insertECA))
 		{
 			$mysqli->autocommit(TRUE);
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
@@ -40,7 +44,8 @@
 		else
 		{
 			$date_registro_a_s_db = date("YmdHis");
-			$stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+			if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumentoAdicional, $documentoAdicional);
+		    else $stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
 			if(!$stmt10->execute())
 			{
 				$mysqli->autocommit(TRUE);

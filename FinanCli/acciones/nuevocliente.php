@@ -155,34 +155,6 @@
 		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';
-		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilcreditoclientn">'.translate('Lbl_Profile_Credit_Client',$GLOBALS['lang']).':</label>';
-		echo '					<div class="form-group" id="perfilcreditoclientn">';
-		echo '						<select class="form-control input-sm" name="perfilcreditoclientni" id="perfilcreditoclientni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil_credito")) 
-										{ 
-											$stmt->execute();    
-											$stmt->store_result();
-									 
-											$stmt->bind_result($id_perfil_credito,$nombre_perfil_credito);
-											while($stmt->fetch())
-											{
-												echo '<option value="'.$id_perfil_credito.'">'.$nombre_perfil_credito.'</option>';
-											}
-										}
-										else  
-										{
-											echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
-											return;			
-										}
-		echo '						</select>';
-		echo '					</div>';		
-		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="homeaddressandphoneclientn">'.translate('Lbl_Home_Address_And_Phone',$GLOBALS['lang']).':</label>';
-		echo '					<div class="form-group" id="homeaddressandphoneclientn">';
-		echo '						<button type="button" class="btn" id="btnCargaDomicilioCN" name="btnCargaDomicilioCN" title="'.translate('Lbl_New_Home_Address_User',$GLOBALS['lang']).'" onclick="verDomicilioNC();"><i class="fa fa-eye"></i></button>';
-		echo '						&nbsp;<button type="button" class="btn" id="btnCargaTelefonoCN" name="btnCargaTelefonoCN" title="'.translate('Lbl_New_Phone_Client',$GLOBALS['lang']).'" onclick="verTelefonoNC();"><i class="fas fa-phone"></i></button>';
-		echo '					</div>';
-		echo '				</div>';
-		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="generoclientn">'.translate('Lbl_Gender_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="generoclientn">';
 		echo '						<select class="form-control input-sm" name="generoclientni" id="generoclientni" style="width:190px;">';			 
@@ -203,7 +175,35 @@
 											return;			
 										}
 		echo '						</select>';
-		echo '					</div>';		
+		echo '					</div>';	
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="homeaddressandphoneclientn">'.translate('Lbl_Home_Address_And_Phone',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="homeaddressandphoneclientn">';
+		echo '						<button type="button" class="btn" id="btnCargaDomicilioCN" name="btnCargaDomicilioCN" title="'.translate('Lbl_New_Home_Address_User',$GLOBALS['lang']).'" onclick="verDomicilioNC();"><i class="fa fa-eye"></i></button>';
+		echo '						&nbsp;<button type="button" class="btn" id="btnCargaTelefonoCN" name="btnCargaTelefonoCN" title="'.translate('Lbl_New_Phone_Client',$GLOBALS['lang']).'" onclick="verTelefonoNC();"><i class="fas fa-phone"></i></button>';
+		echo '					</div>';
+		echo '				</div>';
+		echo '				<div class="form-group form-inline" id="diviperfilcreditoclientn" name="diviperfilcreditoclientn">';
+		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilcreditoclientn" id="labelperfilcreditoclientn" name="labelperfilcreditoclientn" >'.translate('Lbl_Profile_Credit_Client',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="perfilcreditoclientn">';
+		echo '						<select class="form-control input-sm" name="perfilcreditoclientni" id="perfilcreditoclientni" style="width:190px;">';			 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil_credito")) 
+										{ 
+											$stmt->execute();    
+											$stmt->store_result();
+									 
+											$stmt->bind_result($id_perfil_credito,$nombre_perfil_credito);
+											while($stmt->fetch())
+											{
+												echo '<option value="'.$id_perfil_credito.'">'.$nombre_perfil_credito.'</option>';
+											}
+										}
+										else  
+										{
+											echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+											return;			
+										}
+		echo '						</select>';
+		echo '					</div>';			
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';
 		echo '					<label class="control-label" for="observacionclientn">'.translate('Lbl_Observations_Client',$GLOBALS['lang']).':</label>';

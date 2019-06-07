@@ -25,12 +25,22 @@
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 				
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
-		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');	
+		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt4 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ?"))
+		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
+		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');		
+		
+		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectVCS = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+		else $selectVCS = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ?";
+		if($stmt4 = $mysqli->prepare($selectVCS))
 		{
 			$date_registro_a_s = date("Ymd")."%";
-			$stmt4->bind_param('issi', $tipoDocumento, $documento, $date_registro_a_s, $motivo);
+			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
+			{				
+				if($motivo == 37 || $motivo == 38) $stmt4->bind_param('issiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s, $motivo, $tipoDocumento, $documento);
+				else $stmt4->bind_param('issiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $tipoDocumento, $documento);
+			}
+			else $stmt4->bind_param('issi', $tipoDocumento, $documento, $date_registro_a_s, $motivo);
 			$stmt4->execute();    
 			$stmt4->store_result();
 			
@@ -56,7 +66,9 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
-			if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
+			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
+			else $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+			if(!$stmt10 = $mysqli->prepare($insertVCS))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);
@@ -67,7 +79,12 @@
 			else
 			{
 				$date_registro_a_s_db = date("YmdHis");
-				$stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
+				{
+					if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
+					else $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
+				}
+				else $stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
 				if(!$stmt10->execute())
 				{
 					echo $mysqli->error;

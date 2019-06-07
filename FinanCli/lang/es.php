@@ -389,7 +389,15 @@
 		'Age_Not_Allowed_To_Register_Client_Holder' => 'Edad no permitida para registrar cliente titular!!',
 		'Age_Not_Allowed_To_Register_Additional_Client_Holder' => 'Edad no permitida para registrar cliente adicional!!',
 		'Negative_Numbers_Are_Not_Allowed' => 'No se permiten numeros negativos!!',
-		'Maximum_Amount_Not_Allowed' => 'Monto maximo no permitido!!',	
-		'Amount_Entered_Exceeds_The_Maximum_Amount_Allowed_For_The_Selected_Credit_Profile' => 'Monto ingresado supera el monto maximo permitido para el perfil de credito seleccionado!!'		
+		'Msg_Negative_Numbers_Cuit_Cuil_Client_Are_Not_Allowed' => 'No se permiten numeros negativos en el CUIT/CUIL!!',		
+		'Maximum_Amount_Not_Allowed' => 'Monto maximo no permitido!!',
+		'Msg_The_Maximum_Amount_Can_Not_Be_Greater_Than_The_Credit_Profile' => 'El monto maximo no puede ser mayor al del perfil de credito!!',		
+		'Msg_Maximum_Amount_Of_Credit_Of_The_Additional_Can_Not_Be_Greater_Than_The_Holder' => 'El monto maximo de credito del adicional no puede ser mayor al del titular!!',		
+		'Amount_Entered_Exceeds_The_Maximum_Amount_Allowed_For_The_Selected_Credit_Profile' => 'Monto ingresado supera el monto maximo permitido para el perfil de credito seleccionado!!',
+		'Msg_Disabled_For_Client_%1_to_%2_for_user_%3' => 'El cliente: %1, fue deshabilitado el: %2, por el usuario: %3!!',
+		'Msg_Enabled_For_Client_%1_to_%2_for_user_%3' => 'El cliente: %1, fue habilitado el: %2, por el usuario: %3!!',
+		'Msg_Disabled_Client_OK' => 'El cliente fue deshabilitado correctamente!!',	
+		'Can_Not_Enable_An_Additional_Client_That_Has_The_Holder_Disabled' => 'No se puede habilitar un cliente adicional que tiene al titular deshabilitado!!',		
+		'Msg_Enabled_Client_OK' => 'El cliente fue habilitado correctamente!!'
 	);
 ?>

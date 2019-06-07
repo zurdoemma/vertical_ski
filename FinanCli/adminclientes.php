@@ -149,6 +149,8 @@ include("./menu/menu.php");
 							$( "#emailclientni" ).prop( "disabled", true );
 							$( "#montomaximoclientni" ).prop( "disabled", true );
 							$( "#perfilcreditoclientni" ).prop( "disabled", true );
+							$( "#perfilcreditoclientni" ).hide();
+							$( "#diviperfilcreditoclientn" ).hide();
 							$( "#observacionclientni" ).prop( "disabled", true );
 							
 							$('#mostrarDomicilioCargaN').hide();
@@ -197,6 +199,8 @@ include("./menu/menu.php");
 							$( "#emailclientni" ).prop( "disabled", false );
 							$( "#montomaximoclientni" ).prop( "disabled", false );
 							$( "#perfilcreditoclientni" ).prop( "disabled", false );
+							$( "#perfilcreditoclientni" ).show();
+							$( "#diviperfilcreditoclientn" ).show();
 							$( "#observacionclientni" ).prop( "disabled", false );
 							$( "#btnCargaDomicilioCN" ).prop( "disabled", false );							
 							$( "#btnCargaTelefonoCN" ).prop( "disabled", false );
@@ -303,7 +307,6 @@ include("./menu/menu.php");
 							$( "#cuitcuilclientni" ).prop( "disabled", false );
 							$( "#emailclientni" ).prop( "disabled", false );
 							$( "#montomaximoclientni" ).prop( "disabled", false );
-							$( "#perfilcreditoclientni" ).prop( "disabled", false );
 							$( "#observacionclientni" ).prop( "disabled", false );
 							$( "#btnCargaDomicilioCN" ).prop( "disabled", false );							
 							$( "#btnCargaTelefonoCN" ).prop( "disabled", false );
@@ -534,6 +537,35 @@ include("./menu/menu.php");
 					});					
 					$( "#cuitcuilclientni" ).tooltip('destroy');
 				}
+				
+				if ($( "#cuitcuilclientni" ).val() < 0)
+				{
+					$('#cuitcuilclientni').prop('title', '<?php echo translate('Msg_Negative_Numbers_Cuit_Cuil_Client_Are_Not_Allowed',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#cuitcuilclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#cuitcuilclientni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#cuitcuilclientni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#cuitcuilclientni" ).tooltip('destroy');
+				}				
 			}			
 
 			if($( "#emailclientni" ).val().length != 0)
@@ -1287,13 +1319,22 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function validar_cliente_supervisor(motivo)
 		{
+			var tipoDocumentoTit = null;
+			var documentoTit = null;
+						
+			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+			{
+				tipoDocumentoTit = $( "#tipodocumentoclientnbi" ).val();
+				documentoTit = $( "#documentonbi" ).val();
+			}
+			
 			var urlvcs = "./acciones/validacionclientesupervisor.php";
 			$('#img_loader_12').show();
 									
 			$.ajax({
 				url: urlvcs,
 				method: "POST",
-				data: { motivo: motivo, tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val() },
+				data: { motivo: motivo, tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), tipoDocumentoTitular: tipoDocumentoTit, documentoTitular: documentoTit },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -1413,11 +1454,26 @@ include("./menu/menu.php");
 			
 			if(formularionacr.passwordsupervisorn2i.value == "") p211.value = "";
 			formularionacr.passwordsupervisorn2i.value = "";
+			
+			var tipoDocumentoTit2 = null;
+			var documentoTit2 = null;
+			
+			var tipoDocumentoAdicional10 = null;
+			var documentoAdicional10 = null;
+						
+			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
+			{
+				tipoDocumentoTit2 = $( "#tipodocumentoclientnbi" ).val();
+				documentoTit2 = $( "#documentonbi" ).val();
+				
+				tipoDocumentoAdicional10 = $( "#tipodocumentoclientni" ).val();
+				documentoAdicional10 = $( "#documentoni" ).val();
+			}			
 						
 			$.ajax({
 				url: urlasrc,
 				method: "POST",
-				data: { motivo: motivo, usuarioSupervisor: formularionacr.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tokenECC2: '' },
+				data: { motivo: motivo, usuarioSupervisor: formularionacr.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentoclientni" ).val(), documento: $( "#documentoni" ).val(), tokenECC2: '', tipoDocumentoTitular: tipoDocumentoTit2, documentoTitular: documentoTit2, tipoDocumentoAdicional: tipoDocumentoAdicional10, documentoAdicional: documentoAdicional10 },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1540,10 +1596,22 @@ include("./menu/menu.php");
 			var tipoDocumentoCEA2 = null;
 			var documentoCEA2 = null;
 			
+			var tipoDocumentoTit2 = null;
+			var documentoTit2 = null;			
+			
+			var tipoDocumentoAdicional10 = null;
+			var documentoAdicional10 = null;			
+			
 			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 			{
 				tipoDocumentoCEA2 = $( "#tipodocumentoclientnbi" ).val();
 				documentoCEA2 = $( "#documentonbi" ).val();
+				
+				tipoDocumentoTit2 = $( "#tipodocumentoclientnbi" ).val();
+				documentoTit2 = $( "#documentonbi" ).val();				
+				
+				tipoDocumentoAdicional10 = $( "#tipodocumentoclientni" ).val();
+				documentoAdicional10 = $( "#documentoni" ).val();				
 			}
 			else
 			{
@@ -1554,7 +1622,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlasrc2,
 				method: "POST",
-				data: { motivo: 38, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: tipoDocumentoCEA2, documento: documentoCEA2, tokenECC2: $('#tokenvecci').val() },
+				data: { motivo: 38, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: tipoDocumentoCEA2, documento: documentoCEA2, tokenECC2: $('#tokenvecci').val(), tipoDocumentoTitular: tipoDocumentoTit2, documentoTitular: documentoTit2, tipoDocumentoAdicional: tipoDocumentoAdicional10, documentoAdicional: documentoAdicional10 },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1606,10 +1674,16 @@ include("./menu/menu.php");
 			var tipoDocumentoCEA = null;
 			var documentoCEA = null;
 			
+			var tipoDocumentoAdicional = null;
+			var documentoAdicional = null;
+			
 			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 			{
 				tipoDocumentoCEA = $( "#tipodocumentoclientnbi" ).val();
 				documentoCEA = $( "#documentonbi" ).val();
+				
+				tipoDocumentoAdicional = $( "#tipodocumentoclientni" ).val();
+				documentoAdicional = $( "#documentoni" ).val();
 			}
 			else
 			{
@@ -1623,7 +1697,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlasrc3,
 				method: "POST",
-				data: { motivo: motivo, tipoDocumento: tipoDocumentoCEA, documento: documentoCEA, tokenECC2: $('#tokenvecci').val() },
+				data: { motivo: motivo, tipoDocumento: tipoDocumentoCEA, documento: documentoCEA, tokenECC2: $('#tokenvecci').val(), tipoDocumentoAdicional: tipoDocumentoAdicional, documentoAdicional: documentoAdicional  },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -1675,8 +1749,12 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_New_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
 						$('#dialognewclient').dialog('destroy').remove();
-						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
+						$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));					
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
@@ -1691,270 +1769,31 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function modificarCliente(plancredito, nombre)
 		{
-			var urla = "./acciones/modificarplancredito.php";
-			var tag = $("<div id='dialogmodifycreditplan'></div>");
-			$('#img_loader').show();
 			
-			$.ajax({
-				url: urla,
-				method: "POST",
-				data: { idPlanCredito: plancredito },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader').hide();
-					
-					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
-					{
-						window.location.replace("./login.php?result_ok=3");
-					}
-										
-					tag.html(dataresponse).dialog({
-					  show: "blind",
-					  hide: "explode",
-					  height: "auto",
-					  width: "auto",					  
-					  modal: true, 
-					  title: "<?php echo translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']);?>: "+nombre,
-					  autoResize:true,
-							close: function(){
-									tag.dialog('destroy').remove()
-							}
-					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-					tag.dialog('open');
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader').hide();
-				}
-			});
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionCliente(formulariod, plancredito)
 		{
-			if($( "#nombreplancrediti" ).val().length == 0)
-			{
-				$(function() {
-					$( "#nombreplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nombreplancrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#nombreplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#nombreplancrediti" ).tooltip('destroy');
-			}
-												
-			if($( "#descripcionplancrediti" ).val().length == 0)
-			{
-				$(function() {
-					$( "#descripcionplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#descripcionplancrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#descripcionplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#descripcionplancrediti" ).tooltip('destroy');
-			}
-			
-			
-			if($( "#cantidadcuotasplancrediti" ).val().length == 0)
-			{
-				$('#cantidadcuotasplancrediti').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#cantidadcuotasplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#cantidadcuotasplancrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#cantidadcuotasplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#cantidadcuotasplancrediti" ).tooltip('destroy');
-			}			
-			
-			if($( "#cantidadcuotasplancrediti" ).val().length != 0)
-			{			
-				if (isNaN($( "#cantidadcuotasplancrediti" ).val()) || $( "#cantidadcuotasplancrediti" ).val() % 1 != 0)
-				{
-					$('#cantidadcuotasplancrediti').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
-					$(function() {
-						$( "#cantidadcuotasplancrediti" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#cantidadcuotasplancrediti" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#cantidadcuotasplancrediti" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});					
-					$( "#cantidadcuotasplancrediti" ).tooltip('destroy');
-				}
-			}
-
-
-			if($( "#interesfijoplancrediti" ).val().length == 0)
-			{
-				$('#interesfijoplancrediti').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#interesfijoplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#interesfijoplancrediti" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#interesfijoplancrediti" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});				
-				$( "#interesfijoplancrediti" ).tooltip('destroy');
-			}			
-			
-			if($( "#interesfijoplancrediti" ).val().length != 0)
-			{			
-				if (isNaN($( "#interesfijoplancrediti" ).val()) || $( "#interesfijoplancrediti" ).val() % 1 != 0)
-				{
-					$('#interesfijoplancrediti').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
-					$(function() {
-						$( "#interesfijoplancrediti" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#interesfijoplancrediti" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#interesfijoplancrediti" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});					
-					$( "#interesfijoplancrediti" ).tooltip('destroy');
-				}
-			}			
-			
-			var urlgmu = "./acciones/guardarmodificacionplancredito.php";
-			$('#img_loader_11').show();
-			
-			$.ajax({
-				url: urlgmu,
-				method: "POST",
-				data: { idPlanCredito: plancredito, nombre: $( "#nombreplancrediti" ).val(), descripcion: $( "#descripcionplancrediti" ).val(), cantidadCuotas: $( "#cantidadcuotasplancrediti" ).val(), interesFijo: $( "#interesfijoplancrediti" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancrediti" ).val(), cadena: $( "#cadenaplancrediti" ).val() },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
-					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
-					{
-						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
-						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
-						
-						$('#dialogmodifycreditplan').dialog('close');
-						$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));
-						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
-					}
-					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
-				}
-			});				
+				
 		}			
 	</script>
 			
 	<script type="text/javascript">
-		function borrar_cliente(plancredito)
+		function baja_cliente(idCliente)
 		{
-			var urlrdu = "./acciones/borrarplancredito.php";
+			var urlbc = "./acciones/bajacliente.php";
 			$('#img_loader').show();
 			
 			$.ajax({
-				url: urlrdu,
+				url: urlbc,
 				method: "POST",
-				data: { idPlanCredito: plancredito },
+				data: { idCliente: idCliente },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Disabled_Client_OK',$GLOBALS['lang']);?>') != -1 || dataresponse.indexOf('<?php echo translate('Msg_Enabled_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
@@ -2030,7 +1869,7 @@ include("./menu/menu.php");
 		}
     </script>	
 	<script type="text/javascript">
-		function confirmar_accion(titulo, mensaje, plancredito, nombre)
+		function confirmar_accion(titulo, mensaje, idCliente, nroDoc)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -2044,7 +1883,7 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										
-										borrar_cliente(plancredito);                                                      
+										baja_cliente(idCliente);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -2053,7 +1892,7 @@ include("./menu/menu.php");
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nroDoc+"?</div>");
 				$('#img_loader').hide();
 		}
 	</script>
