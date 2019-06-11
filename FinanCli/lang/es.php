@@ -398,6 +398,13 @@
 		'Msg_Enabled_For_Client_%1_to_%2_for_user_%3' => 'El cliente: %1, fue habilitado el: %2, por el usuario: %3!!',
 		'Msg_Disabled_Client_OK' => 'El cliente fue deshabilitado correctamente!!',	
 		'Can_Not_Enable_An_Additional_Client_That_Has_The_Holder_Disabled' => 'No se puede habilitar un cliente adicional que tiene al titular deshabilitado!!',		
-		'Msg_Enabled_Client_OK' => 'El cliente fue habilitado correctamente!!'
+		'Msg_Enabled_Client_OK' => 'El cliente fue habilitado correctamente!!',
+		'Msg_See_Additional_Client' => 'Ver Adicionales Cliente',
+		'Msg_Find_Additional_Client_OK' => 'Se encontraron los adicionales del cliente',
+		'Lbl_Admin_Additional_Client' => 'Administrar Adicionales de Cliente',
+		'Msg_Client_Not_Exist' => 'El cliente no existe!!',
+		'Lbl_Additionals_Client' => 'Adicionales de Cliente',
+		'File_Clients_Additional' => 'ClientesAdicionales',
+		'Lbl_Edit_Client' => 'Modificar Cliente'
 	);
 ?>

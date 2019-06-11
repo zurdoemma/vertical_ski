@@ -1764,12 +1764,116 @@ include("./menu/menu.php");
 				}
 			});
 		}
-    </script>	
+    </script>
+
+	<script type="text/javascript">
+		function verAdicionalesCliente(idCliente, documento)
+		{			
+			var urlvac = "./acciones/adminadicionalescliente.php";
+			$('#img_loader_5').show();
+									
+			$.ajax({
+				url: urlvac,
+				method: "POST",
+				data: { idCliente: idCliente },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}				
+
+					if(dataresponse.indexOf('<?php echo translate('Msg_Find_Additional_Client_OK',$GLOBALS['lang']); ?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Find_Additional_Client_OK',$GLOBALS['lang']); ?>","");
+						var tagaac = $("<div id='dialogadicionalescliente'></div>");
+												
+						tagaac.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_Admin_Additional_Client',$GLOBALS['lang']);?>: "+documento,
+						  autoResize:true,
+								close: function(){
+										tagaac.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						
+						$('#tableadminadditionalclientt').bootstrapTable({locale:'es-AR'});
+						tagaac.dialog('open');
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);						
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});			
+		}	
+	</script>	
 	
 	<script type="text/javascript">
-		function modificarCliente(plancredito, nombre)
+		function modificarCliente(idCliente, documento)
 		{
+			var urlmpc = "./acciones/modificarcliente.php";
+			var tagmpc = $("<div id='dialogmodifyclient'></div>");
+			$('#img_loader_5').show();
 			
+			$.ajax({
+				url: urlmpc,
+				method: "POST",
+				data: { idCliente: idCliente },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+										
+					tagmpc.html(dataresponse).dialog({
+					  show: "blind",
+					  hide: "explode",
+					  height: "auto",
+					  width: "auto",					  
+					  modal: true, 
+					  title: "<?php echo translate('Lbl_Edit_Client',$GLOBALS['lang']);?>: "+documento,
+					  autoResize:true,
+							close: function(){
+									tagmpc.dialog('destroy').remove()
+							}
+					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					var todayDate = new Date().getDate();
+					$("#datetimepickerfechanacimientoclient").datetimepicker({
+							format: 'L',
+							locale: 'es',
+							viewMode: 'years',
+							minDate: new Date(new Date().setDate(todayDate - 40150)),
+							maxDate: new Date(new Date().setDate(todayDate + 0)),
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'bottom'}
+					});
+					
+					$('#documentobi').keypress(function(event){
+						var keycode = (event.keyCode ? event.keyCode : event.which);
+						if(keycode == '13'){
+							validarExistenciaTitularMod($('#tipodocumentoclientbi').val(),$('#documentobi').val()); 
+						}
+					});
+													
+					tagmpc.dialog('open');
+					$('#montomaximoclienti').maskNumber();
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});	
 		}
     </script>
 	
@@ -1992,9 +2096,39 @@ include("./menu/menu.php");
 									echo '<td>'.$state_client.'</td>';
 									echo '<td>'.$type_account_client.'</td>';
 									
-									if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
-									else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
-									echo '</tr>';
+									if($type_account_client == translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']))
+									{
+										if ($stmt90 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_titular = ?")) 
+										{
+											$stmt90->bind_param('i', $id_client);
+											$stmt90->execute();   
+											$stmt90->store_result();
+									 
+											$totR90 = $stmt90->num_rows;
+
+											if($totR90 > 0)
+											{
+												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
+												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
+												echo '</tr>';
+											}
+											else
+											{
+												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+												echo '</tr>';												
+											}
+										}
+										
+										$stmt90->free_result();
+										$stmt90->close();
+									}
+									else
+									{
+										if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+										else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+										echo '</tr>';
+									}
 								}
 							}
 						?>						
