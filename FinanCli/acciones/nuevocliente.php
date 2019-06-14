@@ -87,7 +87,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="validarstatuscreditclienten">'.translate('Lbl_Valid_Status_Credit_Client',$GLOBALS['lang']).':</label>';			
 		echo '					<div class="form-group" id="validarstatuscreditclienten">';	
 		echo '						<label class="switch">';
-		echo '						  <input type="checkbox" id="validarstatuscreditclienteni" name="validarstatuscreditclienten" checked />';
+		echo '						  <input type="checkbox" id="validarstatuscreditclienteni" name="validarstatuscreditclienteni" checked />';
 		echo '						  <span class="slider round"></span>';
 		echo '						</label>';
 		echo '					</div>';		

@@ -904,7 +904,6 @@ include("./menu/menu.php");
 			}			
 			
 			
-			
 			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 			{
 				
@@ -1880,6 +1879,338 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarModificacionCliente(formulariod, plancredito)
 		{
+			if($( "#documentoi" ).val().length == 0)
+			{
+				$(function() {
+					$( "#documentoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#documentoi" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#documentoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#documentoi" ).tooltip('destroy');
+			}
+												
+			if($( "#nombreclienti" ).val().length == 0)
+			{
+				$(function() {
+					$( "#nombreclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#nombreclienti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#nombreclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#nombreclienti" ).tooltip('destroy');
+			}
+			
+			if($( "#apellidoclienti" ).val().length == 0)
+			{
+				$(function() {
+					$( "#apellidoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#apellidoclienti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#apellidoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#apellidoclienti" ).tooltip('destroy');
+			}			
+			
+			if($( "#fechanacimientoclienti" ).val().length == 0)
+			{
+				$(function() {
+					$( "#fechanacimientoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#fechanacimientoclienti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#fechanacimientoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#fechanacimientoclienti" ).tooltip('destroy');
+			}			
+						
+			if($( "#cuitcuilclienti" ).val().length == 0)
+			{
+				$('#cuitcuilclienti').prop('title', '<?php echo translate('Msg_A_Cuit_Cuil_Client_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#cuitcuilclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#cuitcuilclienti" ).focus();
+				return;
+			}
+			else 
+			{
+				if (isNaN($( "#cuitcuilclienti" ).val()) || $( "#cuitcuilclienti" ).val() % 1 != 0)
+				{
+					$('#cuitcuilclienti').prop('title', '<?php echo translate('Msg_A_Cuit_Cuil_Client_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#cuitcuilclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#cuitcuilclienti" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#cuitcuilclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#cuitcuilclienti" ).tooltip('destroy');
+				}
+				
+				if ($( "#cuitcuilclienti" ).val() < 0)
+				{
+					$('#cuitcuilclienti').prop('title', '<?php echo translate('Msg_Negative_Numbers_Cuit_Cuil_Client_Are_Not_Allowed',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#cuitcuilclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#cuitcuilclienti" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#cuitcuilclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#cuitcuilclienti" ).tooltip('destroy');
+				}				
+			}			
+
+			if($( "#emailclienti" ).val().length != 0)
+			{			
+				if(!caracteresCorreoValido($( "#emailclienti" ).val()))
+				{
+					$('#emailclienti').prop('title', '<?php echo translate('Msg_A_User_Email_Invalid',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#emailclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#emailclienti" ).focus();
+					return;				
+				}
+				else
+				{
+					$(function() {
+						$( "#emailclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#emailclienti" ).tooltip('destroy');				
+				}
+			}
+			
+			if($( "#montomaximoclienti" ).val().length == 0)
+			{
+				$('#montomaximoclienti').prop('title', '<?php echo translate('Msg_A_Max_Amount_Client_Must_Enter',$GLOBALS['lang']);?>');	
+				$(function() {
+					$( "#montomaximoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#montomaximoclienti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#montomaximoclienti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#montomaximoclienti" ).tooltip('destroy');
+			}				
+			
+			if($( "#montomaximoclienti" ).val().length != 0)
+			{			
+				if (isNaN($( "#montomaximoclienti" ).val().replace(/,/g,"")))
+				{
+					$('#montomaximoclienti').prop('title', '<?php echo translate('Msg_A_Amount_Limit_Client_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#montomaximoclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#montomaximoclienti" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#montomaximoclienti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#montomaximoclienti" ).tooltip('destroy');
+				}
+			}
+
+			var urlvmc = "./acciones/validarmodificacioncliente.php";
+			$('#img_loader_12').show();
+			
+			$.ajax({
+				url: urlvs,
+				method: "POST",
+				data: { tokenA: $( "#tokenasi" ).val(), tipoDocumento: $( "#tipodocumentoclienti" ).val(), documento: $( "#documentoi" ).val()},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_12').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
+					{
+						guardarModificacionClienteUC();
+						return;
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Change_Type_Account',$GLOBALS['lang']); ?>') != -1)
+						{
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Change_Type_Account',$GLOBALS['lang']); ?>","");
+							var tagactc = $("<div id='dialogautorizarcambiotipocuenta'></div>");
+							
+							tagactc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Authorize_Change_Type_Account',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagactc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagactc.dialog('open');
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+					}
+						
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_12').hide();
+				}
+			});			
+			
 				
 		}			
 	</script>

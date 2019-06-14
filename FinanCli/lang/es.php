@@ -405,6 +405,8 @@
 		'Msg_Client_Not_Exist' => 'El cliente no existe!!',
 		'Lbl_Additionals_Client' => 'Adicionales de Cliente',
 		'File_Clients_Additional' => 'ClientesAdicionales',
-		'Lbl_Edit_Client' => 'Modificar Cliente'
+		'Lbl_Edit_Client' => 'Modificar Cliente',
+		'Msg_Must_Authorize_Change_Type_Account' => 'Debe autorizar el cambio de tipo de cuenta',		
+		'Lbl_Authorize_Change_Type_Account' => 'Autorizar Cambio Tipo de Cuenta'
 	);
 ?>
