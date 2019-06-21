@@ -75,7 +75,10 @@
 				echo '				<div class="form-group form-inline">';		
 				echo '					<div class="form-group" id="tokenveccm" style="display:none;">';
 				echo '						<input class="form-control input-sm green-border" id="tokenvecci" name="tokenvecci" type="text" maxlength="128" />';
-				echo '					</div>';		
+				echo '					</div>';
+				echo '					<div class="form-group" id="tokenvctc" style="display:none;">';
+				echo '						<input class="form-control input-sm green-border" id="tokenvctci" name="tokenvctci" type="text" maxlength="128" />';
+				echo '					</div>';				
 				echo '				</div>';		
 				echo '				<div class="form-group form-inline text-center"><hr />';
 				echo '					<div id="validarestadocrediticiocliente">';				
@@ -89,6 +92,9 @@
 				echo '					</div>';				
 				echo '				</div>';
 				echo '				<div class="form-group form-inline"><hr />';
+				echo '					<div class="form-group" id="idclientem" style="display:none;">';
+				echo '						<input class="form-control input-sm green-border" id="idclientemi" name="idclientemi" type="text" maxlength="11" value="'.$id_client.'" />';
+				echo '					</div>';				
 				echo '					&nbsp;&nbsp;<label class="control-label" for="tipodocumentoclient">'.translate('Lbl_Type_Document_Client2',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="tipodocumentoclient">';
 				echo '						<select class="form-control input-sm" name="tipodocumentoclienti" id="tipodocumentoclienti" style="width:190px;">';			 

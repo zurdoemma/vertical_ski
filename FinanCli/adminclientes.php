@@ -2164,9 +2164,9 @@ include("./menu/menu.php");
 			$('#img_loader_12').show();
 			
 			$.ajax({
-				url: urlvs,
+				url: urlvmc,
 				method: "POST",
-				data: { tokenA: $( "#tokenasi" ).val(), tipoDocumento: $( "#tipodocumentoclienti" ).val(), documento: $( "#documentoi" ).val()},
+				data: { tokenCTC: $( "#tokenvctci" ).val(), idCliente: $('#idclientemi').val(), tipoCuenta: $( "#tipoclientmi" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -2209,11 +2209,202 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_12').hide();
 				}
-			});			
-			
-				
+			});					
 		}			
 	</script>
+	
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorCambioCuenta(formularioncc)
+		{
+			if($('#usuariosupervisori').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisori').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisori').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisori').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisori').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisori').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisori').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisori').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisori').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisori').tooltip('destroy');
+			}			
+			
+			var urlvcscc = "./acciones/verificarcredencialessupervisorcambiocuenta.php";
+			$('#img_loader_13').show();
+			
+			
+			var p610 = document.createElement("input");
+		 			
+			formularioncc.appendChild(p610);
+			p610.name = "p610";
+			p610.type = "hidden";
+			
+			p610.value = hex_sha512(formularioncc.passwordsupervisori.value);
+			
+			if(formularioncc.passwordsupervisori.value == "") p610.value = "";
+			formularioncc.passwordsupervisori.value = "";
+						
+			$.ajax({
+				url: urlvcscc,
+				method: "POST",
+				data: { usuarioSupervisor: formularioncc.usuariosupervisori.value, claveSupervisor: p610.value, idCliente: $('#idclientemi').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var tokenR = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#tokenvctci').val(tokenR);
+						$('#dialogautorizarcambiotipocuenta').dialog('destroy').remove();
+						guardarModificacionClienteUC();
+						return;
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisori').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisori').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisori').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarModificacionClienteUC()
+		{
+			if($('#validarstatuscreditclientei').is(":checked"))
+			{
+				QQWQWQWQW var urlvc = "./acciones/validarcelularcliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlvc,
+					method: "POST",
+					data: { tokenVCC: $("#tokenvcci").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_12').hide();
+						
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>') != -1)
+						{
+							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+							dataresponse = dataresponse.replace(tokenR+"=:=:=:","");
+							
+							$('#tokenvcci').val(tokenR);
+							var tagvcc = $("<div id='dialogvalidacioncelularcliente'></div>");
+							
+							tagvcc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Validation_Mobile_Client',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagvcc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagvcc.dialog('open');
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Only_Mobile_Phones_Can_Be_Validated',$GLOBALS['lang']); ?>') != -1)
+						{
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Mobile_Phones_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+						{
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 36);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
+						{
+							guardarNuevoClienteUC2();
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_12').hide();
+						return;
+					}
+				});				
+			}
+			else
+			{
+				//VER SI SIRVE ESTE CASO
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone',$GLOBALS['lang']);?>", 22);
+			}		
+		}	
+	</script>	
 			
 	<script type="text/javascript">
 		function baja_cliente(idCliente)

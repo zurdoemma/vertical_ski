@@ -407,6 +407,8 @@
 		'File_Clients_Additional' => 'ClientesAdicionales',
 		'Lbl_Edit_Client' => 'Modificar Cliente',
 		'Msg_Must_Authorize_Change_Type_Account' => 'Debe autorizar el cambio de tipo de cuenta',		
-		'Lbl_Authorize_Change_Type_Account' => 'Autorizar Cambio Tipo de Cuenta'
+		'Lbl_Authorize_Change_Type_Account' => 'Autorizar Cambio Tipo de Cuenta',
+		'Lbl_Authorize_Change_Account' => 'Autorizar Cambio',
+		'Msg_It_Is_Not_Possible_To_Change_From_Holder_To_Additional_Account' => 'No es posible cambiar de Titular a Adicional de cuenta!!'
 	);
 ?>
