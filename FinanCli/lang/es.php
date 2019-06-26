@@ -354,7 +354,7 @@
 		'Msg_Validation_Mobile_Client_OK' => 'El mensaje de celular fue enviado correctamente!!',		
 		'Lbl_Validation_Mobile_Client' => 'Validación Teléfono Móvil',
 		'Msg_Only_Mobile_Phones_Can_Be_Validated' => 'Solo se pueden validar telefonos moviles!!',
-		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone' => 'Esta seguro de registrar el cliente sin validar el telefono?',
+		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_The_Phone' => 'Esta seguro de registrar el cliente sin validar el telefono',
 		'Lbl_Authorize_Client_Registration' => 'Autorizar Registro Cliente',
 		'Msg_Must_Authorize_Client_Registration' => 'Debe autorizar registro de cliente',
 		'Msg_Mobile_Phones_Not_Validated' => 'No se pudo validar el telefono!!',
@@ -378,7 +378,7 @@
 		'Lbl_Validation_Credit_Status_Client' => 'Validación Estado Financiero',
 		'Msg_Validation_Credit_Status_Client_Is_Not_Necessary' => 'Ya se realizo validacion del estado crediticio!!',
 		'Lbl_Confirmation_Action_Register_Client' => 'Confirmar',
-		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_Credit_Status' => 'Esta seguro de registrar el cliente sin validar el estado financiero?',
+		'Msg_Be_Sure_To_Register_The_Client_Without_Validating_Credit_Status' => 'Esta seguro de registrar el cliente sin validar el estado financiero',
 		'Msg_Credit_Status_Client_Not_Validated' => 'No se pudo verificar el estado financiero del cliente!!',
 		'Msg_Financial_Statement_Was_Consulted_Successfully' => 'El estado financiero se consulto con exito',
 		'Lbl_Result_Financial_Statement_Client' => 'Resultado Estado Financiero',
@@ -409,6 +409,9 @@
 		'Msg_Must_Authorize_Change_Type_Account' => 'Debe autorizar el cambio de tipo de cuenta',		
 		'Lbl_Authorize_Change_Type_Account' => 'Autorizar Cambio Tipo de Cuenta',
 		'Lbl_Authorize_Change_Account' => 'Autorizar Cambio',
-		'Msg_It_Is_Not_Possible_To_Change_From_Holder_To_Additional_Account' => 'No es posible cambiar de Titular a Adicional de cuenta!!'
+		'Msg_It_Is_Not_Possible_To_Change_From_Holder_To_Additional_Account' => 'No es posible cambiar de Titular a Adicional de cuenta!!',
+		'Msg_Must_Authorize_Client_Modification' => 'Debe autorizar modificación de cliente',
+		'Lbl_Authorize_Client_Modification' => 'Autorizar Modificación Cliente',
+		'Msg_Be_Sure_To_Modification_The_Client_Without_Validating_The_Credit_Status' => 'Esta seguro de modificar el cliente sin validar el estado crediticio'	
 	);
 ?>

@@ -74,7 +74,7 @@
 				}				
 				echo '				<div class="form-group form-inline">';		
 				echo '					<div class="form-group" id="tokenveccm" style="display:none;">';
-				echo '						<input class="form-control input-sm green-border" id="tokenvecci" name="tokenvecci" type="text" maxlength="128" />';
+				echo '						<input class="form-control input-sm green-border" id="tokenveccmi" name="tokenveccmi" type="text" maxlength="128" />';
 				echo '					</div>';
 				echo '					<div class="form-group" id="tokenvctc" style="display:none;">';
 				echo '						<input class="form-control input-sm green-border" id="tokenvctci" name="tokenvctci" type="text" maxlength="128" />';

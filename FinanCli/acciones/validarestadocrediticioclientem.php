@@ -23,26 +23,22 @@
 		}
 		
 		$tokenVECC=htmlspecialchars($_POST["tokenVECC"], ENT_QUOTES, 'UTF-8');
-		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
-		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
-		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
-		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-		
-		$cuitCuil=htmlspecialchars($_POST["cuitCuil"], ENT_QUOTES, 'UTF-8');
+		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 		$genero=htmlspecialchars($_POST["genero"], ENT_QUOTES, 'UTF-8');
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt4 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				
+		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento, c.cuil_cuit FROM finan_cli.cliente c WHERE c.id = ?"))
 		{
-			$stmt4->bind_param('is', $tipoDocumento, $documento);
+			$stmt4->bind_param('i', $idCliente);
 			$stmt4->execute();    
 			$stmt4->store_result();
 			
 			$totR4 = $stmt4->num_rows;
 
-			if($totR4 > 0)
+			if($totR4 == 0)
 			{
-				echo translate('Msg_Client_Exist',$GLOBALS['lang']);
+				echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
 				return;
 			}			
 		}
@@ -52,46 +48,19 @@
 			return;
 		}
 		
+		$stmt4->bind_result($id_cliente_db, $tipo_cuenta_cliente_db, $tipo_documento_cliente_db, $documento_cliente_db, $cuil_cuit_cliente_db);
+		$stmt4->fetch();
+		
+		$tipoDocumento=$tipo_documento_cliente_db;
+		$documento=$documento_cliente_db;
+		$cuitCuil=$cuil_cuit_cliente_db;
+				
 		$stmt4->free_result();
 		$stmt4->close();
-
-		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
-		{
-			if($stmt40 = $mysqli->prepare("SELECT c.cuil_cuit, c.id_genero FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
-			{
-				$stmt40->bind_param('is', $tipoDocumentoTitular, $documentoTitular);
-				$stmt40->execute();    
-				$stmt40->store_result();
-				
-				$totR40 = $stmt40->num_rows;
-
-				if($totR40 > 0)
-				{
-					$stmt40->bind_result($cuit_cuil_titular, $id_genero_titular);
-					$stmt40->fetch();
-					
-					$cuitCuilTitular = $cuit_cuil_titular;
-					$idGeneroTitular = $id_genero_titular;
-				}
-				else
-				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;					
-				}					
-			}
-			else
-			{
-				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-				return;
-			}
-		}			
 		
-		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $consEFCAyT = "SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND  cef.tipo_documento_adicional = ? AND cef.documento_adicional = ? AND cef.validado = 1";
-		else $consEFCAyT = "SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1";
-		if($stmt = $mysqli->prepare($consEFCAyT))
+		if($stmt = $mysqli->prepare("SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1"))
 		{
-			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt->bind_param('issiis', $tipoDocumentoTitular, $documentoTitular, $tokenVECC, $cuitCuilTitular, $tipoDocumento, $documento);
-			else $stmt->bind_param('issi', $tipoDocumento, $documento, $tokenVECC, $cuitCuil);
+			$stmt->bind_param('issi', $tipoDocumento, $documento, $tokenVECC, $cuitCuil);
 			$stmt->execute();    
 			$stmt->store_result();
 			
@@ -109,16 +78,10 @@
 			return;
 		}
 
-		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
-		{
-			$stmt40->free_result();
-			$stmt40->close();
-		}
 		
 		if($stmt = $mysqli->prepare("SELECT cef.id, cef.fecha, cef.resultado_xml, cef.token, cef.validado FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.cuit_cuil = ? ORDER BY cef.fecha DESC"))
 		{
-			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt->bind_param('isi', $tipoDocumentoTitular, $documentoTitular, $cuit_cuil_titular);
-			else $stmt->bind_param('isi', $tipoDocumento, $documento, $cuitCuil);
+			$stmt->bind_param('isi', $tipoDocumento, $documento, $cuitCuil);
 			$stmt->execute();    
 			$stmt->store_result();
 			
@@ -153,8 +116,7 @@
 						}
 						else
 						{
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumentoTitular, $documentoTitular, $cuitCuilTitular, $idGeneroTitular);
-							else $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
+							$resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
 								
 							if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false)
 							{
@@ -162,10 +124,8 @@
 								
 								$mysqli->autocommit(FALSE);
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-								
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional, documento_adicional,validado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-								else $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)";
-								if(!$stmt10 = $mysqli->prepare($insertEFCDB))
+						
+								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)"))
 								{
 									$mysqli->autocommit(TRUE);
 									$stmt->free_result();
@@ -179,14 +139,13 @@
 									$tokenECF = md5(uniqid(rand(), true));
 									$tokenECF = hash('sha512', $tokenECF);
 									$validadoECF = 0;
-									if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisi', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF);
-									else $stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+									$stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
 									if(!$stmt10->execute())
 									{
+										echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 										$mysqli->autocommit(TRUE);
 										$stmt->free_result();
 										$stmt->close();
-										echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 										return;						
 									}
 									
@@ -215,8 +174,7 @@
 			}
 			else
 			{
-				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumentoTitular, $documentoTitular, $cuitCuilTitular, $idGeneroTitular);
-				else $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
+				$resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
 					
 				if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false)
 				{
@@ -225,10 +183,7 @@
 					$mysqli->autocommit(FALSE);
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 					
-					
-					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-					else $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)";
-					if(!$stmt10 = $mysqli->prepare($insertEFCDB2))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)"))
 					{
 						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 						$mysqli->autocommit(TRUE);
@@ -242,8 +197,7 @@
 						$tokenECF = md5(uniqid(rand(), true));
 						$tokenECF = hash('sha512', $tokenECF);
 						$validadoECF = 0;
-						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisi', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF);
-						else $stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+						$stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
 						if(!$stmt10->execute())
 						{
 							$mysqli->autocommit(TRUE);
@@ -292,9 +246,7 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
-							if(!$stmt43 = $mysqli->prepare($insertECCOP))
+							if(!$stmt43 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								$mysqli->autocommit(TRUE);
@@ -305,8 +257,7 @@
 							else
 							{
 								$date_registro_a_eccef_db = date("YmdHis");
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt43->bind_param('sisisis', $date_registro_a_eccef_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
-								else $stmt43->bind_param('sisis', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+								$stmt43->bind_param('sisis', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
 								if(!$stmt43->execute())
 								{
 									echo $mysqli->error;
@@ -328,16 +279,16 @@
 							echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 							echo ' 		</div>';
 							echo '		<div class="panel-body">';
-							echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+							echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 							echo '				<div class="form-group form-inline">';
-							echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-							echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-							echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+							echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+							echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+							echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 							echo '					</div>';
 							echo '				</div>';
 							echo '				<div class="form-group form-inline">';					
-							echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-							echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+							echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+							echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 							echo '<EXISTENCIA_FISICA>&#013;&#010;';
 							$contadorRecC1 = 0;
 							foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -547,14 +498,11 @@
 						}
 						else
 						{
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
-							else $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
-							if($stmt44 = $mysqli->prepare($selectECCEF))
+							if($stmt44 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)"))
 							{
 								$date_registro_c_ecef = date("Ymd")."%";
-								$motivo2_u = 38;
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt44->bind_param('issiiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_c_ecef, $motivo, $motivo2_u, $tipoDocumento, $documento);
-								else $stmt44->bind_param('issii', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo, $motivo2_u);
+								$motivo2_u = 51;
+								$stmt44->bind_param('issii', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo, $motivo2_u);
 								$stmt44->execute();    
 								$stmt44->store_result();
 								
@@ -570,16 +518,16 @@
 									echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 									echo ' 		</div>';
 									echo '		<div class="panel-body">';
-									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 									echo '				<div class="form-group form-inline">';
-									echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-									echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+									echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+									echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 									echo '					</div>';
 									echo '				</div>';
 									echo '				<div class="form-group form-inline">';					
-									echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-									echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+									echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+									echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 									echo '<EXISTENCIA_FISICA>&#013;&#010;';
 									$contadorRecC1 = 0;
 									foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -787,13 +735,13 @@
 									echo '					</div>';		
 									echo '				</div>';									
 									echo '				<div class="form-group form-inline"><hr />';
-									echo '					<label class="control-label" for="usuariosupervisorn3">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-									echo '					<div class="form-group" id="usuariosupervisorn3">';
-									echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn3i" name="usuariosupervisorn3i" type="text" maxlength="50" />';
+									echo '					<label class="control-label" for="usuariosupervisorn30">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+									echo '					<div class="form-group" id="usuariosupervisorn30">';
+									echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn30i" name="usuariosupervisorn30i" type="text" maxlength="50" />';
 									echo '					</div>';
-									echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn3">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-									echo '					<div class="form-group" id="passwordsupervisorn3">';
-									echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn3i" name="passwordsupervisorn3i" type="password" maxlength="128" />';
+									echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn30">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+									echo '					<div class="form-group" id="passwordsupervisorn30">';
+									echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn30i" name="passwordsupervisorn30i" type="password" maxlength="128" />';
 									echo '					</div>';		
 									echo '				</div>';
 									$estado_activa_supervisor = 1;
@@ -808,16 +756,16 @@
 									echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 									echo ' 		</div>';
 									echo '		<div class="panel-body">';
-									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 									echo '				<div class="form-group form-inline">';
-									echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-									echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+									echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+									echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 									echo '					</div>';
 									echo '				</div>';
 									echo '				<div class="form-group form-inline">';					
-									echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-									echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+									echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+									echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 									echo '<EXISTENCIA_FISICA>&#013;&#010;';
 									$contadorRecC1 = 0;
 									foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -1037,9 +985,9 @@
 						}
 						echo '				<div class="form-group form-inline">';
 						echo '					<div id="img_loader_13"></div>';		
-						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarEFC" id="btnCancelarEFC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidacionestadocrediticiocliente\').dialog(\'close\');" style="margin-left:10px;" />';
-						if($estado_activa_supervisor == 1) echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFC" id="btnValidarEFC" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorEstadoFinancieroCliente(document.getElementById(\'formulariocefc\'),'.$motivo.');"/>';										
-						else echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFC" id="btnValidarEFC" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarSinSupervisorEstadoFinancieroCliente('.$motivo.');"/>';
+						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarEFCM" id="btnCancelarEFCM" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidacionestadocrediticioclientem\').dialog(\'close\');" style="margin-left:10px;" />';
+						if($estado_activa_supervisor == 1) echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFCM" id="btnValidarEFCM" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorEstadoFinancieroClienteM(document.getElementById(\'formulariocefcm\'),'.$motivo.');"/>';										
+						else echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFCM" id="btnValidarEFCM" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarSinSupervisorEstadoFinancieroClienteM('.$motivo.');"/>';
 						echo '				</div>';				
 						echo '			</form>';
 						echo '		</div>';
@@ -1060,16 +1008,16 @@
 								echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 								echo ' 		</div>';
 								echo '		<div class="panel-body">';
-								echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+								echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 								echo '				<div class="form-group form-inline">';
-								echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-								echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-								echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+								echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+								echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+								echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 								echo '					</div>';
 								echo '				</div>';
 								echo '				<div class="form-group form-inline">';					
-								echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-								echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+								echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+								echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 								echo '<EXISTENCIA_FISICA>&#013;&#010;';
 								$contadorRecC1 = 0;
 								foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -1279,14 +1227,11 @@
 							}
 							else
 							{
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
-								else $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
-								if($stmt44 = $mysqli->prepare($selectECCEF))
+								if($stmt44 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)"))
 								{
 									$date_registro_c_ecef = date("Ymd")."%";
-									$motivo2_u = 38;
-									if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt44->bind_param('issiiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_c_ecef, $motivo, $motivo2_u, $tipoDocumento, $documento);
-									else $stmt44->bind_param('issii', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo, $motivo2_u);
+									$motivo2_u = 51;
+									$stmt44->bind_param('issii', $tipoDocumento, $documento, $date_registro_c_ecef, $motivo, $motivo2_u);
 									$stmt44->execute();    
 									$stmt44->store_result();
 									
@@ -1302,16 +1247,16 @@
 										echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 										echo ' 		</div>';
 										echo '		<div class="panel-body">';
-										echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+										echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 										echo '				<div class="form-group form-inline">';
-										echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-										echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-										echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+										echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+										echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+										echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 										echo '					</div>';
 										echo '				</div>';
 										echo '				<div class="form-group form-inline">';					
-										echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-										echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+										echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+										echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 										echo '<EXISTENCIA_FISICA>&#013;&#010;';
 										$contadorRecC1 = 0;
 										foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -1519,13 +1464,13 @@
 										echo '					</div>';		
 										echo '				</div>';									
 										echo '				<div class="form-group form-inline"><hr />';
-										echo '					<label class="control-label" for="usuariosupervisorn3">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-										echo '					<div class="form-group" id="usuariosupervisorn3">';
-										echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn3i" name="usuariosupervisorn3i" type="text" maxlength="50" />';
+										echo '					<label class="control-label" for="usuariosupervisorn30">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+										echo '					<div class="form-group" id="usuariosupervisorn30">';
+										echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn30i" name="usuariosupervisorn30i" type="text" maxlength="50" />';
 										echo '					</div>';
-										echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn3">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-										echo '					<div class="form-group" id="passwordsupervisorn3">';
-										echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn3i" name="passwordsupervisorn3i" type="password" maxlength="128" />';
+										echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn30">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+										echo '					<div class="form-group" id="passwordsupervisorn30">';
+										echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn30i" name="passwordsupervisorn30i" type="password" maxlength="128" />';
 										echo '					</div>';		
 										echo '				</div>';
 										$estado_activa_supervisor = 1;
@@ -1540,16 +1485,16 @@
 										echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 										echo ' 		</div>';
 										echo '		<div class="panel-body">';
-										echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+										echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 										echo '				<div class="form-group form-inline">';
-										echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-										echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-										echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+										echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+										echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+										echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 										echo '					</div>';
 										echo '				</div>';
 										echo '				<div class="form-group form-inline">';					
-										echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-										echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+										echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+										echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 										echo '<EXISTENCIA_FISICA>&#013;&#010;';
 										$contadorRecC1 = 0;
 										foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -1778,16 +1723,16 @@
 							echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 							echo ' 		</div>';
 							echo '		<div class="panel-body">';
-							echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinanciero(); return false;">';		
+							echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 							echo '				<div class="form-group form-inline">';
-							echo '					<div class="form-group" id="buscartextoestadocrediticiocliente">';
-							echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientei" name="buscartextoestadocrediticioclientei" type="text" maxlength="150" />';
-							echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoF" name="btnBuscarEstadoF" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinanciero();"><i class="fas fa-search"></i></button>';									
+							echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
+							echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
+							echo '						&nbsp;<button type="button" class="btn" id="btnBuscarEstadoFM" name="btnBuscarEstadoFM" title="'.translate('Lbl_Search_Text_Statement_Client',$GLOBALS['lang']).'" onclick="buscarTextoEstadoFinancieroM();"><i class="fas fa-search"></i></button>';									
 							echo '					</div>';
 							echo '				</div>';
 							echo '				<div class="form-group form-inline">';					
-							echo '					<div class="form-group" id="resultadoestadofinancierocliente">';
-							echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientei" name="resultadoestadofinancieroclientei">';
+							echo '					<div class="form-group" id="resultadoestadofinancieroclientem">';
+							echo '						<textarea rows="3" cols="67" class="form-control input-sm" id="resultadoestadofinancieroclientemi" name="resultadoestadofinancieroclientemi">';
 							echo '<EXISTENCIA_FISICA>&#013;&#010;';
 							$contadorRecC1 = 0;
 							foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFC) 
@@ -1997,9 +1942,9 @@
 						}
 						echo '				<div class="form-group form-inline">';
 						echo '					<div id="img_loader_13"></div>';		
-						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarEFC" id="btnCancelarEFC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidacionestadocrediticiocliente\').dialog(\'close\');" style="margin-left:10px;" />';
-						if($estado_activa_supervisor == 1) echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFC" id="btnValidarEFC" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorEstadoFinancieroCliente(document.getElementById(\'formulariocefc\'),'.$motivo.');"/>';										
-						else echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFC" id="btnValidarEFC" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarSinSupervisorEstadoFinancieroCliente('.$motivo.');"/>';
+						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarEFCM" id="btnCancelarEFCM" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidacionestadocrediticioclientem\').dialog(\'close\');" style="margin-left:10px;" />';
+						if($estado_activa_supervisor == 1) echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFCM" id="btnValidarEFCM" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorEstadoFinancieroClienteM(document.getElementById(\'formulariocefcm\'),'.$motivo.');"/>';										
+						else echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarEFCM" id="btnValidarEFCM" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarSinSupervisorEstadoFinancieroClienteM('.$motivo.');"/>';
 						echo '				</div>';				
 						echo '			</form>';
 						echo '		</div>';
