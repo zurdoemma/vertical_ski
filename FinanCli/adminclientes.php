@@ -2433,12 +2433,12 @@ include("./menu/menu.php");
 	</script>
 
 	<script type="text/javascript">
-		function guardarAutorizacionSupervisorEstadoFinancieroClienteM(formulariocefc, motivo)
+		function guardarAutorizacionSupervisorEstadoFinancieroClienteM(formulariocefcm, motivo)
 		{
-			if($('#usuariosupervisorn3FFFi').val().length == 0)
+			if($('#usuariosupervisorn30i').val().length == 0)
 			{
 				$(function() {
-					$('#usuariosupervisorn3i').tooltip({
+					$('#usuariosupervisorn30i').tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -2446,13 +2446,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$('#usuariosupervisorn3i').focus();
+				$('#usuariosupervisorn30i').focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$('#usuariosupervisorn3i').tooltip({
+					$('#usuariosupervisorn30i').tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -2460,13 +2460,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$('#usuariosupervisorn3i').tooltip('destroy');
+				$('#usuariosupervisorn30i').tooltip('destroy');
 			}
 
-			if($('#passwordsupervisorn3i').val().length == 0)
+			if($('#passwordsupervisorn30i').val().length == 0)
 			{
 				$(function() {
-					$('#passwordsupervisorn3i').tooltip({
+					$('#passwordsupervisorn30i').tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -2474,13 +2474,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$('#passwordsupervisorn3i').focus();
+				$('#passwordsupervisorn30i').focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$('#passwordsupervisorn3i').tooltip({
+					$('#passwordsupervisorn30i').tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -2488,54 +2488,29 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$('#passwordsupervisorn3i').tooltip('destroy');
+				$('#passwordsupervisorn30i').tooltip('destroy');
 			}			
 			
-			var urlasrc2 = "./acciones/verificarcredencialessupervisorregistrocliente.php";
+			var urlasmc2 = "./acciones/verificarcredencialessupervisormodificacionclienteec.php";
 			$('#img_loader_13').show();
 			
 			
-			var p221 = document.createElement("input");
+			var p521 = document.createElement("input");
 		 			
-			formulariocefc.appendChild(p221);
-			p221.name = "p221";
-			p221.type = "hidden";
+			formulariocefcm.appendChild(p521);
+			p521.name = "p521";
+			p521.type = "hidden";
 			
-			p221.value = hex_sha512(formulariocefc.passwordsupervisorn3i.value);
+			p521.value = hex_sha512(formulariocefcm.passwordsupervisorn30i.value);
 			
-			if(formulariocefc.passwordsupervisorn3i.value == "") p221.value = "";
-			formulariocefc.passwordsupervisorn3i.value = "";
+			if(formulariocefcm.passwordsupervisorn30i.value == "") p521.value = "";
+			formulariocefcm.passwordsupervisorn30i.value = "";
 			
-			var tipoDocumentoCEA2 = null;
-			var documentoCEA2 = null;
-			
-			var tipoDocumentoTit2 = null;
-			var documentoTit2 = null;			
-			
-			var tipoDocumentoAdicional10 = null;
-			var documentoAdicional10 = null;			
-			
-			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
-			{
-				tipoDocumentoCEA2 = $( "#tipodocumentoclientnbi" ).val();
-				documentoCEA2 = $( "#documentonbi" ).val();
-				
-				tipoDocumentoTit2 = $( "#tipodocumentoclientnbi" ).val();
-				documentoTit2 = $( "#documentonbi" ).val();				
-				
-				tipoDocumentoAdicional10 = $( "#tipodocumentoclientni" ).val();
-				documentoAdicional10 = $( "#documentoni" ).val();				
-			}
-			else
-			{
-				tipoDocumentoCEA2 = $( "#tipodocumentoclientni" ).val();
-				documentoCEA2 = $( "#documentoni" ).val();
-			}			
-						
+								
 			$.ajax({
-				url: urlasrc2,
+				url: urlasmc2,
 				method: "POST",
-				data: { motivo: 38, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: tipoDocumentoCEA2, documento: documentoCEA2, tokenECC2: $('#tokenvecci').val(), tipoDocumentoTitular: tipoDocumentoTit2, documentoTitular: documentoTit2, tipoDocumentoAdicional: tipoDocumentoAdicional10, documentoAdicional: documentoAdicional10 },
+				data: { motivo: 52, usuarioSupervisor: formulariocefcm.usuariosupervisorn30i.value, claveSupervisor: p521.value, idCliente: $('#idclientemi').val(), tokenECC2: $('#tokenveccmi').val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -2546,34 +2521,59 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
-						if(motivo != 37) 
-						{
-							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
-							guardarNuevoClienteUC2();
-						}
-						else 
-						{
-							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
-							guardarNuevoClienteFinal();
-						}
+						$('#dialogvalidacionestadocrediticioclientem').dialog('destroy').remove();
+						guardarModificacionClienteFinal();
 					}
 					else
 					{
 						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
 						{
-							$('#usuariosupervisorn3i').focus();
+							$('#usuariosupervisorn30i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						}
 						else 
 						{
-							$('#usuariosupervisorn3i').focus();
+							$('#usuariosupervisorn30i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						}					
 					}
 					
 				},
 				error: function(request, errorcode, errortext){
-					$('#usuariosupervisorn3i').focus();
+					$('#usuariosupervisorn30i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarSinSupervisorEstadoFinancieroClienteM(motivo)
+		{							
+			var urlasrc3 = "./acciones/grabarmodificacionclientesinsupervisorestadofinancierom.php";
+			$('#img_loader_13').show();
+			
+			$.ajax({
+				url: urlasrc3,
+				method: "POST",
+				data: { motivo: 51, idCliente: $('#idclientemi').val(), tokenECC2: $('#tokenveccmi').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Not_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogvalidacionestadocrediticioclientem').dialog('destroy').remove();
+						guardarModificacionClienteFinal();
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
+				},
+				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
 				}

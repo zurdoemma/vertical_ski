@@ -68,8 +68,26 @@
 
 			if($totR > 0)
 			{
-				echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']);
-				return;
+				if($stmt85 = $mysqli->prepare("SELECT ec.id FROM finan_cli.estado_cliente ec WHERE ec.tipo_documento = ? AND ec.documento = ? AND ec.id_motivo IN (51,52) AND ec.fecha LIKE (?)"))
+				{
+					$date_registro_ec_db = date("Ymd").'%';
+					$stmt85->bind_param('iss', $tipoDocumento, $documento, $date_registro_ec_db);
+					$stmt85->execute();    
+					$stmt85->store_result();
+					
+					$totR85 = $stmt85->num_rows;
+					
+					if($totR85 > 0)
+					{
+						echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']);
+						return;
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;
+				}
 			}			
 		}
 		else
@@ -518,7 +536,7 @@
 									echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 									echo ' 		</div>';
 									echo '		<div class="panel-body">';
-									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
+									echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 									echo '				<div class="form-group form-inline">';
 									echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
 									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
@@ -756,7 +774,7 @@
 									echo '			<h3 class="panel-title">'.translate('Lbl_Result_Financial_Statement_Client',$GLOBALS['lang']).'</h3>';
 									echo ' 		</div>';
 									echo '		<div class="panel-body">';
-									echo '			<form id="formulariocefc" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
+									echo '			<form id="formulariocefcm" role="form" onsubmit="buscarTextoEstadoFinancieroM(); return false;">';		
 									echo '				<div class="form-group form-inline">';
 									echo '					<div class="form-group" id="buscartextoestadocrediticioclientem">';
 									echo '						<input class="form-control input-sm" id="buscartextoestadocrediticioclientemi" name="buscartextoestadocrediticioclientemi" type="text" maxlength="150" />';
