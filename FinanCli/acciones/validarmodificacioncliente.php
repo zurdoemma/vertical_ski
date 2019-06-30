@@ -68,7 +68,7 @@
 				if($stmt = $mysqli->prepare("SELECT tcc.id FROM finan_cli.token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ? AND tcc.validado = 1"))
 				{
 					$date_registro_a_s = date("Ymd")."%";
-					$stmt->bind_param('sisss', $tokenCTC, $tipoDocumento, $documento, $date_registro_a_s);
+					$stmt->bind_param('siss', $tokenCTC, $tipoDocumento, $documento, $date_registro_a_s);
 					$stmt->execute();    
 					$stmt->store_result();
 				

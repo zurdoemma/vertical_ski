@@ -412,6 +412,8 @@
 		'Msg_It_Is_Not_Possible_To_Change_From_Holder_To_Additional_Account' => 'No es posible cambiar de Titular a Adicional de cuenta!!',
 		'Msg_Must_Authorize_Client_Modification' => 'Debe autorizar modificación de cliente',
 		'Lbl_Authorize_Client_Modification' => 'Autorizar Modificación Cliente',
-		'Msg_Be_Sure_To_Modification_The_Client_Without_Validating_The_Credit_Status' => 'Esta seguro de modificar el cliente sin validar el estado crediticio'	
+		'Msg_Be_Sure_To_Modification_The_Client_Without_Validating_The_Credit_Status' => 'Esta seguro de modificar el cliente sin validar el estado crediticio',
+		'Msg_Error_Authorize_Client_Change_Type_Account' => 'Error en autorización cambio de cuenta!!',
+		'Msg_Error_Authorize_Client_Credit_Status' => 'Error en autorización estado crediticio!!'
 	);
 ?>

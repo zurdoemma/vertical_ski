@@ -22,20 +22,41 @@
 				return;
 		}
 
-		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
-		
-		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
-		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-		$tipoDocumentoAdicional=htmlspecialchars($_POST["tipoDocumentoAdicional"], ENT_QUOTES, 'UTF-8');
-		$documentoAdicional=htmlspecialchars($_POST["documentoAdicional"], ENT_QUOTES, 'UTF-8');		
+		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');		
 		$tokenECC2=htmlspecialchars($_POST["tokenECC2"], ENT_QUOTES, 'UTF-8');
+		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
+		
+		
+		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+		{
+			$stmt4->bind_param('i', $idCliente);
+			$stmt4->execute();    
+			$stmt4->store_result();
+			
+			$totR4 = $stmt4->num_rows;
 
+			if($totR4 == 0)
+			{
+				echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+				return;
+			}			
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
+		$stmt4->bind_result($id_cliente_db, $tipo_cuenta_cliente_db, $tipo_documento_cliente_db, $documento_cliente_db);
+		$stmt4->fetch();
+		
+		$tipoDocumento=$tipo_documento_cliente_db;
+		$documento=$documento_cliente_db;
+		
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-		else $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
-		if(!$stmt10 = $mysqli->prepare($insertECA))
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
 		{
 			$mysqli->autocommit(TRUE);
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
@@ -44,8 +65,7 @@
 		else
 		{
 			$date_registro_a_s_db = date("YmdHis");
-			if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumentoAdicional, $documentoAdicional);
-		    else $stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+			$stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
 			if(!$stmt10->execute())
 			{
 				$mysqli->autocommit(TRUE);
@@ -53,28 +73,25 @@
 				return;						
 			}
 			
-			if($motivo == 37)
+			if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
 			{
-				if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
+				$mysqli->rollback();
+				$mysqli->autocommit(TRUE);
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+			else
+			{
+				$stmt11->bind_param('iss', $tipoDocumento, $documento, $tokenECC2);
+				if(!$stmt11->execute())
 				{
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;
+					return;						
 				}
-				else
-				{
-					$stmt11->bind_param('iss', $tipoDocumento, $documento, $tokenECC2);
-					if(!$stmt11->execute())
-					{
-						$mysqli->rollback();
-						$mysqli->autocommit(TRUE);
-						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-						return;						
-					}
-				}
-			}								
-								
+			}
+			
 			$mysqli->commit();
 			$mysqli->autocommit(TRUE);
 		}

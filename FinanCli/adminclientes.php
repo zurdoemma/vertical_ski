@@ -2557,7 +2557,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlasrc3,
 				method: "POST",
-				data: { motivo: 51, idCliente: $('#idclientemi').val(), tokenECC2: $('#tokenveccmi').val() },
+				data: { motivo: 51, idCliente: $('#idclientemi').val(), tokenECC2: $("#tokenveccmi").val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_13').hide();
 					
@@ -2636,7 +2636,7 @@ include("./menu/menu.php");
 		}	
 	</script>
 	
-<script type="text/javascript">
+	<script type="text/javascript">
 		function guardarAutorizacionSupervisorModificacionCliente(formularionacm, motivo)
 		{
 			if($('#usuariosupervisorn21i').val().length == 0)
@@ -2746,6 +2746,43 @@ include("./menu/menu.php");
 					$('#usuariosupervisorn21i').focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarModificacionClienteFinal()
+		{			
+			var urlnc = "./acciones/guardarmodificacioncliente.php";
+			$('#img_loader_12').show();
+									
+			$.ajax({
+				url: urlnc,
+				method: "POST",
+				data: { idCliente: $('#idclientemi').val(), tipoCuenta: $( "#tipoclientmi" ).val(), tipoDocumento: $("#tipodocumentoclienti").val(), documento: $("#documentoi").val(), nombre: $("#nombreclienti").val(), apellido: $("#apellidoclienti").val(), fechaNacimiento: $("#fechanacimientoclienti").val(), cuitCuil: $("#cuitcuilclienti").val(), email: $("#emailclienti").val(), montoMaximo: (($("#montomaximoclienti").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclienti").val(), observaciones: $("#observacionclienti").val(), tokenCTC: $( "#tokenvctci" ).val(), tokenVECC: $("#tokenveccmi").val()},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_12').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#dialognewclient').dialog('destroy').remove();
+						$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));					
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_12').hide();
 				}
 			});
 		}
