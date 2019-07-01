@@ -208,7 +208,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			$.ajax({
 				url: urlgnd,
 				method: "POST",
-				data: { usuario: "<?php echo $_GET['usuario']; ?>", calle: $( "#callei" ).val(), nroCalle: $( "#nrocallei" ).val(), provincia: $( "#domprovinciai" ).val(), localidad: $( "#domlocalidadi" ).val(), departamento: $( "#domdepartamentoi" ).val(), piso: $( "#domfloori" ).val(), codigoPostal: $( "#zipcodei" ).val(), entreCalle1: $( "#entrecalle1i" ).val(), entreCalle2: $( "#entrecalle2i" ).val() },
+				data: { idCliente: "<?php echo $_GET['idCliente']; ?>", calle: $( "#callei" ).val(), nroCalle: $( "#nrocallei" ).val(), provincia: $( "#domprovinciai" ).val(), localidad: $( "#domlocalidadi" ).val(), departamento: $( "#domdepartamentoi" ).val(), piso: $( "#domfloori" ).val(), codigoPostal: $( "#zipcodei" ).val(), entreCalle1: $( "#entrecalle1i" ).val(), entreCalle2: $( "#entrecalle2i" ).val(), preferido: $('#domiciliopreferidoclientei').is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_3').hide();
 					
@@ -376,7 +376,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			$.ajax({
 				url: urlgnd,
 				method: "POST",
-				data: { usuario: "<?php echo $_GET['usuario']; ?>", idDomicilio: idDomicilio, calle: $( "#callemi" ).val(), nroCalle: $( "#nrocallemi" ).val(), provincia: $( "#domprovinciami" ).val(), localidad: $( "#domlocalidadmi" ).val(), departamento: $( "#domdepartamentomi" ).val(), piso: $( "#domfloormi" ).val(), codigoPostal: $( "#zipcodemi" ).val(), entreCalle1: $( "#entrecalle1mi" ).val(), entreCalle2: $( "#entrecalle2mi" ).val() },
+				data: { idCliente: "<?php echo $_GET['idCliente']; ?>", idDomicilio: idDomicilio, calle: $( "#callemi" ).val(), nroCalle: $( "#nrocallemi" ).val(), provincia: $( "#domprovinciami" ).val(), localidad: $( "#domlocalidadmi" ).val(), departamento: $( "#domdepartamentomi" ).val(), piso: $( "#domfloormi" ).val(), codigoPostal: $( "#zipcodemi" ).val(), entreCalle1: $( "#entrecalle1mi" ).val(), entreCalle2: $( "#entrecalle2mi" ).val(), preferido: $( "#domiciliopreferidoclientemi" ).is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_4').hide();
 					
@@ -402,7 +402,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	</script>	
 	
 	<script type="text/javascript">
-		function nuevoDomicilio(usuario)
+		function nuevoDomicilio(idCliente)
 		{
 			var urlnd = "./acciones/nuevodomicilioc.php";
 			var tagnd = $("<div id='dialognewaddress'></div>");
@@ -411,7 +411,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			$.ajax({
 				url: urlnd,
 				method: "POST",
-				data: { usuario: usuario },
+				data: { idCliente: idCliente },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -432,7 +432,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						  height: "auto",
 						  width: "auto",					  
 						  modal: true, 
-						  title: "<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>: "+usuario,
+						  title: "<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>: "+"<?php echo $nom_tipo_documento_cliente_db.' - '.$documento_cliente_db;?>",
 						  autoResize:true,
 								close: function(){
 										tagnd.dialog('destroy').remove()
@@ -450,7 +450,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
     </script>
 	
 	<script type="text/javascript">
-		function modificarDomicilio(usuario, idDomicilio)
+		function modificarDomicilio(idCliente, idDomicilio)
 		{
 			var urlnd = "./acciones/modificardomicilioc.php";
 			var tagmd = $("<div id='dialogmodifyaddress'></div>");
@@ -459,7 +459,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			$.ajax({
 				url: urlnd,
 				method: "POST",
-				data: { usuario: usuario, id_domicilio: idDomicilio },
+				data: { idCliente: idCliente, id_domicilio: idDomicilio },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -659,8 +659,8 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						<?php
 							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.domicilio d, finan_cli.cliente c, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
 							{
-								$usuarioP = htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8');
-								$stmt->bind_param('s', $usuarioP);
+								$idClienteP = htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8');
+								$stmt->bind_param('i', $idClienteP);
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 
@@ -680,7 +680,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 									else echo '<td>'.$client_domicilio_piso.'</td>';
 									if(empty($client_domicilio_codigo_postal)) echo '<td> --- </td>'; 
 									else echo '<td>'.$client_domicilio_codigo_postal.'</td>';
-									if($client_preference_domicilio == 0) $preferenciaDom = translate('Lbl_Button_YES',$GLOBALS['lang']);
+									if($client_preference_domicilio == 1) $preferenciaDom = translate('Lbl_Button_YES',$GLOBALS['lang']);
 									else $preferenciaDom = translate('Lbl_Button_NO',$GLOBALS['lang']);
 									echo '<td>'.$preferenciaDom.'</td>';
 									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$_GET['idCliente'].'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$_GET['idCliente'].'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button></td>';

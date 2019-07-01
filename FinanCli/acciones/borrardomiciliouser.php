@@ -39,7 +39,7 @@
 			{
 				$stmt->free_result();
 				$stmt->close();
-				echo translate('Msg_User_Not_Exist',$GLOBALS['lang']);
+				echo translate('Msg_User_Or_Address_Not_Exist',$GLOBALS['lang']);
 				return;
 			}
 			else

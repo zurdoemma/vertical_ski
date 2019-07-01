@@ -22,12 +22,14 @@
 				return;
 		}
 		
-		$usuario=htmlspecialchars ( $_POST["usuario"], ENT_QUOTES, 'UTF-8' );
+		$idCliente=htmlspecialchars ( $_POST["idCliente"], ENT_QUOTES, 'UTF-8' );
 		$idDomicilio=htmlspecialchars ( $_POST["id_domicilio"], ENT_QUOTES, 'UTF-8' );
+		
+		
 				
-		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio AND d.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.cliente_x_domicilio cd, finan_cli.provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio AND d.id = ?"))
 		{
-			$stmt->bind_param('si', $usuario, $idDomicilio);
+			$stmt->bind_param('ii', $idCliente, $idDomicilio);
 			$stmt->execute();    
 			$stmt->store_result();
 		
@@ -37,19 +39,22 @@
 			{
 				$stmt->free_result();
 				$stmt->close();
-				echo translate('Msg_User_Or_Address_Not_Exist',$GLOBALS['lang']);
+				echo translate('Msg_Client_Or_Address_Not_Exist',$GLOBALS['lang']);
 				return;
 			}
 			else
 			{
-				if($_SESSION['username'] != $usuario)
-				{
-					echo translate('Msg_Edit_User_Not_Match_User_Logged',$GLOBALS['lang']);
-					return;						
-				}				
+				$stmt->bind_result($id_domicilio_client, $client_dom_calle, $client_dom_nro_calle, $client_dom_provincia, $client_dom_localidad, $client_dom_departamento, $client_dom_piso, $client_dom_codigo_postal, $client_entre_calle_1, $client_entre_calle_2, $client_preference, $client_tipo_doc, $client_document);				
+				$stmt->fetch();
 				
-				if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio"))
-				$stmt2->bind_param('s', $usuario);
+				if($client_preference == 1)
+				{
+					echo translate('Msg_Can_Not_Delete_The_Preferred_Address',$GLOBALS['lang']);
+					return;
+				}
+				
+				if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.cliente_x_domicilio cd, finan_cli.provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio"))
+				$stmt2->bind_param('i', $idCliente);
 				$stmt2->execute();    
 				$stmt2->store_result();
 			
@@ -66,10 +71,7 @@
 				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-				
-				
-				$stmt->bind_result($id_domicilio_user, $user_dom_calle, $user_dom_nro_calle, $user_dom_provincia, $user_dom_localidad, $user_dom_departamento, $user_dom_piso, $user_dom_codigo_postal, $user_entre_calle_1, $user_entre_calle_2);
-				
+								
 				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.usuario_x_domicilio WHERE id_usuario = ? AND id_domicilio = ?"))
 				{
 					echo $mysqli->error;
@@ -87,7 +89,7 @@
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
-						return;						
+						return;
 					}
 					
 					if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.domicilio WHERE id = ?"))
@@ -110,14 +112,14 @@
 							$stmt->free_result();
 							$stmt->close();
 							return;							
-						}					
+						}
 					}
+				
 				}	
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_user." - Calle: ".$user_dom_calle." - Nro. Calle: ".$user_dom_nro_calle." - Provincia: ".$user_dom_provincia." - Localidad: ".$user_dom_localidad." - Departamento: ".(!empty($user_dom_departamento) ? "$user_dom_departamento" : "NULL")." - Piso: ".(!empty($user_dom_piso) ? "$user_dom_piso" : "NULL")." - Codigo Postal: ".(!empty($user_dom_codigo_postal) ? "$user_dom_codigo_postal" : "NULL")." - Entre Calle 1: ".(!empty($user_entre_calle_1) ? "$user_entre_calle_1" : "NULL")." - Entre Calle 2: ".(!empty($user_entre_calle_2) ? "$user_entre_calle_2" : "NULL");
+				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_user." - Calle: ".$user_dom_calle." - Nro. Calle: ".$user_dom_nro_calle." - Provincia: ".$user_dom_provincia." - Localidad: ".$user_dom_localidad." - Departamento: ".(!empty($user_dom_departamento) ? "$user_dom_departamento" : "---")." - Piso: ".(!empty($user_dom_piso) ? "$user_dom_piso" : "---")." - Codigo Postal: ".(!empty($user_dom_codigo_postal) ? "$user_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($user_entre_calle_1) ? "$user_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($user_entre_calle_2) ? "$user_entre_calle_2" : "---");
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

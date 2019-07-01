@@ -417,6 +417,8 @@
 		'Msg_Error_Authorize_Client_Change_Type_Account' => 'Error en autorización cambio de cuenta!!',
 		'Msg_Error_Authorize_Client_Credit_Status' => 'Error en autorización estado crediticio!!',
 		'Msg_Modify_Client_OK' => 'El cliente se modifico correctamente!!',
-		'Lbl_Home_Addresses_Client' => 'Domicilios de Cliente'		
+		'Lbl_Home_Addresses_Client' => 'Domicilios de Cliente',
+		'Msg_Client_Or_Address_Not_Exist' => 'El cliente o domicilio selecccionado, no existe.',
+		'Msg_Can_Not_Delete_The_Preferred_Address' => 'No se puede borrar el domicilio de preferencia!!!'
 	);
 ?>
