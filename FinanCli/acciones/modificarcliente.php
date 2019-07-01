@@ -191,8 +191,8 @@
 				echo '					</div>';	
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="homeaddressandphoneclient">'.translate('Lbl_Home_Address_And_Phone',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="homeaddressandphoneclient">';
-				echo '						<button type="button" class="btn" id="btnCargaDomicilioC" name="btnCargaDomicilioC" title="'.translate('Lbl_View_Home_Address',$GLOBALS['lang']).'" onclick="adminDomiciliosC(\''.$type_document_client.'\',\''.$document_client.'\');"><i class="fa fa-eye"></i></button>';
-				echo '						&nbsp;<button type="button" class="btn" id="btnCargaTelefonoC" name="btnCargaTelefonoC" title="'.translate('Lbl_View_Phones',$GLOBALS['lang']).'" onclick="adminTelefonosC(\''.$type_document_client.'\',\''.$document_client.'\');"><i class="fas fa-phone"></i></button>';
+				echo '						<button type="button" class="btn" id="btnCargaDomicilioC" name="btnCargaDomicilioC" title="'.translate('Lbl_View_Home_Address',$GLOBALS['lang']).'" onclick="window.open(\'domiciliosclients.php?idCliente='.$idCliente.'\',\'_blank\');"><i class="fa fa-eye"></i></button>';
+				echo '						&nbsp;<button type="button" class="btn" id="btnCargaTelefonoC" name="btnCargaTelefonoC" title="'.translate('Lbl_View_Phones',$GLOBALS['lang']).'" onclick="window.open(\'phonesclients.php?idCliente='.$idCliente.'\',\'_blank\');"><i class="fas fa-phone"></i></button>';
 				echo '					</div>';
 				echo '				</div>';
 				if($type_account_client == translate('Lbl_Type_Client_Headline',$GLOBALS['lang']))

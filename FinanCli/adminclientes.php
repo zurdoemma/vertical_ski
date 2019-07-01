@@ -2760,7 +2760,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { idCliente: $('#idclientemi').val(), tipoCuenta: $( "#tipoclientmi" ).val(), tipoDocumento: $("#tipodocumentoclienti").val(), documento: $("#documentoi").val(), nombre: $("#nombreclienti").val(), apellido: $("#apellidoclienti").val(), fechaNacimiento: $("#fechanacimientoclienti").val(), cuitCuil: $("#cuitcuilclienti").val(), email: $("#emailclienti").val(), montoMaximo: (($("#montomaximoclienti").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclienti").val(), observaciones: $("#observacionclienti").val(), tokenCTC: $( "#tokenvctci" ).val(), tokenVECC: $("#tokenveccmi").val()},
+				data: { idCliente: $('#idclientemi').val(), tipoCuenta: $( "#tipoclientmi" ).val(), tipoDocumento: $("#tipodocumentoclienti").val(), documento: $("#documentoi").val(), genero: $("#generoclienti").val(), nombre: $("#nombreclienti").val(), apellido: $("#apellidoclienti").val(), fechaNacimiento: $("#fechanacimientoclienti").val(), cuitCuil: $("#cuitcuilclienti").val(), email: $("#emailclienti").val(), montoMaximo: (($("#montomaximoclienti").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclienti").val(), observaciones: $("#observacionclienti").val(), tokenCTC: $( "#tokenvctci" ).val(), tokenVECC: $("#tokenveccmi").val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					
@@ -2769,12 +2769,12 @@ include("./menu/menu.php");
 						window.location.replace("./login.php?result_ok=3");
 					}
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_New_Client_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialognewclient').dialog('destroy').remove();
+						$('#dialogmodifyclient').dialog('destroy').remove();
 						$('#tableadminclientt').bootstrapTable('load',JSON.parse(datTable));					
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}

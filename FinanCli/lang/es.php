@@ -106,6 +106,7 @@
 		'Lbl_Departament' => 'Departamento',
 		'Lbl_Floor' => 'Piso',
 		'Lbl_Zip_Code' => 'Codigo Postal',
+		'Lbl_Preference_Address' => 'Preferido',		
 		'Lbl_New_Home_Address' => 'Nuevo Domicilio',
 		'Lbl_New_Phone' => 'Nuevo Telefono',		
 		'Lbl_Actions_Home_Address' => 'Acciones Domicilio',
@@ -414,6 +415,8 @@
 		'Lbl_Authorize_Client_Modification' => 'Autorizar Modificación Cliente',
 		'Msg_Be_Sure_To_Modification_The_Client_Without_Validating_The_Credit_Status' => 'Esta seguro de modificar el cliente sin validar el estado crediticio',
 		'Msg_Error_Authorize_Client_Change_Type_Account' => 'Error en autorización cambio de cuenta!!',
-		'Msg_Error_Authorize_Client_Credit_Status' => 'Error en autorización estado crediticio!!'
+		'Msg_Error_Authorize_Client_Credit_Status' => 'Error en autorización estado crediticio!!',
+		'Msg_Modify_Client_OK' => 'El cliente se modifico correctamente!!',
+		'Lbl_Home_Addresses_Client' => 'Domicilios de Cliente'		
 	);
 ?>
