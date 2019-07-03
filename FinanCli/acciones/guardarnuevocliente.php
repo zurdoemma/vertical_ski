@@ -408,7 +408,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2,preferido) VALUES (?,?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -418,8 +418,7 @@
 				}
 				else
 				{
-					$preferidoD = 1;
-					$stmt10->bind_param('siississsi', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2, $preferidoD);
+					$stmt10->bind_param('siississs', $calle, $nroCalle, $provincia, $localidad, $departamento, $piso, $codigoPostal, $entreCalle1, $entreCalle2);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -459,7 +458,7 @@
 				}				
 								
 
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo,preferido) VALUES (?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -470,10 +469,9 @@
 				}
 				else
 				{
-					$preferidoT = 1;
 					$numTelFinI = $prefijoTelefono.$nroTelefono;
 					$cantPrefiFN = strlen($prefijoTelefono);
-					$stmt10->bind_param('iiii', $tipoTelefono, $numTelFinI, $cantPrefiFN, $preferidoT);
+					$stmt10->bind_param('iii', $tipoTelefono, $numTelFinI, $cantPrefiFN);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -544,7 +542,7 @@
 						return;						
 					}
 					
-					if(!$stmt21 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_domicilio(tipo_documento, documento, id_domicilio) VALUES (?,?,?)"))
+					if(!$stmt21 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_domicilio(tipo_documento, documento, id_domicilio, preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -555,7 +553,8 @@
 					}
 					else
 					{
-						$stmt21->bind_param('isi', $tipoDocumento, $documento, $idDomicilioClient);
+						$preferidoDomC = 1;
+						$stmt21->bind_param('isii', $tipoDocumento, $documento, $idDomicilioClient, $preferidoDomC);
 						if(!$stmt21->execute())
 						{	
 							echo $mysqli->error;
@@ -567,7 +566,7 @@
 						}					
 					}
 					
-					if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono) VALUES (?,?,?)"))
+					if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -578,7 +577,8 @@
 					}
 					else
 					{
-						$stmt22->bind_param('isi', $tipoDocumento, $documento, $idTelefonoClient);
+						$preferidoTelC = 1;
+						$stmt22->bind_param('isii', $tipoDocumento, $documento, $idTelefonoClient, $preferidoTelC);
 						if(!$stmt22->execute())
 						{	
 							echo $mysqli->error;

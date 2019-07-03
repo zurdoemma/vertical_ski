@@ -576,7 +576,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 		}
 	</script>
 	<script type="text/javascript">
-		function borrar_domicilio_usuario(idCliente, idDomicilio)
+		function borrar_domicilio_cliente(idCliente, idDomicilio)
 		{
 			var urlrdu = "./acciones/borrardomicilioclient.php";
 			$('#img_loader').show();

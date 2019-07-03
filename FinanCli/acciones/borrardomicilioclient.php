@@ -72,7 +72,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.usuario_x_domicilio WHERE id_usuario = ? AND id_domicilio = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.cliente_x_domicilio WHERE tipo_documento = ? AND documento = ? AND id_domicilio = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -82,7 +82,7 @@
 				}
 				else
 				{
-					$stmt10->bind_param('si', $usuario, $idDomicilio);
+					$stmt10->bind_param('isi', $client_tipo_doc, $client_document, $idDomicilio);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -119,7 +119,7 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_user." - Calle: ".$user_dom_calle." - Nro. Calle: ".$user_dom_nro_calle." - Provincia: ".$user_dom_provincia." - Localidad: ".$user_dom_localidad." - Departamento: ".(!empty($user_dom_departamento) ? "$user_dom_departamento" : "---")." - Piso: ".(!empty($user_dom_piso) ? "$user_dom_piso" : "---")." - Codigo Postal: ".(!empty($user_dom_codigo_postal) ? "$user_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($user_entre_calle_1) ? "$user_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($user_entre_calle_2) ? "$user_entre_calle_2" : "---");
+				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_client." - Calle: ".$client_dom_calle." - Nro. Calle: ".$client_dom_nro_calle." - Provincia: ".$client_dom_provincia." - Localidad: ".$client_dom_localidad." - Departamento: ".(!empty($client_dom_departamento) ? "$client_dom_departamento" : "---")." - Piso: ".(!empty($client_dom_piso) ? "$client_dom_piso" : "---")." - Codigo Postal: ".(!empty($client_dom_codigo_postal) ? "$client_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($client_entre_calle_1) ? "$client_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($client_entre_calle_2) ? "$client_entre_calle_2" : "---");
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
@@ -132,7 +132,7 @@
 				}
 				else
 				{
-					$motivo = 5;
+					$motivo = 41;
 					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
 					if(!$stmt->execute())
 					{
@@ -148,31 +148,35 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
+				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.domicilio d, finan_cli.cliente c, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
 				{
-					$stmt->bind_param('s', $usuario);
-					$stmt->execute();    
+					$stmt->bind_param('i', $idCliente);
+					$stmt->execute();    // Ejecuta la consulta preparada.
 					$stmt->store_result();
-					
-					$stmt->bind_result($id_domicilio_user, $user_dom_calle, $user_dom_nro_calle, $user_dom_provincia, $user_dom_localidad, $user_dom_departamento, $user_dom_piso, $user_dom_codigo_postal);
-										
+			 
+					// Obtiene las variables del resultado.
+					$stmt->bind_result($id_domicilio, $client_domicilio_calle, $client_domicilio_nro_calle, $client_domicilio_id_provincia, $client_domicilio_localidad, $client_domicilio_departamento, $client_domicilio_piso, $client_domicilio_codigo_postal, $client_domicilio_entre_calles_1, $client_domicilio_entre_calles_2, $client_preference_domicilio);
+									
 					$array[0] = array();
 					$posicion = 0;
 					while($stmt->fetch())
 					{
-						$array[$posicion]['calle'] = $user_dom_calle;
-						$array[$posicion]['nrocalle'] = $user_dom_nro_calle;
-						$array[$posicion]['provincia'] = $user_dom_provincia;
-						$array[$posicion]['localidad'] = $user_dom_localidad;
+						$array[$posicion]['calle'] = $client_domicilio_calle;
+						$array[$posicion]['nrocalle'] = $client_domicilio_nro_calle;
+						$array[$posicion]['provincia'] = $client_domicilio_id_provincia;
+						$array[$posicion]['localidad'] = $client_domicilio_localidad;
 						
-						if(empty($user_dom_departamento)) $array[$posicion]['departamento'] = '---';
-						else $array[$posicion]['departamento'] = $user_dom_departamento;
-						if(empty($user_dom_piso)) $array[$posicion]['piso'] = '---';
-						else $array[$posicion]['piso'] = $user_dom_piso;
-						if(empty($user_dom_codigo_postal)) $array[$posicion]['codigopostal'] = '---';
-						else $array[$posicion]['codigopostal'] = $user_dom_codigo_postal;
+						if(empty($client_domicilio_departamento)) $array[$posicion]['departamento'] = '---';
+						else $array[$posicion]['departamento'] = $client_domicilio_departamento;
+						if(empty($client_domicilio_piso)) $array[$posicion]['piso'] = '---';
+						else $array[$posicion]['piso'] = $client_domicilio_piso;
+						if(empty($client_domicilio_codigo_postal)) $array[$posicion]['codigopostal'] = '---';
+						else $array[$posicion]['codigopostal'] = $client_domicilio_codigo_postal;
+						if($client_preference_domicilio == 1) $preferenciaDom = translate('Lbl_Button_YES',$GLOBALS['lang']);
+						else $preferenciaDom = translate('Lbl_Button_NO',$GLOBALS['lang']);
+						$array[$posicion]['preferencia'] = $preferenciaDom;
 						
-						$array[$posicion]['acciones'] = '<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-edit"></i></button>';
+						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$idCliente.'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$idCliente.'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button>';
 						
 						$posicion++;
 					}
