@@ -291,10 +291,9 @@
 				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM finan_cli.telefono t, finan_cli.cliente c, finan_cli.tipo_telefono tt, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
-					$stmt->execute();    // Ejecuta la consulta preparada.
+					$stmt->execute();
 					$stmt->store_result();
 			 
-					// Obtiene las variables del resultado.
 					$stmt->bind_result($id_telefono, $client_tipo_telefono, $client_numero_telefono, $client_preference_telefono);
 										
 					$array[0] = array();

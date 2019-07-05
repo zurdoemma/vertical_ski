@@ -244,6 +244,21 @@ include("./menu/menu.php");
 								
 					tagnpc.dialog('open');
 					$('#montomaximoclientni').maskNumber();
+					
+					$( "#generoclientni" ).change(function() 
+					{
+						if($('#documentoni').val() != 0)
+						{
+							autoCompletarCamposAuto();
+						}
+					});
+					
+					$('#documentoni').keypress(function(event){
+						var keycode = (event.keyCode ? event.keyCode : event.which);
+						if(keycode == '13'){
+							autoCompletarCamposAuto(); 
+						}
+					});					
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);

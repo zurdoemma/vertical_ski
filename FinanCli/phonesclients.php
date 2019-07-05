@@ -508,7 +508,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			$.ajax({
 				url: urlgnd,
 				method: "POST",
-				data: { usuario: "<?php echo $_GET['usuario']; ?>", idTelefono: idTelefono, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val(), tipoTelefono: $( "#tipotelefonomi" ).val() },
+				data: { idCliente: "<?php echo $_GET['idCliente']; ?>", idTelefono: idTelefono, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val(), tipoTelefono: $( "#tipotelefonomi" ).val(), preferido: $('#telefonopreferidoclientemi').is(":checked"), token: $( "#tokenvccmi" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_15').hide();
 					
@@ -774,7 +774,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 		}
     </script>	
 	<script type="text/javascript">
-		function confirmar_accion(titulo, mensaje, usuario, idTelefono)
+		function confirmar_accion(titulo, mensaje, idCliente, idTelefono)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -787,7 +787,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						buttons: {
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
-										borrar_telefono_usuario(usuario, idTelefono);                                                      
+										borrar_telefono_cliente(idCliente, idTelefono);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -801,15 +801,15 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 		}
 	</script>
 	<script type="text/javascript">
-		function borrar_telefono_usuario(usuario, idTelefono)
+		function borrar_telefono_cliente(idCliente, idTelefono)
 		{
-			var urlrdu = "./acciones/borrartelefonouser.php";
+			var urlrdu = "./acciones/borrartelefonocliente.php";
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlrdu,
 				method: "POST",
-				data: { usuario: usuario, id_telefono: idTelefono },
+				data: { idCliente: idCliente, idTelefono: idTelefono },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -976,7 +976,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 					{
-						guardarModificacionTelefonoFinal();
+						guardarModificacionTelefonoFinal(idTelefono);
 					}
 					else
 					{

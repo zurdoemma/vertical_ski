@@ -432,6 +432,7 @@
 		'Msg_Client_Or_Phone_Not_Exist' => 'El cliente o teléfono selecccionado, no existe.',			
 		'The_Client_Phone_Was_Not_Correctly_Validated' => 'No se validó correctamente el teléfono del cliente!!',
 		'Msg_Be_Sure_To_Modify_The_Phone_Without_Validating' => 'Esta seguro de modificar el teléfono sin validar',
-		'Msg_Client_Modification_Phone_Verification_Code' => 'Codigo de verificación modificación de teléfono'		
+		'Msg_Client_Modification_Phone_Verification_Code' => 'Codigo de verificación modificación de teléfono',
+		'Msg_Limit_Remove_Phone' => 'El usuario debe tener por lo menos un teléfono asociado!!'		
 	);
 ?>
