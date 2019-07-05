@@ -54,7 +54,7 @@
 				echo '<div class="panel-group">';				
 				echo '	<div class="panel panel-default">';
 				echo '		<div id="panel-title-header" class="panel-heading">';
-				echo '			<h3 class="panel-title">'.translate('Lbl_New_Phone',$GLOBALS['lang']).'</h3>';
+				echo '			<h3 class="panel-title">'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'</h3>';
 				echo ' 		</div>';
 				echo '		<div class="panel-body">';
 				echo '			<div id="img_loader_7"></div>';

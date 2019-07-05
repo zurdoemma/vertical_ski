@@ -423,10 +423,15 @@
 		'Msg_Can_Not_Delete_The_Preferred_Address' => 'No se puede borrar el domicilio de preferencia!!!',
 		'Lbl_Phone_Client' => 'Telefonos de Cliente',
 		'Lbl_Authorize_Phone_Registration' => 'Autorizar Registro Teléfono',
-		'Msg_Must_Authorize_Phone_Registration' => 'Debe autorizar registro de teléfono',		
+		'Lbl_Authorize_Phone_Modify' => 'Autorizar Modificación Teléfono',
+		'Msg_Must_Authorize_Phone_Registration' => 'Debe autorizar registro de teléfono',	
+		'Msg_Must_Authorize_Phone_Modify' => 'Debe autorizar modificación de teléfono',		
 		'Lbl_Valid_Client_Phone_Mobile' => 'Validar Teléfono',
 		'Msg_Be_Sure_To_Register_The_Phone_Without_Validating' => 'Esta seguro de registrar el teléfono sin validar',
 		'Msg_Client_Registration_Phone_Verification_Code' => 'Codigo de verificación registro de teléfono',
-		'The_Client_Phone_Was_Not_Correctly_Validated' => 'No se validó correctamente el teléfono del cliente!!'		
+		'Msg_Client_Or_Phone_Not_Exist' => 'El cliente o teléfono selecccionado, no existe.',			
+		'The_Client_Phone_Was_Not_Correctly_Validated' => 'No se validó correctamente el teléfono del cliente!!',
+		'Msg_Be_Sure_To_Modify_The_Phone_Without_Validating' => 'Esta seguro de modificar el teléfono sin validar',
+		'Msg_Client_Modification_Phone_Verification_Code' => 'Codigo de verificación modificación de teléfono'		
 	);
 ?>

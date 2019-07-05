@@ -429,8 +429,80 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$( "#nrotelefonomi" ).tooltip('destroy');
 				}
 			}
+			
+			if($('#validarclientemi').is(":checked") && $('#tipotelefonomi').val() == 1)
+			{			
+				var urlvcm = "./acciones/validarcelularclientetm.php";
+				$('#img_loader_15').show();
+				
+				$.ajax({
+					url: urlvcm,
+					method: "POST",
+					data: { idTelefono: idTelefono, tokenVCC: $("#tokenvccmi").val(), idCliente: <?php echo $_GET['idCliente'] ?>, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val(), tipoTelefono: $( "#tipotelefonomi" ).val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_15').hide();
 						
-			var urlgnd = "./acciones/guardarmodificaciontelefono.php";
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>') != -1)
+						{
+							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Mobile_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+							dataresponse = dataresponse.replace(tokenR+"=:=:=:","");
+							
+							$('#tokenvccmi').val(tokenR);
+							var tagvccm = $("<div id='dialogvalidacioncelularclientem'></div>");
+							
+							tagvccm.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Validation_Mobile_Client',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagvccm.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagvccm.dialog('open');
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Only_Mobile_Phones_Can_Be_Validated',$GLOBALS['lang']); ?>') != -1)
+						{
+							confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 57, idTelefono);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Mobile_Phones_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+						{
+							confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 56, idTelefono);
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
+						{
+							guardarModificacionTelefonoFinal(idTelefono);
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_15').hide();
+						return;
+					}
+				});	
+			}
+			else
+			{
+				if($('#tipotelefonomi').val() == 1) confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 56, idTelefono);
+				else confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 57, idTelefono);
+			}						
+		}			
+	</script>
+	<script type="text/javascript">
+		function guardarModificacionTelefonoFinal(idTelefono)
+		{
+			var urlgnd = "./acciones/guardarmodificaciontelefonoc.php";
 			$('#img_loader_15').show();
 			
 			$.ajax({
@@ -456,10 +528,75 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#img_loader_15').hide();
 				}
 			});				
-			
-			
 		}			
 	</script>	
+	
+	<script type="text/javascript">
+		function verificarValidacionSMSModificacionTelefono(formulariovsmsm, idTelefono)
+		{
+			if($('#codigovalidsmsmi').val().length == 0)
+			{
+				$(function() {
+					$('#codigovalidsmsmi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#codigovalidsmsmi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#codigovalidsmsmi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#codigovalidsmsmi').tooltip('destroy');
+			}
+
+			var urlavcsmsm = "./acciones/verificarcodigosmsregistrotelefonom.php";
+			$('#img_loader_15').show();
+				 									
+			$.ajax({
+				url: urlavcsmsm,
+				method: "POST",
+				data: { codigo: $('#codigovalidsmsmi').val(), token: $( "#tokenvccmi" ).val(), idTelefono: idTelefono, idCliente: <?php echo $_GET['idCliente'] ?>, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_15').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_SMS_Code_Validated_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogvalidacioncelularclientem').dialog('destroy').remove();
+						guardarModificacionTelefonoFinal(idTelefono);
+					}
+					else
+					{
+						$('#codigovalidsmsmi').focus();
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#codigovalidsmsmi').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_15').hide();
+				}
+			});
+		}
+    </script>
 	
 	<script type="text/javascript">
 		function nuevoTelefono(idCliente)
@@ -525,16 +662,16 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
     </script>
 	
 	<script type="text/javascript">
-		function modificarTelefono(usuario, idTelefono)
+		function modificarTelefono(idCliente, idTelefono)
 		{
-			var urlmt = "./acciones/modificartelefono.php";
+			var urlmt = "./acciones/modificartelefonoc.php";
 			var tagmt = $("<div id='dialogmodifyphone'></div>");
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlmt,
 				method: "POST",
-				data: { usuario: usuario, id_telefono: idTelefono },
+				data: { idCliente: idCliente, id_telefono: idTelefono },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -555,6 +692,19 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 									tagmt.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					$('#tipotelefonomi').change(function() {
+						var valueAcm = $('#tipotelefonomi').val();
+						if(valueAcm == 1) {
+							$('#validartelefonoclientem').show();
+						}
+						else
+						{
+							$('#validartelefonoclientem').hide();
+							$('#validarclientemi').prop('checked', false);
+						}		       
+					});
+											
 					tagmt.dialog('open');
 				},
 				error: function(request, errorcode, errortext){
@@ -722,6 +872,34 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 				$('#img_loader').hide();
 		}
 	</script>
+	
+	<script type="text/javascript">
+		function confirmar_accion_validar_cliente_m(titulo, mensaje, motivo, idTelefono)
+		{
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										validar_cliente_supervisor_m(motivo, idTelefono);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>	
 
 	<script type="text/javascript">
 		function validar_cliente_supervisor(motivo)
@@ -777,6 +955,61 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			});			
 		}	
 	</script>
+	
+	<script type="text/javascript">
+		function validar_cliente_supervisor_m(motivo, idTelefono)
+		{			
+			var urlvcsm = "./acciones/validacionclientesupervisortcm.php";
+			$('#img_loader_15').show();
+									
+			$.ajax({
+				url: urlvcsm,
+				method: "POST",
+				data: { motivo: motivo, idCliente: <?php echo $_GET['idCliente'] ?>, idTelefono: idTelefono, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_15').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
+					{
+						guardarModificacionTelefonoFinal();
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Phone_Modify',$GLOBALS['lang']); ?>') != -1)
+						{
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Phone_Modify',$GLOBALS['lang']); ?>","");
+							var tagarcm = $("<div id='dialogautorizacionregistrotelefonom'></div>");
+							
+							tagarcm.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Authorize_Phone_Modify',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagarcm.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							tagarcm.dialog('open');
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+					}
+						
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_15').hide();
+				}
+			});			
+		}	
+	</script>	
 
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroTelefono(formularionacrt, motivo)
@@ -886,6 +1119,121 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 				},
 				error: function(request, errorcode, errortext){
 					$('#usuariosupervisorn2i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>	
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorModificacionTelefono(formularionacrtm, motivo, idTelefono)
+		{
+			if($('#usuariosupervisorn2mi').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn2mi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn2mi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn2mi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn2mi').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn2mi').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn2mi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn2mi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn2mi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn2mi').tooltip('destroy');
+			}			
+			
+			var urlasrcm = "./acciones/verificarcredencialessupervisorregistrotelefonom.php";
+			$('#img_loader_13').show();
+			
+			
+			var p111 = document.createElement("input");
+		 			
+			formularionacrtm.appendChild(p111);
+			p111.name = "p111";
+			p111.type = "hidden";
+			
+			p111.value = hex_sha512(formularionacrtm.passwordsupervisorn2mi.value);
+			
+			if(formularionacrtm.passwordsupervisorn2mi.value == "") p111.value = "";
+			formularionacrtm.passwordsupervisorn2mi.value = "";
+									
+			$.ajax({
+				url: urlasrcm,
+				method: "POST",
+				data: { motivo: motivo, idTelefono: idTelefono, usuarioSupervisor: formularionacrtm.usuariosupervisorn2mi.value, claveSupervisor: p111.value, idCliente: <?php echo $_GET['idCliente'] ?>, prefijoTelefono: $( "#prefijotelefonomi" ).val(), nroTelefono: $( "#nrotelefonomi" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogautorizacionregistrotelefonom').dialog('destroy').remove();
+						guardarModificacionTelefonoFinal(idTelefono);
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn2mi').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn2mi').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn2mi').focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
 				}

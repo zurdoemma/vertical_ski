@@ -78,7 +78,7 @@
 		echo '					<label class="control-label" for="validarclienten">'.translate('Lbl_Valid_Client_Phone_Mobile',$GLOBALS['lang']).':</label>';			
 		echo '					<div class="form-group" id="validarclienten">';	
 		echo '						<label class="switch">';
-		echo '						  <input type="checkbox" id="validarclienteni" name="validarclienten" checked />';
+		echo '						  <input type="checkbox" id="validarclienteni" name="validarclienteni" checked />';
 		echo '						  <span class="slider round"></span>';
 		echo '						</label>';
 		echo '					</div>';		
