@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 include('httpful.phar');
 
 function verificar_usuario($mysqli)
@@ -383,6 +383,7 @@ function envio_sms($from, $destination, $message)
 	curl_setopt( $envio_sms, CURLOPT_POSTFIELDS, $postSMS );
 	curl_setopt( $envio_sms, CURLOPT_RETURNTRANSFER, TRUE );
 	curl_setopt( $envio_sms, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_TIMEOUT, 90);
 	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYHOST, 0 );
 	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYPEER, 0 );
 
@@ -450,6 +451,7 @@ function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCui
 	$consulta_estado_financiero_ws = curl_init($GLOBALS['url_consulta_estado_financiero'].$GLOBALS['usuario_servicio_consulta_estado_financiero'].'/'.$GLOBALS['clave_servicio_consulta_estado_financiero'].'/'.$documento.'/'.$generoC);
 	curl_setopt( $consulta_estado_financiero_ws, CURLOPT_RETURNTRANSFER, TRUE );
 	curl_setopt( $consulta_estado_financiero_ws, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+	curl_setopt( $consulta_estado_financiero_ws, CURLOPT_TIMEOUT, 90);
 
 
 	$respuesta_consulta_estado_financiero_ws = curl_exec( $consulta_estado_financiero_ws );

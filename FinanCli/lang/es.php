@@ -434,6 +434,21 @@
 		'Msg_Be_Sure_To_Modify_The_Phone_Without_Validating' => 'Esta seguro de modificar el teléfono sin validar',
 		'Msg_Client_Modification_Phone_Verification_Code' => 'Codigo de verificación modificación de teléfono',
 		'Msg_Auto_Complete_Data_Client_OK' => 'Los datos del cliente se obtuvieron correctamente',
-		'Msg_Limit_Remove_Phone' => 'El usuario debe tener por lo menos un teléfono asociado!!'		
+		'Msg_Limit_Remove_Phone' => 'El usuario debe tener por lo menos un teléfono asociado!!',
+		'Lbl_Credits_Clients' => 'Créditos',
+		'File_Credits_Clients' => 'Créditos',
+		'Lbl_New_Credit' => 'Nuevo Crédito',
+		'Lbl_Date_Credit' => 'Fecha',
+		'Lbl_Type_Document_Credit' => 'T. Documento',
+		'Lbl_Type_Document_Credit2' => 'Tipo Documento',
+		'Lbl_Document_Credit' => 'Documento',
+		'Lbl_Amount_Credit' => 'Monto',
+		'Lbl_Name_Plan_Credit' => 'Plan Credito',
+		'Lbl_Fees_Credit' => 'Cuotas',
+		'Lbl_State_Credit' => 'Estado',
+		'Lbl_Actions_Credit' => 'Acciones Crédito',
+		'Msg_View_Credit_Client' => 'Ver Crédito',
+		'Lbl_Number_Phone_Credit_Client' => 'Teléfono',
+		'Lbl_Purchase_Amount_Client' => 'Monto Compra'
 	);
 ?>
