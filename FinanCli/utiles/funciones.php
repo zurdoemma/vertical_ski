@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp\www\pls_config.php';
+include_once 'c:\wamp64\www\pls_config.php';
 include('httpful.phar');
 
 function verificar_usuario($mysqli)
@@ -511,4 +511,5 @@ function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCui
 	return $msg_consulta.$dom->documentElement->textContent.$GLOBALS['url_consulta_estado_financiero'].$GLOBALS['usuario_servicio_consulta_estado_financiero'].'/'.$GLOBALS['clave_servicio_consulta_estado_financiero'].'/'.$documento.'/'.$generoC;
 	*/
 }
+
 ?>

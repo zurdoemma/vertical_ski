@@ -207,3 +207,52 @@ function caracteresCorreoValido(email){
         return true;
     }
 }
+
+function mayusculasPrimeraLetraPalabras(palabras){
+    palabras = palabras.replace(/\b\w/g, function(l){ return l.toUpperCase() });
+	
+	return palabras;
+}
+
+function separarNombreYApellido(nombreYApellido){
+	var fullName = nombreYApellido || ""; 
+	var result = {}; 
+	if (fullName.length > 0) 
+	{ 
+		var nameTokens = fullName.match(/[A-ZÁ-ÚÑÜ][a-zá-úñü]+|([aeodlsz]+\s+)+[A-ZÁ-ÚÑÜ][a-zá-úñü]+/g) || []; 
+		if (nameTokens.length > 3) 
+		{ 
+			result.name = nameTokens.slice(0, 2).join(' '); 
+		} 
+		else 
+		{ 
+			result.name = nameTokens.slice(0, 1).join(' '); 
+		} 
+		if (nameTokens.length > 2) 
+		{ 
+			result.lastName = nameTokens.slice(-2, -1).join(' '); 
+			result.secondLastName = nameTokens.slice(-1).join(' '); 
+		} 
+		else 
+		{ 
+			result.lastName = nameTokens.slice(-1).join(' '); 
+			result.secondLastName = ""; 
+		} 
+	} 
+	
+	return result; 
+}
+
+function separarCalleYNumero(calleYNumero){
+	var fullAddress = calleYNumero || ""; 
+	var result = {}; 
+	if (fullAddress.length > 0) 
+	{ 
+		var dividCYN = fullAddress.split(" ");
+		result.nameAddress = dividCYN.slice(0,-1).join(" ");
+		result.numberAddress = dividCYN.slice(-1).join(" ");
+	} 
+	
+	return result; 
+}
+	
