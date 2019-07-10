@@ -80,6 +80,8 @@ include("./menu/menu.php");
 									tagnpc.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					$('#tablefeescreditclientt').bootstrapTable({locale:'es-AR'});
 					tagnc.dialog('open');
 					$('#montomaximoclientcreditni').maskNumber();
 					$('#montocompraclientcreditni').maskNumber();

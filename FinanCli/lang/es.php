@@ -449,6 +449,10 @@
 		'Lbl_Actions_Credit' => 'Acciones Crédito',
 		'Msg_View_Credit_Client' => 'Ver Crédito',
 		'Lbl_Number_Phone_Credit_Client' => 'Teléfono',
-		'Lbl_Purchase_Amount_Client' => 'Monto Compra'
+		'Lbl_Purchase_Amount_Client' => 'Monto Compra',
+		'Lbl_Amount_Credit_Client' => 'Monto Crédito',
+		'Lbl_Fee_Credit' => 'Cuota',
+		'Lbl_Date_Expired_Fee_Credit' => 'Fecha Vencimiento',
+		'Lbl_Amount_Fee_Credit' => 'Monto Cuota'
 	);
 ?>
