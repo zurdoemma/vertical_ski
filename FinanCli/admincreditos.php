@@ -25,7 +25,8 @@ include("./menu/menu.php");
 	<link rel="stylesheet" href="./css/all.css">
 	<link rel="stylesheet" type="text/css" href="./css/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap-multiselect.css">
-
+	<link rel="stylesheet" href="./utiles/CodeMirror/lib/codemirror.css">
+	<link rel="stylesheet" href="./utiles/CodeMirror/addon/hint/show-hint.css">	
 	
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/JavaScript" src="./js/bootstrap.min.op2.js" ></script>
@@ -42,10 +43,33 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
-	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>	
+	<script type="text/JavaScript" src="./js/jquery.masknumber.js" ></script>
+	<script src="./utiles/CodeMirror/lib/codemirror.js"></script>
+	<script src="./utiles/CodeMirror/addon/hint/show-hint.js"></script>
+	<script src="./utiles/CodeMirror/addon/hint/xml-hint.js"></script>
+	<script src="./utiles/CodeMirror/mode/xml/xml.js"></script>	
+	<script src="./utiles/CodeMirror/addon/search/search.js"></script>
+	<script src="./utiles/CodeMirror/addon/search/searchcursor.js"></script>	
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
+	
+	<script type="text/javascript">	
+		function buscarTextoEstadoFinanciero()
+		{	     
+			 if(editorEF != null)
+			 {
+				 var cursor = editorEF.getSearchCursor($('#buscartextoestadocrediticioclientei').val() , CodeMirror.Pos(editorEF.firstLine(), 0), {caseFold: true, multiline: true});
+				 if(cursor.find(false))
+				 { 
+					  var from = cursor.from();
+					  var to = cursor.to();
+					  editorEF.setSelection(CodeMirror.Pos(from.line, 0), to);
+					  editorEF.scrollIntoView({from: from, to: CodeMirror.Pos(to.line + 10, 0)});
+				 }
+			 }
+		}
+	</script>
 	
 	<script type="text/javascript">
 		function nuevoCredito()
@@ -82,6 +106,22 @@ include("./menu/menu.php");
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 					
 					$('#tablefeescreditclientt').bootstrapTable({locale:'es-AR'});
+					
+					$( "#tipodocumentocreditclientni" ).change(function() 
+					{
+						if($( "#documentoclientcreditni" ).val().length != 0)
+						{
+							buscarClienteCredito();
+						}
+					});
+
+					$('#documentoclientcreditni').keypress(function(event){
+						var keycode = (event.keyCode ? event.keyCode : event.which);
+						if(keycode == '13'){
+							buscarClienteCredito(); 
+						}
+					});					
+					
 					tagnc.dialog('open');
 					$('#montomaximoclientcreditni').maskNumber();
 					$('#montocompraclientcreditni').maskNumber();
@@ -93,6 +133,315 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
+	
+	<script type="text/javascript">
+		function buscarClienteCredito()
+		{
+			if($('#validarstatuscreditclientecreni').is(":checked"))
+			{
+				var urlbcc = "./acciones/buscarclientecredito.php";
+				$('#img_loader_16').show();
+				
+				$.ajax({
+					url: urlbcc,
+					method: "POST",
+					data: { motivo: 59, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenveccrediti").val() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_16').hide();
+						
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+						{
+							window.location.replace("./login.php?result_ok=3");
+						}
+						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']);?>') != -1)
+						{
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>"+"=::=::","");
+							var tokenVECCC3 = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+							dataresponse = dataresponse.replace(tokenVECCC3+"=:=:","");
+							
+							var compCampos = dataresponse.split("|");
+							if(compCampos.length != 5)
+							{
+								mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+								$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+								$('#documentoclientcreditni').prop('title', dataresponse);
+								$('#documentoclientcreditni').focus();
+								
+								$( "#montocompraclientcreditni" ).prop( "disabled", true );
+								
+								$( "#montocompraclientcreditni" ).val("");
+								$( "#nombreclientcreditni" ).val("");
+								$( "#apellidoclientcreditni" ).val("");
+								$( "#tipoclientcreditni" ).val("1");
+								$( "#telefonoclientcreditni" ).val("");
+								$( "#montomaximoclientcreditni" ).val("");
+								$( "#montocompraclientcreditni" ).val("");								
+							}
+							else
+							{
+								$( "#montocompraclientcreditni" ).prop( "disabled", false );
+								$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
+								$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>');
+							
+								$( "#nombreclientcreditni" ).val(compCampos[0]);
+								$( "#apellidoclientcreditni" ).val(compCampos[1]);
+								
+								var tipoCliC = document.getElementById('tipoclientcreditni');
+								for (var i = 0; i < tipoCliC.options.length; i++) {
+									if (tipoCliC.options[i].text === compCampos[2]) {
+										tipoCliC.selectedIndex = i;
+										break;
+									}
+								}
+								
+								$( "#telefonoclientcreditni" ).val(compCampos[3]);
+								$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
+								$( "#tokenveccrediti" ).val(tokenVECCC3);
+								$( "#montocompraclientcreditni" ).focus();
+							}							
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+							dataresponse = dataresponse.replace(tokenR+"=:=:=:","");
+							
+							$('#tokenveccrediti').val(tokenR);
+							var tagvcc = $("<div id='dialogsearchclientcredit'></div>");
+							
+							tagvcc.html(dataresponse).dialog({
+							  show: "blind",
+							  hide: "explode",
+							  height: "auto",
+							  width: "auto",					  
+							  modal: true, 
+							  title: "<?php echo translate('Lbl_Validation_Credit_Status_Client',$GLOBALS['lang']);?>",
+							  autoResize:true,
+									close: function(){
+											tagvcc.dialog('destroy').remove()
+									}
+							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+							
+						    editorEF = CodeMirror.fromTextArea(document.getElementById("resultadoestadofinancieroclientei"), {
+								mode: "xml",
+								lineNumbers: true,
+								readOnly: true
+							});
+							editorEF.setSize(650, 300);
+							
+							$('#buscartextoestadocrediticioclientei').keypress(function(event){
+								var keycode = (event.keyCode ? event.keyCode : event.which);
+								if(keycode == '13'){
+									buscarTextoEstadoFinanciero(); 
+								}
+							});							
+							
+							$( "#montocompraclientcreditni" ).prop( "disabled", true );
+
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#nombreclientcreditni" ).val("");
+							$( "#apellidoclientcreditni" ).val("");
+							$( "#tipoclientcreditni" ).val("1");
+							$( "#telefonoclientcreditni" ).val("");
+							$( "#montomaximoclientcreditni" ).val("");
+							$( "#montocompraclientcreditni" ).val("");
+							
+							tagvcc.dialog('open');							
+						}
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+						{
+							alert(dataresponse);
+							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
+						}						
+						else 
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+							$('#documentoclientcreditni').prop('title', dataresponse);
+							$('#documentoclientcreditni').focus();
+							
+							$( "#montocompraclientcreditni" ).prop( "disabled", true );
+
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#nombreclientcreditni" ).val("");
+							$( "#apellidoclientcreditni" ).val("");
+							$( "#tipoclientcreditni" ).val("1");
+							$( "#telefonoclientcreditni" ).val("");
+							$( "#montomaximoclientcreditni" ).val("");
+							$( "#montocompraclientcreditni" ).val("");								
+						}
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_16').hide();
+					}
+				});
+			}
+			else
+			{
+				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
+			}
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorEstadoFinancieroCliente(formulariocefc, motivo)
+		{
+			if($('#usuariosupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn3i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn3i').tooltip('destroy');
+			}			
+			
+			var urlasrc2 = "./acciones/verificarcredencialessupervisorregistrocreditocliente2.php";
+			$('#img_loader_13').show();
+			
+			
+			var p221 = document.createElement("input");
+		 			
+			formulariocefc.appendChild(p221);
+			p221.name = "p221";
+			p221.type = "hidden";
+			
+			p221.value = hex_sha512(formulariocefc.passwordsupervisorn3i.value);
+			
+			if(formulariocefc.passwordsupervisorn3i.value == "") p221.value = "";
+			formulariocefc.passwordsupervisorn3i.value = "";
+					
+			$.ajax({
+				url: urlasrc2,
+				method: "POST",
+				data: { motivo: motivo, usuarioSupervisor: formulariocefc.usuariosupervisorn3i.value, claveSupervisor: p221.value, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenveccrediti").val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
+						var tokenVECCC4 = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+						dataresponse = dataresponse.replace(tokenVECCC4+"=:=:","");
+						
+						var compCampos = dataresponse.split("|");
+						if(compCampos.length != 5)
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+							$('#documentoclientcreditni').prop('title', dataresponse);
+							$('#documentoclientcreditni').focus();
+							
+							$( "#montocompraclientcreditni" ).prop( "disabled", true );
+
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#nombreclientcreditni" ).val("");
+							$( "#apellidoclientcreditni" ).val("");
+							$( "#tipoclientcreditni" ).val("1");
+							$( "#telefonoclientcreditni" ).val("");
+							$( "#montomaximoclientcreditni" ).val("");
+							$( "#montocompraclientcreditni" ).val("");								
+						}
+						else
+						{
+							$('#dialogautorizacionregistrocreditocliente').dialog('destroy').remove();
+							$( "#montocompraclientcreditni" ).prop( "disabled", false );
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
+							$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>');
+						
+							$( "#nombreclientcreditni" ).val(compCampos[0]);
+							$( "#apellidoclientcreditni" ).val(compCampos[1]);
+							
+							var tipoCliC = document.getElementById('tipoclientcreditni');
+							for (var i = 0; i < tipoCliC.options.length; i++) {
+								if (tipoCliC.options[i].text === compCampos[2]) {
+									tipoCliC.selectedIndex = i;
+									break;
+								}
+							}
+							
+							$( "#telefonoclientcreditni" ).val(compCampos[3]);
+							$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
+							$( "#tokenvalidsupcrei" ).val(tokenVECCC4);
+							$( "#montocompraclientcreditni" ).focus();
+						}						
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn3i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>	
 			
 	<script type="text/javascript">
 		function modificarPlanCredito(plancredito, nombre)
@@ -644,7 +993,302 @@ include("./menu/menu.php");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
 				$('#img_loader').hide();
 		}
-	</script>	
+	</script>
+	<script type="text/javascript">
+		function confirmar_accion_validar_cliente(titulo, mensaje, motivo)
+		{
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										validar_cliente_supervisor(motivo);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+	
+	<script type="text/javascript">
+		function validar_cliente_supervisor(motivo)
+		{			
+			var urlvcsrc = "./acciones/validacionclientesupervisorregistrocredito.php";
+			$('#img_loader_16').show();
+									
+			$.ajax({
+				url: urlvcsrc,
+				method: "POST",
+				data: { motivo: motivo, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenvalidsupcrei").val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_16').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>","");
+						var tagarcc = $("<div id='dialogautorizacionregistrocreditocliente'></div>");
+						
+						tagarcc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_Authorize_Client_Registration_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagarcc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagarcc.dialog('open');
+					}
+					else if(dataresponse.indexOf('<?php echo translate('Msg_Authorize_Client_Registration_Credit_OK',$GLOBALS['lang']); ?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Authorize_Client_Registration_Credit_OK',$GLOBALS['lang']); ?>"+"=::=::","");
+						var tokenVECCC = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+						dataresponse = dataresponse.replace(tokenVECCC+"=:=:","");
+						
+						var compCampos = dataresponse.split("|");
+						if(compCampos.length != 5)
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+							$('#documentoclientcreditni').prop('title', dataresponse);
+							$('#documentoclientcreditni').focus();
+							
+							$( "#montocompraclientcreditni" ).prop( "disabled", true );
+							
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#nombreclientcreditni" ).val("");
+							$( "#apellidoclientcreditni" ).val("");
+							$( "#tipoclientcreditni" ).val("1");
+							$( "#telefonoclientcreditni" ).val("");
+							$( "#montomaximoclientcreditni" ).val("");
+							$( "#montocompraclientcreditni" ).val("");								
+						}
+						else
+						{
+							$( "#montocompraclientcreditni" ).prop( "disabled", false );
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
+							$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Authorize_Client_Registration_Credit_OK',$GLOBALS['lang']); ?>');
+						
+							$( "#nombreclientcreditni" ).val(compCampos[0]);
+							$( "#apellidoclientcreditni" ).val(compCampos[1]);
+							
+							var tipoCliC = document.getElementById('tipoclientcreditni');
+							for (var i = 0; i < tipoCliC.options.length; i++) {
+								if (tipoCliC.options[i].text === compCampos[2]) {
+									tipoCliC.selectedIndex = i;
+									break;
+								}
+							}
+							
+							$( "#telefonoclientcreditni" ).val(compCampos[3]);
+							$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
+							$( "#tokenvalidsupcrei" ).val(tokenVECCC);
+							$( "#montocompraclientcreditni" ).focus();
+						}
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+						$('#documentoclientcreditni').prop('title', dataresponse);
+						$('#documentoclientcreditni').focus();
+						
+						$( "#montocompraclientcreditni" ).prop( "disabled", true );
+
+						$( "#montocompraclientcreditni" ).val("");
+						$( "#nombreclientcreditni" ).val("");
+						$( "#apellidoclientcreditni" ).val("");
+						$( "#tipoclientcreditni" ).val("1");
+						$( "#telefonoclientcreditni" ).val("");
+						$( "#montomaximoclientcreditni" ).val("");
+						$( "#montocompraclientcreditni" ).val("");						
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_16').hide();
+				}
+			});			
+		}	
+	</script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorRegistroCreditoCliente(formularionacrc, motivo)
+		{
+			if($('#usuariosupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn2i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn2i').tooltip('destroy');
+			}			
+			
+			var urlasrc = "./acciones/verificarcredencialessupervisorregistrocreditocliente.php";
+			$('#img_loader_13').show();
+			
+			
+			var p211 = document.createElement("input");
+		 			
+			formularionacrc.appendChild(p211);
+			p211.name = "p211";
+			p211.type = "hidden";
+			
+			p211.value = hex_sha512(formularionacrc.passwordsupervisorn2i.value);
+			
+			if(formularionacrc.passwordsupervisorn2i.value == "") p211.value = "";
+			formularionacrc.passwordsupervisorn2i.value = "";
+									
+			$.ajax({
+				url: urlasrc,
+				method: "POST",
+				data: { motivo: motivo, usuarioSupervisor: formularionacrc.usuariosupervisorn2i.value, claveSupervisor: p211.value, tipoDocumento: $( "#tipodocumentocreditclientni" ).val(), documento: $( "#documentoclientcreditni" ).val(), token: $("#tokenvalidsupcrei").val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
+						var tokenVECCC2 = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+						dataresponse = dataresponse.replace(tokenVECCC2+"=:=:","");
+						
+						var compCampos = dataresponse.split("|");
+						if(compCampos.length != 5)
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+							$('#documentoclientcreditni').prop('title', dataresponse);
+							$('#documentoclientcreditni').focus();
+							
+							$( "#montocompraclientcreditni" ).prop( "disabled", true );
+
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#nombreclientcreditni" ).val("");
+							$( "#apellidoclientcreditni" ).val("");
+							$( "#tipoclientcreditni" ).val("1");
+							$( "#telefonoclientcreditni" ).val("");
+							$( "#montomaximoclientcreditni" ).val("");
+							$( "#montocompraclientcreditni" ).val("");								
+						}
+						else
+						{
+							$('#dialogautorizacionregistrocreditocliente').dialog('destroy').remove();
+							$( "#montocompraclientcreditni" ).prop( "disabled", false );
+							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
+							$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>');
+						
+							$( "#nombreclientcreditni" ).val(compCampos[0]);
+							$( "#apellidoclientcreditni" ).val(compCampos[1]);
+							
+							var tipoCliC = document.getElementById('tipoclientcreditni');
+							for (var i = 0; i < tipoCliC.options.length; i++) {
+								if (tipoCliC.options[i].text === compCampos[2]) {
+									tipoCliC.selectedIndex = i;
+									break;
+								}
+							}
+							
+							$( "#telefonoclientcreditni" ).val(compCampos[3]);
+							$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
+							$( "#tokenvalidsupcrei" ).val(tokenVECCC2);
+							$( "#montocompraclientcreditni" ).focus();
+						}						
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn2i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>	
 </head>
 
 <body>

@@ -453,6 +453,18 @@
 		'Lbl_Amount_Credit_Client' => 'Monto Crédito',
 		'Lbl_Fee_Credit' => 'Cuota',
 		'Lbl_Date_Expired_Fee_Credit' => 'Fecha Vencimiento',
-		'Lbl_Amount_Fee_Credit' => 'Monto Cuota'
+		'Lbl_Amount_Fee_Credit' => 'Monto Cuota',
+		'Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status' => 'Esta seguro de registrar el crédito sin validar el estado financiero',
+		'Msg_Must_Authorize_Client_Registration_Credit' => 'Debe Autorizar por Supervisor',
+		'Lbl_Authorize_Client_Registration_Credit' => 'Autorizar Registro Crédito',		
+		'Msg_Authorize_Client_Registration_Credit_OK' => 'Autorizacion Registro Credito OK',
+		'Msg_Disable_Client' => 'El cliente se encuentra deshabilitado.',
+		'Msg_Disable_Client_Headline' => 'El cliente titular se encuentra deshabilitado.',		
+        'Msg_Client_Headline_Not_Exist' => 'El cliente titular no existe!!!',
+		'Lbl_Status_Fee_Pending' => 'Pendiente',
+		'Lbl_Status_Fee_In_Mora' => 'En Mora',
+		'Lbl_Status_Fee_Condoned' => 'Condonada',
+		'Lbl_Status_Fee_Incobrable' => 'Incobrable',
+		'Lbl_Status_Fee_Paid' => 'Pagada'
 	);
 ?>

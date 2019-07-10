@@ -28,7 +28,7 @@
 		echo '			<h3 class="panel-title">'.translate('Lbl_New_Credit',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_11"></div>';
+		echo '			<div id="img_loader_16"></div>';
 		echo '			<form id="formularionc" role="form">';
 		echo '				<div class="form-group form-inline text-center">';		
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="validarstatuscreditclientecren">'.translate('Lbl_Valid_Status_Credit_Client',$GLOBALS['lang']).':</label>';			
@@ -42,6 +42,9 @@
 		echo '				<div class="form-group form-inline"><hr />';
 		echo '					<div class="form-group" id="tokenveccredit" style="display:none;">';
 		echo '						<input class="form-control input-sm green-border" id="tokenveccrediti" name="tokenveccrediti" type="text" maxlength="128" />';
+		echo '					</div>';
+		echo '					<div class="form-group" id="tokenvalidsupcre" style="display:none;">';
+		echo '						<input class="form-control input-sm green-border" id="tokenvalidsupcrei" name="tokenvalidsupcrei" type="text" maxlength="128" />';
 		echo '					</div>';		
 		echo '					&nbsp;<label class="control-label" for="tipodocumentocreditclientn">'.translate('Lbl_Type_Document_Credit2',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipodocumentocreditclientn">';
@@ -109,7 +112,7 @@
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="plancreditclientn">'.translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditclientn">';
-		echo '						<select class="form-control input-sm" name="plancreditclientni" id="plancreditclientni" style="width:190px;">';			 
+		echo '						<select class="form-control input-sm" name="plancreditclientni" id="plancreditclientni" style="width:190px;" disabled >';			 
 										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito")) 
 										{ 
 											$stmt->execute();    
