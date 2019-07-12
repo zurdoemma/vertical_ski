@@ -21,7 +21,35 @@
 				header('Location:../login.php?error_l=9');
 				return;
 		}
-						
+		
+		if($stmt48 = $mysqli->prepare("SELECT s.id_cadena FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		{
+			$stmt48->bind_param('s', $_SESSION['username']);
+			$stmt48->execute();    
+			$stmt48->store_result();
+			
+			$totR48 = $stmt48->num_rows;
+
+			if($totR48 > 0)
+			{
+				$stmt48->bind_result($id_cadena_usuario);
+				$stmt48->fetch();
+								
+				$stmt48->free_result();
+				$stmt48->close();
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
 		echo '<div class="panel-group">';				
 		echo '	<div class="panel panel-default">';
 		echo '		<div id="panel-title-header" class="panel-heading">';
@@ -113,8 +141,10 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="plancreditclientn">'.translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditclientn">';
 		echo '						<select class="form-control input-sm" name="plancreditclientni" id="plancreditclientni" style="width:190px;" disabled >';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito")) 
+										/**
+										if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre FROM finan_cli.plan_credito pc, finan_cli.cadena c WHERE pc.id_cadena = c.id AND c.id = ?")) 
 										{ 
+											$stmt->bind_param('i', $id_cadena_usuario);
 											$stmt->execute();    
 											$stmt->store_result();
 										 
@@ -129,6 +159,7 @@
 											echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
 											return;			
 										}
+										*/
 		echo '						</select>';
 		echo '					</div>';		
 		echo '				</div>';
@@ -138,7 +169,7 @@
 										<div id="panel-title-header" class="panel-heading">
 											<h3 class="panel-title">'.translate('Lbl_Fees_Credit',$GLOBALS['lang']).'</h3>
 										</div>
-										<div id="apDiv1" class="panel-body">
+										<div id="apDiv11" class="panel-body">
 											<div id="tablefeescreditclient" class="table-responsive">
 												<table id="tablefeescreditclientt" data-classes="table table-hover table-condensed"
 													data-striped="true" data-pagination="true">

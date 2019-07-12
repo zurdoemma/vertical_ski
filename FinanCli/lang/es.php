@@ -465,6 +465,15 @@
 		'Lbl_Status_Fee_In_Mora' => 'En Mora',
 		'Lbl_Status_Fee_Condoned' => 'Condonada',
 		'Lbl_Status_Fee_Incobrable' => 'Incobrable',
-		'Lbl_Status_Fee_Paid' => 'Pagada'
+		'Lbl_Status_Fee_Paid' => 'Pagada',
+		'Msg_View_Info_Credit_Client_OK' => 'Se obtuvo la información de crédito correctamente',
+		'Msg_Max_Amount_Credit_Client_Exceeded' => 'Monto maximo de credito excedido',
+		'Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded' => 'Esta seguro de registrar el crédito excediendo el monto máximo',
+		'Msg_Not_Validated_Status_Credit_Client' => 'No se valido el estado financiero del cliente correctamente!!',
+		'There_Is_ No_Chain_Associated_With_The_User' => 'No existe la cadena asociada al usuario',
+		'The_Selected_Credit_Plan_Is_Inconsistent_User_Client' => 'El plan de credito seleccionado es inconsistente al usuario/cliente!!',
+		'The_Amount_Of_Available_Credit_Is_Incosistent_Re_Register_Credit' => 'El monto de crédito disponible es incosistente, vuelva a registrar credito!!',
+		'No_Credit_Plans_Associated_With_The_Customer_Credit_Profile' => 'Sin planes de credito asociado al perfil de crédito del cliente!!',
+		'Msg_New_Credit_Client_OK' => 'El credito se registro correctamente!!'
 	);
 ?>

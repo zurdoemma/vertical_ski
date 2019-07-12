@@ -514,4 +514,67 @@ function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCui
 	*/
 }
 
+function obtenerFechaInicialCuotaCredito($id_tipo_diferimiento_cuota, $mysqlip) {
+	
+ 	if ($stmt73 = $mysqlip->prepare("SELECT id, nombre FROM finan_cli.parametros WHERE id = ?")) 
+	{
+		$stmt73->bind_param('i', $id_tipo_diferimiento_cuota);
+		$stmt73->execute();    // Ejecuta la consulta preparada.
+		$stmt73->store_result();
+ 
+		// Obtiene las variables del resultado.
+		$stmt73->bind_result($parameter_id, $parameter_value);
+		$stmt73->fetch();		
+	}
+	else return translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	
+	$fecha_actual = date("Y-m-d");
+	if($parameter_value == 'tipo_diferimiento_cuota_liviano')
+	{
+		$fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_actual. ' + 30 days'));
+		$dia_venc = date('d', strtotime($fecha_vencimiento_cuota));
+		if($dia_venc >= 20 && $dia_venc <= 31)
+		{
+			$cantidad_dias_dif_fm = 32 - $dia_venc;
+			$fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + '.$cantidad_dias_dif_fm.' days'));
+			$dayofweek = date('w', strtotime($fecha_vencimiento_cuota));
+			
+			if($dayofweek == 0) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 1 days'));
+			if($dayofweek == 6) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 2 days'));
+		}
+		else
+		{
+			$dayofweek = date('w', strtotime($fecha_vencimiento_cuota));
+			
+			if($dayofweek == 0) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 1 days'));
+			if($dayofweek == 6) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 2 days'));			
+		}
+	}
+	else
+	{
+		$fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_actual. ' + 30 days'));
+		
+		$dayofweek = date('w', strtotime($fecha_vencimiento_cuota));
+		
+		if($dayofweek == 0) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 1 days'));
+		if($dayofweek == 6) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 2 days'));			
+	}
+	
+	$stmt73->free_result();
+	$stmt73->close();
+	
+	return $fecha_vencimiento_cuota;
+}
+
+function obtenerFechaSiguienteCuotaCredito($fecha_anterior) {
+	
+	$fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_anterior. ' + 30 days'));
+	$dayofweek = date('w', strtotime($fecha_vencimiento_cuota));
+		
+	if($dayofweek == 0) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 1 days'));
+	if($dayofweek == 6) $fecha_vencimiento_cuota = date('Y-m-d', strtotime($fecha_vencimiento_cuota. ' + 2 days'));
+	
+	return $fecha_vencimiento_cuota;
+}
+
 ?>

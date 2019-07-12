@@ -23,12 +23,13 @@
 		}
 		
 		$tokenVECC=htmlspecialchars($_POST["token"], ENT_QUOTES, 'UTF-8');
+		$tokenVS=htmlspecialchars($_POST["token2"], ENT_QUOTES, 'UTF-8');
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 
-		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
+		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit, c.id_perfil_credito FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt47->bind_param('is', $tipoDocumento, $documento);
 			$stmt47->execute();    
@@ -43,7 +44,7 @@
 			}
 			else
 			{
-				$stmt47->bind_result($id_cliente_db, $estado_cliente_db, $id_titular_cliente_db, $monto_maximo_credito_cliente_db, $nombres_cliente_db, $apellidos_cliente_db, $telefono_cliente_db, $cuil_cuit_cliente_db);
+				$stmt47->bind_result($id_cliente_db, $estado_cliente_db, $id_titular_cliente_db, $monto_maximo_credito_cliente_db, $nombres_cliente_db, $apellidos_cliente_db, $telefono_cliente_db, $cuil_cuit_cliente_db, $id_perfil_credito_cliente_db);
 				$stmt47->fetch();
 				
 				$cuitCuil = $cuil_cuit_cliente_db;
@@ -190,7 +191,8 @@
 				{
 					$date_registro_a_s = date("Ymd")."%";
 					$motivo2 = 60;
-					$stmt51->bind_param('issiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $tokenVECC);
+					if(empty($id_cliente_titular_db)) $stmt51->bind_param('issiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $tokenVS);
+					else $stmt51->bind_param('issiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $tokenVS);
 					$stmt51->execute();    
 					$stmt51->store_result();
 					
@@ -198,21 +200,82 @@
 
 					if($totR51 > 0)
 					{						
-						echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']).'=::=::'.$tokenVECC.'=:=:'.$nombres_cliente_db.'|'.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$telefono_cliente_db.'|'.$monto_credito_disponible;
-						$stmt51->free_result();
-						$stmt51->close();
-						return;
-					}			
+						if($stmt61 = $mysqli->prepare("SELECT s.id_cadena FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+						{
+							$stmt61->bind_param('s', $_SESSION['username']);
+							$stmt61->execute();    
+							$stmt61->store_result();
+							
+							$totR61 = $stmt61->num_rows;
+
+							if($totR61 > 0)
+							{
+								$stmt61->bind_result($id_cadena_usuario);
+								$stmt61->fetch();
+												
+								$stmt61->free_result();
+								$stmt61->close();
+							}
+							else
+							{
+								echo translate('There_Is_ No_Chain_Associated_With_The_User',$GLOBALS['lang']);
+								return;
+							}
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}						
+						
+						if($stmt62 = $mysqli->prepare("SELECT pc.id, pc.nombre FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.perfil_credito pcre WHERE pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = pcre.id AND pc.id_cadena = c.id AND pcre.id = ? AND c.id = ?"))
+						{
+							$stmt62->bind_param('ii', $id_perfil_credito_cliente_db, $id_cadena_usuario);
+							$stmt62->execute();    
+							$stmt62->store_result();
+							
+							$totR62 = $stmt62->num_rows;
+
+							if($totR62 > 0)
+							{
+								$stmt62->bind_result($id_plan_credito_s_db, $nombre_plan_credito_s_db);
+								
+								while($stmt62->fetch())
+								{
+									if(empty($planesCreditoCli)) $planesCreditoCli = $id_plan_credito_s_db.'|'.$nombre_plan_credito_s_db;
+									else $planesCreditoCli = $planesCreditoCli.';;'.$id_plan_credito_s_db.'|'.$nombre_plan_credito_s_db;
+								}
+								
+								$stmt62->free_result();
+								$stmt62->close();
+								
+								echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']).'=::=::'.$tokenVECC.'=:::=:::'.$tokenVS.'=::::=::::'.$planesCreditoCli.'=:=:'.$nombres_cliente_db.'|'.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$telefono_cliente_db.'|'.$monto_credito_disponible;
+								$stmt51->free_result();
+								$stmt51->close();
+								return;								
+							}
+							else
+							{
+								echo translate('No_Credit_Plans_Associated_With_The_Customer_Credit_Profile',$GLOBALS['lang']);
+								return;
+							}
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}	
+					}
+
+					$stmt51->free_result();
+					$stmt51->close();					
 				}
 				else
 				{
 					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 					return;
 				}
-			}
-
-			$stmt51->free_result();
-			$stmt51->close();			
+			}			
 		}
 		else
 		{
@@ -398,8 +461,8 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 							if(!$stmt43 = $mysqli->prepare($insertECCOP))
 							{
 								echo $mysqli->error;
@@ -411,8 +474,10 @@
 							else
 							{
 								$date_registro_a_eccef_db = date("YmdHis");
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt43->bind_param('sisisis', $date_registro_a_eccef_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
-								else $stmt43->bind_param('sisis', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+								$tokenECRC = md5(uniqid(rand(), true));
+								$tokenECRC = hash('sha512', $tokenECRC);
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt43->bind_param('sisisiss', $date_registro_a_eccef_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento, $tokenECRC);
+								else $stmt43->bind_param('sisiss', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tokenECRC);
 								if(!$stmt43->execute())
 								{
 									echo $mysqli->error;
@@ -427,7 +492,9 @@
 							}
 
 							$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-							echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+							if(empty($tokenECF)) $tokenECF = $tokenVECC;
+							if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+							echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 							echo '<div class="panel-group">';				
 							echo '	<div class="panel panel-default">';
 							echo '		<div id="panel-title-header" class="panel-heading">';
@@ -669,7 +736,9 @@
 								if($totR44 == 0)
 								{
 									$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-									echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+									if(empty($tokenECF)) $tokenECF = $tokenVECC;
+									if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+									echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 									echo '<div class="panel-group">';				
 									echo '	<div class="panel panel-default">';
 									echo '		<div id="panel-title-header" class="panel-heading">';
@@ -907,7 +976,9 @@
 								else
 								{
 									$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-									echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+									if(empty($tokenECF)) $tokenECF = $tokenVECC;
+									if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+									echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 									echo '<div class="panel-group">';				
 									echo '	<div class="panel panel-default">';
 									echo '		<div id="panel-title-header" class="panel-heading">';
@@ -1159,7 +1230,9 @@
 							if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
 							{
 								$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-								echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+								if(empty($tokenECF)) $tokenECF = $tokenVECC;
+								if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+								echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 								echo '<div class="panel-group">';				
 								echo '	<div class="panel panel-default">';
 								echo '		<div id="panel-title-header" class="panel-heading">';
@@ -1401,7 +1474,9 @@
 									if($totR44 == 0)
 									{
 										$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-										echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+										if(empty($tokenECF)) $tokenECF = $tokenVECC;
+										if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+										echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 										echo '<div class="panel-group">';				
 										echo '	<div class="panel panel-default">';
 										echo '		<div id="panel-title-header" class="panel-heading">';
@@ -1639,7 +1714,9 @@
 									else
 									{
 										$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-										echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+										if(empty($tokenECF)) $tokenECF = $tokenVECC;
+										if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+										echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 										echo '<div class="panel-group">';				
 										echo '	<div class="panel panel-default">';
 										echo '		<div id="panel-title-header" class="panel-heading">';
@@ -1877,7 +1954,9 @@
 						else
 						{
 							$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-							echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:=:=:';
+							if(empty($tokenECF)) $tokenECF = $tokenVECC;
+							if(empty($tokenECRC)) $tokenECRC = $tokenVS;
+							echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']).'=::=::=::'.$tokenECF.'=:::=:::'.$tokenECRC.'=:=:=:';
 							echo '<div class="panel-group">';				
 							echo '	<div class="panel panel-default">';
 							echo '		<div id="panel-title-header" class="panel-heading">';
