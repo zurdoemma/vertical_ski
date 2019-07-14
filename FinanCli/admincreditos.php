@@ -74,8 +74,6 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoCredito()
 		{
-			// alert($('.search').find(':input').val()); --> BUSQUEDA DE CREDITOS POR DOCUMENTO
-
 			var urlnc = "./acciones/nuevocredito.php";
 			var tagnc = $("<div id='dialognewcredit'></div>");
 			$('#img_loader_5').show();
@@ -140,6 +138,68 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
+	
+	<script type="text/javascript">
+		function buscarCreditosCliente()
+		{
+			if($('.search').find(':input').val().length == 0)
+			{
+				$('.search').find(':input').focus();
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Search_Credits',$GLOBALS['lang']);?>");
+				return;
+			}
+
+			var urlbccd = "./acciones/buscarcreditosclientedocumento.php";
+			$('#img_loader_5').show();
+			
+			$.ajax({
+				url: urlbccd,
+				method: "POST",
+				data: { documento: $('.search').find(':input').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Search_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						dataresponse = dataresponse.replace(menR+"=:=:=:","");
+						var datTable = dataresponse.substring(0,dataresponse.indexOf('=::=::=::'));
+						dataresponse = dataresponse.replace(datTable+"=::=::=::","");
+						
+						$('#tableadmincreditst').bootstrapTable('load',JSON.parse(datTable));
+						$('#titulocreditoscliente').html('<?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?>'+': '+dataresponse);						
+						//mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else if(dataresponse.indexOf('<?php echo translate('Msg_Without_Credit_Client',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#tableadmincreditst').bootstrapTable('removeAll');
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=::=::=::'));
+						dataresponse = dataresponse.replace(menR+"=::=::=::","");
+						
+						$('#titulocreditoscliente').html('<?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?>');
+						$('.search').find(':input').focus();						
+						mensaje_atencion("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR.replace("%1",dataresponse));
+					}
+					else
+					{
+						$('#tableadmincreditst').bootstrapTable('removeAll');
+						$('#titulocreditoscliente').html('<?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?>');
+						$('.search').find(':input').focus();
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}										
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});	
+		}
+    </script>	
 	
 	<script type="text/javascript">
 		function buscarClienteCredito()
@@ -588,7 +648,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlbcc,
 					method: "POST",
-					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_16').hide();
 						
@@ -617,7 +677,7 @@ include("./menu/menu.php");
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);?>') != -1)
 						{
-							confirmar_accion_validar_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded',$GLOBALS['lang']);?>", 61);
+							confirmar_accion_validar_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded',$GLOBALS['lang']);?>", 64);
 						}
 						else 
 						{
@@ -636,15 +696,46 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarNuevoCredito()
 		{
+			if((!document.getElementById('documentoclientcreditni').disabled && $( "#documentoclientcreditni" ).val().length == 0) || $( "#nombreclientcreditni" ).val().length == 0)
+			{
+				$( "#documentoclientcreditni" ).focus();
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Register_The_Credit',$GLOBALS['lang']);?>");
+				return;					
+			}			
+
 			if($( "#montocompraclientcreditni" ).val().length != 0)
 			{
+				var tableFeesC = $("#tablefeescreditclientt tbody");
+				var montoTCC = 0.00;
+				tableFeesC.find('tr').each(function (i, el) {
+					var $tds = $(this).find('td'),
+						nroCuotC = $tds.eq(0).text(),
+						fechVenC = $tds.eq(1).text(),
+						montoCC = $tds.eq(2).text();
+						montoTCC = montoTCC + parseFloat(montoCC.replace("$",""));
+				});
+								
+				if($( "#montocompraclientcreditni" ).val().length == 0)
+				{
+					$( "#montocompraclientcreditni" ).focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+					return;					
+				}
+				
+				if(montoTCC != $( "#montocreditoclientcreditni" ).val())
+				{
+					$( "#montocompraclientcreditni" ).focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+					return;
+				}
+				
 				var urlbcc = "./acciones/guardarnuevocredito.php";
 				$('#img_loader_16').show();
 				
 				$.ajax({
 					url: urlbcc,
 					method: "POST",
-					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_16').hide();
 						
@@ -656,10 +747,17 @@ include("./menu/menu.php");
 						if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
 						{
 							var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
-							var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+							dataresponse = dataresponse.replace(menR+"=:=:=:","");
+							var datosImpresion = dataresponse.substring(0,dataresponse.indexOf('=::=::=::'));
+							dataresponse = dataresponse.replace(datosImpresion+"=::=::=::","");
+							var datTable = dataresponse.substring(0);
 							
 							$('#dialognewcredit').dialog('destroy').remove();
-							$('#tableadmincreditst').bootstrapTable('load',JSON.parse(datTable));					
+							$('#tableadmincreditst').bootstrapTable('load',JSON.parse(datTable));
+
+							var datosFinImpre = datosImpresion.split('|');
+
+							imprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10]);
 							mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 						}
 						else 
@@ -673,6 +771,44 @@ include("./menu/menu.php");
 					}
 				});
 			}
+			else
+			{
+				$( "#montocompraclientcreditni" ).focus();
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+				return;				
+			}
+		}
+    </script>	
+	
+	<script type="text/javascript">
+		function imprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp)
+		{
+			var urlinc = "<?php echo $GLOBALS['imprimir_nuevo_credito']; ?>";
+
+			$.ajax({
+				url: urlinc,
+				method: "POST",
+				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp },
+				success: function(dataresponse, statustext, response){
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_The_New_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>') != -1)
+					{
+						console.log('<?php echo translate('Msg_The_New_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+				}
+			});
 		}
     </script>	
 					
@@ -762,6 +898,34 @@ include("./menu/menu.php");
 				$('#img_loader').hide();
 		}
 	</script>
+	
+	<script type="text/javascript">
+		function confirmar_accion_validar_credito_cliente(titulo, mensaje, motivo)
+		{
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										validar_cliente_supervisor_me(motivo);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>	
 	
 	<script type="text/javascript">
 		function validar_cliente_supervisor(motivo)
@@ -888,6 +1052,78 @@ include("./menu/menu.php");
 			});			
 		}	
 	</script>
+	
+	<script type="text/javascript">
+		function validar_cliente_supervisor_me(motivo)
+		{			
+			var urlvcsrcme = "./acciones/validacionclientesupervisorregistrocreditome.php";
+			$('#img_loader_16').show();
+									
+			$.ajax({
+				url: urlvcsrcme,
+				method: "POST",
+				data: { motivo: motivo, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_16').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>') != -1)
+					{
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>","");
+						var tagarccme = $("<div id='dialogautorizacionregistrocreditoclienteme'></div>");
+						
+						tagarccme.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_Authorize_Client_Registration_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagarccme.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagarccme.dialog('open');
+					}
+					else if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
+					{
+						$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
+						$( "#documentoclientcreditni" ).prop( "disabled", true );
+													
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>"+"=::=::","");
+						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+						dataresponse = dataresponse.replace(datTable+"=:=:","");
+						var montoTotCre = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
+						dataresponse = dataresponse.replace(montoTotCre+"=:::=:::","");
+
+						$("#tokenvalidexcesomi").val(dataresponse);
+						var resF = JSON.parse(datTable);
+						for(var i in resF)
+						{
+							 resF[i]["montocuota"] = '$'+(resF[i]["montocuota"]/100.00);
+							 resF[i]["fechavencimiento"] = resF[i]["fechavencimiento"].substring(8,10)+'/'+resF[i]["fechavencimiento"].substring(5,7)+'/'+resF[i]["fechavencimiento"].substring(0,4);
+						}								
+						$( "#montocreditoclientcreditni" ).val(montoTotCre/100.00);
+						$('#tablefeescreditclientt').bootstrapTable('load',resF);
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						$( "#montocompraclientcreditni" ).focus();						
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_16').hide();
+				}
+			});			
+		}	
+	</script>	
 
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroCreditoCliente(formularionacrc, motivo)
@@ -1060,6 +1296,212 @@ include("./menu/menu.php");
 				}
 			});
 		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorRegistroCreditoClienteME(formularionacrcme, motivo)
+		{
+			if($('#usuariosupervisorn20i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn20i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn20i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn20i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn20i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn20i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn20i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn20i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn20i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn20i').tooltip('destroy');
+			}			
+			
+			var urlasrc = "./acciones/verificarcredencialessupervisorregistrocreditoclienteme.php";
+			$('#img_loader_13').show();
+			
+			
+			var p221 = document.createElement("input");
+		 			
+			formularionacrcme.appendChild(p221);
+			p221.name = "p221";
+			p221.type = "hidden";
+			
+			p221.value = hex_sha512(formularionacrcme.passwordsupervisorn20i.value);
+			
+			if(formularionacrcme.passwordsupervisorn20i.value == "") p221.value = "";
+			formularionacrcme.passwordsupervisorn20i.value = "";
+									
+			$.ajax({
+				url: urlasrc,
+				method: "POST",
+				data: { motivo: motivo, usuarioSupervisor: formularionacrcme.usuariosupervisorn20i.value, claveSupervisor: p221.value, tipoDocumento: $( "#tipodocumentocreditclientni" ).val(), documento: $( "#documentoclientcreditni" ).val(), token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogautorizacionregistrocreditoclienteme').dialog('destroy').remove();
+						$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
+						$( "#documentoclientcreditni" ).prop( "disabled", true );
+													
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
+						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+						dataresponse = dataresponse.replace(datTable+"=:=:","");
+						var montoTotCre = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
+						dataresponse = dataresponse.replace(montoTotCre+"=:::=:::","");
+
+						$("#tokenvalidexcesomi").val(dataresponse);
+						var resF = JSON.parse(datTable);
+						for(var i in resF)
+						{
+							 resF[i]["montocuota"] = '$'+(resF[i]["montocuota"]/100.00);
+							 resF[i]["fechavencimiento"] = resF[i]["fechavencimiento"].substring(8,10)+'/'+resF[i]["fechavencimiento"].substring(5,7)+'/'+resF[i]["fechavencimiento"].substring(0,4);
+						}								
+						$( "#montocreditoclientcreditni" ).val(montoTotCre/100.00);
+						$('#tablefeescreditclientt').bootstrapTable('load',resF);
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn20i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn20i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn20i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function reImprimirCreditoCliente(idCredito)
+		{				
+			var urlricc = "./acciones/reimprimircreditocliente.php";
+			$('#img_loader_5').show();
+			
+			$.ajax({
+				url: urlricc,
+				method: "POST",
+				data: { idCredito: idCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Reprint_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						dataresponse = dataresponse.replace(menR+"=:=:=:","");
+						var datosImpresion = dataresponse.substring(0);
+
+						var datosFinImpre = datosImpresion.split('|');
+
+						reImprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10]);
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp)
+		{
+			var urlinc2 = "<?php echo $GLOBALS['imprimir_nuevo_credito']; ?>";
+
+			$.ajax({
+				url: urlinc2,
+				method: "POST",
+				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, esCopia: 1 },
+				success: function(dataresponse, statustext, response){
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_The_New_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>') != -1)
+					{
+						console.log('<?php echo translate('Msg_The_New_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",'<?php echo translate('Msg_Reprint_Credit_Client_OK2',$GLOBALS['lang']);?>');
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+				}
+			});
+		}
     </script>	
 </head>
 
@@ -1086,18 +1528,18 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title" id="titulocreditoscliente"><?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
-			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCredito();" title="<?php echo translate('Lbl_New_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
+			<div id="toolbar" style="margin-left:-345px; margin-top:-1px;">
+				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCredito();" title="<?php echo translate('Lbl_New_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadmincredits" class="table-responsive">
 				<table id="tableadmincreditst" data-classes="table table-hover table-condensed"
 				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Credits_Clients',$GLOBALS['lang']); ?>"}'
 				   data-export-types="['excel','pdf','csv','txt']"
-				   data-search="true" data-search-align="left" data-toolbar="#toolbar" data-toolbar-align="right">
+				   data-search="true" data-search-align="right" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
 							<th class="col-xs-1 text-center" data-field="fecha" data-sortable="true"><?php echo translate('Lbl_Date_Credit',$GLOBALS['lang']);?></th>
@@ -1131,7 +1573,8 @@ include("./menu/menu.php");
 									echo '<td>'.$fees_credit_client.'</td>';
 									echo '<td>'.$state_credit_client.'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button></td>';
+									if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button></td>';
+									else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button></td>';
 									echo '</tr>';
 								}
 							}

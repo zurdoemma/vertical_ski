@@ -474,6 +474,19 @@
 		'The_Selected_Credit_Plan_Is_Inconsistent_User_Client' => 'El plan de credito seleccionado es inconsistente al usuario/cliente!!',
 		'The_Amount_Of_Available_Credit_Is_Incosistent_Re_Register_Credit' => 'El monto de crédito disponible es incosistente, vuelva a registrar credito!!',
 		'No_Credit_Plans_Associated_With_The_Customer_Credit_Profile' => 'Sin planes de credito asociado al perfil de crédito del cliente!!',
-		'Msg_New_Credit_Client_OK' => 'El credito se registro correctamente!!'
+		'Msg_New_Credit_Client_OK' => 'El credito se registro correctamente!!',
+		'Msg_Max_Amount_Credit_Client_Exceeded_Not_Validated' => 'Monto maximo de credito excedido y no validado!!',
+		'Msg_The_New_Credit_Was_Printed_Correctly' => 'El nuevo crédito se imprimió correctamente!!',		
+		'Msg_Minimum_Amount_Credit_Not_Allowed'	=> 'Monto de compra no permitido, debe ser mayor o igual a $%1',
+		'Msg_You_Must_Confirm_The_Amount_Of_The_Purchase' => 'Debe confirmar el monto de compra!!',	
+		'Msg_A_Customer_Must_Enter_To_Register_The_Credit' => 'Debe ingresar un cliente para registrar el crédito!!',
+		'Lbl_Search_Credits_Client' => 'Buscar Créditos',
+		'Msg_A_Customer_Must_Enter_To_Search_Credits' => 'Debe ingresar un cliente para buscar sus créditos!!',	
+		'Msg_Search_Credit_Client_OK' => 'Se encontraron crédito/s para el documento ingresado!!',
+		'Msg_Without_Credit_Client' => 'No se encontraron crédito/s para el documento: %1!!',
+		'Msg_Reprint_Credit_Client' => 'Reimprimir Crédito',
+		'Msg_Reprint_Credit_Client_OK' => 'Reimpresión de credito OK!!',
+		'Msg_Reprint_Credit_Client_OK2' => 'El crédito seleccionado se reimprimió correctamente!!',
+		'Msg_Credit_Client_Not_Exist' => 'El crédito no exite o tiene un estado incorrecto!!'
 	);
 ?>

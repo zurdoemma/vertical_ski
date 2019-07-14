@@ -24,6 +24,7 @@
 		
 		$tokenVECC=htmlspecialchars($_POST["token2"], ENT_QUOTES, 'UTF-8');
 		$tokenVS=htmlspecialchars($_POST["token"], ENT_QUOTES, 'UTF-8');
+		$token3=htmlspecialchars($_POST["token3"], ENT_QUOTES, 'UTF-8');
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
@@ -37,7 +38,40 @@
 			return;
 		}		
 
-		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit, c.id_perfil_credito FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
+		if ($stmt73 = $mysqli->prepare("SELECT id, nombre, valor FROM finan_cli.parametros WHERE nombre = ?")) 
+		{
+			$nombreValPar = 'monto_minimo_compra_para_credito';
+			$stmt73->bind_param('s', $nombreValPar);
+			$stmt73->execute();    // Ejecuta la consulta preparada.
+			$stmt73->store_result();
+	 
+			// Obtiene las variables del resultado.
+			$stmt73->bind_result($parameter_id, $parameter_name, $parameter_value);
+			$stmt73->fetch();
+			
+			$totR73 = $stmt73->num_rows;
+
+			if($totR73 > 0)
+			{
+				if($parameter_value > $montoCompra)
+				{
+					echo str_replace('%1',''.round(($parameter_value/100.00),2),translate('Msg_Minimum_Amount_Credit_Not_Allowed',$GLOBALS['lang']));
+					return;					
+				}
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}			
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
+		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit, c.id_perfil_credito, td.nombre FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct, finan_cli.tipo_documento td WHERE c.tipo_documento = td.id AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt47->bind_param('is', $tipoDocumento, $documento);
 			$stmt47->execute();    
@@ -52,7 +86,7 @@
 			}
 			else
 			{
-				$stmt47->bind_result($id_cliente_db, $estado_cliente_db, $id_titular_cliente_db, $monto_maximo_credito_cliente_db, $nombres_cliente_db, $apellidos_cliente_db, $telefono_cliente_db, $cuil_cuit_cliente_db, $id_perfil_credito_cliente_db);
+				$stmt47->bind_result($id_cliente_db, $estado_cliente_db, $id_titular_cliente_db, $monto_maximo_credito_cliente_db, $nombres_cliente_db, $apellidos_cliente_db, $telefono_cliente_db, $cuil_cuit_cliente_db, $id_perfil_credito_cliente_db, $nombre_tipo_documento_cliente_db);
 				$stmt47->fetch();
 				
 				$cuitCuil = $cuil_cuit_cliente_db;
@@ -286,7 +320,7 @@
 			return;
 		}
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -296,7 +330,7 @@
 
 			if($totR61 > 0)
 			{
-				$stmt61->bind_result($id_cadena_usuario, $id_sucursal_usuario);
+				$stmt61->bind_result($id_cadena_usuario, $id_sucursal_usuario, $nombre_sucursal_usuario);
 				$stmt61->fetch();
 								
 				$stmt61->free_result();
@@ -315,7 +349,7 @@
 		}
 		
 		$paso_seleccion_plan = 0;
-		if($stmt62 = $mysqli->prepare("SELECT pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.perfil_credito pcre WHERE pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = pcre.id AND pc.id_cadena = c.id AND pcre.id = ? AND c.id = ? AND pc.id = ?"))
+		if($stmt62 = $mysqli->prepare("SELECT pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.nombre FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.perfil_credito pcre WHERE pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = pcre.id AND pc.id_cadena = c.id AND pcre.id = ? AND c.id = ? AND pc.id = ?"))
 		{
 			$stmt62->bind_param('iii', $id_perfil_credito_cliente_db, $id_cadena_usuario, $planCredito);
 			$stmt62->execute();    
@@ -325,7 +359,7 @@
 
 			if($totR62 > 0)
 			{
-				$stmt62->bind_result($cantidad_cuotas_plan_credito_s_db, $interes_fijo_plan_credito_s_db, $id_tipo_diferiemiento_cuota_plan_credito_s_db);
+				$stmt62->bind_result($cantidad_cuotas_plan_credito_s_db, $interes_fijo_plan_credito_s_db, $id_tipo_diferiemiento_cuota_plan_credito_s_db, $nombre_plan_credito_s_db);
 				$stmt62->fetch();
 				
 				$paso_seleccion_plan = 1;
@@ -360,8 +394,35 @@
 		
 		if($montoTotalCredito > $monto_credito_disponible)
 		{
-			echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);
-			return;
+			$selectVCS = "SELECT e.id, e.token FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.token = ?";
+			if($stmt44 = $mysqli->prepare($selectVCS))
+			{
+				$date_registro_a_s_44 = date("Ymd")."%";
+				$motivoAE = 64;
+				if(empty($id_cliente_titular_db)) $stmt44->bind_param('issis', $tipoDocumento, $documento, $date_registro_a_s_44, $motivoAE, $token3);
+				else $stmt44->bind_param('issis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s_44, $motivoAE, $token3);
+				$stmt44->execute();    
+				$stmt44->store_result();
+				
+				$totR44 = $stmt44->num_rows;
+
+				if($totR44 == 0)
+				{
+					$stmt44->free_result();
+					$stmt44->close();	
+			
+					echo translate('Msg_Max_Amount_Credit_Client_Exceeded_Not_Validated',$GLOBALS['lang']);
+					return;
+				}			
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+			
+			$stmt44->free_result();
+			$stmt44->close();			
 		}
 		
 		$array[0] = array();
@@ -538,6 +599,7 @@
 			if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.cuota_credito(id_credito,numero_cuota,fecha_vencimiento,monto_cuota_original,estado) VALUES (?,?,?,?,?)"))
 			{
 				echo $mysqli->error;
+				$mysqli->rollback();
 				$mysqli->autocommit(TRUE);
 				$stmt->free_result();
 				$stmt->close();
@@ -550,6 +612,7 @@
 				if(!$stmt10->execute())
 				{
 					echo $mysqli->error;
+					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
@@ -613,7 +676,9 @@
 				$posicion++;
 			}
 			
-			echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($arrayC);
+			$fecha_cre_pi = date("d-m-Y H:i:s");
+			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento; 
+			echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion.'=::=::=::'.json_encode($arrayC);
 			return;
 		}
 		else 

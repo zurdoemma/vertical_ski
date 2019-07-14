@@ -73,6 +73,9 @@
 		echo '					</div>';
 		echo '					<div class="form-group" id="tokenvalidsupcre" style="display:none;">';
 		echo '						<input class="form-control input-sm green-border" id="tokenvalidsupcrei" name="tokenvalidsupcrei" type="text" maxlength="128" />';
+		echo '					</div>';
+		echo '					<div class="form-group" id="tokenvalidexcesom" style="display:none;">';
+		echo '						<input class="form-control input-sm green-border" id="tokenvalidexcesomi" name="tokenvalidexcesomi" type="text" maxlength="128" />';
 		echo '					</div>';		
 		echo '					&nbsp;<label class="control-label" for="tipodocumentocreditclientn">'.translate('Lbl_Type_Document_Credit2',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipodocumentocreditclientn">';

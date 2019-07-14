@@ -24,6 +24,7 @@
 		
 		$tokenVECC=htmlspecialchars($_POST["token2"], ENT_QUOTES, 'UTF-8');
 		$tokenVS=htmlspecialchars($_POST["token"], ENT_QUOTES, 'UTF-8');
+		$token3=htmlspecialchars($_POST["token3"], ENT_QUOTES, 'UTF-8');
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
@@ -31,12 +32,50 @@
 		$montoMaximoCompra=htmlspecialchars($_POST["montoMaximoCompra"], ENT_QUOTES, 'UTF-8');
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
 		
+		$validacionEC=htmlspecialchars($_POST["validacionEC"], ENT_QUOTES, 'UTF-8');
+		
 		if($montoCompra < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
-		}		
+		}
 
+		if ($stmt73 = $mysqli->prepare("SELECT id, nombre, valor FROM finan_cli.parametros WHERE nombre = ?")) 
+		{
+			$nombreValPar = 'monto_minimo_compra_para_credito';
+			$stmt73->bind_param('s', $nombreValPar);
+			$stmt73->execute();    // Ejecuta la consulta preparada.
+			$stmt73->store_result();
+	 
+			// Obtiene las variables del resultado.
+			$stmt73->bind_result($parameter_id, $parameter_name, $parameter_value);
+			$stmt73->fetch();
+			
+			$totR73 = $stmt73->num_rows;
+
+			if($totR73 > 0)
+			{
+				if($parameter_value > $montoCompra)
+				{
+					echo str_replace('%1',''.round(($parameter_value/100.00),2),translate('Msg_Minimum_Amount_Credit_Not_Allowed',$GLOBALS['lang']));
+					return;					
+				}
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}			
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
+		$stmt73->free_result();
+		$stmt73->close();
+		
 		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit, c.id_perfil_credito FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt47->bind_param('is', $tipoDocumento, $documento);
@@ -360,8 +399,33 @@
 		
 		if($montoTotalCredito > $monto_credito_disponible)
 		{
-			echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);
-			return;
+			$selectVCS = "SELECT e.id, e.token FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.token = ?";
+			if($stmt44 = $mysqli->prepare($selectVCS))
+			{
+				$date_registro_a_s_44 = date("Ymd")."%";
+				if(empty($id_cliente_titular_db)) $stmt44->bind_param('issis', $tipoDocumento, $documento, $date_registro_a_s_44, $motivo, $token3);
+				else $stmt44->bind_param('issis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s_44, $motivo, $token3);
+				$stmt44->execute();    
+				$stmt44->store_result();
+				
+				$totR44 = $stmt44->num_rows;
+
+				if($totR44 == 0)
+				{
+					$stmt44->free_result();
+					$stmt44->close();	
+					echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);
+					return;
+				}			
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+			
+			$stmt44->free_result();
+			$stmt44->close();
 		}
 		
 		$array[0] = array();
