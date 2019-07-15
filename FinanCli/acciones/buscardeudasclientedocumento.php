@@ -79,7 +79,10 @@
 			return;
 		}
 
-		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
+		if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
+		else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
+		
+		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado, cc.tipo_documento_adicional, cc.documento_adicional FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
 		else $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cli.documento = ? ORDER BY cc.fecha DESC";
 		if ($stmt = $mysqli->prepare($selecBDC)) 
 		{
@@ -88,7 +91,8 @@
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
+			if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client, $tipo_documento_adicional_client, $documento_adicional_client);			
+			else $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
 			
 			$totR = $stmt->num_rows;
 
@@ -103,15 +107,23 @@
 			while($stmt->fetch())
 			{
 				$arrayC[$posicion]['fecha'] = substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4);
-				$arrayC[$posicion]['tipodocumento'] = $type_documento_credit_client;
-				$arrayC[$posicion]['documento'] = $document_credit_client;
+				if(!empty($tipo_documento_titular) && !empty($documento_titular))
+				{
+					$arrayC[$posicion]['tipodocumento'] = $tipo_documento_adicional_client;
+					$arrayC[$posicion]['documento'] = $documento_adicional_client;					
+				}
+				else
+				{
+					$arrayC[$posicion]['tipodocumento'] = $type_documento_credit_client;
+					$arrayC[$posicion]['documento'] = $document_credit_client;
+				}
+				$arrayC[$posicion]['tipocuenta'] = $tipo_cuenta_texto_cliente;
 				$arrayC[$posicion]['monto'] = '$'.round(($amount_credit_client/100.00),2);
 				$arrayC[$posicion]['plancredito'] = $name_credit_plan_client;
 				$arrayC[$posicion]['cuotas'] = $fees_credit_client;
 				$arrayC[$posicion]['estado'] = $state_credit_client;
 								
-				if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) $arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>';
-				else $arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>';													
+				$arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="far fa-edit"></i></button>';													
 
 				$posicion++;
 			}

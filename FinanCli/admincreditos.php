@@ -130,6 +130,7 @@ include("./menu/menu.php");
 					tagnc.dialog('open');
 					$('#montomaximoclientcreditni').maskNumber();
 					$('#montocompraclientcreditni').maskNumber();
+					$( "#documentoclientcreditni" ).focus();
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -138,6 +139,60 @@ include("./menu/menu.php");
 			});	
 		}
     </script>
+	
+	<script type="text/javascript">
+		function verCredito(idCredito)
+		{
+			var urlvc = "./acciones/vercredito.php";
+			var tagvc = $("<div id='dialogviewcredit'></div>");
+			$('#img_loader_5').show();
+			
+			$.ajax({
+				url: urlvc,
+				method: "POST",
+				data: { idCredito: idCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagvc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_View_Credit',$GLOBALS['lang']);?>: "+idCredito,
+						  autoResize:true,
+								close: function(){
+										tagvc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						
+						$('#tablefeescreditclienttv').bootstrapTable({locale:'es-AR'});	
+						
+						tagvc.dialog('open');
+						$('#montocompraclientcreditvi').maskNumber();
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});	
+		}
+    </script>	
 	
 	<script type="text/javascript">
 		function buscarCreditosCliente()
@@ -204,37 +259,146 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function buscarClienteCredito()
 		{
-			if($('#validarstatuscreditclientecreni').is(":checked"))
-			{
-				var urlbcc = "./acciones/buscarclientecredito.php";
-				$('#img_loader_16').show();
-				
-				$.ajax({
-					url: urlbcc,
-					method: "POST",
-					data: { motivo: 59, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenveccrediti").val(), token2: $("#tokenvalidsupcrei").val() },
-					success: function(dataresponse, statustext, response){
-						$('#img_loader_16').hide();
-						
-						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
-						{
-							window.location.replace("./login.php?result_ok=3");
-						}
-						
-						if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']);?>') != -1)
-						{
-							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>"+"=::=::","");
-							var tokenVECCC30 = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
-							dataresponse = dataresponse.replace(tokenVECCC30+"=:::=:::","");
-							var tokenVECCC3 = dataresponse.substring(0, dataresponse.indexOf('=::::=::::'));
-							dataresponse = dataresponse.replace(tokenVECCC3+"=::::=::::","");
-							var planesCreCli = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
-							dataresponse = dataresponse.replace(planesCreCli+"=:=:","");
+			if($('#documentoclientcreditni').val().length != 0)
+			{				
+				if($('#validarstatuscreditclientecreni').is(":checked"))
+				{
+					var urlbcc = "./acciones/buscarclientecredito.php";
+					$('#img_loader_16').show();
+					
+					$.ajax({
+						url: urlbcc,
+						method: "POST",
+						data: { motivo: 59, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenveccrediti").val(), token2: $("#tokenvalidsupcrei").val() },
+						success: function(dataresponse, statustext, response){
+							$('#img_loader_16').hide();
 							
-							var compCampos = dataresponse.split("|");
-							if(compCampos.length != 5)
+							if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
 							{
-								mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+								window.location.replace("./login.php?result_ok=3");
+							}
+							
+							if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']);?>') != -1)
+							{
+								dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>"+"=::=::","");
+								var tokenVECCC30 = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
+								dataresponse = dataresponse.replace(tokenVECCC30+"=:::=:::","");
+								var tokenVECCC3 = dataresponse.substring(0, dataresponse.indexOf('=::::=::::'));
+								dataresponse = dataresponse.replace(tokenVECCC3+"=::::=::::","");
+								var planesCreCli = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
+								dataresponse = dataresponse.replace(planesCreCli+"=:=:","");
+								
+								var compCampos = dataresponse.split("|");
+								if(compCampos.length != 5)
+								{
+									mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Unknown_Error',$GLOBALS['lang']); ?>");
+									$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
+									$('#documentoclientcreditni').prop('title', dataresponse);
+									$('#documentoclientcreditni').focus();
+									
+									$( "#montocompraclientcreditni" ).prop( "disabled", true );
+									$( "#plancreditclientni" ).prop( "disabled", true );
+									$( "#plancreditclientni" ).empty();
+									
+									$( "#montocompraclientcreditni" ).val("");
+									$( "#nombreclientcreditni" ).val("");
+									$( "#apellidoclientcreditni" ).val("");
+									$( "#tipoclientcreditni" ).val("1");
+									$( "#telefonoclientcreditni" ).val("");
+									$( "#montomaximoclientcreditni" ).val("");
+									$( "#montocompraclientcreditni" ).val("");								
+								}
+								else
+								{
+									$( "#montocompraclientcreditni" ).prop( "disabled", false );
+									$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
+									$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>');
+								
+									$( "#nombreclientcreditni" ).val(compCampos[0]);
+									$( "#apellidoclientcreditni" ).val(compCampos[1]);
+									
+									var tipoCliC = document.getElementById('tipoclientcreditni');
+									for (var i = 0; i < tipoCliC.options.length; i++) {
+										if (tipoCliC.options[i].text === compCampos[2]) {
+											tipoCliC.selectedIndex = i;
+											break;
+										}
+									}
+									
+									$( "#telefonoclientcreditni" ).val(compCampos[3]);
+									$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
+									$( "#tokenveccrediti" ).val(tokenVECCC30);
+									$('#tokenvalidsupcrei').val(tokenVECCC3);
+									$( "#plancreditclientni" ).prop( "disabled", false );
+									$( "#montocompraclientcreditni" ).focus();
+									
+									var planesCreCliA = planesCreCli.split(";;");
+									for (var i = 0; i < planesCreCliA.length; i++) {
+									   var datosPlanCreCli = planesCreCliA[i].split("|");
+									   $("#plancreditclientni").append('<option value="'+datosPlanCreCli[0]+'">'+datosPlanCreCli[1]+'</option>');
+									}
+								}							
+							}
+							else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']);?>') != -1)
+							{
+								var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:::=:::'));
+								var tokenR2 = dataresponse.substring(dataresponse.indexOf('=:::=:::')+8, dataresponse.indexOf('=:=:=:'));
+								dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
+								dataresponse = dataresponse.replace(tokenR+"=:::=:::","");
+								dataresponse = dataresponse.replace(tokenR2+"=:=:=:","");
+															
+								$('#tokenveccrediti').val(tokenR);
+								$('#tokenvalidsupcrei').val(tokenR2);
+								var tagvcc = $("<div id='dialogsearchclientcredit'></div>");
+								
+								tagvcc.html(dataresponse).dialog({
+								  show: "blind",
+								  hide: "explode",
+								  height: "auto",
+								  width: "auto",					  
+								  modal: true, 
+								  title: "<?php echo translate('Lbl_Validation_Credit_Status_Client',$GLOBALS['lang']);?>",
+								  autoResize:true,
+										close: function(){
+												tagvcc.dialog('destroy').remove()
+										}
+								}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+								
+								editorEF = CodeMirror.fromTextArea(document.getElementById("resultadoestadofinancieroclientei"), {
+									mode: "xml",
+									lineNumbers: true,
+									readOnly: true
+								});
+								editorEF.setSize(650, 300);
+								
+								$('#buscartextoestadocrediticioclientei').keypress(function(event){
+									var keycode = (event.keyCode ? event.keyCode : event.which);
+									if(keycode == '13'){
+										buscarTextoEstadoFinanciero(); 
+									}
+								});							
+								
+								$( "#montocompraclientcreditni" ).prop( "disabled", true );
+								$( "#plancreditclientni" ).prop( "disabled", true );
+								$( "#plancreditclientni" ).empty();
+
+								$( "#montocompraclientcreditni" ).val("");
+								$( "#nombreclientcreditni" ).val("");
+								$( "#apellidoclientcreditni" ).val("");
+								$( "#tipoclientcreditni" ).val("1");
+								$( "#telefonoclientcreditni" ).val("");
+								$( "#montomaximoclientcreditni" ).val("");
+								$( "#montocompraclientcreditni" ).val("");
+								
+								tagvcc.dialog('open');							
+							}
+							else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
+							{
+								confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
+							}						
+							else 
+							{
+								mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 								$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
 								$('#documentoclientcreditni').prop('title', dataresponse);
 								$('#documentoclientcreditni').focus();
@@ -251,123 +415,23 @@ include("./menu/menu.php");
 								$( "#montomaximoclientcreditni" ).val("");
 								$( "#montocompraclientcreditni" ).val("");								
 							}
-							else
-							{
-								$( "#montocompraclientcreditni" ).prop( "disabled", false );
-								$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #00FF00'});
-								$('#documentoclientcreditni').prop('title', '<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>');
-							
-								$( "#nombreclientcreditni" ).val(compCampos[0]);
-								$( "#apellidoclientcreditni" ).val(compCampos[1]);
-								
-								var tipoCliC = document.getElementById('tipoclientcreditni');
-								for (var i = 0; i < tipoCliC.options.length; i++) {
-									if (tipoCliC.options[i].text === compCampos[2]) {
-										tipoCliC.selectedIndex = i;
-										break;
-									}
-								}
-								
-								$( "#telefonoclientcreditni" ).val(compCampos[3]);
-								$( "#montomaximoclientcreditni" ).val(compCampos[4]/100.00);
-								$( "#tokenveccrediti" ).val(tokenVECCC30);
-								$('#tokenvalidsupcrei').val(tokenVECCC3);
-								$( "#plancreditclientni" ).prop( "disabled", false );
-								$( "#montocompraclientcreditni" ).focus();
-								
-								var planesCreCliA = planesCreCli.split(";;");
-								for (var i = 0; i < planesCreCliA.length; i++) {
-								   var datosPlanCreCli = planesCreCliA[i].split("|");
-								   $("#plancreditclientni").append('<option value="'+datosPlanCreCli[0]+'">'+datosPlanCreCli[1]+'</option>');
-								}
-							}							
+						},
+						error: function(request, errorcode, errortext){
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+							$('#img_loader_16').hide();
 						}
-						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']);?>') != -1)
-						{
-							var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:::=:::'));
-							var tokenR2 = dataresponse.substring(dataresponse.indexOf('=:::=:::')+8, dataresponse.indexOf('=:=:=:'));
-							dataresponse = dataresponse.replace("<?php echo translate('Msg_Validation_Credit_Status_Client_OK',$GLOBALS['lang']); ?>=::=::=::","");
-							dataresponse = dataresponse.replace(tokenR+"=:::=:::","");
-							dataresponse = dataresponse.replace(tokenR2+"=:=:=:","");
-														
-							$('#tokenveccrediti').val(tokenR);
-							$('#tokenvalidsupcrei').val(tokenR2);
-							var tagvcc = $("<div id='dialogsearchclientcredit'></div>");
-							
-							tagvcc.html(dataresponse).dialog({
-							  show: "blind",
-							  hide: "explode",
-							  height: "auto",
-							  width: "auto",					  
-							  modal: true, 
-							  title: "<?php echo translate('Lbl_Validation_Credit_Status_Client',$GLOBALS['lang']);?>",
-							  autoResize:true,
-									close: function(){
-											tagvcc.dialog('destroy').remove()
-									}
-							}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-							
-						    editorEF = CodeMirror.fromTextArea(document.getElementById("resultadoestadofinancieroclientei"), {
-								mode: "xml",
-								lineNumbers: true,
-								readOnly: true
-							});
-							editorEF.setSize(650, 300);
-							
-							$('#buscartextoestadocrediticioclientei').keypress(function(event){
-								var keycode = (event.keyCode ? event.keyCode : event.which);
-								if(keycode == '13'){
-									buscarTextoEstadoFinanciero(); 
-								}
-							});							
-							
-							$( "#montocompraclientcreditni" ).prop( "disabled", true );
-							$( "#plancreditclientni" ).prop( "disabled", true );
-							$( "#plancreditclientni" ).empty();
-
-							$( "#montocompraclientcreditni" ).val("");
-							$( "#nombreclientcreditni" ).val("");
-							$( "#apellidoclientcreditni" ).val("");
-							$( "#tipoclientcreditni" ).val("1");
-							$( "#telefonoclientcreditni" ).val("");
-							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");
-							
-							tagvcc.dialog('open');							
-						}
-						else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
-						{
-							confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
-						}						
-						else 
-						{
-							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-							$('#documentoclientcreditni').css({'box-shadow' : '0 0 3px #FF0000'});
-							$('#documentoclientcreditni').prop('title', dataresponse);
-							$('#documentoclientcreditni').focus();
-							
-							$( "#montocompraclientcreditni" ).prop( "disabled", true );
-							$( "#plancreditclientni" ).prop( "disabled", true );
-							$( "#plancreditclientni" ).empty();
-							
-							$( "#montocompraclientcreditni" ).val("");
-							$( "#nombreclientcreditni" ).val("");
-							$( "#apellidoclientcreditni" ).val("");
-							$( "#tipoclientcreditni" ).val("1");
-							$( "#telefonoclientcreditni" ).val("");
-							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");								
-						}
-					},
-					error: function(request, errorcode, errortext){
-						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-						$('#img_loader_16').hide();
-					}
-				});
+					});
+				}
+				else
+				{
+					confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
+				}
 			}
 			else
 			{
-				confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Credit_Without_Validating_Credit_Status',$GLOBALS['lang']);?>", 58);
+				$('#documentoclientcreditni').focus();
+				mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>", "<?php echo translate('Msg_A_Document_Client_Must_Enter_Credit',$GLOBALS['lang']);?>");
+				return;
 			}
 		}
     </script>
@@ -1456,7 +1520,7 @@ include("./menu/menu.php");
 
 						var datosFinImpre = datosImpresion.split('|');
 
-						reImprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10]);
+						confirmar_accion_reimprimir_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Reprint_The_Credit',$GLOBALS['lang']);?>", datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10]);
 					}
 					else 
 					{
@@ -1471,6 +1535,34 @@ include("./menu/menu.php");
 		}
     </script>
 
+	<script type="text/javascript">
+		function confirmar_accion_reimprimir_credito_cliente(titulo, mensaje, idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp)
+		{
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+	
 	<script type="text/javascript">
 		function reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp)
 		{

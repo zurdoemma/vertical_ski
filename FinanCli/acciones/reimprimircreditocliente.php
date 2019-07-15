@@ -97,8 +97,40 @@
 			{
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 				return;
-			}			
+			}
+
+			$date_registro = date("YmdHis");				
+			$valor_log_user = translate('Msg_Reprint_Credit_Client_db',$GLOBALS['lang']).': .'$idCredito;
+
 			
+			$mysqli->autocommit(FALSE);
+			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+		
+			if(!$stmt75 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+			{
+				echo $mysqli->error;
+				$mysqli->autocommit(TRUE);
+				$stmt75->free_result();
+				$stmt75->close();
+				return;
+			}
+			else
+			{
+				$motivo = 65;
+				$stmt75->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+				if(!$stmt->execute())
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					$stmt75->free_result();
+					$stmt75->close();
+					return;						
+				}
+			}			
+					
+			$mysqli->commit();
+			$mysqli->autocommit(TRUE);
+		
 			$stmt->fetch();
 			$fecha_cre_pi = substr($fecha_cre_pi,6,2).'-'.substr($fecha_cre_pi,4,2).'-'.substr($fecha_cre_pi,0,4).' '.substr($fecha_cre_pi,8,2).':'.substr($fecha_cre_pi,10,2).':'.substr($fecha_cre_pi,12,2);
 			if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);

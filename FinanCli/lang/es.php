@@ -441,7 +441,9 @@
 		'Lbl_Date_Credit' => 'Fecha',
 		'Lbl_Type_Document_Credit' => 'T. Documento',
 		'Lbl_Type_Document_Credit2' => 'Tipo Documento',
+		'Lbl_Type_Document_Credit_Headline2' => 'T. Doc. Titular',		
 		'Lbl_Document_Credit' => 'Documento',
+		'Lbl_Document_Credit_Headline' => 'Doc. Titular',		
 		'Lbl_Amount_Credit' => 'Monto',
 		'Lbl_Name_Plan_Credit' => 'Plan Credito',
 		'Lbl_Fees_Credit' => 'Cuotas',
@@ -487,6 +489,16 @@
 		'Msg_Reprint_Credit_Client' => 'Reimprimir Crédito',
 		'Msg_Reprint_Credit_Client_OK' => 'Reimpresión de credito OK!!',
 		'Msg_Reprint_Credit_Client_OK2' => 'El crédito seleccionado se reimprimió correctamente!!',
-		'Msg_Credit_Client_Not_Exist' => 'El crédito no exite o tiene un estado incorrecto!!'
+		'Msg_Credit_Client_Not_Exist' => 'El crédito no existe o tiene un estado incorrecto!!',
+		'Lbl_View_Credit' => 'Credito',
+		'Lbl_Number_Credit' => 'Nro. Crédito',
+		'Lbl_Number_Fee_Credit' => 'Nro. Cuota',
+		'Lbl_State_Fee_Credit'  => 'Estado',
+		'Msg_View_Credit_OK'  => 'Se encontro el credito para mostrar!!',
+		'Lbl_View_Data_Credit' => 'Información de Crédito',
+		'Msg_A_Document_Client_Must_Enter_Credit' => 'Debe ingresar un documento!!',
+		'Msg_Reprint_Credit_Client_db' => 'Reimpresión de Crédito',		
+		'Msg_Be_Sure_To_Reprint_The_Credit' => 'Esta seguro de reimprimir el crédito',
+		'Msg_Modify_Debt_Client' => 'Modificar Deuda'		
 	);
 ?>
