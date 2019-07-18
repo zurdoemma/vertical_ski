@@ -428,11 +428,14 @@
 		$array[0] = array();
 		$monto_x_cuota = round((($montoTotalCredito/100.00)/$cantidad_cuotas_plan_credito_s_db),2);
 		$monto_acum_cuotas = 0;
+		$cuotas_credito_plan_s = '';
 		for ($i = 1; $i <= $cantidad_cuotas_plan_credito_s_db; $i++) 
 		{
+			if(!empty($cuotas_credito_plan_s) && $cuotas_credito_plan_s != '') $cuotas_credito_plan_s = $cuotas_credito_plan_s.':';
 			if($i != $cantidad_cuotas_plan_credito_s_db)
 			{
 				$array[$i-1]['cuota'] = $i;
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$i.'!';
 				if($i == 1)
 				{
 					$resulFunF = obtenerFechaInicialCuotaCredito($id_tipo_diferiemiento_cuota_plan_credito_s_db, $mysqli);
@@ -453,12 +456,15 @@
 						return;
 					}					
 				}
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['fechavencimiento'].'!';
 				$array[$i-1]['montocuota'] = round(($monto_x_cuota*100.00),2);
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['montocuota'];
 				$monto_acum_cuotas = $monto_acum_cuotas + $array[$i-1]['montocuota'];
 			}
 			else
 			{
 				$array[$i-1]['cuota'] = $i;
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$i.'!';
 				if($i == 1)
 				{
 					$resulFunF = obtenerFechaInicialCuotaCredito($id_tipo_diferiemiento_cuota_plan_credito_s_db, $mysqli);
@@ -479,7 +485,9 @@
 						return;
 					}					
 				}
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['fechavencimiento'] + '!';
 				$array[$i-1]['montocuota'] = (round((($montoTotalCredito/100.00) - ($monto_acum_cuotas/100.00)),2)*100);
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['montocuota'];
 			}
 		}
 		
@@ -671,14 +679,14 @@
 				$arrayC[$posicion]['cuotas'] = $fees_credit_client;
 				$arrayC[$posicion]['estado'] = $state_credit_client;
 				
-				if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) $arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>';
+				if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) $arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Generate_PDF_Credit_Client',$GLOBALS['lang']).'" onclick="generarPDF('.$id_credit_client.')"><i class="far fa-file-pdf"></i></button>';
 				else $arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>';												
 
 				$posicion++;
 			}
 			
 			$fecha_cre_pi = date("d-m-Y H:i:s");
-			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento; 
+			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoTotalCredito-$montoCompra; 
 			echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion.'=::=::=::'.json_encode($arrayC);
 			return;
 		}

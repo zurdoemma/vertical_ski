@@ -52,7 +52,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento, c.monto_compra, cc.id_usuario FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
 		{
 			$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -60,7 +60,7 @@
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($id_credit_client, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento);			
+			$stmt->bind_result($id_credit_client, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento, $montoCompra, $usuario_otorga_credito);			
 			
 			$totR = $stmt->num_rows;
 
@@ -98,9 +98,44 @@
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 				return;
 			}
+			
+			if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+			{
+				$stmt63->bind_param('i', $idCredito);
+				$stmt63->execute();    
+				$stmt63->store_result();
+				
+				$totR63 = $stmt63->num_rows;
+
+				if($totR63 > 0)
+				{
+					$stmt63->bind_result($numero_cuota_f_db, $fecha_vencimiento_cuota_f_db, $monto_cuota_f_db);
+					$cuotas_credito_plan_s = '';
+					while($stmt63->fetch())
+					{
+						if(!empty($cuotas_credito_plan_s) && $cuotas_credito_plan_s != '') $cuotas_credito_plan_s = $cuotas_credito_plan_s + ':';
+						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$numero_cuota_f_db.'!';
+						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$fecha_vencimiento_cuota_f_db.'!';
+						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$monto_cuota_f_db;
+					}
+									
+					$stmt63->free_result();
+					$stmt63->close();
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;
+				}
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}			
 
 			$date_registro = date("YmdHis");				
-			$valor_log_user = translate('Msg_Reprint_Credit_Client_db',$GLOBALS['lang']).': .'$idCredito;
+			$valor_log_user = translate('Msg_Reprint_Credit_Client_db',$GLOBALS['lang']).': '.$idCredito;
 
 			
 			$mysqli->autocommit(FALSE);
@@ -136,7 +171,7 @@
 			if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 			else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);			
 			
-			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento; 
+			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoTotalCredito-$montoCompra.'|'.$usuario_otorga_credito; 
 			echo translate('Msg_Reprint_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion;
 			$stmt->free_result();
 			$stmt->close();
