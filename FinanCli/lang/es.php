@@ -523,6 +523,8 @@
 		'Lbl_Print_Voucher_Original' => 'ORIGINAL',
 		'Lbl_Print_Voucher_Copy' => 'COPIA',
 		'Msg_Generate_PDF_Credit_Client_db' => 'Generación PDF de Crédito',
-		'Lbl_Credit_PDF_View' => 'Crédito PDF'	
+		'Lbl_Credit_PDF_View' => 'Crédito PDF',
+		'Lbl_Debt_Management' => 'Gestión de Deuda',
+		'Lbl_Debt_Management2' => 'Gestionar de Deuda'
 	);
 ?>
