@@ -26,6 +26,7 @@
 		'Lbl_Print_Duplicate_New_Credit' => 'SI',
 		'Msg_Print_Error_Driver' => 'Error en impresión',
 		'Lbl_Print_Voucher_Original' => 'ORIGINAL',
-		'Lbl_Print_Voucher_Copy' => 'COPIA'
+		'Lbl_Print_Voucher_Copy' => 'COPIA',
+		'Lbl_Print_Type_Voucher_Generate_Credit' => 'Generación Crédito'
 	);
 ?>

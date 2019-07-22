@@ -131,6 +131,23 @@
 		}			
 		$montoTotalConInteresesCredito = $montoTotalCredito + $montoIntereses;
 		
+		if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+		{
+			$stmt65->bind_param('i', $idCredito);
+			$stmt65->execute();    
+			$stmt65->store_result();
+			
+			$totR65 = $stmt65->num_rows;
+			
+			$stmt65->free_result();
+			$stmt65->close();			
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}		
+
 		
 		echo translate('Msg_View_Credit_OK',$GLOBALS['lang']);	
 		echo '<div class="panel-group">';				
@@ -142,38 +159,36 @@
 		echo '			<div id="img_loader_16"></div>';
 		echo '			<form id="formularionc" role="form">';
 		echo '				<div class="form-group form-inline">';
-		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="numerocreditv">'.translate('Lbl_Credit_Number',$GLOBALS['lang']).':</label>';
+		echo '					&nbsp;<label class="control-label" for="numerocreditv">'.translate('Lbl_Credit_Number',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="numerocreditv">';
 		echo '						<input class="form-control input-sm" id="numerocreditvi" name="numerocreditvi" type="text" maxlength="11" value="'.$idCredito.'" disabled />';
 		echo '					</div>';
-		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cantidadcuotascreditv">'.translate('Lbl_Surnames_Client',$GLOBALS['lang']).':</label>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cantidadcuotascreditv">'.translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="cantidadcuotascreditv">';
 		echo '						<input class="form-control input-sm" id="cantidadcuotascreditvi" name="cantidadcuotascreditvi" type="text" maxlength="11" value="'.$cantidad_cuotas_plan_credito_s_db.'" disabled/>';
 		echo '					</div>';		
-		echo '				</div>';		
-		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="plancreditv">'.translate('Lbl_Name_Print_Credit_Plan',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditv">';
 		echo '						<input class="form-control input-sm" id="plancreditvi" name="plancreditvi" type="text" maxlength="150" value="'.$nombre_plan_credito_s_db.'" disabled />';
-		echo '					</div>';
-		echo '					 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="montototalcreditv">'.translate('Lbl_Total_Amount_Credit',$GLOBALS['lang']).':</label>';
+		echo '					</div>';		
+		echo '				</div>';		
+		echo '				<div class="form-group form-inline">';
+		echo '					 &nbsp;&nbsp;<label class="control-label" for="montototalcreditv">'.translate('Lbl_Total_Amount_Credit',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="telefonoclientcreditv">';
 		echo '						<input class="form-control input-sm" id="montototalcreditvi" name="montototalcreditvi" type="text" maxlength="11" value="'.round(($montoTotalConInteresesCredito/100.00),2).'" disabled />';
-		echo '					 </div>';		
-		echo '				</div>';
-		echo '				<div class="form-group form-inline">';
-		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="interesescreditv">'.translate('Lbl_Amount_Interests_Credit',$GLOBALS['lang']).':</label>';
+		echo '					 </div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="interesescreditv">'.translate('Lbl_Amount_Interests_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="interesescreditv">';
 		echo '						<input class="form-control input-sm" id="interesescreditvi" name="interesescreditvi" type="text" maxlength="11" value="'.round(($montoIntereses/100.00),2).'" disabled />';
 		echo '					</div>';
-		echo '					&nbsp;&nbsp;<label class="control-label" for="estadocreditv">'.translate('Lbl_State_Fee_Credit',$GLOBALS['lang']).':</label>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="estadocreditv">'.translate('Lbl_State_Fee_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="estadocreditv">';
 		echo '						<input class="form-control input-sm" id="estadocreditvi" name="estadocreditvi" type="text" maxlength="50" value="'.$estado_credito_cliente_db.'" disabled />';
 		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline"><hr />';
 		echo '					<div class="panel-group">				
-									<div class="panel panel-default" style="width:630px;">
+									<div class="panel panel-default" style="width:900px;">
 										<div id="panel-title-header" class="panel-heading">
 											<h3 class="panel-title">'.translate('Lbl_Fees_Credit',$GLOBALS['lang']).'</h3>
 										</div>
@@ -185,10 +200,10 @@
 														<tr>
 															<th class="col-xs-1 text-center" data-field="seleccioncuota" data-sortable="true">'.translate('Lbl_Selects_Fees_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="nrocuota" data-sortable="true">'.translate('Lbl_Number_Fee_Credit',$GLOBALS['lang']).'</th>
-															<th class="col-xs-2 text-center" data-field="fechavencimientov" data-sortable="true">'.translate('Lbl_Date_Expired_Fee_Credit',$GLOBALS['lang']).'</th>
+															<th class="col-xs-1 text-center" data-field="fechavencimientov" data-sortable="true">'.translate('Lbl_Date_Expire_Print_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="montototalcuotav" data-sortable="true">'.translate('Lbl_Amount_Fee_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="interesescuotav" data-sortable="true">'.translate('Lbl_Amount_Interests_Credit',$GLOBALS['lang']).'</th>
-															<th class="col-xs-2 text-center" data-field="fechapagov" data-sortable="true">'.translate('Lbl_Payment_Date_Fee_Credit',$GLOBALS['lang']).'</th>
+															<th class="col-xs-1 text-center" data-field="fechapagov" data-sortable="true">'.translate('Lbl_Payment_Date_Fee_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-2 text-center" data-field="accionesv" data-sortable="true">'.translate('Lbl_Actions_Fee_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="estadov" data-sortable="true">'.translate('Lbl_State_Fee_Credit',$GLOBALS['lang']).'</th>														
 														</tr>						
@@ -229,17 +244,32 @@
 																	else echo '<td>---</td>';
 																	if($monto_interes_cuota_credito_db == 0)
 																	{
+																		echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																	}
+																	else
+																	{
+																		echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																	}
+																	echo '<td>'.$estado_cuota_db.'</td>';
+																}
+																else
+																{
+																	echo '<td>---</td>';
+																	echo '<td>'.$numero_cuota_db.'</td>';
+																	echo '<td>'.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4).'</td>';
+																	echo '<td>$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2).'</td>';															
+																	echo '<td>$'.round(($monto_interes_cuota_credito_db/100.00),2).'</td>';
+																	if(!empty($fecha_pago_cuota_db)) echo '<td>'.substr($fecha_pago_cuota_db,6,2).'/'.substr($fecha_pago_cuota_db,4,2).'/'.substr($fecha_pago_cuota_db,0,4).'</td>';
+																	else echo '<td>---</td>';
+																	if($monto_interes_cuota_credito_db == 0)
+																	{
 																		echo '<td>'.$estado_cuota_db.'</td>';
 																	}
 																	else
 																	{
 																		echo '<td>'.$estado_cuota_db.'</td>';
 																	}
-																	echo '<td>'.$estado_cuota_db.'</td>';
-																}
-																else
-																{
-																	
+																	echo '<td>'.$estado_cuota_db.'</td>';																	
 																}
 															echo '</tr>';
 															
@@ -256,7 +286,23 @@
 								</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';				
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnSalirVC" id="btnSalirVC" value="'.translate('Lbl_Exit',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
+		if($estado_credito_cliente_db == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_cliente_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) 
+		{
+			echo '				<input type="button" class="btn btn-primary pull-right" name="btnPagoSeleccionCD" id="btnPagoSeleccionCD" value="'.translate('Lbl_Payment_Selection_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoSeleccionDeuda('.$idCredito.');" style="margin-left:10px;" disabled />';
+			echo '				<input type="button" class="btn btn-primary pull-right" name="btnCancelarCD" id="btnCancelarCD" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
+			if($totR62 > 1)
+			{
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPagoTotalCD" id="btnPagoTotalCD" value="'.translate('Lbl_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoTotalDeuda('.$idCredito.');" style="margin-right:10px;" />';
+			}
+		}
+		else
+		{
+			if($totR65 > 0)
+			{
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnReimpresionPagoTotalCD" id="btnReimpresionPagoTotalCD" value="'.translate('Lbl_Reprint_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="reimpresionPagoTotalDeuda('.$idCredito.');" style="margin-right:10px;" />';				
+			}
+			echo '				<input type="button" class="btn btn-primary pull-right" name="btnSalirCD" id="btnSalirCD" value="'.translate('Lbl_Exit',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
+		}
 		echo '				</div>';				
 		echo '			</form>';
 		echo '		</div>';

@@ -530,6 +530,13 @@
 		'Lbl_Amount_Interests_Credit' => 'Intereses',
 		'Lbl_Selects_Fees_Credit' => 'Selección',
 		'Lbl_Actions_Fee_Credit' => 'Acciones Cuota',
-		'Lbl_Payment_Date_Fee_Credit' => 'Fecha Pago'		
+		'Lbl_Payment_Date_Fee_Credit' => 'Fecha Pago',
+		'Lbl_Print_Type_Voucher_Generate_Credit' => 'Generación Crédito',
+		'Lbl_Payment_Selection_Fees_Credit' => 'Pago Selección',
+		'Lbl_Payment_Total_Amount_Fees_Credit' => 'Pago Total',
+		'Lbl_Reprint_Payment_Total_Amount_Fees_Credit' => 'Reimpresión Pago Total',
+		'Msg_Payment_Fee_Credit' => 'Pagar Cuota',
+		'Msg_Change_State_Fee_Credit' => 'Cambiar Estado',
+		'Msg_View_Interest_Fee_Credit' => 'Ver Intereses'
 	);
 ?>

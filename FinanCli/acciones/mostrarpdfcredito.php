@@ -220,42 +220,46 @@
 
 			$pdf->Text(5,25,'--------------------------------------------------------------');
 			$pdf->Ln();
-			$pdf->Text(28,30,translate('Lbl_Print_Voucher_Copy',$GLOBALS['lang']));
+			$pdf->SetFont('Helvetica','B',10);
+			$pdf->Text(17,30,iconv('UTF-8', 'windows-1252', translate('Lbl_Print_Type_Voucher_Generate_Credit',$GLOBALS['lang'])));
+			$pdf->Ln();
+			$pdf->SetFont('Helvetica','B',8);			
+			$pdf->Text(28,35,translate('Lbl_Print_Voucher_Copy',$GLOBALS['lang']));
 			$pdf->Ln();
 			$fechaRIC = date("d-m-Y H:i:s");
-			$pdf->Text(20,35,str_replace("-","/",$fechaRIC));
+			$pdf->Text(20,40,str_replace("-","/",$fechaRIC));
 			$pdf->Ln();
-			$pdf->Text(5,40,'--------------------------------------------------------------');			
+			$pdf->Text(5,45,'--------------------------------------------------------------');			
 			$pdf->Ln(2);
 
-			$pdf->Text(5,45,iconv('UTF-8', 'windows-1252', translate('Lbl_Credit_Number',$GLOBALS['lang'])).': '.$idCredito);
+			$pdf->Text(5,50,iconv('UTF-8', 'windows-1252', translate('Lbl_Credit_Number',$GLOBALS['lang'])).': '.$idCredito);
 			$pdf->Ln();	
-			$pdf->Text(5,50,translate('Lbl_Name_Print_Credit_Plan',$GLOBALS['lang']).': '.$nombre_plan_credito_s_db);
+			$pdf->Text(5,55,translate('Lbl_Name_Print_Credit_Plan',$GLOBALS['lang']).': '.$nombre_plan_credito_s_db);
 			$pdf->Ln();	
-			$pdf->Text(5,55,translate('Lbl_Type_Client_Print',$GLOBALS['lang']).': '.$tipo_cuenta_texto_cliente);
+			$pdf->Text(5,60,translate('Lbl_Type_Client_Print',$GLOBALS['lang']).': '.$tipo_cuenta_texto_cliente);
 			$pdf->Ln();	
-			$pdf->Text(5,60,translate('Lbl_Name_Print_Client',$GLOBALS['lang']).': '.$nombres_cliente_db.' '.$apellidos_cliente_db);
+			$pdf->Text(5,65,translate('Lbl_Name_Print_Client',$GLOBALS['lang']).': '.$nombres_cliente_db.' '.$apellidos_cliente_db);
 			$pdf->Ln();
-			$pdf->Text(5,65,translate('Lbl_Tender_Print',$GLOBALS['lang']).': '.$nombre_sucursal_usuario);
+			$pdf->Text(5,70,translate('Lbl_Tender_Print',$GLOBALS['lang']).': '.$nombre_sucursal_usuario);
 			$pdf->Ln();	
-			$pdf->Text(5,70,translate('Lbl_User_Print',$GLOBALS['lang']).': '.$usuario_otorga_credito);
+			$pdf->Text(5,75,translate('Lbl_User_Print',$GLOBALS['lang']).': '.$usuario_otorga_credito);
 			$pdf->Ln();
-			$pdf->Text(5,75,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).': '.$cantidad_cuotas_plan_credito_s_db);
+			$pdf->Text(5,80,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).': '.$cantidad_cuotas_plan_credito_s_db);
 			$pdf->Ln();	
 			$fecha_cre_pi = str_replace("-","",$fecha_cre_pi);
-			$pdf->Text(5,80,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4));
+			$pdf->Text(5,85,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4));
 			$pdf->Ln();			
 
-			$pdf->Text(5,85,'--------------------------------------------------------------');
+			$pdf->Text(5,90,'--------------------------------------------------------------');
 			$pdf->Ln();		
 			$pdf->SetFont('Helvetica','B',10);
-			$pdf->Text(27,90,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
-			$pdf->Ln(80);
+			$pdf->Text(27,95,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
+			$pdf->Ln(85);
 			$pdf->SetLeftMargin(12);			
 			$pdf->SetFont('Helvetica','B',8);
 			
 			$cuotasArr = explode(":",$cuotas_credito_plan_s);
-			$posicionYC = 107;
+			$posicionYC = 112;
 			for ($i = 0; $i < count($cuotasArr); $i++) 
 			{
 				$pdf->Ln();

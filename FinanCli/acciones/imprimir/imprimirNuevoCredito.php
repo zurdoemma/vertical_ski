@@ -56,6 +56,10 @@ try
 			$printer -> feed();
 			$printer -> text('-------------------------------');
 			$printer -> feed();
+			$printer -> setTextSize(1, 2);
+			$printer -> text(translate('Lbl_Print_Type_Voucher_Generate_Credit',$GLOBALS['lang']));
+			$printer -> feed();
+			$printer -> setTextSize(1, 1);			
 			$printer -> text(translate('Lbl_Print_Voucher_Copy',$GLOBALS['lang']));
 			$printer -> feed();
 			$fechaRIC = date("d-m-Y H:i:s");
@@ -148,6 +152,10 @@ try
 				$printer -> feed();
 				$printer -> text('-------------------------------');
 				$printer -> feed();
+				$printer -> setTextSize(1, 2);
+				$printer -> text(translate('Lbl_Print_Type_Voucher_Generate_Credit',$GLOBALS['lang']));
+				$printer -> feed();
+				$printer -> setTextSize(1, 1);
 				$printer -> text(translate('Lbl_Print_Voucher_Copy',$GLOBALS['lang']));
 				$printer -> feed();
 				$fechaRIC = date("d-m-Y H:i:s");

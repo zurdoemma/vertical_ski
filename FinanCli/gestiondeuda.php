@@ -59,14 +59,14 @@ include("./menu/menu.php");
 		{
 			var urlvc = "./acciones/gestiondeudacredito.php";
 			var tagvc = $("<div id='dialogviewcredit'></div>");
-			$('#img_loader_5').show();
+			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlvc,
 				method: "POST",
 				data: { idCredito: idCredito },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_5').hide();
+					$('#img_loader').hide();
 					
 					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
 					{
@@ -103,7 +103,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_5').hide();
+					$('#img_loader').hide();
 				}
 			});	
 		}
