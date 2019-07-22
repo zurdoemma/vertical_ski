@@ -90,13 +90,13 @@ try
 		$printer -> text(translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
 		$printer -> feed();
 		$printer -> setTextSize(1, 1);		
-		$printer -> text(translate('Lbl_Fee_Print_Credit',$GLOBALS['lang']).'   '.translate('Lbl_Date_Expire_Print_Credit',$GLOBALS['lang']).'       '.translate('Lbl_Amount_Fee_Print_Credit',$GLOBALS['lang']));
+		$printer -> text(translate('Lbl_Fee_Print_Credit',$GLOBALS['lang']).'    '.translate('Lbl_Date_Expire_Print_Credit',$GLOBALS['lang']).'      '.translate('Lbl_Amount_Fee_Print_Credit',$GLOBALS['lang']));
 		$cuotasArr = explode(":",$datosCuotas);
 		for ($i = 0; $i < count($cuotasArr); $i++) 
 		{
 			$printer -> feed();
 			$datosCuotX = explode("!",$cuotasArr[$i]);
-			$printer -> text($datosCuotX[0].'      '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'       $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+			$printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 		}
 		$printer -> feed();
 		$printer -> setJustification($justification[0]);
@@ -106,6 +106,7 @@ try
 		$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 		$printer -> feed();
 		$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));		
+		$printer -> feed();
 		$printer -> setJustification($justification[1]);
 		$printer -> text('********************************');
 		$printer -> feed();
@@ -183,13 +184,13 @@ try
 			$printer -> text(translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
 			$printer -> feed();
 			$printer -> setTextSize(1, 1);
-			$printer -> text(translate('Lbl_Fee_Print_Credit',$GLOBALS['lang']).'   '.translate('Lbl_Date_Expire_Print_Credit',$GLOBALS['lang']).'       '.translate('Lbl_Amount_Fee_Print_Credit',$GLOBALS['lang']));
+			$printer -> text(translate('Lbl_Fee_Print_Credit',$GLOBALS['lang']).'    '.translate('Lbl_Date_Expire_Print_Credit',$GLOBALS['lang']).'      '.translate('Lbl_Amount_Fee_Print_Credit',$GLOBALS['lang']));
 			$cuotasArr = explode(":",$datosCuotas);
 			for ($i = 0; $i < count($cuotasArr); $i++) 
 			{
 				$printer -> feed();
 				$datosCuotX = explode("!",$cuotasArr[$i]);
-				$printer -> text($datosCuotX[0].'      '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'       $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+				$printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 			}
 			$printer -> feed();
 			$printer -> setJustification($justification[0]);
@@ -199,6 +200,7 @@ try
 			$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 			$printer -> feed();
 			$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
+			$printer -> feed();			
 			$printer -> setJustification($justification[1]);
 			$printer -> text('********************************');
 			$printer -> feed();	

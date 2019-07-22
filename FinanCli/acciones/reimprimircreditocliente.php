@@ -113,7 +113,7 @@
 					$cuotas_credito_plan_s = '';
 					while($stmt63->fetch())
 					{
-						if(!empty($cuotas_credito_plan_s) && $cuotas_credito_plan_s != '') $cuotas_credito_plan_s = $cuotas_credito_plan_s + ':';
+						if(!empty($cuotas_credito_plan_s) && $cuotas_credito_plan_s != '') $cuotas_credito_plan_s = $cuotas_credito_plan_s.':';
 						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$numero_cuota_f_db.'!';
 						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$fecha_vencimiento_cuota_f_db.'!';
 						$cuotas_credito_plan_s = $cuotas_credito_plan_s.$monto_cuota_f_db;
@@ -171,7 +171,8 @@
 			if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 			else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);			
 			
-			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoTotalCredito-$montoCompra.'|'.$usuario_otorga_credito; 
+			$montoInteresF = $montoTotalCredito-$montoCompra;
+			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$usuario_otorga_credito; 
 			echo translate('Msg_Reprint_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion;
 			$stmt->free_result();
 			$stmt->close();

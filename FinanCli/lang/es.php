@@ -525,6 +525,11 @@
 		'Msg_Generate_PDF_Credit_Client_db' => 'Generación PDF de Crédito',
 		'Lbl_Credit_PDF_View' => 'Crédito PDF',
 		'Lbl_Debt_Management' => 'Gestión de Deuda',
-		'Lbl_Debt_Management2' => 'Gestionar de Deuda'
+		'Lbl_Debt_Management2' => 'Gestionar de Deuda',
+		'Lbl_Total_Amount_Credit' => 'Monto Total',
+		'Lbl_Amount_Interests_Credit' => 'Intereses',
+		'Lbl_Selects_Fees_Credit' => 'Selección',
+		'Lbl_Actions_Fee_Credit' => 'Acciones Cuota',
+		'Lbl_Payment_Date_Fee_Credit' => 'Fecha Pago'		
 	);
 ?>

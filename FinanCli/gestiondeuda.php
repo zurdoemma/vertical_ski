@@ -93,7 +93,8 @@ include("./menu/menu.php");
 						$('#tablefeescreditclienttv').bootstrapTable({locale:'es-AR'});	
 						
 						tagvc.dialog('open');
-						$('#montocompraclientcreditvi').maskNumber();
+						$('#montototalcreditvi').maskNumber();
+						$('#interesescreditvi').maskNumber();
 					}
 					else
 					{
