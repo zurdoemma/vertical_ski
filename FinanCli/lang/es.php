@@ -537,6 +537,20 @@
 		'Lbl_Reprint_Payment_Total_Amount_Fees_Credit' => 'Reimpresión Pago Total',
 		'Msg_Payment_Fee_Credit' => 'Pagar Cuota',
 		'Msg_Change_State_Fee_Credit' => 'Cambiar Estado',
-		'Msg_View_Interest_Fee_Credit' => 'Ver Intereses'
+		'Msg_View_Interest_Fee_Credit' => 'Ver Intereses',
+		'Msg_Reprint_Payment_Amount_Fee_Credit' => 'Reimpresión Pago Cuota',
+		'Msg_View_Fee_Credit_OK' => 'Visualizacion de Cuota Credito OK',
+		'Lbl_Amount_Original_Fee_Credit' => 'Monto Original',
+		'Lbl_Amount_Interest_Credit' => 'Interés',
+		'Msg_A_Total_Amount_Payment_Fee_Credit_Must_Enter' => 'Debe ingresar el monto total a pagar',
+		'Msg_View_Fee_Credit_OK' => 'Pago de cuota OK',
+		'Msg_Need_Authorize_Pay_Fee_Credit' => 'Se necesita autorización de supervisor',
+		'Msg_Collection_Data_Fee_Credit' => 'Datos de Cobro',
+		'Msg_Pay_Fee_Credit_OK' => 'El pago de la cuota se realizo correctamente!!',
+		'The_Value_Entered_Is_Not_Allowed_Pay_Fee_Credit' => 'El valor ingresado no esta permitido!!',
+		'The_Payment_Amount_Cannot_Be_Less_Than_The_Interest_Free_Installment_Pay_Fee_Credit' => 'El monto de pago no puede ser menor a la cuota sin intereses!!',
+		'The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fee_Pay_Fee_Credit' => 'El monto de pago no puede ser mayor al monto total de la cuota!!',
+		'Lbl_Authorize_Pay_Fee_Credit' => 'Autorizar Pago Cuota',
+		'Lbl_Authorize_Pay_Fee_Credit2' => 'Autorización Supervisor'		
 	);
 ?>

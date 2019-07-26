@@ -90,7 +90,81 @@ include("./menu/menu.php");
 								}
 						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 						
-						$('#tablefeescreditclienttv').bootstrapTable({locale:'es-AR'});	
+						$('#tablefeescreditclienttv').bootstrapTable({locale:'es-AR'});
+						
+						var primerSeleccionE = 0;
+						var totalRTab = $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows;
+						for(var i=0; i<totalRTab; i++)
+						{
+							if(primerSeleccionE == 1 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+							{								
+								document.getElementById("seleccioncuotanro"+(i+1)).disabled = true;
+								$('#seleccioncuotanro'+(i+1)).change(function() {
+									if($(this).is(":checked")) 
+									{
+										var idCS = $(this).attr('id');
+										var idCSSig = parseInt(idCS[idCS.length -1]);
+										
+										if((idCSSig+1) <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+										{
+											document.getElementById("seleccioncuotanro"+(idCSSig+1)).disabled = false;
+										}
+										
+									}
+									else
+									{
+										var idCS = $(this).attr('id');
+										var idCSSig = parseInt(idCS[idCS.length -1]);
+										
+										idCSSig = idCSSig + 1;
+										while(idCSSig <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+										{
+											document.getElementById("seleccioncuotanro"+idCSSig).checked = false;
+											document.getElementById("seleccioncuotanro"+idCSSig).disabled = true;
+											
+											idCSSig++;
+										}
+									}										
+								});									
+							}
+							
+							if(primerSeleccionE == 0 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+							{
+								document.getElementById("seleccioncuotanro"+(i+1)).disabled = false;
+								
+								$('#seleccioncuotanro'+(i+1)).change(function() {
+									if($(this).is(":checked")) 
+									{
+										document.getElementById("btnPagoSeleccionCD").disabled = false;
+										var idCS = $(this).attr('id');
+										var idCSSig = parseInt(idCS[idCS.length -1]);
+										
+										if((idCSSig+1) <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+										{
+											document.getElementById("seleccioncuotanro"+(idCSSig+1)).disabled = false;
+										}
+										
+									}
+									else
+									{
+										document.getElementById("btnPagoSeleccionCD").disabled = true;
+										var idCS = $(this).attr('id');
+										var idCSSig = parseInt(idCS[idCS.length -1]);
+										
+										idCSSig = idCSSig + 1;
+										while(idCSSig <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+										{
+											document.getElementById("seleccioncuotanro"+idCSSig).checked = false;
+											document.getElementById("seleccioncuotanro"+idCSSig).disabled = true;
+											
+											idCSSig++;
+										}
+									}										
+								});
+								
+								primerSeleccionE = 1;
+							}
+						}
 						
 						tagvc.dialog('open');
 						$('#montototalcreditvi').maskNumber();
@@ -166,6 +240,151 @@ include("./menu/menu.php");
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
+				}
+			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function pagarCuotaCredito(idCredito, idCuotaCredito)
+		{
+			if($('#idcreditovi').val() != idCredito) return;
+			var urlpcc = "./acciones/buscarcuotacredito.php";
+			var tagpcc = $("<div id='dialogviewfeecredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlpcc,
+				method: "POST",
+				data: { idCredito: idCredito, idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagpcc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagpcc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagpcc.dialog('open');
+						$('#montooriginalcuotacreditvi').maskNumber();
+						$('#interescuotacreditvi').maskNumber();
+						$('#montototalcuotacreditvi').maskNumber();
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarPagoCuotaCredito(formulariopcc)
+		{
+			if($('#idcreditovi').val() != formulariopcc.idcreditovc2i.value) return;
+			
+			if(formulariopcc.montototalcuotacreditvi.value.length == 0)
+			{
+				$(function() {
+					$('#montototalcuotacreditvi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#montototalcuotacreditvi').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#montototalcuotacreditvi').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#montototalcuotacreditvi').tooltip('destroy');
+			}
+			
+			var urlpcc = "./acciones/pagarcuotacredito.php";
+			$('#img_loader_18').show();
+			
+			$.ajax({
+				url: urlpcc,
+				method: "POST",
+				data: { idCredito: formulariopcc.idcreditovc2i.value, idCuotaCredito: formulariopcc.idcuotacreditovi.value, montoPago: ((formulariopcc.montototalcuotacreditvi.value.replace(/,/g,""))*100.00), tokenVS: $('#tokenvalidsuppagocuotacrei').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_18').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",dataresponse);
+						imprimirPagoCuota();
+					}
+					else if(dataresponse.indexOf('<?php echo translate('Msg_Need_Authorize_Pay_Fee_Credit',$GLOBALS['lang']);?>') != -1)
+					{
+						var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:::=:::'));
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Need_Authorize_Pay_Fee_Credit',$GLOBALS['lang']); ?>=::=::=::","");
+						dataresponse = dataresponse.replace(tokenR+"=:::=:::","");
+												
+						$('#tokenvalidsuppagocuotacrei').val(tokenR);
+						var tagvpcc = $("<div id='dialogvalidsuppagocuotacredit'></div>");
+						
+						tagvpcc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_Authorize_Pay_Fee_Credit2',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagvpcc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");						
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_18').hide();
 				}
 			});	
 		}

@@ -240,6 +240,34 @@ h1 {
     margin-left:0%;
 }
 
+#img_loader_17
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando2.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:15px;
+    height:15px;
+    margin-top:-12px;
+    margin-left:-12px;
+}
+
+#img_loader_18
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:12%;
+    margin-left:52%;
+}
+
 #mensajeError
 {
     background-image: url("../images/errorDialog.png");	

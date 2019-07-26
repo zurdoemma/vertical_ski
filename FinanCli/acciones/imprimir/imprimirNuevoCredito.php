@@ -68,7 +68,18 @@ try
 			$printer -> text('-------------------------------');			
 			$printer -> feed();			
 		}
-		else $printer -> feed(2);
+		else 
+		{
+			$printer -> feed();
+			$printer -> text('-------------------------------');
+			$printer -> feed();
+			$printer -> setTextSize(1, 2);
+			$printer -> text(translate('Lbl_Print_Type_Voucher_Generate_Credit',$GLOBALS['lang']));
+			$printer -> feed();
+			$printer -> text('-------------------------------');			
+			$printer -> feed();
+			$printer -> setTextSize(1, 1);
+		}
 		$printer -> setJustification($justification[0]);
 		$printer -> text(translate('Lbl_Credit_Number',$GLOBALS['lang']).': '.$numeroCredito);
 		$printer -> feed();	
@@ -84,8 +95,12 @@ try
 		$printer -> feed();	
 		$printer -> text(translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).': '.$cuotas);
 		$printer -> feed();	
-		$proximoPago = str_replace("-","",$proximoPago);
-		$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+		if(!empty($proximoPago))
+		{
+			$proximoPago = str_replace("-","",$proximoPago);
+			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+		}
+		else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---';
 		$printer -> feed();
 		$printer -> text('-------------------------------');
 		$printer -> feed();		
@@ -164,7 +179,18 @@ try
 				$printer -> text('-------------------------------');			
 				$printer -> feed();			
 			}
-			else $printer -> feed(2);
+			else 
+			{
+				$printer -> feed();
+				$printer -> text('-------------------------------');
+				$printer -> feed();
+				$printer -> setTextSize(1, 2);
+				$printer -> text(translate('Lbl_Print_Type_Voucher_Generate_Credit',$GLOBALS['lang']));
+				$printer -> feed();
+				$printer -> text('-------------------------------');			
+				$printer -> feed();
+				$printer -> setTextSize(1, 1);
+			}
 			$printer -> setJustification($justification[0]);
 			$printer -> text(translate('Lbl_Credit_Number',$GLOBALS['lang']).': '.$numeroCredito);
 			$printer -> feed();	
@@ -182,8 +208,12 @@ try
 			$printer -> feed();	
 			$printer -> text(translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).': '.$cuotas);
 			$printer -> feed();	
-			$proximoPago = str_replace("-","",$proximoPago);
-			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+			if(!empty($proximoPago))
+			{
+				$proximoPago = str_replace("-","",$proximoPago);
+				$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+			}
+			else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---';
 			$printer -> feed();
 			$printer -> text('-------------------------------');
 			$printer -> feed();		
