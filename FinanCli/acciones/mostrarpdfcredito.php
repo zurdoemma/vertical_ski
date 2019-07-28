@@ -154,7 +154,7 @@
 			{
 				$motivo = 66;
 				$stmt75->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
-				if(!$stmt->execute())
+				if(!$stmt75->execute())
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);

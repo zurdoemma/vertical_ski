@@ -500,6 +500,7 @@
 		'Msg_A_Document_Client_Must_Enter_Credit' => 'Debe ingresar un documento!!',
 		'Msg_Reprint_Credit_Client_db' => 'Reimpresión de Crédito',		
 		'Msg_Be_Sure_To_Reprint_The_Credit' => 'Esta seguro de reimprimir el crédito',
+		'Msg_Be_Sure_To_Reprint_The_Pay_Fee_Credit' => 'Esta seguro de reimprimir el comprobante de pago de la cuota',
 		'Msg_Modify_Debt_Client' => 'Modificar Deuda',
 		'Lbl_Title_Text_Print_Credit' => 'MANOLOS',
 		'Lbl_Date_Print_Credit' => 'Fecha',
@@ -539,6 +540,7 @@
 		'Msg_Change_State_Fee_Credit' => 'Cambiar Estado',
 		'Msg_View_Interest_Fee_Credit' => 'Ver Intereses',
 		'Msg_Reprint_Payment_Amount_Fee_Credit' => 'Reimpresión Pago Cuota',
+		'Msg_Reprint_Payment_Amount_Fee_PDF_Credit' => 'Reimpresión Pago Cuota PDF',
 		'Msg_View_Fee_Credit_OK' => 'Visualizacion de Cuota Credito OK',
 		'Lbl_Amount_Original_Fee_Credit' => 'Monto Original',
 		'Lbl_Amount_Interest_Credit' => 'Interés',
@@ -551,6 +553,17 @@
 		'The_Payment_Amount_Cannot_Be_Less_Than_The_Interest_Free_Installment_Pay_Fee_Credit' => 'El monto de pago no puede ser menor a la cuota sin intereses!!',
 		'The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fee_Pay_Fee_Credit' => 'El monto de pago no puede ser mayor al monto total de la cuota!!',
 		'Lbl_Authorize_Pay_Fee_Credit' => 'Autorizar Pago Cuota',
-		'Lbl_Authorize_Pay_Fee_Credit2' => 'Autorización Supervisor'		
+		'Lbl_Authorize_Pay_Fee_Credit2' => 'Autorización Supervisor',
+		'Msg_The_New_Pay_Fee_Credit_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!',
+		'Lbl_Number_Fee_Credit' => 'Cuota Nro.',
+		'Lbl_Amount_Original_Fee_Print_Credit' => 'Monto Cuota',		
+		'Lbl_Print_Type_Voucher_Pay_Fee_Credit' => 'Pago Cuota Crédito',
+		'Lbl_Amount_Diferential_Fee_Print_Credit' => 'Monto Diferencial',		
+		'Lbl_Amount_Pay_Print_Credit' => 'Monto Pagado',
+		'Msg_Reprint_Pay_Fee_Credit_Client_OK' => 'Reimpresión de credito OK!!',
+		'Msg_Reprint_Pay_Fee_Credit_Client_OK2' => 'El comprobante de pago se reimprimió correctamente!!',
+		'Msg_Reprint_Pay_Fee_Credit_Client_db' => 'Reimpresión de Pago Cuota Crédito',
+		'Msg_Generation_PDF_Pay_Fee_Credit_Client_db' => 'Generación PDF de Pago Cuota Crédito',
+		'Lbl_Pay_Fee_Credit_PDF_View' => 'Pago Cuota Crédito PDF'		
 	);
 ?>

@@ -87,11 +87,6 @@
 					$stmt62->free_result();
 					$stmt62->close();
 				}
-				else
-				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;
-				}
 			}
 			else
 			{
@@ -153,7 +148,7 @@
 			{
 				$motivo = 65;
 				$stmt75->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
-				if(!$stmt->execute())
+				if(!$stmt75->execute())
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
