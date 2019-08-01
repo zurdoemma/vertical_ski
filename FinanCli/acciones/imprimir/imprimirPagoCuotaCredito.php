@@ -21,7 +21,7 @@ $montoCuota=htmlspecialchars($_POST["montoCuota"], ENT_QUOTES, 'UTF-8');
 $montoInteres=htmlspecialchars($_POST["montoInteres"], ENT_QUOTES, 'UTF-8');
 
 
-if(empty($fecha) || empty($numeroCredito) || empty($nroCuota) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoPagado) || empty($proximoPago) || empty($tipoDocumento) || empty($documento) || empty($montoCuota)) 
+if(empty($fecha) || empty($numeroCredito) || empty($nroCuota) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoPagado) || empty($tipoDocumento) || empty($documento) || empty($montoCuota)) 
 {
 	echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']);
 	return;
@@ -114,7 +114,7 @@ try
 			$proximoPago = str_replace("-","",$proximoPago);
 			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
 		}
-		else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': ---';		
+		else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');		
 		$printer -> feed(3);
 		$printer -> setJustification($justification[1]);
 		$printer -> text('-----------------------------');
@@ -208,7 +208,7 @@ try
 				$proximoPago = str_replace("-","",$proximoPago);
 				$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
 			}
-			else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': ---';				
+			else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');				
 			$printer -> feed(3);		
 		}		
 		$printer -> pulse();

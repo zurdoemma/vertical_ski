@@ -579,6 +579,7 @@
 		'Lbl_Print_Duplicate_Pay_Fee_Credit' => 'SI',
 		'Lbl_Print_Duplicate_Pay_Fees_Credit' => 'SI',
 		'Lbl_Fees_Pay_Print_Credit' => 'Cuotas Pagadas',
-		'Lbl_Amount_Original_Fees_Print_Credit' => 'Monto Cuotas'		
+		'Lbl_Amount_Original_Fees_Print_Credit' => 'Monto Cuotas',
+		'Msg_Pay_Total_Amount_Debt_Credit_OK' => 'El pago total de la deuda se realizo correctamente!!'	
 	);
 ?>

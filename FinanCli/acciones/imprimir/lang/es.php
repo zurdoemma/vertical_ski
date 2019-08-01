@@ -38,6 +38,8 @@
 		'Lbl_Print_Type_Voucher_Pay_Fees_Credit' => 'Pago Cuotas Crédito',
 		'Lbl_Fees_Pay_Print_Credit' => 'Cuotas Pagadas',
 		'Lbl_Print_Duplicate_Pay_Fee_Credit' => 'SI',
-		'Lbl_Print_Duplicate_Pay_Fees_Credit' => 'SI'
+		'Lbl_Print_Duplicate_Pay_Fees_Credit' => 'SI',
+		'Lbl_Amount_Interest_Fee_Print_Credit' => 'Interés',
+		'Msg_The_Selection_Fees_Pay_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!'
 	);
 ?>

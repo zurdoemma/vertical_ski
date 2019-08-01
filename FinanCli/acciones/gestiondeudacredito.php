@@ -162,6 +162,9 @@
 		echo '					<div class="form-group" id="tokenvalidsuppagocuotacre" style="display:none;">';
 		echo '						<input class="form-control input-sm green-border" id="tokenvalidsuppagocuotacrei" name="tokenvalidsuppagocuotacrei" type="text" maxlength="128" />';
 		echo '					</div>';
+		echo '					<div class="form-group" id="tokenvalidsuppagocuotascre" style="display:none;">';
+		echo '						<input class="form-control input-sm green-border" id="tokenvalidsuppagocuotascrei" name="tokenvalidsuppagocuotascrei" type="text" maxlength="128" />';
+		echo '					</div>';
 		echo '					<div class="form-group" id="idcreditov" style="display:none;">';
 		echo '						<input class="form-control input-sm green-border" id="idcreditovi" name="idcreditovi" type="text" maxlength="11" value="'.$idCredito.'" disabled />';
 		echo '					</div>';

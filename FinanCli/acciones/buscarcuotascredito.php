@@ -43,7 +43,7 @@
 				{
 					$montoCuotas = $montoCuotas + $monto_cuota_original_db;
 					if($nrosCuotas == "") $nrosCuotas = $numero_cuota_db;
-					else $nrosCuotas = $nrosCuotas + "," + $numero_cuota_db;
+					else $nrosCuotas = $nrosCuotas.",".$numero_cuota_db;
 				}
 				$stmt63->free_result();
 				$stmt63->close();				
@@ -106,8 +106,8 @@
 		echo '					<div class="form-group" id="idcuotascreditov" style="display:none;">';
 		echo '						<input class="form-control input-sm green-border" id="idcuotascreditovi" name="idcuotascreditovi" type="text" maxlength="50" value="'.$nrosCuotas.'" disabled />';
 		echo '					</div>';
-		echo '					<div class="form-group" id="idcreditosvc2" style="display:none;">';
-		echo '						<input class="form-control input-sm green-border" id="idcreditosvc2i" name="idcreditosvc2i" type="text" maxlength="11" value="'.$idCredito.'" disabled />';
+		echo '					<div class="form-group" id="idcreditosvc3" style="display:none;">';
+		echo '						<input class="form-control input-sm green-border" id="idcreditosvc3i" name="idcreditosvc3i" type="text" maxlength="11" value="'.$idCredito.'" disabled />';
 		echo '					</div>';		
 		echo '					&nbsp;<label class="control-label" for="numerocuotascreditv">'.translate('Lbl_Number_Fees_Pay_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="numerocuotascreditv">';
