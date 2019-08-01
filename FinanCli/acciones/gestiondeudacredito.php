@@ -216,6 +216,7 @@
 													</thead>
 													<tbody>';
 														$pasoPrimeraCuota = 0;
+														$cantidadCuotasPendientes = 0;
 														while($stmt62->fetch())
 														{		
 															if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
@@ -256,9 +257,11 @@
 															echo '<tr>';
 																if($estado_cuota_db == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']))
 																{
+																	$cantidadCuotasPendientes++;
 																	if($pasoPrimeraCuota == 0)
 																	{
-																		echo '<td><label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db.'" name="seleccioncuotanro'.$numero_cuota_db.'" /><span class="slider round"></span></label></td>';
+																		if($numero_cuota_db == $totR62 && $cantidadCuotasPendientes == 1) echo '<td>---</td>';
+																		else echo '<td><label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db.'" name="seleccioncuotanro'.$numero_cuota_db.'" /><span class="slider round"></span></label></td>';
 																		echo '<td>'.$numero_cuota_db.'</td>';
 																		echo '<td>'.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4).'</td>';
 																		echo '<td>$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2).'</td>';															
@@ -267,19 +270,20 @@
 																		else echo '<td>---</td>';
 																		if($monto_interes_cuota_credito_db == 0)
 																		{
-																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
-																			else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button></td>';
+																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button id="pagoCuotaNro'.$numero_cuota_db.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																			else echo '<td><button id="pagoCuotaNro'.$numero_cuota_db.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button></td>';
 																		}
 																		else
 																		{
-																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
-																			else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button></td>';
+																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button id="pagoCuotaNro'.$numero_cuota_db.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																			else echo '<td><button id="pagoCuotaNro'.$numero_cuota_db.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button></td>';
 																		}
 																		$pasoPrimeraCuota = 1;
 																	}
 																	else
 																	{
-																		echo '<td><label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db.'" name="seleccioncuotanro'.$numero_cuota_db.'" /><span class="slider round"></span></label></td>';
+																		if($numero_cuota_db == $totR62 && $cantidadCuotasPendientes == 1) echo '<td>---</td>';
+																		else echo '<td><label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db.'" name="seleccioncuotanro'.$numero_cuota_db.'" /><span class="slider round"></span></label></td>';
 																		echo '<td>'.$numero_cuota_db.'</td>';
 																		echo '<td>'.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4).'</td>';
 																		echo '<td>$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2).'</td>';															
@@ -288,12 +292,14 @@
 																		else echo '<td>---</td>';
 																		if($monto_interes_cuota_credito_db == 0)
 																		{
-																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
-																			else echo '<td>---</td>';
+																			//if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																			//else echo '<td>---</td>';
+																			echo '<td>---</td>';
 																		}
 																		else
 																		{
-																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																			//if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button></td>';
+																			if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button></td>';
 																			else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button></td>';
 																		}																		
 																	}
@@ -347,10 +353,10 @@
 		echo '				<div class="form-group form-inline">';				
 		if($estado_credito_cliente_db == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_cliente_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) 
 		{
-			echo '				<input type="button" class="btn btn-primary pull-right" name="btnPagoSeleccionCD" id="btnPagoSeleccionCD" value="'.translate('Lbl_Payment_Selection_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoSeleccionDeuda('.$idCredito.');" style="margin-left:10px;" disabled />';
-			echo '				<input type="button" class="btn btn-primary pull-right" name="btnCancelarCD" id="btnCancelarCD" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
-			if($totR62 > 1)
+			echo '				<input type="button" class="btn btn-primary pull-right" name="btnSalirCD" id="btnSalirCD" value="'.translate('Lbl_Exit',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
+			if($cantidadCuotasPendientes > 1)
 			{
+				echo '			<input type="button" class="btn btn-primary pull-right" name="btnPagoSeleccionCD" id="btnPagoSeleccionCD" value="'.translate('Lbl_Payment_Selection_Fees_Credit',$GLOBALS['lang']).'" onClick="confirmar_accion_pago_seleccion_cuotas(\''.translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']).'\',\''.translate('Msg_Be_Sure_To_Pay_Fees_Credit_Selection',$GLOBALS['lang']).'\');" style="margin-left:10px;" disabled />';				
 				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPagoTotalCD" id="btnPagoTotalCD" value="'.translate('Lbl_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoTotalDeuda('.$idCredito.');" style="margin-right:10px;" />';
 			}
 		}

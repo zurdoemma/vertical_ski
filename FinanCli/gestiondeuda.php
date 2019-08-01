@@ -265,9 +265,9 @@ include("./menu/menu.php");
 						window.location.replace("./login.php?result_ok=3");
 					}
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_View_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Fee_Credit_OK2',$GLOBALS['lang']);?>') != -1)
 					{					
-						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Fee_Credit_OK2',$GLOBALS['lang']);?>',"");
 						
 						tagpcc.html(dataresponse).dialog({
 						  show: "blind",
@@ -361,13 +361,20 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
-						if(cantidadCuotasP <= 1) 
+						if(cantidadCuotasP == 1) 
 						{
 							$('#btnPagoTotalCD').hide();
 							document.getElementById("btnPagoTotalCD").disabled = true;
 						}
 						var infoImprPC = datosCompPC.split("|");
-						document.getElementById("btnPagoSeleccionCD").disabled = true;
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+
+						if(cantidadCuotasP == 1) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
+						}
 						
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 						
@@ -439,6 +446,152 @@ include("./menu/menu.php");
 				}
 			});
 		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorPagoCuota(formularionaspcc)
+		{
+			if($('#usuariosupervisorni').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorni').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorni').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorni').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorni').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorni').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorni').tooltip('destroy');
+			}			
+			
+			var urlvcspcc = "./acciones/verificarcredencialessupervisorpagocuotacredito.php";
+			$('#img_loader_13').show();
+			
+			
+			var p221 = document.createElement("input");
+		 			
+			formularionaspcc.appendChild(p221);
+			p221.name = "p221";
+			p221.type = "hidden";
+			
+			p221.value = hex_sha512(formularionaspcc.passwordsupervisorni.value);
+			
+			if(formularionaspcc.passwordsupervisorni.value == "") p221.value = "";
+			formularionaspcc.passwordsupervisorni.value = "";
+					
+			$.ajax({
+				url: urlvcspcc,
+				method: "POST",
+				data: { usuarioSupervisor: formularionaspcc.usuariosupervisorni.value, claveSupervisor: p221.value, idCredito: $('#idcreditovc2i').val(), idCuotaCredito: $('#idcuotacreditovi').val(), montoPago: (($('#montototalcuotacreditvi').val().replace(/,/g,""))*100.00), tokenVS: $('#tokenvalidsuppagocuotacrei').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = "<?php echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']);?>";
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosCompPC = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
+						dataresponse = dataresponse.replace(datosCompPC+'=:::=:::=',"");
+						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
+						dataresponse = dataresponse.replace(datosTablaCuotas+'=::::=::::=',"");
+						var cantidadCuotasP = parseInt(dataresponse);
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+						if(cantidadCuotasP == 1) 
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+						}
+						var infoImprPC = datosCompPC.split("|");
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+
+						if(cantidadCuotasP == 1) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});
+							//$('#tablefeescreditclienttv').bootstrapTable('getData')[($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1)].seleccioncuota = '---';
+						}
+						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+						
+						$('#dialogvalidsuppagocuotacredit').dialog('destroy').remove();
+						$('#dialogviewfeecredit').dialog('destroy').remove();
+						imprimirPagoCuota(infoImprPC[0],infoImprPC[1],infoImprPC[2],infoImprPC[3],infoImprPC[4],infoImprPC[5],infoImprPC[6],infoImprPC[7],infoImprPC[8],infoImprPC[9],infoImprPC[10],infoImprPC[11],infoImprPC[12]);						
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorni').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorni').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorni').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
     </script>	
 						
     <script type="text/javascript">
@@ -499,34 +652,6 @@ include("./menu/menu.php");
 					$( "#okDialog" ).html("<div id='mensajeOK'>"+mensaje+"</div>");
 		}
     </script>	
-
-	<script type="text/javascript">
-		function confirmar_accion_validar_cliente(titulo, mensaje, motivo)
-		{
-			$( "#confirmDialog" ).dialog({
-						title:titulo,
-						show:"blind",
-						modal: true,
-						hide:"slide",
-						resizable: false,
-						height: "auto",
-						width: "auto",
-						buttons: {
-								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
-										$("#confirmDialog").dialog('close');
-										
-										validar_cliente_supervisor(motivo);                                                      
-								},
-								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
-										$("#confirmDialog").dialog('close');
-										return;
-								}
-						}
-				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
-				$('#img_loader').hide();
-		}
-	</script>
 	
 	<script type="text/javascript">
 		function reImprimirPagoCuotaCreditoCliente(idCuotaCredito)
@@ -629,6 +754,231 @@ include("./menu/menu.php");
 		}
     </script>	
 	
+	<script type="text/javascript">
+		function confirmar_accion_pago_seleccion_cuotas(titulo, mensaje)
+		{
+			var cuotas = '';
+			var montoTotalAPagar = 0.00;
+			for(var i=0; i < $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows; i++)
+			{
+				if($('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+				{
+					if($('#seleccioncuotanro'+(i+1)).is(":checked"))
+					{
+						if(cuotas == '') cuotas = ''+(i+1);
+						else cuotas = cuotas + '|' + (i+1);
+						montoTotalAPagar = montoTotalAPagar + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].montototalcuotav.replace("$","")) + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].interesescuotav.replace("$",""));
+					}
+				}
+			}
+			
+			if(cuotas == '') return;
+			var cuotasVis = '';
+			var cuotasRecV = cuotas.split('|');
+			if(cuotasRecV.length == 1)
+			{				
+				$('#pagoCuotaNro'+cuotasRecV[0]).click();
+				return;
+			}
+			
+			for(var j=0; j < cuotasRecV.length; j++)
+			{
+				if(j==0) cuotasVis = cuotasRecV[j];
+				else if((j+1) == cuotasRecV.length) cuotasVis = cuotasVis + ' <?php echo translate('Lbl_AND_letter',$GLOBALS['lang']);?> ' + cuotasRecV[j];
+				else cuotasVis = cuotasVis + ', ' + cuotasRecV[j];
+			}
+			
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+																				
+										pagoSeleccionCuotasCredito(cuotas);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje.replace(":cuotasM",cuotasVis)+": $"+montoTotalAPagar+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+
+	<script type="text/javascript">
+		function pagoSeleccionCuotasCredito(cuotas)
+		{
+			var urlrpcc = "./acciones/registrarpagocuotascredito.php";
+			$('#img_loader_17').show();
+								
+			$.ajax({
+				url: urlrpcc,
+				method: "POST",
+				data: { idCredito: $('#numerocreditvi').val(), nrosCuotasCredito: cuotas },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Pay_Fees_Credit_Selection_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = "<?php echo translate('Msg_Pay_Fees_Credit_Selection_OK',$GLOBALS['lang']);?>";
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Pay_Fees_Credit_Selection_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosCompPC = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
+						dataresponse = dataresponse.replace(datosCompPC+'=:::=:::=',"");
+						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
+						dataresponse = dataresponse.replace(datosTablaCuotas+'=::::=::::=',"");
+						var cantidadCuotasP = parseInt(dataresponse);
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+						if(cantidadCuotasP == 1) 
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+						}
+						var infoImprPC = datosCompPC.split("|");
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+
+						if(cantidadCuotasP == 1) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});
+							//$('#tablefeescreditclienttv').bootstrapTable('getData')[($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1)].seleccioncuota = '---';
+						}
+						
+						if(cantidadCuotasP == 0)
+						{
+							if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+							{
+								$('#btnPagoSeleccionCD').hide();
+								document.getElementById("btnPagoSeleccionCD").disabled = true;
+							}
+							
+							if(document.getElementById("btnPagoTotalCD") != undefined && document.getElementById("btnPagoTotalCD") != null)
+							{
+								$('#btnPagoTotalCD').hide();
+								document.getElementById("btnPagoTotalCD").disabled = true;
+							}							
+						}
+						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+						imprimirPagoSeleccionCuotas(infoImprPC[0],infoImprPC[1],infoImprPC[2],infoImprPC[3],infoImprPC[4],infoImprPC[5],infoImprPC[6],infoImprPC[7],infoImprPC[8],infoImprPC[9],infoImprPC[10],infoImprPC[11]);						
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);				
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function imprimirPagoSeleccionCuotas(fechaCreditoImp, nroCreditoP, cantidadCuotasP, tipoClienteCreditoImp, datosCliCreditoImp, sucursalCreditoImp, usuarioCreditoImp, montoPagado, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotasPagadas)
+		{
+			var urlinc2 = "<?php echo $GLOBALS['imprimir_seleccion_pago_cuotas_credito']; ?>";
+
+			$.ajax({
+				url: urlinc2,
+				method: "POST",
+				data: { numeroCredito: nroCreditoP, fecha: fechaCreditoImp, cantidadCuotasP: cantidadCuotasP, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoPagado: montoPagado, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotasPagadas: datosCuotasPagadas },
+				success: function(dataresponse, statustext, response){
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_The_Selection_Fees_Pay_Was_Printed_Correctly',$GLOBALS['lang']);?>') != -1)
+					{
+						console.log('<?php echo translate('Msg_The_Selection_Fees_Pay_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",'<?php echo translate('Msg_The_Selection_Fees_Pay_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function pagoTotalDeuda(idCredito)
+		{
+			if($('#idcreditovi').val() != idCredito) return;
+			var urlpccs = "./acciones/buscarcuotascredito.php";
+			var tagpccs = $("<div id='dialogviewfeescredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlpccs,
+				method: "POST",
+				data: { idCredito: idCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Fees_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Fees_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagpccs.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Msg_Payment_Total_Amount_Debt_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagpccs.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagpccs.dialog('open');
+						$('#montooriginalcuotascreditvi').maskNumber();
+						$('#interescuotascreditvi').maskNumber();
+						$('#montototalcuotascreditvi').maskNumber();
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
+		}
+    </script>	
 </head>
 
 <body>

@@ -7,7 +7,8 @@
 		'Lbl_Date_Expire_Print_Credit' => 'Fecha V.',
 		'Lbl_Credit_Number' => 'Crédito Nro.',
 		'Lbl_Name_Print_Credit_Plan' => 'Plan',
-		'Lbl_Number_Fee_Credit' => 'Cuota Nro.',		
+		'Lbl_Number_Fee_Credit' => 'Cuota Nro.',
+		'Lbl_Number_Fees_Pay_Credit' => 'Cantidad Cuotas',		
 		'Lbl_Name_Print_Client' => 'Cliente',
 		'Lbl_Type_Client_Print' => 'Tipo Cliente',
 		'Lbl_Tender_Print' => 'Sucursal',
@@ -33,6 +34,10 @@
 		'Lbl_Print_Voucher_Original' => 'ORIGINAL',
 		'Lbl_Print_Voucher_Copy' => 'COPIA',
 		'Lbl_Print_Type_Voucher_Generate_Credit' => 'Generación Crédito',
-		'Lbl_Print_Type_Voucher_Pay_Fee_Credit' => 'Pago Cuota Crédito'
+		'Lbl_Print_Type_Voucher_Pay_Fee_Credit' => 'Pago Cuota Crédito',
+		'Lbl_Print_Type_Voucher_Pay_Fees_Credit' => 'Pago Cuotas Crédito',
+		'Lbl_Fees_Pay_Print_Credit' => 'Cuotas Pagadas',
+		'Lbl_Print_Duplicate_Pay_Fee_Credit' => 'SI',
+		'Lbl_Print_Duplicate_Pay_Fees_Credit' => 'SI'
 	);
 ?>

@@ -97,7 +97,7 @@ try
 		if(empty($montoInteres)) $printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $0,00');
 		else $printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));		
 		$printer -> feed();
-		$printer -> text(translate('Lbl_Amount_Diferential_Fee_Print_Credit',$GLOBALS['lang']).': $'.number_format((($montoCuota-$montoPagado)/100.00), 2, ',', '.'));		
+		$printer -> text(translate('Lbl_Amount_Diferential_Fee_Print_Credit',$GLOBALS['lang']).': $'.number_format(((($montoCuota+$montoInteres)-$montoPagado)/100.00), 2, ',', '.'));		
 		$printer -> feed();
 		$printer -> setJustification($justification[1]);
 		$printer -> text('********************************');
@@ -128,7 +128,7 @@ try
 		$printer -> text($tipoDocumento.': '.$documento);	
 		$printer -> feed(3);	
 
-		if(translate('Lbl_Print_Duplicate_New_Credit',$GLOBALS['lang']) == 'SI')
+		if(translate('Lbl_Print_Duplicate_Pay_Fee_Credit',$GLOBALS['lang']) == 'SI')
 		{
 			$printer -> setJustification($justification[1]);
 			$printer -> text('-------------------------------');
@@ -191,7 +191,7 @@ try
 			if(empty($montoInteres)) $printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $0,00');
 			else $printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
 			$printer -> feed();
-			$printer -> text(translate('Lbl_Amount_Diferential_Fee_Print_Credit',$GLOBALS['lang']).': $'.number_format((($montoCuota-$montoPagado)/100.00), 2, ',', '.'));		
+			$printer -> text(translate('Lbl_Amount_Diferential_Fee_Print_Credit',$GLOBALS['lang']).': $'.number_format(((($montoCuota+$montoInteres)-$montoPagado)/100.00), 2, ',', '.'));		
 			$printer -> feed();			
 			$printer -> setJustification($justification[1]);
 			$printer -> text('********************************');

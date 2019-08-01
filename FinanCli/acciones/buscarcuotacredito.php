@@ -89,7 +89,7 @@
 			return;
 		}
 
-		echo translate('Msg_View_Fee_Credit_OK',$GLOBALS['lang']);	
+		echo translate('Msg_View_Fee_Credit_OK2',$GLOBALS['lang']);	
 		echo '<div class="panel-group">';				
 		echo '	<div class="panel panel-default">';
 		echo '		<div id="panel-title-header" class="panel-heading">';
@@ -106,11 +106,11 @@
 		echo '						<input class="form-control input-sm green-border" id="idcreditovc2i" name="idcreditovc2i" type="text" maxlength="11" value="'.$idCredito.'" disabled />';
 		echo '					</div>';		
 		echo '					&nbsp;<label class="control-label" for="numerocuotacreditv">'.translate('Lbl_Number_Fee_Credit',$GLOBALS['lang']).':</label>';
-		echo '					<div class="form-group" id="numerocreditv">';
+		echo '					<div class="form-group" id="numerocuotacreditv">';
 		echo '						<input class="form-control input-sm" id="numerocuotacreditvi" name="numerocuotacreditvi" type="text" maxlength="11" value="'.$numero_cuota_db.'" disabled />';
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="montooriginalcuotacreditv">'.translate('Lbl_Amount_Original_Fee_Credit',$GLOBALS['lang']).':</label>';
-		echo '					<div class="form-group" id="cantidadcuotascreditv">';
+		echo '					<div class="form-group" id="montooriginalcuotacreditv">';
 		echo '						<input class="form-control input-sm" id="montooriginalcuotacreditvi" name="montooriginalcuotacreditvi" type="text" maxlength="11" value="'.round(($monto_cuota_original_db/100.00),2).'" disabled/>';
 		echo '					</div>';				
 		echo '				</div>';
