@@ -39,13 +39,11 @@
 			return;
 		}		
 		
-		echo $idCredito." -- ".$cuotasCredito." -- ".$montoPago." -- ".$tokenVS;
-		return;
-		if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original, c.monto_compra, c.cantidad_cuotas, ccli.documento, ccli.tipo_documento, cc.fecha_pago, cc.monto_pago  FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND cc.id = ? AND cc.id_credito = ? AND cc.estado IN (?,?)"))
+		if($stmt63 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.monto_cuota_original, c.monto_compra, c.cantidad_cuotas, ccli.documento, ccli.tipo_documento, cc.fecha_pago, cc.monto_pago  FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND cc.numero_cuota IN ($cuotasCredito) AND cc.id_credito = ? AND cc.estado IN (?,?)"))
 		{
 			$estadoU = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estadoD = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
-			$stmt63->bind_param('iiss', $idCuotaCredito, $idCredito, $estadoU, $estadoD);
+			$stmt63->bind_param('iss', $idCredito, $estadoU, $estadoD);
 			$stmt63->execute();    
 			$stmt63->store_result();
 			
@@ -53,18 +51,25 @@
 
 			if($totR63 > 0)
 			{
-				$stmt63->bind_result($numero_cuota_db, $monto_cuota_original_db, $monto_compra_orig_credito_db, $cantidad_cuotas_credito_db, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $fecha_pago_cuota_credito_db, $monto_pago_cuota_credito_db);
-				$stmt63->fetch();
-				
-				if(!empty($fecha_pago_cuota_credito_db) || !empty($monto_pago_cuota_credito_db))
+				$stmt63->bind_result($id_cuota_credito_db_e, $numero_cuota_db, $monto_cuota_original_db, $monto_compra_orig_credito_db, $cantidad_cuotas_credito_db, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $fecha_pago_cuota_credito_db, $monto_pago_cuota_credito_db);
+				$idCuotasCredito = "";
+				$monto_cuotas_original_db = 0;
+				while($stmt63->fetch())
 				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;					
+					if(!empty($fecha_pago_cuota_credito_db) || !empty($monto_pago_cuota_credito_db))
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;					
+					}
+					
+					$monto_cuotas_original_db = $monto_cuotas_original_db + $monto_cuota_original_db;
+					if($idCuotasCredito == "") $idCuotasCredito = $id_cuota_credito_db_e;
+					else $idCuotasCredito = $idCuotasCredito.",".$id_cuota_credito_db_e;
 				}
 				
-				if(($monto_compra_orig_credito_db/$cantidad_cuotas_credito_db) > $montoPago)
+				if((($monto_compra_orig_credito_db/$cantidad_cuotas_credito_db)*$totR63) > $montoPago)
 				{
-					echo translate('The_Payment_Amount_Cannot_Be_Less_Than_The_Interest_Free_Installment_Pay_Fee_Credit',$GLOBALS['lang']);
+					echo translate('The_Payment_Amount_Cannot_Be_Less_Than_The_Interest_Free_Installment_Pay_Fees_Credit',$GLOBALS['lang']);
 					return;	
 				}
 				
@@ -81,40 +86,36 @@
 		{
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 			return;
-		}		
+		}
+
 		
-		if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+		$idCuotasCreditoRec = explode(",",$idCuotasCredito);
+		$monto_interes_cuotas_credito = 0;
+		for($i = 0; $i < count($idCuotasCreditoRec); $i++)
 		{
-			$stmt64->bind_param('i', $idCuotaCredito);
-			$stmt64->execute();    
-			$stmt64->store_result();
-			
-			$totR64 = $stmt64->num_rows;
-			$monto_interes_cuota_credito = 0;
-			if($totR64 == 1)
+			if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 			{
-				$stmt64->bind_result($monto_interes_cuota_credito_db);
-				$stmt64->fetch();
+				$stmt64->bind_param('i', $idCuotasCreditoRec[$i]);
+				$stmt64->execute();    
+				$stmt64->store_result();
 				
-				$monto_interes_cuota_credito = $monto_interes_cuota_credito_db;
-				
-				$stmt64->free_result();
-				$stmt64->close();				
+				$totR64 = $stmt64->num_rows;
+				if($totR64 == 1)
+				{
+					$stmt64->bind_result($monto_interes_cuota_credito_db);
+					$stmt64->fetch();
+					
+					$monto_interes_cuotas_credito = $monto_interes_cuotas_credito + $monto_interes_cuota_credito_db;
+					
+					$stmt64->free_result();
+					$stmt64->close();				
+				}
 			}
-			else if($totR64 == 0) 
-			{
-				$monto_interes_cuota_credito = 0;			
-			}
-			else 
+			else
 			{
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-				return;				
+				return;
 			}
-		}
-		else
-		{
-			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-			return;
 		}
 		
 		if(!empty($tokenVS))
@@ -138,30 +139,30 @@
 						echo '<div class="panel-group">';				
 						echo '	<div class="panel panel-default">';
 						echo '		<div id="panel-title-header" class="panel-heading">';
-						echo '			<h3 class="panel-title">'.translate('Lbl_Authorize_Pay_Fee_Credit',$GLOBALS['lang']).'</h3>';
+						echo '			<h3 class="panel-title">'.translate('Lbl_Authorize_Pay_Total_Amount_Debt_Credit',$GLOBALS['lang']).'</h3>';
 						echo ' 		</div>';
 						echo '		<div class="panel-body">';
-						echo '			<form id="formularionaspcc" role="form">';		
+						echo '			<form id="formularionasptd" role="form">';		
 						echo '				<div class="form-group form-inline">';
-						echo '					<label class="control-label" for="usuariosupervisorn">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-						echo '					<div class="form-group" id="usuariosupervisorn">';
-						echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorni" name="usuariosupervisorni" type="text" maxlength="50" />';
+						echo '					<label class="control-label" for="usuariosupervisorn2">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+						echo '					<div class="form-group" id="usuariosupervisorn2">';
+						echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn2i" name="usuariosupervisorn2i" type="text" maxlength="50" />';
 						echo '					</div>';
-						echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-						echo '					<div class="form-group" id="passwordsupervisorn">';
-						echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorni" name="passwordsupervisorni" type="password" maxlength="128" />';
+						echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn2">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+						echo '					<div class="form-group" id="passwordsupervisorn2">';
+						echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn2i" name="passwordsupervisorn2i" type="password" maxlength="128" />';
 						echo '					</div>';		
 						echo '				</div>';
 						echo '				<div class="form-group form-inline">';
 						echo '					<div id="img_loader_13"></div>';		
-						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarVS" id="btnCancelarVS" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidsuppagocuotacredit\').dialog(\'close\');" style="margin-left:10px;" />';
-						echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarS" id="btnValidarS" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorPagoCuota(document.getElementById(\'formularionaspcc\'));"/>';										
+						echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarVS2" id="btnCancelarVS2" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidsuppagototaldeudacredit\').dialog(\'close\');" style="margin-left:10px;" />';
+						echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarS2" id="btnValidarS2" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorPagoTotalDeuda(document.getElementById(\'formularionasptd\'));"/>';										
 						echo '				</div>';				
 						echo '			</form>';
 						echo '		</div>';
 						echo '	</div>';
-						echo '</div>';
-						
+						echo '</div>';	
+												
 						$stmt65->free_result();
 						$stmt65->close();
 						
@@ -169,68 +170,80 @@
 					}
 					else
 					{
-						if($montoPago > ($monto_cuota_original_db+$monto_interes_cuota_credito))
+						if($montoPago > ($monto_cuotas_original_db+$monto_interes_cuotas_credito))
 						{
-							echo translate('The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fee_Pay_Fee_Credit',$GLOBALS['lang']);
+							echo translate('The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fees_Pay_Fee_Credit',$GLOBALS['lang']);
 							return;			
 						}
 						
 						$esUltimaCuota = 0;
 						
-						if($numero_cuota_db == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
-						
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+						$monto_x_cuota = round(($montoPago/count($idCuotasCreditoRec)), 0);
+						$monto_pago_acum_cuotas = 0;
+						
+						$monto_interes_x_cuota = round(($monto_interes_cuotas_credito/count($idCuotasCreditoRec)), 0);
+						$monto_interes_acum_cuotas = 0;						
+						
+						$date_registro_a_fpcc_db = date("YmdHis");
+						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito(id_credito,fecha,monto,usuario,supervisor,token) VALUES (?,?,?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
 							return;
 						}
 						else
 						{
-							$date_registro_a_fpcc_db = date("YmdHis");
-							$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-							$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $montoPago, $estadoP, $_SESSION['username'], $idCuotaCredito);
-							if(!$stmt43->execute())
+							$stmt->bind_param('isisss', $idCredito, $date_registro_a_fpcc_db, $montoPago, $_SESSION['username'], $usuario_supervisor_token_pago_cuota_db, $tokenVS);
+							if(!$stmt->execute())
 							{
 								echo $mysqli->error;
-								$mysqli->autocommit(TRUE);
-								return;						
-							}
-
-							$date_registro = date("YmdHis");				
-							$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
-
-							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
-							{
-								echo $mysqli->error;
-								$mysqli->rollback();
 								$mysqli->autocommit(TRUE);
 								$stmt->free_result();
 								$stmt->close();
-								return;
+								return;						
+							}
+							else $id_monto_pago_total_deuda = $mysqli->insert_id;
+						}
+						
+						$datosCuotasPagadas = "";						
+						for($i = 0; $i < count($idCuotasCreditoRec); $i++)
+						{	
+							if($datosCuotasPagadas != "") $datosCuotasPagadas = $datosCuotasPagadas.'!';
+							
+							if($stmt91 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ?"))
+							{
+								$stmt91->bind_param('i', $idCuotasCreditoRec[$i]);
+								$stmt91->execute();    
+								$stmt91->store_result();
+								
+								$totR91 = $stmt91->num_rows;
+								if($totR91 == 1)
+								{
+									$stmt91->bind_result($numero_cuota_db_e, $monto_cuota_original_db_e);
+									$stmt91->fetch();
+									
+									$stmt91->free_result();
+									$stmt91->close();				
+								}
+								else
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}	
 							}
 							else
 							{
-								$motivo2 = 68;
-								$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
-								if(!$stmt->execute())
-								{
-									echo $mysqli->error;
-									$mysqli->rollback();
-									$mysqli->autocommit(TRUE);
-									$stmt->free_result();
-									$stmt->close();
-									return;						
-								}
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;
 							}							
-						}
-						
-						if($esUltimaCuota == 1)
-						{
-							if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+							if($numero_cuota_db_e == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
+														
+							if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -239,8 +252,28 @@
 							}
 							else
 							{
+								if(($i+1) == count($idCuotasCreditoRec))
+								{
+									$monto_pago_cuota_r = $montoPago - $monto_pago_acum_cuotas;
+									$monto_interes_cuota_r = $monto_interes_cuotas_credito - $monto_interes_acum_cuotas;
+									
+									if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
+									else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;
+								}									
+								else 
+								{
+									$monto_pago_cuota_r = $monto_x_cuota;
+									$monto_pago_acum_cuotas = $monto_pago_acum_cuotas + $monto_pago_cuota_r;
+									
+									$monto_interes_cuota_r = $monto_interes_x_cuota;
+									$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
+
+									if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r;
+									else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0';									
+								}
+								
 								$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-								$stmt43->bind_param('si', $estadoP, $idCredito);
+								$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $monto_pago_cuota_r, $estadoP, $_SESSION['username'], $idCuotasCreditoRec[$i]);
 								if(!$stmt43->execute())
 								{
 									echo $mysqli->error;
@@ -250,7 +283,7 @@
 								}
 
 								$date_registro = date("YmdHis");				
-								$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+								$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$monto_pago_cuota_r.", estado = ".$estadoP." WHERE id = ".$idCuotasCreditoRec[$i];
 
 								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
@@ -263,7 +296,7 @@
 								}
 								else
 								{
-									$motivo2 = 69;
+									$motivo2 = 68;
 									$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
 									if(!$stmt->execute())
 									{
@@ -274,15 +307,10 @@
 										$stmt->close();
 										return;						
 									}
-								}								
-							}						
-						}
-						
-						if($montoPago < ($monto_cuota_original_db+$monto_interes_cuota_credito))
-						{
-							if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3) $insertPPCuotaC = "INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)";
-							else $insertPPCuotaC = "INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,supervisor,token) VALUES (?,?,?,?,?,?)";
-							if(!$stmt = $mysqli->prepare($insertPPCuotaC))
+								}							
+							}
+							
+							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito_x_cuota(id_pago_total_credito,id_cuota_credito) VALUES (?,?)"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -293,11 +321,7 @@
 							}
 							else
 							{
-								$date_registro = date("YmdHis");
-								$token2 = md5(uniqid(rand(), true));
-								$token2 = hash('sha512', $token2);
-								if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3) $stmt->bind_param('isiss', $idCuotaCredito, $date_registro, $montoPago, $_SESSION['username'], $token2);
-								else $stmt->bind_param('isisss', $idCuotaCredito, $date_registro, $montoPago, $_SESSION['username'], $usuario_supervisor_token_pago_cuota_db, $token2);
+								$stmt->bind_param('ii', $id_monto_pago_total_deuda, $idCuotasCreditoRec[$i]);
 								if(!$stmt->execute())
 								{
 									echo $mysqli->error;
@@ -308,6 +332,56 @@
 									return;						
 								}
 							}							
+							
+							if($esUltimaCuota == 1)
+							{
+								if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+								{
+									echo $mysqli->error;
+									$mysqli->rollback();
+									$mysqli->autocommit(TRUE);
+									return;
+								}
+								else
+								{
+									$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+									$stmt43->bind_param('si', $estadoP, $idCredito);
+									if(!$stmt43->execute())
+									{
+										echo $mysqli->error;
+										$mysqli->rollback();
+										$mysqli->autocommit(TRUE);
+										return;						
+									}
+
+									$date_registro = date("YmdHis");				
+									$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+
+									if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+									{
+										echo $mysqli->error;
+										$mysqli->rollback();
+										$mysqli->autocommit(TRUE);
+										$stmt->free_result();
+										$stmt->close();
+										return;
+									}
+									else
+									{
+										$motivo2 = 69;
+										$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
+										if(!$stmt->execute())
+										{
+											echo $mysqli->error;
+											$mysqli->rollback();
+											$mysqli->autocommit(TRUE);
+											$stmt->free_result();
+											$stmt->close();
+											return;						
+										}
+									}								
+								}						
+							}
 						}
 						
 						$mysqli->commit();
@@ -471,9 +545,9 @@
 						$stmt65->free_result();
 						$stmt65->close();
 						
-						if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+						if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 						{
-							$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
+							$stmt68->bind_param('i', $idCredito);
 							$stmt68->execute();    
 							$stmt68->store_result();
 							
@@ -481,7 +555,7 @@
 
 							if($totR68 > 0)
 							{
-								$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $numero_cuota_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res, $monto_cuota_original_db_res);
+								$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res);
 								$stmt68->fetch();
 								
 								$stmt68->free_result();
@@ -498,62 +572,12 @@
 							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 							return;
 						}
-						
-						if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
-						{
-							$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
-							$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
-							$stmt69->bind_param('iss', $idCredito, $estado_p_1, $estado_p_2);
-							$stmt69->execute();    
-							$stmt69->store_result();
-							
-							$totR69 = $stmt69->num_rows;
-
-							if($totR69 > 0)
-							{
-								$stmt69->bind_result($fecha_vencimiento_cuota_db_res);
-								$stmt69->fetch();
 												
-								$stmt69->free_result();
-								$stmt69->close();
-							}
-						}
-						else
-						{
-							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-							return;
-						}
-
-						if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
-						{
-							$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
-							$stmt70->execute();    
-							$stmt70->store_result();
-							
-							$totR70 = $stmt70->num_rows;
-
-							if($totR70 > 0)
-							{
-								$stmt70->bind_result($monto_interes_cuota_credito_db_res);
-								$stmt70->fetch();
-								
-								$stmt70->free_result();
-								$stmt70->close();
-							}
-							else $monto_interes_cuota_credito_db_res = 0;
-						}
-						else
-						{
-							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-							return;
-						}						
-						
 						if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 						else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 						
-						echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
-						return;
-						
+						echo translate('Msg_Pay_Total_Amount_Debt_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.count($idCuotasCreditoRec).'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$datosCuotasPagadas.'=:::=:::='.json_encode($array);
+						return;	
 					}				
 				}
 			}
@@ -563,26 +587,21 @@
 				return;
 			}
 		}			
-
 		
-		if($montoPago > ($monto_cuota_original_db+$monto_interes_cuota_credito))
+		if($montoPago > ($monto_cuotas_original_db+$monto_interes_cuotas_credito))
 		{
-			echo translate('The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fee_Pay_Fee_Credit',$GLOBALS['lang']);
+			echo translate('The_Payment_Amount_Cannot_Be_Greater_Than_The_Total_Amount_Of_The_Fees_Pay_Fee_Credit',$GLOBALS['lang']);
 			return;			
 		}
-		else if($montoPago < ($monto_cuota_original_db+$monto_interes_cuota_credito))
+		else if($montoPago < ($monto_cuotas_original_db+$monto_interes_cuotas_credito))
 		{
 			
 			if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
-			{
-				$esUltimaCuota = 0;
-				
-				if($numero_cuota_db == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
-				
+			{				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt80 = $mysqli->prepare("INSERT INTO finan_cli.token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
+				if(!$stmt80 = $mysqli->prepare("INSERT INTO finan_cli.token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,usuario_supervisor,validado) VALUES (?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -591,11 +610,11 @@
 				else
 				{
 					$date_registro_a_pcc_db = date("YmdHis");
-					$motivo = 72;
+					$motivo = 76;
 					$token = md5(uniqid(rand(), true));
 					$token = hash('sha512', $token);
 					$validacionI = 1;
-					$stmt80->bind_param('sisissi', $date_registro_a_pcc_db, $tipo_documento_cliente_credito_db, $documento_cliente_credito_db, $motivo, $token, $_SESSION['username'], $validacionI);
+					$stmt80->bind_param('sisisssi', $date_registro_a_pcc_db, $tipo_documento_cliente_credito_db, $documento_cliente_credito_db, $motivo, $token, $_SESSION['username'], $_SESSION['username'], $validacionI);
 					if(!$stmt80->execute())
 					{
 						echo $mysqli->error;
@@ -604,57 +623,74 @@
 					}		
 				}
 				
-				if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+				$esUltimaCuota = 0;				
+				$monto_x_cuota = round(($montoPago/count($idCuotasCreditoRec)), 0);
+				$monto_pago_acum_cuotas = 0;
+				
+				$monto_interes_x_cuota = round(($monto_interes_cuotas_credito/count($idCuotasCreditoRec)), 0);
+				$monto_interes_acum_cuotas = 0;						
+				
+				$date_registro_a_fpcc_db = date("YmdHis");
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito(id_credito,fecha,monto,usuario,supervisor,token) VALUES (?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
 					return;
 				}
 				else
 				{
-					$date_registro_a_fpcc_db = date("YmdHis");
-					$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-					$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $montoPago, $estadoP, $_SESSION['username'], $idCuotaCredito);
-					if(!$stmt43->execute())
-					{
-						echo $mysqli->error;
-						$mysqli->rollback();
-						$mysqli->autocommit(TRUE);
-						return;						
-					}
-
-					$date_registro = date("YmdHis");				
-					$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
-
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					$token2 = md5(uniqid(rand(), true));
+					$token2 = hash('sha512', $token);
+					$stmt->bind_param('isisss', $idCredito, $date_registro_a_fpcc_db, $montoPago, $_SESSION['username'], $_SESSION['username'], $token2);
+					if(!$stmt->execute())
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
-						return;
+						return;						
+					}
+					else $id_monto_pago_total_deuda = $mysqli->insert_id;
+				}
+				
+				$datosCuotasPagadas = "";						
+				for($i = 0; $i < count($idCuotasCreditoRec); $i++)
+				{	
+					if($datosCuotasPagadas != "") $datosCuotasPagadas = $datosCuotasPagadas.'!';
+					
+					if($stmt91 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ?"))
+					{
+						$stmt91->bind_param('i', $idCuotasCreditoRec[$i]);
+						$stmt91->execute();    
+						$stmt91->store_result();
+						
+						$totR91 = $stmt91->num_rows;
+						if($totR91 == 1)
+						{
+							$stmt91->bind_result($numero_cuota_db_e, $monto_cuota_original_db_e);
+							$stmt91->fetch();
+							
+							$stmt91->free_result();
+							$stmt91->close();				
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}	
 					}
 					else
 					{
-						$motivo2 = 68;
-						$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
-						if(!$stmt->execute())
-						{
-							echo $mysqli->error;
-							$mysqli->rollback();
-							$mysqli->autocommit(TRUE);
-							$stmt->free_result();
-							$stmt->close();
-							return;						
-						}
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
 					}							
-				}
-				
-				if($esUltimaCuota == 1)
-				{
-					if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+					if($numero_cuota_db_e == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
+												
+					if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -663,8 +699,28 @@
 					}
 					else
 					{
+						if(($i+1) == count($idCuotasCreditoRec))
+						{
+							$monto_pago_cuota_r = $montoPago - $monto_pago_acum_cuotas;
+							$monto_interes_cuota_r = $monto_interes_cuotas_credito - $monto_interes_acum_cuotas;
+							
+							if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
+							else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;
+						}									
+						else 
+						{
+							$monto_pago_cuota_r = $monto_x_cuota;
+							$monto_pago_acum_cuotas = $monto_pago_acum_cuotas + $monto_pago_cuota_r;
+							
+							$monto_interes_cuota_r = $monto_interes_x_cuota;
+							$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
+
+							if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r;
+							else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0';									
+						}
+						
 						$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-						$stmt43->bind_param('si', $estadoP, $idCredito);
+						$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $monto_pago_cuota_r, $estadoP, $_SESSION['username'], $idCuotasCreditoRec[$i]);
 						if(!$stmt43->execute())
 						{
 							echo $mysqli->error;
@@ -674,7 +730,7 @@
 						}
 
 						$date_registro = date("YmdHis");				
-						$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+						$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$monto_pago_cuota_r.", estado = ".$estadoP." WHERE id = ".$idCuotasCreditoRec[$i];
 
 						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
@@ -687,7 +743,7 @@
 						}
 						else
 						{
-							$motivo2 = 69;
+							$motivo2 = 68;
 							$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
 							if(!$stmt->execute())
 							{
@@ -698,35 +754,82 @@
 								$stmt->close();
 								return;						
 							}
-						}								
-					}						
-				}
-				
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)"))
-				{
-					echo $mysqli->error;
-					$mysqli->rollback();
-					$mysqli->autocommit(TRUE);
-					$stmt->free_result();
-					$stmt->close();
-					return;
-				}
-				else
-				{
-					$date_registro = date("YmdHis");
-					$token2 = md5(uniqid(rand(), true));
-					$token2 = hash('sha512', $token2);
-					$stmt->bind_param('isiss', $idCuotaCredito, $date_registro, $montoPago, $_SESSION['username'], $token2);
-					if(!$stmt->execute())
+						}							
+					}
+					
+					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito_x_cuota(id_pago_total_credito,id_cuota_credito) VALUES (?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
-						return;						
+						return;
 					}
-				}							
+					else
+					{
+						$stmt->bind_param('ii', $id_monto_pago_total_deuda, $idCuotasCreditoRec[$i]);
+						if(!$stmt->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}
+					}							
+					
+					if($esUltimaCuota == 1)
+					{
+						if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							return;
+						}
+						else
+						{
+							$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+							$stmt43->bind_param('si', $estadoP, $idCredito);
+							if(!$stmt43->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								return;						
+							}
+
+							$date_registro = date("YmdHis");				
+							$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+
+							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;
+							}
+							else
+							{
+								$motivo2 = 69;
+								$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
+								if(!$stmt->execute())
+								{
+									echo $mysqli->error;
+									$mysqli->rollback();
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									return;						
+								}
+							}								
+						}						
+					}
+				}
 				
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
@@ -886,9 +989,9 @@
 					return;
 				}
 				
-				if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+				if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 				{
-					$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
+					$stmt68->bind_param('i', $idCredito);
 					$stmt68->execute();    
 					$stmt68->store_result();
 					
@@ -896,7 +999,7 @@
 
 					if($totR68 > 0)
 					{
-						$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $numero_cuota_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res, $monto_cuota_original_db_res);
+						$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res);
 						$stmt68->fetch();
 						
 						$stmt68->free_result();
@@ -913,60 +1016,11 @@
 					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 					return;
 				}
-				
-				if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
-				{
-					$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
-					$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
-					$stmt69->bind_param('iss', $idCredito, $estado_p_1, $estado_p_2);
-					$stmt69->execute();    
-					$stmt69->store_result();
-					
-					$totR69 = $stmt69->num_rows;
-
-					if($totR69 > 0)
-					{
-						$stmt69->bind_result($fecha_vencimiento_cuota_db_res);
-						$stmt69->fetch();
-										
-						$stmt69->free_result();
-						$stmt69->close();
-					}
-				}
-				else
-				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;
-				}
-
-				if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
-				{
-					$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
-					$stmt70->execute();    
-					$stmt70->store_result();
-					
-					$totR70 = $stmt70->num_rows;
-
-					if($totR70 > 0)
-					{
-						$stmt70->bind_result($monto_interes_cuota_credito_db_res);
-						$stmt70->fetch();
-						
-						$stmt70->free_result();
-						$stmt70->close();
-					}
-					else $monto_interes_cuota_credito_db_res = 0;
-				}
-				else
-				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;
-				}						
-				
+								
 				if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 				else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 				
-				echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
+				echo translate('Msg_Pay_Total_Amount_Debt_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.count($idCuotasCreditoRec).'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$datosCuotasPagadas.'=:::=:::='.json_encode($array);
 				return;
 			}
 			else
@@ -985,7 +1039,7 @@
 				else
 				{
 					$date_registro_a_pcc_db = date("YmdHis");
-					$motivo = 67;
+					$motivo = 75;
 					$token = md5(uniqid(rand(), true));
 					$token = hash('sha512', $token);
 					$validacionI = 0;
@@ -1007,24 +1061,24 @@
 				echo '<div class="panel-group">';				
 				echo '	<div class="panel panel-default">';
 				echo '		<div id="panel-title-header" class="panel-heading">';
-				echo '			<h3 class="panel-title">'.translate('Lbl_Authorize_Pay_Fee_Credit',$GLOBALS['lang']).'</h3>';
+				echo '			<h3 class="panel-title">'.translate('Lbl_Authorize_Pay_Total_Amount_Debt_Credit',$GLOBALS['lang']).'</h3>';
 				echo ' 		</div>';
 				echo '		<div class="panel-body">';
-				echo '			<form id="formularionaspcc" role="form">';		
+				echo '			<form id="formularionasptd" role="form">';		
 				echo '				<div class="form-group form-inline">';
-				echo '					<label class="control-label" for="usuariosupervisorn">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-				echo '					<div class="form-group" id="usuariosupervisorn">';
-				echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorni" name="usuariosupervisorni" type="text" maxlength="50" />';
+				echo '					<label class="control-label" for="usuariosupervisorn2">'.translate('Lbl_User_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+				echo '					<div class="form-group" id="usuariosupervisorn2">';
+				echo '						<input title="'.translate('Msg_User_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="usuariosupervisorn2i" name="usuariosupervisorn2i" type="text" maxlength="50" />';
 				echo '					</div>';
-				echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
-				echo '					<div class="form-group" id="passwordsupervisorn">';
-				echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorni" name="passwordsupervisorni" type="password" maxlength="128" />';
+				echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="passwordsupervisorn2">'.translate('Lbl_Password_Supervisor_For_Client_Additional',$GLOBALS['lang']).':</label>';
+				echo '					<div class="form-group" id="passwordsupervisorn2">';
+				echo '						<input title="'.translate('Msg_Password_Supervisor_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="passwordsupervisorn2i" name="passwordsupervisorn2i" type="password" maxlength="128" />';
 				echo '					</div>';		
 				echo '				</div>';
 				echo '				<div class="form-group form-inline">';
 				echo '					<div id="img_loader_13"></div>';		
-				echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarVS" id="btnCancelarVS" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidsuppagocuotacredit\').dialog(\'close\');" style="margin-left:10px;" />';
-				echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarS" id="btnValidarS" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorPagoCuota(document.getElementById(\'formularionaspcc\'));"/>';										
+				echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarVS2" id="btnCancelarVS2" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogvalidsuppagototaldeudacredit\').dialog(\'close\');" style="margin-left:10px;" />';
+				echo '					<input type="button" class="btn btn-primary pull-right" name="btnValidarS2" id="btnValidarS2" value="'.translate('Lbl_OK',$GLOBALS['lang']).'" onClick="guardarAutorizacionSupervisorPagoTotalDeuda(document.getElementById(\'formularionasptd\'));"/>';										
 				echo '				</div>';				
 				echo '			</form>';
 				echo '		</div>';
@@ -1036,10 +1090,6 @@
 		}
 		else
 		{
-			$esUltimaCuota = 0;
-			
-			if($numero_cuota_db == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
-			
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
@@ -1052,7 +1102,7 @@
 			else
 			{
 				$date_registro_a_pcc_db = date("YmdHis");
-				$motivo = 73;
+				$motivo = 77;
 				$token = md5(uniqid(rand(), true));
 				$token = hash('sha512', $token);
 				$validacionI = 1;
@@ -1065,57 +1115,95 @@
 				}		
 			}
 			
-			if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+			$esUltimaCuota = 0;				
+			$monto_x_cuota = round(($montoPago/count($idCuotasCreditoRec)), 0);
+			$monto_pago_acum_cuotas = 0;
+			
+			$monto_interes_x_cuota = round(($monto_interes_cuotas_credito/count($idCuotasCreditoRec)), 0);
+			$monto_interes_acum_cuotas = 0;						
+			
+			$date_registro_a_fpcc_db = date("YmdHis");
+			if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito(id_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->rollback();
 				$mysqli->autocommit(TRUE);
+				$stmt->free_result();
+				$stmt->close();
 				return;
 			}
 			else
 			{
-				$date_registro_a_fpcc_db = date("YmdHis");
-				$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-				$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $montoPago, $estadoP, $_SESSION['username'], $idCuotaCredito);
-				if(!$stmt43->execute())
-				{
-					echo $mysqli->error;
-					$mysqli->rollback();
-					$mysqli->autocommit(TRUE);
-					return;						
-				}
-
-				$date_registro = date("YmdHis");				
-				$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
-
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				$token2 = md5(uniqid(rand(), true));
+				$token2 = hash('sha512', $token);
+				$stmt->bind_param('isiss', $idCredito, $date_registro_a_fpcc_db, $montoPago, $_SESSION['username'], $token2);
+				if(!$stmt->execute())
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
-					return;
+					return;						
+				}
+				else $id_monto_pago_total_deuda = $mysqli->insert_id;
+			}
+			
+			$datosCuotasPagadas = "";						
+			for($i = 0; $i < count($idCuotasCreditoRec); $i++)
+			{	
+				if($datosCuotasPagadas != "") $datosCuotasPagadas = $datosCuotasPagadas.'!';
+				
+				if($stmt91 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ?"))
+				{
+					$stmt91->bind_param('i', $idCuotasCreditoRec[$i]);
+					$stmt91->execute();    
+					$stmt91->store_result();
+					
+					$totR91 = $stmt91->num_rows;
+					if($totR91 == 1)
+					{
+						$stmt91->bind_result($numero_cuota_db_e, $monto_cuota_original_db_e);
+						$stmt91->fetch();
+						
+						$stmt91->free_result();
+						$stmt91->close();				
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}
+
+					if($stmt92 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+					{
+						$stmt92->bind_param('ii', $idCredito, $idCuotasCreditoRec[$i]);
+						$stmt92->execute();    
+						$stmt92->store_result();
+						
+						$totR92 = $stmt92->num_rows;
+
+						if($totR92 > 0)
+						{
+							$stmt92->bind_result($monto_interes_cuota_credito_db_e);
+							$stmt92->fetch();
+						}
+						else $monto_interes_cuota_credito_db_e = 0;
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}					
 				}
 				else
 				{
-					$motivo2 = 68;
-					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
-					if(!$stmt->execute())
-					{
-						echo $mysqli->error;
-						$mysqli->rollback();
-						$mysqli->autocommit(TRUE);
-						$stmt->free_result();
-						$stmt->close();
-						return;						
-					}
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;
 				}							
-			}
-			
-			if($esUltimaCuota == 1)
-			{
-				if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+				if($numero_cuota_db_e == $cantidad_cuotas_credito_db) $esUltimaCuota = 1;
+											
+				if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -1124,8 +1212,14 @@
 				}
 				else
 				{
+					$monto_pago_cuota_r = $monto_cuota_original_db_e + $monto_interes_cuota_credito_db_e;
+					$monto_interes_cuota_r = $monto_interes_cuota_credito_db_e;
+						
+					if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
+					else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;
+					
 					$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
-					$stmt43->bind_param('si', $estadoP, $idCredito);
+					$stmt43->bind_param('sissi', $date_registro_a_fpcc_db, $monto_pago_cuota_r, $estadoP, $_SESSION['username'], $idCuotasCreditoRec[$i]);
 					if(!$stmt43->execute())
 					{
 						echo $mysqli->error;
@@ -1135,7 +1229,7 @@
 					}
 
 					$date_registro = date("YmdHis");				
-					$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+					$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$monto_pago_cuota_r.", estado = ".$estadoP." WHERE id = ".$idCuotasCreditoRec[$i];
 
 					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
@@ -1148,7 +1242,7 @@
 					}
 					else
 					{
-						$motivo2 = 69;
+						$motivo2 = 68;
 						$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
 						if(!$stmt->execute())
 						{
@@ -1159,10 +1253,83 @@
 							$stmt->close();
 							return;						
 						}
-					}								
-				}						
+					}							
+				}
+				
+				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_total_credito_x_cuota(id_pago_total_credito,id_cuota_credito) VALUES (?,?)"))
+				{
+					echo $mysqli->error;
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;
+				}
+				else
+				{
+					$stmt->bind_param('ii', $id_monto_pago_total_deuda, $idCuotasCreditoRec[$i]);
+					if(!$stmt->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;						
+					}
+				}							
+				
+				if($esUltimaCuota == 1)
+				{
+					if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						return;
+					}
+					else
+					{
+						$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+						$stmt43->bind_param('si', $estadoP, $idCredito);
+						if(!$stmt43->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							return;						
+						}
+
+						$date_registro = date("YmdHis");				
+						$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoP." WHERE id = ".$idCredito;
+
+						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{
+							$motivo2 = 69;
+							$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo2, $valor_log_user);
+							if(!$stmt->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;						
+							}
+						}								
+					}						
+				}
 			}
-						
+			
 			$mysqli->commit();
 			$mysqli->autocommit(TRUE);
 			
@@ -1321,9 +1488,9 @@
 				return;
 			}
 			
-			if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+			if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 			{
-				$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
+				$stmt68->bind_param('i', $idCredito);
 				$stmt68->execute();    
 				$stmt68->store_result();
 				
@@ -1331,7 +1498,7 @@
 
 				if($totR68 > 0)
 				{
-					$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $numero_cuota_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res, $monto_cuota_original_db_res);
+					$stmt68->bind_result($estado_credito_db_res, $id_titular_cliente_db_res, $nombres_cliente_db_res, $apellidos_cliente_db_res, $nombre_sucursal_db_res, $usuario_registro_pago_cuota_db_res, $tipo_documento_cliente_db_res, $documento_cliente_db_res);
 					$stmt68->fetch();
 					
 					$stmt68->free_result();
@@ -1348,60 +1515,11 @@
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 				return;
 			}
-			
-			if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
-			{
-				$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
-				$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
-				$stmt69->bind_param('iss', $idCredito, $estado_p_1, $estado_p_2);
-				$stmt69->execute();    
-				$stmt69->store_result();
-				
-				$totR69 = $stmt69->num_rows;
-
-				if($totR69 > 0)
-				{
-					$stmt69->bind_result($fecha_vencimiento_cuota_db_res);
-					$stmt69->fetch();
-									
-					$stmt69->free_result();
-					$stmt69->close();
-				}
-			}
-			else
-			{
-				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-				return;
-			}
-
-			if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
-			{
-				$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
-				$stmt70->execute();    
-				$stmt70->store_result();
-				
-				$totR70 = $stmt70->num_rows;
-
-				if($totR70 > 0)
-				{
-					$stmt70->bind_result($monto_interes_cuota_credito_db_res);
-					$stmt70->fetch();
-					
-					$stmt70->free_result();
-					$stmt70->close();
-				}
-				else $monto_interes_cuota_credito_db_res = 0;
-			}
-			else
-			{
-				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-				return;
-			}						
-			
+						
 			if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 			else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 			
-			echo translate('Msg_Pay_Fee_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
+			echo translate('Msg_Pay_Total_Amount_Debt_Credit_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.count($idCuotasCreditoRec).'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$datosCuotasPagadas.'=:::=:::='.json_encode($array);
 			return;
 		}
 

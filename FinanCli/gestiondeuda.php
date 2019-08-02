@@ -1019,7 +1019,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlpccs,
 				method: "POST",
-				data: { idCredito: formulariopccs.idcreditosvc3i.value, cuotasCredito: formulariopccs.idcuotascreditovi.value, montoPago: ((formulariopccs.montototalcuotascreditvi.value.replace(/,/g,""))*100.00), tokenVSS: $('#tokenvalidsuppagocuotascrei').val() },
+				data: { idCredito: formulariopccs.idcreditosvc3i.value, cuotasCredito: formulariopccs.idcuotascreditovi.value, montoPago: ((formulariopccs.montototalcuotascreditvi.value.replace(/,/g,""))*100.00), tokenVSS: $('#tokenvalidsuppagototaldeudacrei').val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_18').hide();
 					
@@ -1036,30 +1036,32 @@ include("./menu/menu.php");
 						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
 						var datosCompPC = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
 						dataresponse = dataresponse.replace(datosCompPC+'=:::=:::=',"");
-						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
-						dataresponse = dataresponse.replace(datosTablaCuotas+'=::::=::::=',"");
-						var cantidadCuotasP = parseInt(dataresponse);
+						var datosTablaCuotas = dataresponse;
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
 
 						$('#btnPagoTotalCD').hide();
 						document.getElementById("btnPagoTotalCD").disabled = true;
+						
+						document.getElementById("btnReimpresionPagoTotalCD").disabled = false;						
+						$('#btnReimpresionPagoTotalCD').show();
+						
+						document.getElementById("btnPDFPagoTotalCD").disabled = false;						
+						$('#btnPDFPagoTotalCD').show();						
 
 						var infoImprPC = datosCompPC.split("|");
-						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
-
-						if(cantidadCuotasP == 1) 
+						if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
 						{
-							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
 							$('#btnPagoSeleccionCD').hide();
-							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
+							document.getElementById("btnPagoSeleccionCD").disabled = true;
 						}
 						
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 						
 						$('#dialogviewfeescredit').dialog('destroy').remove();
-						imprimirPagoTotalDeuda(infoImprPC[0],infoImprPC[1],infoImprPC[2],infoImprPC[3],infoImprPC[4],infoImprPC[5],infoImprPC[6],infoImprPC[7],infoImprPC[8],infoImprPC[9],infoImprPC[10],infoImprPC[11]);
+						alert(infoImprPC[0]+"-"+infoImprPC[1]+"-"+infoImprPC[2]+"-"+infoImprPC[3]+"-"+infoImprPC[4]+"-"+infoImprPC[5]+"-"+infoImprPC[6]+"-"+infoImprPC[7]+"-"+infoImprPC[8]+"-"+infoImprPC[9]+"-"+infoImprPC[10]);
+						imprimirPagoTotalDeuda(infoImprPC[0],infoImprPC[1],infoImprPC[2],infoImprPC[3],infoImprPC[4],infoImprPC[5],infoImprPC[6],infoImprPC[7],infoImprPC[8],infoImprPC[9],infoImprPC[10]);
 					}
 					else if(dataresponse.indexOf('<?php echo translate('Msg_Need_Authorize_Pay_Fee_Credit',$GLOBALS['lang']);?>') != -1)
 					{
@@ -1067,8 +1069,8 @@ include("./menu/menu.php");
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Need_Authorize_Pay_Fee_Credit',$GLOBALS['lang']); ?>=::=::=::","");
 						dataresponse = dataresponse.replace(tokenR+"=:::=:::","");
 												
-						$('#tokenvalidsuppagocuotascrei').val(tokenR);
-						var tagvpccs = $("<div id='dialogvalidsuppagocuotascredit'></div>");
+						$('#tokenvalidsuppagototaldeudacrei').val(tokenR);
+						var tagvpccs = $("<div id='dialogvalidsuppagototaldeudacredit'></div>");
 						
 						tagvpccs.html(dataresponse).dialog({
 						  show: "blind",
@@ -1094,6 +1096,185 @@ include("./menu/menu.php");
 					$('#img_loader_18').hide();
 				}
 			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function imprimirPagoTotalDeuda(fechaCreditoImp, nroCreditoP, cantidadCuotasP, tipoClienteCreditoImp, datosCliCreditoImp, sucursalCreditoImp, usuarioCreditoImp, montoPagado, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotasPagadas)
+		{
+			var urlinc20 = "<?php echo $GLOBALS['imprimir_pago_total_deuda_credito']; ?>";
+
+			$.ajax({
+				url: urlinc20,
+				method: "POST",
+				data: { numeroCredito: nroCreditoP, fecha: fechaCreditoImp, cantidadCuotasP: cantidadCuotasP, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoPagado: montoPagado, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotasPagadas: datosCuotasPagadas },
+				success: function(dataresponse, statustext, response){
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_The_Pay_Debt_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>') != -1)
+					{
+						console.log('<?php echo translate('Msg_The_Pay_Debt_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",'<?php echo translate('Msg_The_Pay_Debt_Credit_Was_Printed_Correctly',$GLOBALS['lang']);?>');
+					}
+					else 
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorPagoTotalDeuda(formularionasptd)
+		{
+			if($('#usuariosupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn2i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn2i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn2i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn2i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn2i').tooltip('destroy');
+			}			
+			
+			var urlvcsptdc = "./acciones/verificarcredencialessupervisorpagototaldeudacredito.php";
+			$('#img_loader_13').show();
+			
+			
+			var p222 = document.createElement("input");
+		 			
+			formularionasptd.appendChild(p222);
+			p222.name = "p222";
+			p222.type = "hidden";
+			
+			p222.value = hex_sha512(formularionasptd.passwordsupervisorn2i.value);
+			
+			if(formularionasptd.passwordsupervisorn2i.value == "") p222.value = "";
+			formularionasptd.passwordsupervisorn2i.value = "";
+					
+			$.ajax({
+				url: urlvcsptdc,
+				method: "POST",
+				data: { usuarioSupervisor: formularionasptd.usuariosupervisorn2i.value, claveSupervisor: p222.value, idCredito: $('#idcreditosvc3i').val(), cuotasCredito: $('#idcuotascreditovi').val(), montoPago: (($('#montototalcuotascreditvi').val().replace(/,/g,""))*100.00), tokenVSS: $('#tokenvalidsuppagototaldeudacrei').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = "<?php echo translate('Msg_Pay_Total_Amount_Debt_Credit_OK',$GLOBALS['lang']);?>";
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosCompPC = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
+						dataresponse = dataresponse.replace(datosCompPC+'=:::=:::=',"");
+						var datosTablaCuotas = dataresponse;
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+
+						$('#btnPagoTotalCD').hide();
+						document.getElementById("btnPagoTotalCD").disabled = true;
+						
+						document.getElementById("btnReimpresionPagoTotalCD").disabled = false;						
+						$('#btnReimpresionPagoTotalCD').show();
+						
+						document.getElementById("btnPDFPagoTotalCD").disabled = false;						
+						$('#btnPDFPagoTotalCD').show();	
+						
+						var infoImprPC = datosCompPC.split("|");
+						if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+						{
+							$('#btnPagoSeleccionCD').hide();
+							document.getElementById("btnPagoSeleccionCD").disabled = true;
+						}
+
+						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+						
+						$('#dialogvalidsuppagototaldeudacredit').dialog('destroy').remove();
+						$('#dialogviewfeescredit').dialog('destroy').remove();
+						imprimirPagoTotalDeuda(infoImprPC[0],infoImprPC[1],infoImprPC[2],infoImprPC[3],infoImprPC[4],infoImprPC[5],infoImprPC[6],infoImprPC[7],infoImprPC[8],infoImprPC[9],infoImprPC[10]);						
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn2i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn2i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
 		}
     </script>	
 </head>
