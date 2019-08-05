@@ -256,6 +256,8 @@
 								{
 									$monto_pago_cuota_r = $montoPago - $monto_pago_acum_cuotas;
 									$monto_interes_cuota_r = $monto_interes_cuotas_credito - $monto_interes_acum_cuotas;
+									$monto_pago_acum_cuotas = $monto_pago_acum_cuotas + $monto_pago_cuota_r;
+									$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
 									
 									if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
 									else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;
@@ -268,8 +270,8 @@
 									$monto_interes_cuota_r = $monto_interes_x_cuota;
 									$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
 
-									if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r;
-									else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0';									
+									if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
+									else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;									
 								}
 								
 								$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
@@ -703,6 +705,8 @@
 						{
 							$monto_pago_cuota_r = $montoPago - $monto_pago_acum_cuotas;
 							$monto_interes_cuota_r = $monto_interes_cuotas_credito - $monto_interes_acum_cuotas;
+							$monto_pago_acum_cuotas = $monto_pago_acum_cuotas + $monto_pago_cuota_r;
+							$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
 							
 							if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
 							else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;
@@ -715,8 +719,8 @@
 							$monto_interes_cuota_r = $monto_interes_x_cuota;
 							$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;
 
-							if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r;
-							else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0';									
+							if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
+							else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;									
 						}
 						
 						$estadoP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
@@ -1214,6 +1218,8 @@
 				{
 					$monto_pago_cuota_r = $monto_cuota_original_db_e + $monto_interes_cuota_credito_db_e;
 					$monto_interes_cuota_r = $monto_interes_cuota_credito_db_e;
+					$monto_pago_acum_cuotas = $monto_pago_acum_cuotas + $monto_pago_cuota_r;
+					$monto_interes_acum_cuotas = $monto_interes_acum_cuotas + $monto_interes_cuota_r;					
 						
 					if(!empty($monto_interes_cuota_r)) $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡'.$monto_interes_cuota_r.'¡'.$monto_cuota_original_db_e;
 					else $datosCuotasPagadas = $datosCuotasPagadas.$numero_cuota_db_e.'¡'.$monto_pago_cuota_r.'¡0'.'¡'.$monto_cuota_original_db_e;

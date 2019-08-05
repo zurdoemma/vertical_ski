@@ -103,7 +103,7 @@ try
 		{
 			$printer -> feed();
 			$datosCuotX = explode("¡",$cuotasArr[$i]);
-			$printer -> text(' '.$datosCuotX[0].'     $'.number_format(($datosCuotX[1]/100.00), 2, ',', '.').'      $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+			$printer -> text(' '.$datosCuotX[0].'       $'.number_format(($datosCuotX[1]/100.00), 2, ',', '.').'     $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 			$montoTotalCuotasOrig = $montoTotalCuotasOrig + $datosCuotX[3];
 			$montoTotalIntereses = $montoTotalIntereses + $datosCuotX[2];
 		}
@@ -210,7 +210,7 @@ try
 			{
 				$printer -> feed();
 				$datosCuotX = explode("¡",$cuotasArr[$i]);
-				$printer -> text(' '.$datosCuotX[0].'     $'.number_format(($datosCuotX[1]/100.00), 2, ',', '.').'      $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+				$printer -> text(' '.$datosCuotX[0].'       $'.number_format(($datosCuotX[1]/100.00), 2, ',', '.').'     $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 				$montoTotalCuotasOrig = $montoTotalCuotasOrig + $datosCuotX[3];
 				$montoTotalIntereses = $montoTotalIntereses + $datosCuotX[2];			
 			}		

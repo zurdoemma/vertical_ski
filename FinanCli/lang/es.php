@@ -501,6 +501,8 @@
 		'Msg_Reprint_Credit_Client_db' => 'Reimpresión de Crédito',		
 		'Msg_Be_Sure_To_Reprint_The_Credit' => 'Esta seguro de reimprimir el crédito',
 		'Msg_Be_Sure_To_Reprint_The_Pay_Fee_Credit' => 'Esta seguro de reimprimir el comprobante de pago de la cuota',
+		'Msg_Be_Sure_To_Reprint_The_Pay_Total_Amount_Debt_Credit' => 'Esta seguro de reimprimir el comprobante de pago total deuda credito',
+		'Msg_Not_Exist_Voucher_Total_Amount_Debt_Credit' => 'No existe el comprobante que desea imprimir!!',
 		'Msg_Modify_Debt_Client' => 'Modificar Deuda',
 		'Lbl_Title_Text_Print_Credit' => 'MANOLOS',
 		'Lbl_Date_Print_Credit' => 'Fecha',
@@ -569,8 +571,10 @@
 		'Lbl_Amount_Diferential_Fee_Print_Credit' => 'Monto Diferencial',		
 		'Lbl_Amount_Pay_Print_Credit' => 'Monto Pagado',
 		'Msg_Reprint_Pay_Fee_Credit_Client_OK' => 'Reimpresión de credito OK!!',
+		'Msg_Reprint_Pay_Total_Amount_Debt_Credit_Client_OK' => 'Reimpresión de total deuda credito OK!!',
 		'Msg_Reprint_Pay_Fee_Credit_Client_OK2' => 'El comprobante de pago se reimprimió correctamente!!',
 		'Msg_Reprint_Pay_Fee_Credit_Client_db' => 'Reimpresión de Pago Cuota Crédito',
+		'Msg_Reprint_Pay_Total_Amount_Debt_Credit_Client_db' => 'Reimpresión de Pago Total Deuda Crédito',
 		'Msg_Generation_PDF_Pay_Fee_Credit_Client_db' => 'Generación PDF de Pago Cuota Crédito',
 		'Lbl_Pay_Fee_Credit_PDF_View' => 'Pago Cuota Crédito PDF',
 		'Msg_Be_Sure_To_Pay_Fees_Credit_Selection' => 'Esta seguro de realizar el cobro de las cuotas: :cuotasM, por un monto total de',
@@ -587,6 +591,7 @@
 		'Lbl_Fees_Pay_Print_Credit' => 'Cuotas Pagadas',
 		'Lbl_Amount_Original_Fees_Print_Credit' => 'Monto Cuotas',
 		'Msg_Pay_Total_Amount_Debt_Credit_OK' => 'El pago total de la deuda se realizo correctamente!!',
-		'Msg_The_Pay_Debt_Credit_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!'		
+		'Msg_The_Pay_Debt_Credit_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!',
+		'Msg_The_Pay_Debt_Credit_Was_Reprinted_Correctly' => 'El comprobante de pago se reimprimió correctamente!!'		
 	);
 ?>
