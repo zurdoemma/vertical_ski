@@ -55,8 +55,9 @@ include("./menu/menu.php");
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 			
 	<script type="text/javascript">
-		function verCredito(idCredito)
+		function verCredito(idCredito, indiceTabla)
 		{
+			$('#indicetablaacesti').val(indiceTabla);
 			var urlvc = "./acciones/gestiondeudacredito.php";
 			var tagvc = $("<div id='dialogviewcredit'></div>");
 			$('#img_loader').show();
@@ -361,6 +362,7 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 						if(cantidadCuotasP == 1) 
 						{
 							$('#btnPagoTotalCD').hide();
@@ -549,6 +551,7 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 						if(cantidadCuotasP == 1) 
 						{
 							$('#btnPagoTotalCD').hide();
@@ -846,6 +849,7 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 						if(cantidadCuotasP == 1) 
 						{
 							$('#btnPagoTotalCD').hide();
@@ -1040,6 +1044,7 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 
 						$('#btnPagoTotalCD').hide();
 						document.getElementById("btnPagoTotalCD").disabled = true;
@@ -1331,6 +1336,7 @@ include("./menu/menu.php");
 						
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 
 						$('#btnPagoTotalCD').hide();
 						document.getElementById("btnPagoTotalCD").disabled = true;
@@ -1376,6 +1382,396 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function cambiarEstadoCuotaCredito(idCredito, idCuotaCredito)
+		{
+			if($('#idcreditovi').val() != idCredito) return;
+			var urlbecc = "./acciones/buscarestadoscuotacredito.php";
+			var tagvfecc = $("<div id='dialogviewfeestatuschangecredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlbecc,
+				method: "POST",
+				data: { idCredito: idCredito, idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_State_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_State_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagvfecc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Msg_Change_Status_Fee_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagvfecc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagvfecc.dialog('open');
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarCambioEstadoCuotaCredito(formulariocecc)
+		{
+			if($('#idcreditovi').val() != formulariocecc.idcreditovcec2i.value) return;
+			
+			var urlpcc = "./acciones/cambiarestadocuotacredito.php";
+			$('#img_loader_19').show();
+			
+			$.ajax({
+				url: urlpcc,
+				method: "POST",
+				data: { idCredito: formulariocecc.idcreditovcec2i.value, idCuotaCredito: formulariocecc.idcuotacreditocevi.value, estadoN: formulariocecc.nuevoestadocuotacreditvi.value, tokenVSCE: $('#tokenvalidsupcambioestadocuotacrei').val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_19').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Change_State_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						var menR = dataresponse.substring(0, dataresponse.indexOf('=:=:='));
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Change_State_Fee_Credit_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
+						dataresponse = dataresponse.replace(datosTablaCuotas+'=:::=:::=',"");
+						var cantidadCuotasP = parseInt(dataresponse);
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
+						if(cantidadCuotasP <= 1 && cantidadCuotasP != 0) 
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+						}
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+
+						if(cantidadCuotasP <= 1 && cantidadCuotasP != 0) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
+						}
+						
+						$('#dialogviewfeestatuschangecredit').dialog('destroy').remove();
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else if(dataresponse.indexOf('<?php echo translate('Msg_Need_Authorize_Change_State_Fee_Credit',$GLOBALS['lang']);?>') != -1)
+					{
+						var tokenR = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9, dataresponse.indexOf('=:::=:::'));
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Need_Authorize_Change_State_Fee_Credit',$GLOBALS['lang']); ?>=::=::=::","");
+						dataresponse = dataresponse.replace(tokenR+"=:::=:::","");
+												
+						$('#tokenvalidsupcambioestadocuotacrei').val(tokenR);
+						var tagvcecc = $("<div id='dialogvalidsupcambioestadocuotacredit'></div>");
+						
+						tagvcecc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_Authorize_Pay_Fee_Credit2',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagvcecc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						tagvcecc.dialog('open');					
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_19').hide();
+				}
+			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function guardarAutorizacionSupervisorCambioEstadoCuota(formularionaspcec)
+		{
+			if($('#usuariosupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#usuariosupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#usuariosupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#usuariosupervisorn3i').tooltip('destroy');
+			}
+
+			if($('#passwordsupervisorn3i').val().length == 0)
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#passwordsupervisorn3i').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#passwordsupervisorn3i').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#passwordsupervisorn3i').tooltip('destroy');
+			}			
+			
+			var urlvcspcecc = "./acciones/verificarcredencialessupervisorcambioestadocuotacredito.php";
+			$('#img_loader_13').show();
+			
+			
+			var p322 = document.createElement("input");
+		 			
+			formularionaspcec.appendChild(p322);
+			p322.name = "p322";
+			p322.type = "hidden";
+			
+			p322.value = hex_sha512(formularionaspcec.passwordsupervisorn3i.value);
+			
+			if(formularionaspcec.passwordsupervisorn3i.value == "") p322.value = "";
+			formularionaspcec.passwordsupervisorn3i.value = "";
+					
+			$.ajax({
+				url: urlvcspcecc,
+				method: "POST",
+				data: { usuarioSupervisor: formularionaspcec.usuariosupervisorn3i.value, claveSupervisor: p322.value,  idCredito: $('#idcreditovcec2i').val(), idCuotaCredito: $('#idcuotacreditocevi').val(), estadoN: $('#nuevoestadocuotacreditvi').val(), tokenVSCE: $('#tokenvalidsupcambioestadocuotacrei').val()},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_13').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0, dataresponse.indexOf('=:=:='));
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=:::=:::='));
+						dataresponse = dataresponse.replace(datosTablaCuotas+'=:::=:::=',"");
+						var cantidadCuotasP = parseInt(dataresponse);
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
+						if(cantidadCuotasP <= 1 && cantidadCuotasP != 0) 
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+						}
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+
+						if(cantidadCuotasP <= 1 && cantidadCuotasP != 0) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
+						}
+
+						$('#dialogviewfeestatuschangecredit').dialog('destroy').remove();
+						$('#dialogvalidsupcambioestadocuotacredit').dialog('destroy').remove();						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>","<?php echo translate('Msg_Change_State_Fee_Credit_OK',$GLOBALS['lang']);?>");					
+					}
+					else
+					{
+						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}
+						else 
+						{
+							$('#usuariosupervisorn3i').focus();
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+						}					
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					$('#usuariosupervisorn3i').focus();
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_13').hide();
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function verInteresesCuotaCredito(idCuotaCredito)
+		{
+			var urlvicc = "./acciones/verinteresescuotacredito.php";
+			var tagvicc = $("<div id='dialogviewinterestfeecredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlvicc,
+				method: "POST",
+				data: { idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Interests_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Interests_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagvicc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_View_Interest_Fee_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagvicc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						
+						$('#tableinterestfeecreditclienttv').bootstrapTable({locale:'es-AR'});
+						
+						tagvicc.dialog('open');
+						$('#montocuotaorigvi').maskNumber();
+						$('#interesescuotacreditvi').maskNumber();
+						$('#montototalcuotacreditvi').maskNumber();
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
+		}
+    </script>
+
+	<script type="text/javascript">
+		function verAvisosDeuda(idCuotaCredito)
+		{
+			var urlvadcc = "./acciones/veravisosdeudacuotacredito.php";
+			var tagvadcc = $("<div id='dialogseedebtnoticesfeecredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlvadcc,
+				method: "POST",
+				data: { idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_See_Debt_Notices_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_See_Debt_Notices_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagvadcc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Lbl_View_Notices_Debt_Fee_Credit',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagvadcc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+						
+						$('#tablefeesnoticesdebtfeecreditclienttv').bootstrapTable({locale:'es-AR'});
+						
+						tagvadcc.dialog('open');
+						$('#montocuotaorigv2i').maskNumber();
+						$('#interesescuotacreditv2i').maskNumber();
+						$('#montototalcuotacreditv2i').maskNumber();
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
 		}
     </script>	
 </head>
@@ -1495,6 +1891,7 @@ include("./menu/menu.php");
 										return;	
 									}					
 									
+									$indiceTablaGD = 0;
 									while($stmt->fetch())
 									{
 										echo '<tr>';
@@ -1515,7 +1912,8 @@ include("./menu/menu.php");
 										echo '<td>'.$fees_credit_client.'</td>';
 										echo '<td>'.$state_credit_client.'</td>';
 														
-										echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="far fa-edit"></i></button></td>';													
+										echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$indiceTablaGD.')"><i class="far fa-edit"></i></button></td>';													
+										$indiceTablaGD++;
 									}								
 								}
 							}
@@ -1535,6 +1933,9 @@ include("./menu/menu.php");
 	<div id="atencionDialog" style="display:none;"></div>
 	<div id="okDialog" style="display:none;"></div>
 	<div id="confirmDialog" style="display:none;"></div>
+	<div class="form-group" id="indicetablaacest" style="display:none;">
+		<input class="form-control input-sm green-border" id="indicetablaacesti" name="indicetablaacesti" type="text" maxlength="11" disabled />
+	</div>
 	<script type="text/javascript">
 		$(function () 
 		{

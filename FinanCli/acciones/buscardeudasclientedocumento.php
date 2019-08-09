@@ -123,7 +123,7 @@
 				$arrayC[$posicion]['cuotas'] = $fees_credit_client;
 				$arrayC[$posicion]['estado'] = $state_credit_client;
 								
-				$arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="far fa-edit"></i></button>';													
+				$arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$posicion.')"><i class="far fa-edit"></i></button>';													
 
 				$posicion++;
 			}
