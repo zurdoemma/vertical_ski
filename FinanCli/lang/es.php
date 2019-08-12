@@ -19,6 +19,7 @@
 		'Msg_Unknown_Error' => 'Error desconocido contacte al administrador!!',
 		'Msg_Contact_Administrator' => 'Favor de contactar con el administrador!!',
 		'Msg_Connect_DB_Error' => 'Error al conectar con la BD. Contactar con el administrador!!',
+		'Msg_The_Automatic_Process_Runs_Every_Hours' => 'El proceso automatico se ejecuta cada %1 horas!!',
 		'Msg_Query_DB_Error' => 'Error consulta a la BD. Contactar con el administrador!!',
 		'Msg_Query2_DB_Error' => 'Error consulta 2 a la BD. Contactar con el administrador!!',
 		'Msg_Register_User_Success' => 'El usuario fue registrado con ÉXITO!!',
