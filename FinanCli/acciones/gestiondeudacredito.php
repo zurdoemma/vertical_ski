@@ -203,7 +203,7 @@
 		echo '				</div>';
 		echo '				<div class="form-group form-inline"><hr />';
 		echo '					<div class="panel-group">				
-									<div class="panel panel-default" style="width:900px;">
+									<div class="panel panel-default" style="width:1000px;">
 										<div id="panel-title-header" class="panel-heading">
 											<h3 class="panel-title">'.translate('Lbl_Fees_Credit',$GLOBALS['lang']).'</h3>
 										</div>
@@ -219,7 +219,7 @@
 															<th class="col-xs-1 text-center" data-field="montototalcuotav" data-sortable="true">'.translate('Lbl_Amount_Fee_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="interesescuotav" data-sortable="true">'.translate('Lbl_Amount_Interests_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="fechapagov" data-sortable="true">'.translate('Lbl_Payment_Date_Fee_Credit',$GLOBALS['lang']).'</th>
-															<th class="col-xs-2 text-center" data-field="accionesv" data-sortable="true">'.translate('Lbl_Actions_Fee_Credit',$GLOBALS['lang']).'</th>
+															<th class="col-xs-3 text-center" data-field="accionesv" data-sortable="true">'.translate('Lbl_Actions_Fee_Credit',$GLOBALS['lang']).'</th>
 															<th class="col-xs-1 text-center" data-field="estadov" data-sortable="true">'.translate('Lbl_State_Fee_Credit',$GLOBALS['lang']).'</th>														
 														</tr>						
 													</thead>

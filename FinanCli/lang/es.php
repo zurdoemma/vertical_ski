@@ -617,6 +617,18 @@
 		'Lbl_Amount_Original_Fees_Print_Credit' => 'Monto Cuotas',
 		'Msg_Pay_Total_Amount_Debt_Credit_OK' => 'El pago total de la deuda se realizo correctamente!!',
 		'Msg_The_Pay_Debt_Credit_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!',
-		'Msg_The_Pay_Debt_Credit_Was_Reprinted_Correctly' => 'El comprobante de pago se reimprimió correctamente!!'		
+		'Msg_The_Pay_Debt_Credit_Was_Reprinted_Correctly' => 'El comprobante de pago se reimprimió correctamente!!',
+		'Msg_There_Are_No_Debts_To_Process' => 'No hay deudas para procesar!!',
+		'Lbl_User_Automatic' => 'admin_sys',
+		'Msg_The_Automatic_Process_Was_Executed_Correctly' => 'El proceso automatico se ejecuto correctamente!!',
+		'Msg_Credit_Plan_Does_Not_Have_Defined_Surcharge' => 'El plan de crédito no tiene un recargo definido para el id de cuota:%1, con %2 dias de mora!!',
+		'Lbl_State_Create_Default_Notice' => 'Creado',
+		'Lbl_State_Pending_Default_Notice' => 'Pendiente',
+		'Lbl_State_Finished_Default_Notice' => 'Finalizado',
+		'Lbl_State_Error_Default_Notice' => 'Error',
+		'Lbl_State_Forwarded_Default_Notice' => 'Reenviado',		
+		'Msg_It_Is_Reported_Installment_Has_Pending_Debt' => 'Se informa que la cuota número: %1 del credito: %2, tiene una deuda pendiente de $%3.',
+		'Msg_No_Debt_Was_Found_To_Process' => 'No se encontro deuda para procesar!!',
+		'Msg_No_Notice_Debt_Was_Found_To_Process' => 'No se encontraron avisos de deuda para procesar!!'
 	);
 ?>

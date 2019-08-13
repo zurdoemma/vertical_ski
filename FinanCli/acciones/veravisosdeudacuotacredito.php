@@ -60,7 +60,6 @@
 			
 			$totR63 = $stmt63->num_rows;
 
-			$montoIntereses = 0;
 			if($totR63 > 0)
 			{
 				$stmt63->bind_result($fecha_aviso_x_mora_db, $nombre_tipo_aviso_x_mora_db, $estado_aviso_x_mora_db, $mensaje_aviso_x_mora_db);
@@ -75,7 +74,33 @@
 		{
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 			return;
-		}			
+		}
+
+		if($stmt65 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+		{
+			$stmt65->bind_param('i', $idCuotaCredito);
+			$stmt65->execute();    
+			$stmt65->store_result();
+			
+			$totR65 = $stmt65->num_rows;
+
+			$montoIntereses = 0;
+			if($totR65 > 0)
+			{
+				$stmt65->bind_result($monto_interes_cuota_credito_db);
+				$stmt65->fetch();
+				
+				$montoIntereses = $monto_interes_cuota_credito_db;				
+			}
+			
+			$stmt65->free_result();
+			$stmt65->close();			
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}		
 		$montoTotalConInteresesCuotaCredito = $monto_cuota_orig_db + $montoIntereses;
 				
 		echo translate('Msg_View_See_Debt_Notices_Fee_Credit_OK',$GLOBALS['lang']);	
@@ -133,7 +158,9 @@
 															echo	 '<td>'.$estado_aviso_x_mora_db.'</td>';
 															echo	 '<td>'.$mensaje_aviso_x_mora_db.'</td>';															
 															echo '</tr>';
-														}														
+														}
+														$stmt63->free_result();
+														$stmt63->close();												
 		echo '  									</tbody>					
 												</table>
 											</div>
