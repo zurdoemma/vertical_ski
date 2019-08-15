@@ -443,6 +443,116 @@ function envio_sms($from, $destination, $message)
 	return $msg_sms_ok;
 }
 
+function status_envio_sms($idsms)
+{
+	// Creo un array con los valores a enviar.
+	$postSMS = array();
+	$postSMS["token"]= $GLOBALS['token_envio_sms'];
+	$postSMS["id-sms"]= $idsms;
+
+	$envio_sms = curl_init($GLOBALS['url_status_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_POST, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_POSTFIELDS, $postSMS );
+	curl_setopt( $envio_sms, CURLOPT_RETURNTRANSFER, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_TIMEOUT, 90);
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYHOST, 0 );
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYPEER, 0 );
+
+	$respuesta_envio_sms = curl_exec( $envio_sms );
+	
+	if (curl_error($envio_sms)) 
+	{
+		$error_msg = curl_error($envio_sms);
+		return $error_msg;
+	}	
+	
+	if ($respuesta_envio_sms !== false)
+	{
+		$https_code_envio_sms = curl_getinfo( $envio_sms, CURLINFO_HTTP_CODE );
+		//echo $https_code_envio_sms.'</br>';
+		return $respuesta_envio_sms;
+	}
+	else
+	{
+		return translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	}
+}
+
+function envio_sms_auto($from, $destination, $message)
+{
+	// Creo un array con los valores a enviar.
+	$postSMS = array();
+	$postSMS["token"]= $GLOBALS['token_envio_sms'];
+	$postSMS["from"]= $from;
+	$postSMS["destination"]= '0054'.$destination;
+	$postSMS["message"]= $message;
+
+	$envio_sms = curl_init($GLOBALS['url_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_POST, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_POSTFIELDS, $postSMS );
+	curl_setopt( $envio_sms, CURLOPT_RETURNTRANSFER, TRUE );
+	curl_setopt( $envio_sms, CURLOPT_CAINFO, $GLOBALS['path_certificado_envio_sms']);
+	curl_setopt( $envio_sms, CURLOPT_TIMEOUT, 90);
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYHOST, 0 );
+	//curl_setopt( $envio_sms, CURLOPT_SSL_VERIFYPEER, 0 );
+
+	$respuesta_envio_sms = curl_exec( $envio_sms );
+	
+	if (curl_error($envio_sms)) 
+	{
+		$error_msg = curl_error($envio_sms);
+		return $error_msg;
+	}	
+	
+	if ($respuesta_envio_sms !== false)
+	{
+		$https_code_envio_sms = curl_getinfo( $envio_sms, CURLINFO_HTTP_CODE );
+		
+		switch($https_code_envio_sms)
+		{
+			case 103:
+				$msg_sms_ok = translate('Msg_Erroneous_Parameters',$GLOBALS['lang']);
+				break;
+				
+			case 109:
+				$msg_sms_ok = translate('Msg_Mandatory_Parameter_Omitted',$GLOBALS['lang']);
+				break;
+
+			case 200:
+				$msg_sms_ok = translate('Msg_Message_Sent_Succesfully',$GLOBALS['lang']);
+				break;
+
+			case 401:
+				$msg_sms_ok = translate('Msg_Unauthorized_Authentication_Error_Check_Token',$GLOBALS['lang']);
+				break;
+
+			case 402:
+				$msg_sms_ok = translate('Msg_Payment_Required_Insufficient_Balance_For_Sending_SMS',$GLOBALS['lang']);
+				break;
+
+			case 412:
+				$msg_sms_ok = translate('Msg_Precondition_Failed_Unrecognized_Error',$GLOBALS['lang']);
+				break;
+
+			case 404:
+				$msg_sms_ok = translate('Msg_Not_Found_SMS_ID_Sent',$GLOBALS['lang']);
+				break;
+
+			default:
+				$msg_sms_ok = translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				break;				
+		}
+	}
+	else 
+	{		
+		return translate('Msg_Unknown_Error',$GLOBALS['lang']);
+	}
+	curl_close( $envio_sms );
+	
+	return $respuesta_envio_sms.'=:=:='.$https_code_envio_sms;
+}
+
 function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $idGenero)
 {
 	$generoC = 'M';

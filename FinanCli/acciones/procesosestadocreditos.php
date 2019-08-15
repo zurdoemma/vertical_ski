@@ -267,6 +267,90 @@
 									$stmt->close();
 									return;						
 								}
+								else
+								{
+									$mysqli->autocommit(FALSE);
+									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+														
+									$date_registro = date("YmdHis");					
+									if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ?, estado = ? WHERE id_cuota_credito = ? AND estado IN (?,?)"))
+									{
+										echo $mysqli->error;
+										$mysqli->autocommit(TRUE);
+										$stmt51->free_result();
+										$stmt51->close();
+										return;
+									}
+									else
+									{
+										$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
+										$estadoPendiente = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
+										$estadoFinalizado = translate('Lbl_State_Finished_Default_Notice',$GLOBALS['lang']);
+										$comentario2 = translate('Msg_It_Is_Declared_Uncollectible_Fee',$GLOBALS['lang']);
+										$stmt20->bind_param('sssiss', $comentario2, $date_registro, $estadoFinalizado, $id_cuota_credito_db, $estadoPendiente, $estadoCreado);
+										if(!$stmt20->execute())
+										{
+											echo $mysqli->error;
+											$mysqli->autocommit(TRUE);
+											$stmt51->free_result();
+											$stmt51->close();
+											return;						
+										}
+									}
+									
+									if ($stmt132 = $mysqli->prepare("SELECT id FROM finan_cli.aviso_x_mora WHERE id_cuota_credito = ? AND estado IN (?,?)")) 
+									{
+										$stmt132->bind_param('iss', $id_cuota_credito_db, $estadoPendiente, $estadoCreado);
+										$stmt132->execute(); 
+										$stmt132->store_result();
+										
+										$totR132 = $stmt132->num_rows;
+
+										if($totR132 > 0)
+										{
+											$stmt132->bind_result($id_aviso_x_mora_actualizacion_cuota_db);
+											while($stmt132->fetch())
+											{
+												$date_registro = date("YmdHis");					
+												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado IN (?,?,?)"))
+												{
+													echo $mysqli->error;
+													$mysqli->rollback();
+													$mysqli->autocommit(TRUE);
+													$stmt51->free_result();
+													$stmt51->close();
+													return;
+												}
+												else
+												{
+													$estadoEnviado = translate('Lbl_State_Sended_Default_Notice',$GLOBALS['lang']);
+													$estadoReEnviado = translate('Lbl_State_Forwarded_Default_Notice',$GLOBALS['lang']);
+													$estadoError = translate('Lbl_State_Error_Default_Notice',$GLOBALS['lang']);
+													$stmt20->bind_param('sssisss', $estadoFinalizado, $comentario2, $date_registro, $id_aviso_x_mora_actualizacion_cuota_db, $estadoEnviado, $estadoError, $estadoReEnviado);
+													if(!$stmt20->execute())
+													{
+														echo $mysqli->error;
+														$mysqli->rollback();
+														$mysqli->autocommit(TRUE);
+														$stmt51->free_result();
+														$stmt51->close();
+														return;						
+													}
+												}
+											}
+											$stmt132->free_result();
+											$stmt132->close();				
+										}				
+									}
+									else 
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;
+									}
+																									
+									$mysqli->commit();
+									$mysqli->autocommit(TRUE);
+								}
 							}
 							
 							if($esUltimaCuota == 1)
