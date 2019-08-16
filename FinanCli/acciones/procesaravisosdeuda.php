@@ -537,7 +537,7 @@
 					{
 						if($id_tipo_aviso_x_mora_db == 1)
 						{
-							if ($stmt77 = $mysqli->prepare("SELECT es.id, es.id_telefono, es.estado, es.codigo_respuesta, es.cantidad_reintentos, es.id_sms FROM finan_cli.envio_sms es WHERE es.id_aviso_x_mora = ? AND es.estado IN (?,?,?)")) 
+							if ($stmt77 = $mysqli->prepare("SELECT es.id, es.id_telefono, es.estado, es.codigo_respuesta, es.cantidad_reintentos, es.id_sms, t.numero FROM finan_cli.envio_sms es, finan_cli.telefono t WHERE es.id_telefono = t.id AND es.id_aviso_x_mora = ? AND es.estado IN (?,?,?)")) 
 							{
 								$estadoError = translate('Lbl_State_Error_Default_Notice',$GLOBALS['lang']);
 								$estadoEnviado = translate('Lbl_State_Sended_Default_Notice',$GLOBALS['lang']);
@@ -550,37 +550,44 @@
 
 								if($totR77 > 0)
 								{
-									$stmt77->bind_result($id_envio_sms_db, $id_telefono_envio_sms_db, $estado_envio_sms_db, $codigo_respuesta_envio_sms_db, $cantidad_reintentos_envio_sms_db, $id_sms_envio_service_db);
+									$stmt77->bind_result($id_envio_sms_db, $id_telefono_envio_sms_db, $estado_envio_sms_db, $codigo_respuesta_envio_sms_db, $cantidad_reintentos_envio_sms_db, $id_sms_envio_service_db, $numero_telefono_envio_sms_db);
 									$stmt77->fetch();
+									
+									if ($stmt105 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
+									{
+										$nombreValPar = 'cantidad_reintentos_envio_sms';
+										$stmt105->bind_param('s', $nombreValPar);
+										$stmt105->execute();
+										$stmt105->store_result();
+											
+										$totR105 = $stmt105->num_rows;
+
+										if($totR105 > 0)
+										{
+											$stmt105->bind_result($cantidad_reintentos_sms_parametros_db);
+											$stmt105->fetch();
+																						
+											$stmt105->free_result();
+											$stmt105->close();
+										}			
+									}
+									else 
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;
+									}									
 								
 									if($estado_envio_sms_db == translate('Lbl_State_Sended_Default_Notice',$GLOBALS['lang']))
-									{
-										if ($stmt105 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
-										{
-											$nombreValPar = 'cantidad_reintentos_envio_sms';
-											$stmt105->bind_param('s', $nombreValPar);
-											$stmt105->execute();
-											$stmt105->store_result();
-												
-											$totR105 = $stmt105->num_rows;
-
-											if($totR105 > 0)
-											{
-												$stmt105->bind_result($cantidad_reintentos_sms_parametros_db);
-												$stmt105->fetch();
-																							
-												$stmt105->free_result();
-												$stmt105->close();
-											}			
-										}
-										else 
-										{
-											echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-											return;
-										}										
-										
+									{										
 										$resultadoEstadoEnvioSMS = status_envio_sms($id_sms_envio_service_db);
-										if(trim($resultadoEstadoEnvioSMS) == translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang']))
+										$ps = xml_parser_create();
+										xml_parse_into_struct($ps, $resultadoEstadoEnvioSMS, $valss, $indexs);
+										xml_parser_free($ps);
+										
+										$fechaEntregaSMS = $valss[2]['value'];
+										$resultadoEstadoEnvioSMS = $valss[1]['value'];
+
+										if(strcasecmp($resultadoEstadoEnvioSMS, translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang'])) == 0)
 										{
 											$mysqli->autocommit(FALSE);
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -638,7 +645,7 @@
 											$mysqli->commit();
 											$mysqli->autocommit(TRUE);
 										}
-										else if(trim($resultadoEstadoEnvioSMS) == translate('Lbl_State_Sended_SMS_Default_Notice_ERROR',$GLOBALS['lang']))
+										else if(strcasecmp($resultadoEstadoEnvioSMS, translate('Lbl_State_Sended_SMS_Default_Notice_ERROR',$GLOBALS['lang'])) == 0)
 										{
 											$mysqli->autocommit(FALSE);
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -695,7 +702,7 @@
 											$mysqli->commit();
 											$mysqli->autocommit(TRUE);											
 										}
-										else if(trim($resultadoEstadoEnvioSMS) == translate('Lbl_State_Sended_SMS_Default_Notice_PENDING',$GLOBALS['lang']))
+										else if(strcasecmp($resultadoEstadoEnvioSMS, translate('Lbl_State_Sended_SMS_Default_Notice_PENDING',$GLOBALS['lang'])) == 0)
 										{
 											$mysqli->autocommit(FALSE);
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -817,8 +824,19 @@
 											if($cantidad_reintentos_envio_sms_db < $cantidad_reintentos_sms_parametros_db)
 											{
 												$resultadoEstadoEnvioSMS = status_envio_sms($id_sms_envio_service_db);
+												$ps = xml_parser_create();
+												xml_parse_into_struct($ps, $resultadoEstadoEnvioSMS, $valss, $indexs);
+												xml_parser_free($ps);
+												
+												//echo $resultadoEstadoEnvioSMS.' -- '.$id_sms_envio_service_db.'</br>';
+												$fechaEntregaSMS = $valss[2]['value'];
+												$resultadoEstadoEnvioSMS = $valss[1]['value'];
+												 
+												//print_r($valss);
+												//return;
+										
 												$reenviarMensajeSMS = 0;
-												if(trim($resultadoEstadoEnvioSMS) == translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang']))
+												if(strcasecmp($resultadoEstadoEnvioSMS, translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang'])) == 0)
 												{
 													$mysqli->autocommit(FALSE);
 													$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -883,10 +901,10 @@
 												
 												if($reenviarMensajeSMS == 1)
 												{													
-													$resultadoEnvioSMS = envio_sms_auto(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $numero_telefono_aviso_x_mora_db, $mensaje_aviso_x_mora_db);
+													$resultadoEnvioSMS = envio_sms_auto(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $numero_telefono_envio_sms_db, $mensaje_aviso_x_mora_db);
 													$codigoRespuestaEnvSMS = substr($resultadoEnvioSMS, strpos($resultadoEnvioSMS, '=:=:=')+5);
 													$resultadoEnvioSMS = str_replace('=:=:='.$codigoRespuestaEnvSMS, "", $resultadoEnvioSMS);
-												
+													
 													$p = xml_parser_create();
 													xml_parse_into_struct($p, $resultadoEnvioSMS, $vals, $index);
 													xml_parser_free($p);
@@ -935,7 +953,7 @@
 															$estadoReEnviado = translate('Lbl_State_Forwarded_Default_Notice',$GLOBALS['lang']);
 															$comentario = translate('Msg_Was_Resent_Default_Notice',$GLOBALS['lang']);
 															$codigoRespuestaSMS = 200;
-															$stmt20->bind_param('sssiii', $estadoReEnviado, $comentario, $date_registro, $vals[2]['value'], $codigoRespuestaSMS, $id_envio_sms_db);
+															$stmt20->bind_param('ssssii', $estadoReEnviado, $comentario, $date_registro, $vals[2]['value'], $codigoRespuestaSMS, $id_envio_sms_db);
 															if(!$stmt20->execute())
 															{
 																echo $mysqli->error;
@@ -1106,8 +1124,15 @@
 										else
 										{
 											$resultadoEstadoEnvioSMS = status_envio_sms($id_sms_envio_service_db);
+											$ps = xml_parser_create();
+											xml_parse_into_struct($ps, $resultadoEstadoEnvioSMS, $valss, $indexs);
+											xml_parser_free($ps);
+											
+											$fechaEntregaSMS = $valss[2]['value'];
+											$resultadoEstadoEnvioSMS = $valss[1]['value'];
+											
 											$reenviarMensajeSMS = 0;
-											if(trim($resultadoEstadoEnvioSMS) == translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang']))
+											if(strcasecmp($resultadoEstadoEnvioSMS, translate('Lbl_State_Sended_SMS_Default_Notice_OK',$GLOBALS['lang'])) == 0)
 											{
 												$mysqli->autocommit(FALSE);
 												$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -1172,7 +1197,7 @@
 											
 											if($reenviarMensajeSMS == 1)
 											{													
-												$resultadoEnvioSMS = envio_sms_auto(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $numero_telefono_aviso_x_mora_db, $mensaje_aviso_x_mora_db);
+												$resultadoEnvioSMS = envio_sms_auto(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $numero_telefono_envio_sms_db, $mensaje_aviso_x_mora_db);
 												$codigoRespuestaEnvSMS = substr($resultadoEnvioSMS, strpos($resultadoEnvioSMS, '=:=:=')+5);
 												$resultadoEnvioSMS = str_replace('=:=:='.$codigoRespuestaEnvSMS, "", $resultadoEnvioSMS);
 											
@@ -1224,7 +1249,7 @@
 														$estadoReEnviado = translate('Lbl_State_Forwarded_Default_Notice',$GLOBALS['lang']);
 														$comentario = translate('Msg_Was_Resent_Default_Notice',$GLOBALS['lang']);
 														$codigoRespuestaSMS = 200;
-														$stmt20->bind_param('sssiii', $estadoReEnviado, $comentario, $date_registro, $vals[2]['value'], $codigoRespuestaSMS, $id_envio_sms_db);
+														$stmt20->bind_param('ssssii', $estadoReEnviado, $comentario, $date_registro, $vals[2]['value'], $codigoRespuestaSMS, $id_envio_sms_db);
 														if(!$stmt20->execute())
 														{
 															echo $mysqli->error;
