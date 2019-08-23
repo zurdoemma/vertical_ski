@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -23,6 +23,33 @@
 		}
 		
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
+		
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}		
 				
 		echo '<div class="panel-group">';				
 		echo '	<div class="panel panel-default">';
@@ -81,7 +108,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilusern">'.translate('Lbl_Perfil_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="perfilusern">';
 		echo '						<select class="form-control input-sm" name="perfiluserni" id="perfiluserni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil WHERE id <> 1")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -102,8 +129,9 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="sucursalusern">'.translate('Lbl_Tender_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="sucursalusern">';
 		echo '						<select class="form-control input-sm" name="sucursaluserni" id="sucursaluserni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.sucursal")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.sucursal WHERE id_cadena = ?")) 
 										{ 
+											$stmt->bind_param('i', $id_cadena_user);
 											$stmt->execute();    
 											$stmt->store_result();
 									 

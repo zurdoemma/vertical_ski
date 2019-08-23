@@ -49,7 +49,7 @@ function verificar_permisos_supervisor()
 {
 	if(session_status() !== PHP_SESSION_ACTIVE) sec_session_start();
 	//comprobar la existencia del usuario
-	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 2)
+	if ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
 	{
 		return true;
 	}

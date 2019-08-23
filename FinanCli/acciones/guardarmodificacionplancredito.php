@@ -35,11 +35,11 @@
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
-		}		
+		}
 			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ?"))
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ? AND pc.id_cadena = ?"))
 		{
-			$stmt->bind_param('si', $nombre, $idPlanCredito);
+			$stmt->bind_param('sii', $nombre, $idPlanCredito, $cadena);
 			$stmt->execute();    
 			$stmt->store_result();
 								

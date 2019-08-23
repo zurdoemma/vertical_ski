@@ -316,7 +316,7 @@
 						$stmt62->free_result();
 						$stmt62->close();
 						
-						echo translate('Msg_Authorize_Client_Registration_Credit_OK',$GLOBALS['lang']).'=::=::'.$tokenECRC.'=:::=:::'.$tokenVC..'=::::=::::'.$planesCreditoCli.'=:=:'.$nombres_cliente_db.'|'.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$telefono_cliente_db.'|'.$monto_credito_disponible;
+						echo translate('Msg_Authorize_Client_Registration_Credit_OK',$GLOBALS['lang']).'=::=::'.$tokenECRC.'=:::=:::'.$tokenVC.'=::::=::::'.$planesCreditoCli.'=:=:'.$nombres_cliente_db.'|'.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$telefono_cliente_db.'|'.$monto_credito_disponible;
 						return;								
 					}
 					else

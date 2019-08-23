@@ -4,7 +4,7 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
+if (!verificar_permisos_supervisor()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>
@@ -48,7 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoInteresXMora()
 		{
-			var urlnpc = "./acciones/nuevointeresxmora.php";
+			var urlnpc = "./acciones/nuevointeresxmorasup.php";
 			var tagnpc = $("<div id='dialognewinteresxmora'></div>");
 			$('#img_loader_5').show();
 			
@@ -89,7 +89,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function modificarInteresXMora(interesxmora)
 		{
-			var urla = "./acciones/modificarinteresxmora.php";
+			var urla = "./acciones/modificarinteresxmorasup.php";
 			var tag = $("<div id='dialogmodifyinteresxmora'></div>");
 			$('#img_loader').show();
 			
@@ -253,7 +253,7 @@ include("./menu/menu.php");
 				}
 			}			
 			
-			var urlgmu = "./acciones/guardarmodificacioninteresxmora.php";
+			var urlgmu = "./acciones/guardarmodificacioninteresxmorasup.php";
 			$('#img_loader_11').show();
 			
 			$.ajax({
@@ -408,7 +408,7 @@ include("./menu/menu.php");
 				}
 			}			
 						
-			var urlggnu = "./acciones/guardarnuevointeresxmora.php";
+			var urlggnu = "./acciones/guardarnuevointeresxmorasup.php";
 			$('#img_loader_11').show();
 			
 			$.ajax({
@@ -440,7 +440,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function borrar_interes_x_mora(interesxmora)
 		{
-			var urlrdu = "./acciones/borrarinteresxmora.php";
+			var urlrdu = "./acciones/borrarinteresxmorasup.php";
 			$('#img_loader').show();
 			
 			$.ajax({
@@ -468,7 +468,7 @@ include("./menu/menu.php");
 						}
 						
 						if(estaVaciaTabla == 0) $('#tableadmininteresxmorat').bootstrapTable('load',JSON.parse(datTable));
-						else $('#tableadmininteresxmorat').bootstrapTable('removeAll');
+						else $('#tableadmininteresxmorat').bootstrapTable('removeAll');						
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -613,25 +613,42 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
-								$stmt->execute();    // Ejecuta la consulta preparada.
-								$stmt->store_result();
+								$stmt500->bind_param('s', $_SESSION['username']);
+								$stmt500->execute();    
+								$stmt500->store_result();
 						 
-								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
-								
-								while($stmt->fetch())
-								{		
-									echo '<tr>';
-									echo '<td>'.$cantidad_dias_interes_x_mora.'</td>';
-									echo '<td>'.$interes_x_mora.'</td>';
-									echo '<td>'.$plan_credito_interes_x_mora.'</td>';
-									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
-									echo '</tr>';
+								$totR500 = $stmt500->num_rows;
+								if($totR500 > 0)
+								{
+									$stmt500->bind_result($id_cadena_user);
+									$stmt500->fetch();
+															
+									if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+									{
+										$stmt->bind_param('i', $id_cadena_user);
+										$stmt->execute();    // Ejecuta la consulta preparada.
+										$stmt->store_result();
+								 
+										// Obtiene las variables del resultado.
+										$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
+										
+										while($stmt->fetch())
+										{		
+											echo '<tr>';
+											echo '<td>'.$cantidad_dias_interes_x_mora.'</td>';
+											echo '<td>'.$interes_x_mora.'</td>';
+											echo '<td>'.$plan_credito_interes_x_mora.'</td>';
+											
+											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '</tr>';
+										}
+									}
+									$stmt500->free_result();
+									$stmt500->close();	
 								}
-							}
+							}									
 						?>						
 					</tbody>					
 				</table>

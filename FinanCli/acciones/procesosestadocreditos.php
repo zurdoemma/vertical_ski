@@ -77,7 +77,7 @@
 			return;
 		}
 		
-		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 1")) 
+		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 1 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt74->execute();
 			$stmt74->store_result();
@@ -88,7 +88,7 @@
 			{
 				$stmt74->bind_result($fecha_ultimo_proceso);
 				$stmt74->fetch();
-			
+				
 				$fechaObtDB = substr($fecha_ultimo_proceso, 0, 4).'-'.substr($fecha_ultimo_proceso, 4, 2).'-'.substr($fecha_ultimo_proceso, 6, 2).' '.substr($fecha_ultimo_proceso, 8, 2).':'.substr($fecha_ultimo_proceso, 10, 2).':'.substr($fecha_ultimo_proceso, 12, 2);
 				$fechaInfDB = new DateTime($fechaObtDB);
 				$fechaAct = new DateTime();
@@ -102,7 +102,7 @@
 				
 				$stmt74->free_result();
 				$stmt74->close();
-			}			
+			}
 		}
 		else 
 		{
@@ -110,7 +110,94 @@
 			return;
 		}
 
-		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id FROM finan_cli.cuota_credito cc, finan_cli.credito c WHERE cc.id_credito = c.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
+		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.control_ejecucion_procesos WHERE tipo_proceso = 1 HAVING MAX(fecha) IS NOT NULL")) 
+		{
+			$stmt174->execute();
+			$stmt174->store_result();
+	 			
+			$totR174 = $stmt174->num_rows;
+
+			if($totR174 > 0)
+			{
+				$stmt174->bind_result($fecha_ultimo_proceso_para);
+				$stmt174->fetch();
+			
+				$fechaObtDB = substr($fecha_ultimo_proceso_para, 0, 4).'-'.substr($fecha_ultimo_proceso_para, 4, 2).'-'.substr($fecha_ultimo_proceso_para, 6, 2).' '.substr($fecha_ultimo_proceso_para, 8, 2).':'.substr($fecha_ultimo_proceso_para, 10, 2).':'.substr($fecha_ultimo_proceso_para, 12, 2);
+				$fechaInfDB = new DateTime($fechaObtDB);
+				$fechaAct = new DateTime();
+				$difHoras = $fechaAct->diff($fechaInfDB);
+				
+				if($difHoras->h <= $cantidad_horas_entre_procesos_db && $difHoras->days == 0)
+				{
+					echo str_replace("%1",$cantidad_horas_entre_procesos_db,translate('Msg_The_Automatic_Process_Runs_Every_Hours',$GLOBALS['lang']));
+					return;
+				}
+				else
+				{
+					$mysqli->autocommit(FALSE);
+					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+										
+					$date_registro = date("YmdHis");					
+					if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						return;
+					}
+					else
+					{
+						$tipoProcesoCP = 1;
+						$stmt20->bind_param('si', $date_registro, $tipoProcesoCP);
+						if(!$stmt20->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->autocommit(TRUE);
+							return;						
+						}
+					}
+																
+					$mysqli->commit();
+					$mysqli->autocommit(TRUE);			
+				}
+				
+				$stmt174->free_result();
+				$stmt174->close();
+			}
+			else
+			{
+				$mysqli->autocommit(FALSE);
+				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+									
+				$date_registro = date("YmdHis");					
+				if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					return;
+				}
+				else
+				{
+					$tipoProcesoCP = 1;
+					$stmt20->bind_param('si', $date_registro, $tipoProcesoCP);
+					if(!$stmt20->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						return;						
+					}
+				}
+															
+				$mysqli->commit();
+				$mysqli->autocommit(TRUE);
+			}				
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
+		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id, cad.nombre FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.sucursal suc, finan_cli.cadena cad WHERE cc.id_credito = c.id AND suc.id_cadena = cad.id AND cc.id_sucursal = suc.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
 		{
 			$estadoEM = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
 			$estadoPEND = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
@@ -156,7 +243,7 @@
 			}
 			else
 			{
-				$stmt->bind_result($id_cuota_credito_db, $estado_cuota_credito_db, $fecha_vencimiento_cuota_credito_db, $numero_cuota_credito_db, $cantidad_cuotas_credito_db, $id_plan_credito_db, $monto_cuota_original_db, $id_credito_db);
+				$stmt->bind_result($id_cuota_credito_db, $estado_cuota_credito_db, $fecha_vencimiento_cuota_credito_db, $numero_cuota_credito_db, $cantidad_cuotas_credito_db, $id_plan_credito_db, $monto_cuota_original_db, $id_credito_db, $nombre_cadena_credito_db);
 				
 				$pasoDiasVencidosCuota = 0;
 				while($stmt->fetch())
@@ -466,9 +553,9 @@
 									$stmt40->bind_result($interes_x_mora_db, $cantidad_dias_interes_x_mora_db);
 									while($stmt40->fetch())
 									{
-										if($stmt41 = $mysqli->prepare("SELECT ixmcc.id, ixmcc.fecha FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.cantidad_dias_mora = ?"))
+										if($stmt41 = $mysqli->prepare("SELECT ixmcc.id, ixmcc.fecha FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.cantidad_dias_mora = ? AND ixmcc.id_cuota_credito = ?"))
 										{
-											$stmt41->bind_param('i', $cantidad_dias_interes_x_mora_db);
+											$stmt41->bind_param('ii', $cantidad_dias_interes_x_mora_db, $id_cuota_credito_db);
 											$stmt41->execute();    
 											$stmt41->store_result();
 											
@@ -638,6 +725,7 @@
 															$mensajeNuevo = str_replace("%1",$numero_cuota_credito_db,translate('Msg_It_Is_Reported_Installment_Has_Pending_Debt',$GLOBALS['lang']));
 															$mensajeNuevo = str_replace("%2",$id_credito_db,$mensajeNuevo);
 															$mensajeNuevo = str_replace("%3",number_format((($monto_cuota_original_db+$montoInteresAplicado+$monto_interes_anterior_cuota_credito_db)/100.00), 2, ',', '.'),$mensajeNuevo);
+															$mensajeNuevo = str_replace("%4",$nombre_cadena_credito_db,$mensajeNuevo);
 															$stmt2->bind_param('ssi', $date_registro, $mensajeNuevo, $id_aviso_x_mora_db);
 															if(!$stmt2->execute())
 															{
@@ -697,6 +785,7 @@
 															$mensajeNuevo = str_replace("%1",$numero_cuota_credito_db,translate('Msg_It_Is_Reported_Installment_Has_Pending_Debt',$GLOBALS['lang']));
 															$mensajeNuevo = str_replace("%2",$id_credito_db,$mensajeNuevo);
 															$mensajeNuevo = str_replace("%3",number_format((($monto_cuota_original_db+$montoInteresAplicado+$monto_interes_anterior_cuota_credito_db)/100.00), 2, ',', '.'),$mensajeNuevo);
+															$mensajeNuevo = str_replace("%4",$nombre_cadena_credito_db,$mensajeNuevo);
 															$estadoAXMCr = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
 															$tipoAviso = 1;
 															$stmt2->bind_param('issisi', $id_credito_db, $date_registro, $estadoAXMCr, $id_cuota_credito_db, $mensajeNuevo, $tipoAviso);

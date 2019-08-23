@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,96 +22,138 @@
 				return;
 		}
 		
-		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
-		$descripcion=htmlspecialchars($_POST["descripcion"], ENT_QUOTES, 'UTF-8');
-		$cantidadCuotas=htmlspecialchars($_POST["cantidadCuotas"], ENT_QUOTES, 'UTF-8');
-		$interesFijo=htmlspecialchars($_POST["interesFijo"], ENT_QUOTES, 'UTF-8');
-		$tipoDiferimientoCuota=htmlspecialchars($_POST["tipoDiferimientoCuota"], ENT_QUOTES, 'UTF-8');
-		$cadena=htmlspecialchars($_POST["cadena"], ENT_QUOTES, 'UTF-8');
+		$idPlanCredito=htmlspecialchars ($_POST["idPlanCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if($cantidadCuotas < 0 || $interesFijo < 0)
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
-			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
-			return;
-		}		
-			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id_cadena = ?"))
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
 		{
-			$stmt->bind_param('si', $nombre, $cadena);
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+		
+		if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena FROM finan_cli.plan_credito pc WHERE pc.id = ?"))
+		{
+			$stmt->bind_param('i', $idPlanCredito);
 			$stmt->execute();    
 			$stmt->store_result();
 		
 			$totR = $stmt->num_rows;
 
-			if($totR > 0)
+			if($totR == 0)
 			{
-				echo translate('Msg_A_Credit_Plan_Exist',$GLOBALS['lang']);
+				$stmt->free_result();
+				$stmt->close();
+				echo translate('Msg_A_Credit_Plan_Not_Exist',$GLOBALS['lang']);
 				return;
 			}
 			else
-			{					
-				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'maxima_cantidad_cuotas_plan_credito'"))
+			{				
+				if($stmt2 = $mysqli->prepare("SELECT c.id FROM finan_cli.credito c WHERE c.id_plan_credito = ?"))
 				{
+					$stmt2->bind_param('i', $idPlanCredito);
 					$stmt2->execute();    
 					$stmt2->store_result();
 				
-					$stmt2->bind_result($cantidad_cuotas_permitidas_plan_credito_parametro);
-					$stmt2->fetch();
-
 					$totR2 = $stmt2->num_rows;
-					if($totR2 == 0)
+
+					if($totR2 > 0)
 					{
-						$stmt->free_result();
-						$stmt->close();
-						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-						return;	
+						$stmt2->free_result();
+						$stmt2->close();
+						echo translate('Msg_Credit_Plan_Not_Remove_Because_Associated_Credit',$GLOBALS['lang']);
+						return;
 					}
 					
-					if($cantidadCuotas > $cantidad_cuotas_permitidas_plan_credito_parametro)
-					{
-						$stmt->free_result();
-						$stmt->close();
-						echo translate('Msg_Quota_Limit_Exceeded_Credit_Plan',$GLOBALS['lang']);
-						return;	
-					}
+					$stmt2->free_result();
+					$stmt2->close();
 				}
-				else
+				else	
 				{
 					$stmt->free_result();
 					$stmt->close();
 					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 					return;	
 				}
-				$stmt2->free_result();
-				$stmt2->close();
+
+				if($stmt4 = $mysqli->prepare("SELECT pcp.id_plan_credito FROM finan_cli.perfil_credito_x_plan pcp WHERE pcp.id_plan_credito = ?"))
+				{
+					$stmt4->bind_param('i', $idPlanCredito);
+					$stmt4->execute();    
+					$stmt4->store_result();
+				
+					$totR4 = $stmt4->num_rows;
+
+					if($totR4 > 0)
+					{
+						$stmt->free_result();
+						$stmt->close();
+						echo translate('Msg_Profile_Credit_Not_Remove_Because_Associated_Profile_Credit',$GLOBALS['lang']);
+						return;
+					}
+					
+					$stmt4->free_result();
+					$stmt4->close();
+				}
+				else	
+				{
+					$stmt->free_result();
+					$stmt->close();
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;	
+				}				
 				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (?,?,?,?,?,?)"))
+				$stmt->bind_result($id_credit_plan_a, $name_credit_plan_a, $description_credit_plan_a, $cantidad_cuotas_credit_plan_a, $interes_fijo_credit_plan_a, $diferimiento_cuota_credit_plan_a, $cadena_credit_plan_a);	
+				
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.plan_credito WHERE id = ?"))
 				{
 					echo $mysqli->error;
+					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();
 					$stmt->close();
 					return;
 				}
-				else 
+				else
 				{
-					$stmt10->bind_param('ssiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena);
+					$stmt10->bind_param('i', $idPlanCredito);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
+						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
 						return;						
-					}						
+					}
 				}
-
+	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.")";
+				$stmt->fetch();
+				$valor_log_user = "DELETE finan_cli.plan_credito --> id: ".$id_credit_plan_a." - Nombre: ".$name_credit_plan_a." - Descripcion: ".$description_credit_plan_a." - cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a." - interes_fijo = ".$interes_fijo_credit_plan_a." - id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a." - id_cadena = ".$cadena_credit_plan_a." WHERE id = ".$idPlanCredito;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
@@ -124,7 +166,7 @@
 				}
 				else
 				{
-					$motivo = 28;
+					$motivo = 30;
 					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
 					if(!$stmt->execute())
 					{
@@ -135,13 +177,14 @@
 						$stmt->close();
 						return;						
 					}
-				}
+				}				
 										
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id ORDER BY pc.cantidad_cuotas")) 
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id AND c.id = ? ORDER BY pc.cantidad_cuotas")) 
 				{
+					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    
 					$stmt->store_result();
 					
@@ -162,7 +205,7 @@
 						$posicion++;
 					}
 					
-					echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
+					echo translate('Msg_Remove_Credit_Plan_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
 				}
 				else 
 				{

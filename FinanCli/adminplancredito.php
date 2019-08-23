@@ -569,7 +569,20 @@ include("./menu/menu.php");
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#tableadmincreditplant').bootstrapTable('load',JSON.parse(datTable));
+						var estaVaciaTabla = 0;
+						var resBTU = JSON.parse(datTable);
+						
+						for(var i in resBTU)
+						{
+							if(resBTU[i]["nombre"] == null || resBTU[i]["nombre"] === '') 
+							{
+								estaVaciaTabla = 1;
+								break;
+							}
+						}
+						
+						if(estaVaciaTabla == 0) $('#tableadmincreditplant').bootstrapTable('load',JSON.parse(datTable));
+						else $('#tableadmincreditplant').bootstrapTable('removeAll');
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);

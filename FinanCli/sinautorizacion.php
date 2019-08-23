@@ -2,6 +2,8 @@
 include ('utiles/funciones.php');
 require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
+mysqli_set_charset($mysqli,"utf8");
+if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
 if(!isset($_GET['activauto'])){header('Location:/FinanCli/login.php');return;}
 include("menu/menu.php");
 ?>

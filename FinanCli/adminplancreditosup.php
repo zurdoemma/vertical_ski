@@ -4,7 +4,7 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
+if (!verificar_permisos_supervisor()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>
@@ -13,7 +13,7 @@ include("./menu/menu.php");
 	<meta charset="UTF-8">
 	
 	<link rel="shortcut icon" href="./images/iconoFinanCli.png" >
-	<title><?php echo translate('Lbl_Tender',$GLOBALS['lang']); ?></title>
+	<title><?php echo translate('Lbl_Credit_Plan',$GLOBALS['lang']); ?></title>
 	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
@@ -40,20 +40,20 @@ include("./menu/menu.php");
 	<script type="text/JavaScript" src="./js/extensions/export/bootstrap-table-export.js" ></script>
 	<script type="text/JavaScript" src="./js/jquery.validate.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/forms.op2.js" ></script>
-	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>	
+	<script type="text/JavaScript" src="./js/sha512.op2.js" ></script>
 	
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
 	<script type="text/javascript">
-		function nuevaSucursal()
+		function nuevoPlanCredito()
 		{
-			var urlnt = "./acciones/nuevasucursal.php";
-			var tagnt = $("<div id='dialognewtender'></div>");
+			var urlnpc = "./acciones/nuevoplancreditosup.php";
+			var tagnpc = $("<div id='dialognewcreditplan'></div>");
 			$('#img_loader_5').show();
 			
 			$.ajax({
-				url: urlnt,
+				url: urlnpc,
 				method: "POST",
 				data: {},
 				success: function(dataresponse, statustext, response){
@@ -64,19 +64,19 @@ include("./menu/menu.php");
 						window.location.replace("./login.php?result_ok=3");
 					}
 										
-					tagnt.html(dataresponse).dialog({
+					tagnpc.html(dataresponse).dialog({
 					  show: "blind",
 					  hide: "explode",
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Lbl_New_Tender',$GLOBALS['lang']);?>",
+					  title: "<?php echo translate('Lbl_New_Credit_Plan',$GLOBALS['lang']);?>",
 					  autoResize:true,
 							close: function(){
-									tagnt.dialog('destroy').remove()
+									tagnpc.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-					tagnt.dialog('open');
+					tagnpc.dialog('open');
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -87,16 +87,16 @@ include("./menu/menu.php");
     </script>
 			
 	<script type="text/javascript">
-		function modificarSucursal(sucursal, nombre)
+		function modificarPlanCredito(plancredito, nombre)
 		{
-			var urla = "./acciones/modificarsucursal.php";
-			var tag = $("<div id='dialogmodifytender'></div>");
+			var urla = "./acciones/modificarplancreditosup.php";
+			var tag = $("<div id='dialogmodifycreditplan'></div>");
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urla,
 				method: "POST",
-				data: { idSucursal: sucursal },
+				data: { idPlanCredito: plancredito },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -111,7 +111,7 @@ include("./menu/menu.php");
 					  height: "auto",
 					  width: "auto",					  
 					  modal: true, 
-					  title: "<?php echo translate('Msg_Edit_Tender',$GLOBALS['lang']);?>: "+nombre,
+					  title: "<?php echo translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']);?>: "+nombre,
 					  autoResize:true,
 							close: function(){
 									tag.dialog('destroy').remove()
@@ -128,12 +128,12 @@ include("./menu/menu.php");
     </script>
 	
 	<script type="text/javascript">
-		function guardarModificacionSucursal(formulariod, sucursal, idDomicilio)
+		function guardarModificacionPlanCredito(formulariod, plancredito)
 		{
-			if($( "#nombretenderi" ).val().length == 0)
+			if($( "#nombreplancrediti" ).val().length == 0)
 			{
 				$(function() {
-					$( "#nombretenderi" ).tooltip({
+					$( "#nombreplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -141,13 +141,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#nombretenderi" ).focus();
+				$( "#nombreplancrediti" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#nombretenderi" ).tooltip({
+					$( "#nombreplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -155,14 +155,43 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#nombretenderi" ).tooltip('destroy');
+				$( "#nombreplancrediti" ).tooltip('destroy');
+			}
+												
+			if($( "#descripcionplancrediti" ).val().length == 0)
+			{
+				$(function() {
+					$( "#descripcionplancrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#descripcionplancrediti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#descripcionplancrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#descripcionplancrediti" ).tooltip('destroy');
 			}
 			
-			if($( "#codigotenderi" ).val().length == 0)
+			
+			if($( "#cantidadcuotasplancrediti" ).val().length == 0)
 			{
-				$('#codigotenderi').prop('title', '<?php echo translate('Msg_A_Code_Tender_Must_Enter',$GLOBALS['lang']);?>');
+				$('#cantidadcuotasplancrediti').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#codigotenderi" ).tooltip({
+					$( "#cantidadcuotasplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -170,13 +199,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#codigotenderi" ).focus();
+				$( "#cantidadcuotasplancrediti" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#codigotenderi" ).tooltip({
+					$( "#cantidadcuotasplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -184,16 +213,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#codigotenderi" ).tooltip('destroy');
+				$( "#cantidadcuotasplancrediti" ).tooltip('destroy');
 			}			
 			
-			if($( "#codigotenderi" ).val().length != 0)
+			if($( "#cantidadcuotasplancrediti" ).val().length != 0)
 			{			
-				if (isNaN($( "#codigotenderi" ).val()) || $( "#codigotenderi" ).val() % 1 != 0)
+				if (isNaN($( "#cantidadcuotasplancrediti" ).val()) || $( "#cantidadcuotasplancrediti" ).val() % 1 != 0)
 				{
-					$('#codigotenderi').prop('title', '<?php echo translate('Msg_A_Code_Tender_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$('#cantidadcuotasplancrediti').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#codigotenderi" ).tooltip({
+						$( "#cantidadcuotasplancrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -201,13 +230,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#codigotenderi" ).focus();
+					$( "#cantidadcuotasplancrediti" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#codigotenderi" ).tooltip({
+						$( "#cantidadcuotasplancrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -215,52 +244,16 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#codigotenderi" ).tooltip('destroy');
-				}
-			}			
-						
-			if($( "#emailtenderi" ).val().length != 0)
-			{						
-				if(!caracteresCorreoValido($( "#emailtenderi" ).val()))
-				{
-					$(function() {
-						$( "#emailtenderi" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#emailtenderi" ).focus();
-					return;				
-				}
-				else
-				{
-					$(function() {
-						$( "#emailtenderi" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});				
-					$( "#emailtenderi" ).tooltip('destroy');				
+					$( "#cantidadcuotasplancrediti" ).tooltip('destroy');
 				}
 			}
 
-			if(!$('#mostrarDomicilioCarga').is(':visible'))
+
+			if($( "#interesfijoplancrediti" ).val().length == 0)
 			{
-				$('#mostrarDomicilioCarga').show();
-				$('#btnCargaDomicilioU').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioU').html('<i class="fa fa-eye-slash"></i>');
-			}
-			
-			if($( "#callei" ).val().length == 0)
-			{
+				$('#interesfijoplancrediti').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#callei" ).tooltip({
+					$( "#interesfijoplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -268,13 +261,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#callei" ).focus();
+				$( "#interesfijoplancrediti" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#callei" ).tooltip({
+					$( "#interesfijoplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -282,31 +275,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#callei" ).tooltip('destroy');
-			}
+				$( "#interesfijoplancrediti" ).tooltip('destroy');
+			}			
 			
-			if($( "#nrocallei" ).val().length == 0)
-			{
-				$('#nrocallei').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#nrocallei" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nrocallei" ).focus();
-				return;
-			}
-			else 
-			{
-				if (isNaN($( "#nrocallei" ).val()) || $( "#nrocallei" ).val() % 1 != 0)
+			if($( "#interesfijoplancrediti" ).val().length != 0)
+			{			
+				if (isNaN($( "#interesfijoplancrediti" ).val()) || $( "#interesfijoplancrediti" ).val() % 1 != 0)
 				{
-					$('#nrocallei').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$('#interesfijoplancrediti').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#nrocallei" ).tooltip({
+						$( "#interesfijoplancrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -314,13 +292,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#nrocallei" ).focus();
+					$( "#interesfijoplancrediti" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#nrocallei" ).tooltip({
+						$( "#interesfijoplancrediti" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -328,107 +306,46 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#nrocallei" ).tooltip('destroy');
+					$( "#interesfijoplancrediti" ).tooltip('destroy');
 				}
-			}
-			
-			if($( "#domlocalidadi" ).val().length == 0)
-			{
-				$(function() {
-					$( "#domlocalidadi" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#domlocalidadi" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#domlocalidadi" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});					
-				$( "#domlocalidadi" ).tooltip('destroy');		
-			}
-			
-			if($( "#domfloori" ).val().length != 0)
-			{
-				if (isNaN($( "#domfloori" ).val()) || $( "#domfloori" ).val() % 1 != 0)
-				{
-					$(function() {
-						$( "#domfloori" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#domfloori" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#domfloori" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#domfloori" ).tooltip('destroy');
-				}					
 			}			
 			
-			var urlgmu = "./acciones/guardarmodificacionsucursal.php";
-			$('#img_loader_9').show();
+			var urlgmu = "./acciones/guardarmodificacionplancreditosup.php";
+			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idSucursal: sucursal, nombre: $( "#nombretenderi" ).val(), codigo: $( "#codigotenderi" ).val(), email: $( "#emailtenderi" ).val(), cadena: $( "#cadenatenderi" ).val(), idDomicilio: idDomicilio, calle: $( "#callei" ).val(), nroCalle: $( "#nrocallei" ).val(), provincia: $( "#domprovinciai" ).val(), localidad: $( "#domlocalidadi" ).val(), departamento: $( "#domdepartamentoi" ).val(), piso: $( "#domfloori" ).val(), codigoPostal: $( "#zipcodei" ).val(), entreCalle1: $( "#entrecalle1i" ).val(), entreCalle2: $( "#entrecalle2i" ).val() },
+				data: { idPlanCredito: plancredito, nombre: $( "#nombreplancrediti" ).val(), descripcion: $( "#descripcionplancrediti" ).val(), cantidadCuotas: $( "#cantidadcuotasplancrediti" ).val(), interesFijo: $( "#interesfijoplancrediti" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancrediti" ).val(), cadena: $( "#cadenaplancrediti" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_9').hide();
+					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Tender_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialogmodifytender').dialog('close');
-						$('#tableadmintenderst').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialogmodifycreditplan').dialog('close');
+						$('#tableadmincreditplant').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_9').hide();
+					$('#img_loader_11').hide();
 				}
 			});				
-			
-			
 		}			
 	</script>
 	
 	<script type="text/javascript">
-		function guardarNuevaSucursal(formulariod)
+		function guardarNuevoPlanCredito(formulariod)
 		{
-			if($( "#nombretenderni" ).val().length == 0)
+			if($( "#nombreplancreditni" ).val().length == 0)
 			{
 				$(function() {
-					$( "#nombretenderni" ).tooltip({
+					$( "#nombreplancreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -436,13 +353,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#nombretenderni" ).focus();
+				$( "#nombreplancreditni" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#nombretenderni" ).tooltip({
+					$( "#nombreplancreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -450,14 +367,43 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#nombretenderni" ).tooltip('destroy');
+				$( "#nombreplancreditni" ).tooltip('destroy');
+			}
+												
+			if($( "#descripcionplancreditni" ).val().length == 0)
+			{
+				$(function() {
+					$( "#descripcionplancreditni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#descripcionplancreditni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#descripcionplancreditni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#descripcionplancreditni" ).tooltip('destroy');
 			}
 			
-			if($( "#codigotenderni" ).val().length == 0)
+			
+			if($( "#cantidadcuotasplancreditni" ).val().length == 0)
 			{
-				$('#codigotenderni').prop('title', '<?php echo translate('Msg_A_Code_Tender_Must_Enter',$GLOBALS['lang']);?>');
+				$('#cantidadcuotasplancreditni').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#codigotenderni" ).tooltip({
+					$( "#cantidadcuotasplancrediti" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -465,13 +411,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#codigotenderni" ).focus();
+				$( "#cantidadcuotasplancreditni" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#codigotenderni" ).tooltip({
+					$( "#cantidadcuotasplancreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -479,16 +425,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#codigotenderni" ).tooltip('destroy');
+				$( "#cantidadcuotasplancreditni" ).tooltip('destroy');
 			}			
 			
-			if($( "#codigotenderni" ).val().length != 0)
+			if($( "#cantidadcuotasplancreditni" ).val().length != 0)
 			{			
-				if (isNaN($( "#codigotenderni" ).val()) || $( "#codigotenderni" ).val() % 1 != 0)
+				if (isNaN($( "#cantidadcuotasplancreditni" ).val()) || $( "#cantidadcuotasplancreditni" ).val() % 1 != 0)
 				{
-					$('#codigotenderni').prop('title', '<?php echo translate('Msg_A_Code_Tender_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$('#cantidadcuotasplancreditni').prop('title', '<?php echo translate('Msg_Amount_Fees_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#codigotenderni" ).tooltip({
+						$( "#cantidadcuotasplancreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -496,13 +442,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#codigotenderni" ).focus();
+					$( "#cantidadcuotasplancreditni" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#codigotenderni" ).tooltip({
+						$( "#cantidadcuotasplancreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -510,52 +456,16 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#codigotenderni" ).tooltip('destroy');
-				}
-			}			
-						
-			if($( "#emailtenderni" ).val().length != 0)
-			{						
-				if(!caracteresCorreoValido($( "#emailtenderni" ).val()))
-				{
-					$(function() {
-						$( "#emailtenderni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#emailtenderni" ).focus();
-					return;				
-				}
-				else
-				{
-					$(function() {
-						$( "#emailtenderni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});				
-					$( "#emailtenderni" ).tooltip('destroy');				
+					$( "#cantidadcuotasplancreditni" ).tooltip('destroy');
 				}
 			}
 
-			if(!$('#mostrarDomicilioCargaN').is(':visible'))
+
+			if($( "#interesfijoplancreditni" ).val().length == 0)
 			{
-				$('#mostrarDomicilioCargaN').show();
-				$('#btnCargaDomicilioUN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioUN').html('<i class="fa fa-eye-slash"></i>');
-			}
-			
-			if($( "#calleni" ).val().length == 0)
-			{
+				$('#interesfijoplancreditni').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter',$GLOBALS['lang']);?>');
 				$(function() {
-					$( "#calleni" ).tooltip({
+					$( "#interesfijoplancreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -563,13 +473,13 @@ include("./menu/menu.php");
 					   }
 					});
 				});
-				$( "#calleni" ).focus();
+				$( "#interesfijoplancreditni" ).focus();
 				return;
 			}
 			else 
 			{
 				$(function() {
-					$( "#calleni" ).tooltip({
+					$( "#interesfijoplancreditni" ).tooltip({
 					   position: {
 						  my: "center bottom",
 						  at: "center top-10",
@@ -577,31 +487,16 @@ include("./menu/menu.php");
 					   }
 					});
 				});				
-				$( "#calleni" ).tooltip('destroy');
-			}
+				$( "#interesfijoplancreditni" ).tooltip('destroy');
+			}			
 			
-			if($( "#nrocalleni" ).val().length == 0)
-			{
-				$('#nrocalleni').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter',$GLOBALS['lang']);?>');
-				$(function() {
-					$( "#nrocallei" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#nrocalleni" ).focus();
-				return;
-			}
-			else 
-			{
-				if (isNaN($( "#nrocalleni" ).val()) || $( "#nrocalleni" ).val() % 1 != 0)
+			if($( "#interesfijoplancreditni" ).val().length != 0)
+			{			
+				if (isNaN($( "#interesfijoplancreditni" ).val()) || $( "#interesfijoplancreditni" ).val() % 1 != 0)
 				{
-					$('#nrocalleni').prop('title', '<?php echo translate('Msg_A_Street_Number_Must_Enter_A_Whole',$GLOBALS['lang']);?>');
+					$('#interesfijoplancreditni').prop('title', '<?php echo translate('Msg_Fixed_Interest_Credit_Plan_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
 					$(function() {
-						$( "#nrocalleni" ).tooltip({
+						$( "#interesfijoplancreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -609,13 +504,13 @@ include("./menu/menu.php");
 						   }
 						});
 					});
-					$( "#nrocalleni" ).focus();
+					$( "#interesfijoplancreditni" ).focus();
 					return;
 				}
 				else
 				{
 					$(function() {
-						$( "#nrocalleni" ).tooltip({
+						$( "#interesfijoplancreditni" ).tooltip({
 						   position: {
 							  my: "center bottom",
 							  at: "center top-10",
@@ -623,158 +518,71 @@ include("./menu/menu.php");
 						   }
 						});
 					});					
-					$( "#nrocalleni" ).tooltip('destroy');
+					$( "#interesfijoplancreditni" ).tooltip('destroy');
 				}
-			}
-			
-			if($( "#domlocalidadni" ).val().length == 0)
-			{
-				$(function() {
-					$( "#domlocalidadni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});
-				$( "#domlocalidadni" ).focus();
-				return;
-			}
-			else 
-			{
-				$(function() {
-					$( "#domlocalidadni" ).tooltip({
-					   position: {
-						  my: "center bottom",
-						  at: "center top-10",
-						  collision: "none"
-					   }
-					});
-				});					
-				$( "#domlocalidadni" ).tooltip('destroy');		
-			}
-			
-			if($( "#domfloorni" ).val().length != 0)
-			{
-				if (isNaN($( "#domfloorni" ).val()) || $( "#domfloorni" ).val() % 1 != 0)
-				{
-					$(function() {
-						$( "#domfloorni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#domfloorni" ).focus();
-					return;
-				}
-				else
-				{
-					$(function() {
-						$( "#domfloorni" ).tooltip({
-						   position: {
-							  my: "center bottom",
-							  at: "center top-10",
-							  collision: "none"
-						   }
-						});
-					});
-					$( "#domfloorni" ).tooltip('destroy');
-				}					
-			}
-		
-			
-			var urlggnu = "./acciones/guardarnuevasucursal.php";
-			$('#img_loader_5').show();
+			}			
+						
+			var urlggnu = "./acciones/guardarnuevoplancreditosup.php";
+			$('#img_loader_11').show();
 			
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { nombre: $( "#nombretenderni" ).val(), codigo: $( "#codigotenderni" ).val(), email: $( "#emailtenderni" ).val(), cadena: $( "#cadenatenderni" ).val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val() },
+				data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_5').hide();
+					$('#img_loader_11').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_New_Tender_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#dialognewtender').dialog('close');
-						$('#tableadmintenderst').bootstrapTable('load',JSON.parse(datTable));
+						$('#dialognewcreditplan').dialog('close');
+						$('#tableadmincreditplant').bootstrapTable('load',JSON.parse(datTable));
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_5').hide();
+					$('#img_loader_11').hide();
 				}
 			});
 		}			
 	</script>
-	
+		
 	<script type="text/javascript">
-		function verDomicilioNU()
+		function borrar_plan_credito(plancredito)
 		{
-			if(!$('#mostrarDomicilioCargaN').is(':visible'))
-			{
-				$('#mostrarDomicilioCargaN').show();
-				$('#btnCargaDomicilioUN').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioUN').html('<i class="fa fa-eye-slash"></i>');
-				$('#calleni').focus();
-			}
-			else
-			{
-				$('#mostrarDomicilioCargaN').hide();
-				$('#btnCargaDomicilioUN').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioUN').html('<i class="fa fa-eye"></i>');
-				$('#nombretenderni').focus();	
-			}
-		}
-    </script>
-
-	<script type="text/javascript">
-		function verDomicilioU()
-		{
-			if(!$('#mostrarDomicilioCarga').is(':visible'))
-			{
-				$('#mostrarDomicilioCarga').show();
-				$('#btnCargaDomicilioU').prop('title', '<?php echo translate('Lbl_Hide_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioU').html('<i class="fa fa-eye-slash"></i>');
-				$('#callei').focus();
-			}
-			else
-			{
-				$('#mostrarDomicilioCarga').hide();
-				$('#btnCargaDomicilioU').prop('title', '<?php echo translate('Lbl_New_Home_Address_User',$GLOBALS['lang']);?>');
-				$('#btnCargaDomicilioU').html('<i class="fa fa-eye"></i>');
-				$('#nombretenderi').focus();	
-			}
-		}
-    </script>	
-	
-	<script type="text/javascript">
-		function borrar_sucursal(sucursal)
-		{
-			var urlrdu = "./acciones/borrarsucursal.php";
+			var urlrdu = "./acciones/borrarplancreditosup.php";
 			$('#img_loader').show();
 			
 			$.ajax({
 				url: urlrdu,
 				method: "POST",
-				data: { idSucursal: sucursal },
+				data: { idPlanCredito: plancredito },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Tender_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
 						
-						$('#tableadmintenderst').bootstrapTable('load',JSON.parse(datTable));
+						var estaVaciaTabla = 0;
+						var resBTU = JSON.parse(datTable);
+						
+						for(var i in resBTU)
+						{
+							if(resBTU[i]["nombre"] == null || resBTU[i]["nombre"] === '') 
+							{
+								estaVaciaTabla = 1;
+								break;
+							}
+						}
+						
+						if(estaVaciaTabla == 0) $('#tableadmincreditplant').bootstrapTable('load',JSON.parse(datTable));
+						else $('#tableadmincreditplant').bootstrapTable('removeAll');						
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -845,7 +653,7 @@ include("./menu/menu.php");
 		}
     </script>	
 	<script type="text/javascript">
-		function confirmar_accion(titulo, mensaje, sucursal, nombresucu)
+		function confirmar_accion(titulo, mensaje, plancredito, nombre)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -859,7 +667,7 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										
-										borrar_sucursal(sucursal);                                                      
+										borrar_plan_credito(plancredito);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -868,7 +676,7 @@ include("./menu/menu.php");
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
-				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombresucu+"?</div>");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
 				$('#img_loader').hide();
 		}
 	</script>	
@@ -897,47 +705,68 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Tender',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title"><?php echo translate('Lbl_Credit_Plan',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaSucursal();" title="<?php echo translate('Lbl_New_Tender',$GLOBALS['lang']);?>" ><i class="far fa-hospital"></i></button>
+				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPlanCredito();" title="<?php echo translate('Lbl_New_Credit_Plan',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
-			<div id="tablaadmintenders" class="table-responsive">
-				<table id="tableadmintenderst" data-classes="table table-hover table-condensed"
-				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('Lbl_Tender',$GLOBALS['lang']); ?>"}'
+			<div id="tablaadmincreditplan" class="table-responsive">
+				<table id="tableadmincreditplant" data-classes="table table-hover table-condensed"
+				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Credit_Plan',$GLOBALS['lang']); ?>"}'
 				   data-export-types="['excel','pdf','csv','txt']"
 				   data-search="true" data-search-align="left" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
-							<th class="col-xs-1 text-center" data-field="codigo" data-sortable="true"><?php echo translate('Lbl_Code_Tender',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Tender',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="cadena" data-sortable="true"><?php echo translate('Lbl_Chain_Tender',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Tender',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="nombre" data-sortable="true"><?php echo translate('Lbl_Name_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="cantidadcuotas" data-sortable="true"><?php echo translate('Lbl_Amount_Fees_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="interesfijo" data-sortable="true"><?php echo translate('Lbl_Fixed_Interest_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="diferimientocuotas" data-sortable="true"><?php echo translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="cadena" data-sortable="true"><?php echo translate('Lbl_Chain_Credit_Plan',$GLOBALS['lang']);?></th>
+							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Credit_Plan',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM finan_cli.cadena c, finan_cli.sucursal s  WHERE c.id = s.id_cadena UNION  SELECT s.id, s.codigo, s.nombre, '".translate('Lbl_Select_Chain_Tender_None',$GLOBALS['lang'])."' FROM finan_cli.sucursal s WHERE s.id_cadena IS NULL ORDER BY 2")) 
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
-								$stmt->execute();    // Ejecuta la consulta preparada.
-								$stmt->store_result();
+								$stmt500->bind_param('s', $_SESSION['username']);
+								$stmt500->execute();    
+								$stmt500->store_result();
 						 
-								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_tender, $codigo_tender, $nombre_tender, $nombre_cadena_tender);
-								
-								while($stmt->fetch())
-								{		
-									echo '<tr>';
-									echo '<td>'.$codigo_tender.'</td>';
-									echo '<td>'.$nombre_tender.'</td>';
-									echo '<td>'.$nombre_cadena_tender.'</td>';
-									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
-									echo '</tr>';
+								$totR500 = $stmt500->num_rows;
+								if($totR500 > 0)
+								{
+									$stmt500->bind_result($id_cadena_user);
+									$stmt500->fetch();
+															
+									if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id AND c.id = ? ORDER BY pc.cantidad_cuotas")) 
+									{
+										$stmt->bind_param('i', $id_cadena_user);
+										$stmt->execute();    // Ejecuta la consulta preparada.
+										$stmt->store_result();
+								 
+										// Obtiene las variables del resultado.
+										$stmt->bind_result($id_credit_plan, $name_credit_plan, $description_credit_plan, $cantidad_cuotas_credit_plan, $interes_fijo_credit_plan, $diferimiento_cuota_credit_plan, $cadena_credit_plan);
+										
+										while($stmt->fetch())
+										{		
+											echo '<tr>';
+											echo '<td>'.$name_credit_plan.'</td>';
+											echo '<td>'.$cantidad_cuotas_credit_plan.'</td>';
+											echo '<td>'.$interes_fijo_credit_plan.'</td>';
+											echo '<td>'.$diferimiento_cuota_credit_plan.'</td>';
+											echo '<td>'.$cadena_credit_plan.'</td>';
+											
+											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Credit_Plan',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Credit_Plan',$GLOBALS['lang']).'\',\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']).'" onclick="modificarPlanCredito(\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '</tr>';
+										}
+									}
+									$stmt500->free_result();
+									$stmt500->close();	
 								}
-							}
+							}									
 						?>						
 					</tbody>					
 				</table>
@@ -957,8 +786,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		$(function () 
 		{
-			$('#tableadmintenderst').bootstrapTable({locale:'es-AR'});
-			  
+			$('#tableadmincreditplant').bootstrapTable({locale:'es-AR'});
 		});
 	</script>	
 </body>

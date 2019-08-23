@@ -77,6 +77,93 @@
 			return;
 		}
 		
+		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.control_ejecucion_procesos WHERE tipo_proceso = 2 HAVING MAX(fecha) IS NOT NULL")) 
+		{
+			$stmt174->execute();
+			$stmt174->store_result();
+	 			
+			$totR174 = $stmt174->num_rows;
+
+			if($totR174 > 0)
+			{
+				$stmt174->bind_result($fecha_ultimo_proceso_para);
+				$stmt174->fetch();
+			
+				$fechaObtDB = substr($fecha_ultimo_proceso_para, 0, 4).'-'.substr($fecha_ultimo_proceso_para, 4, 2).'-'.substr($fecha_ultimo_proceso_para, 6, 2).' '.substr($fecha_ultimo_proceso_para, 8, 2).':'.substr($fecha_ultimo_proceso_para, 10, 2).':'.substr($fecha_ultimo_proceso_para, 12, 2);
+				$fechaInfDB = new DateTime($fechaObtDB);
+				$fechaAct = new DateTime();
+				$difHoras = $fechaAct->diff($fechaInfDB);
+				
+				if($difHoras->h <= $cantidad_horas_entre_procesos_db && $difHoras->days == 0)
+				{
+					echo str_replace("%1",$cantidad_horas_entre_procesos_db,translate('Msg_The_Automatic_Process_Runs_Every_Hours',$GLOBALS['lang']));
+					return;
+				}
+				else
+				{
+					$mysqli->autocommit(FALSE);
+					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+										
+					$date_registro = date("YmdHis");					
+					if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						return;
+					}
+					else
+					{
+						$tipoProcesoCP = 2;
+						$stmt20->bind_param('si', $date_registro, $tipoProcesoCP);
+						if(!$stmt20->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->autocommit(TRUE);
+							return;						
+						}
+					}
+																
+					$mysqli->commit();
+					$mysqli->autocommit(TRUE);			
+				}
+				
+				$stmt174->free_result();
+				$stmt174->close();
+			}
+			else
+			{
+				$mysqli->autocommit(FALSE);
+				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+									
+				$date_registro = date("YmdHis");					
+				if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
+				{
+					echo $mysqli->error;
+					$mysqli->autocommit(TRUE);
+					return;
+				}
+				else
+				{
+					$tipoProcesoCP = 2;
+					$stmt20->bind_param('si', $date_registro, $tipoProcesoCP);
+					if(!$stmt20->execute())
+					{
+						echo $mysqli->error;
+						$mysqli->autocommit(TRUE);
+						return;						
+					}
+				}
+															
+				$mysqli->commit();
+				$mysqli->autocommit(TRUE);
+			}				
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}		
+		
 		if ($stmt75 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
 		{
 			$nombreValPar = 'cantidad_dias_avisos_x_mora';
@@ -106,7 +193,7 @@
 			return;
 		}		
 		
-		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 2")) 
+		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 2 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt74->execute();
 			$stmt74->store_result();
@@ -866,7 +953,7 @@
 													}
 													
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1 WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->rollback();
@@ -1414,7 +1501,7 @@
 			return;
 		}		
 		
-		if ($stmt107 = $mysqli->prepare("SELECT axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.aviso_x_mora axm, finan_cli.cuota_credito cc WHERE axm.id_cuota_credito = cc.id AND axm.estado IN (?,?) AND cc.estado IN (?,?) AND axm.id = (SELECT MAX(axm2.id) FROM finan_cli.aviso_x_mora axm2 WHERE axm2.id_cuota_credito = axm.id_cuota_credito) GROUP BY axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original")) 
+		if ($stmt107 = $mysqli->prepare("SELECT axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.nombre FROM finan_cli.aviso_x_mora axm, finan_cli.cuota_credito cc, finan_cli.sucursal suc, finan_cli.cadena cad WHERE axm.id_cuota_credito = cc.id AND cc.id_sucursal = suc.id AND suc.id_cadena = cad.id AND axm.estado IN (?,?) AND cc.estado IN (?,?) AND axm.id = (SELECT MAX(axm2.id) FROM finan_cli.aviso_x_mora axm2 WHERE axm2.id_cuota_credito = axm.id_cuota_credito HAVING MAX(axm2.id) IS NOT NULL) GROUP BY axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.nombre")) 
 		{
 			$estadoError = translate('Lbl_State_Error_Default_Notice',$GLOBALS['lang']);
 			$estadoFinalizado = translate('Lbl_State_Finished_Default_Notice',$GLOBALS['lang']);
@@ -1428,133 +1515,133 @@
 
 			if($totR107 > 0)
 			{
-				$stmt107->bind_result($id_revision_aviso_x_mora_db, $id_credito_revision_aviso_x_mora_db, $id_cuota_credito_revision_aviso_x_mora_db, $fecha_revision_aviso_x_mora_db, $fecha_modificacion_revision_aviso_x_mora_db, $id_tipo_aviso_revision_aviso_x_mora_db, $numero_cuota_revision_aviso_x_mora_db, $monto_cuota_original_revision_aviso_x_mora_db);
-				$stmt107->fetch();
-			
-				if ($stmt117 = $mysqli->prepare("SELECT axm.id FROM finan_cli.aviso_x_mora axm WHERE axm.estado IN (?,?) AND axm.id_cuota_credito = ?")) 
+				$stmt107->bind_result($id_revision_aviso_x_mora_db, $id_credito_revision_aviso_x_mora_db, $id_cuota_credito_revision_aviso_x_mora_db, $fecha_revision_aviso_x_mora_db, $fecha_modificacion_revision_aviso_x_mora_db, $id_tipo_aviso_revision_aviso_x_mora_db, $numero_cuota_revision_aviso_x_mora_db, $monto_cuota_original_revision_aviso_x_mora_db, $nombre_cadena_revision_aviso_x_mora_db);
+				while($stmt107->fetch())
 				{
-					$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
-					$estadoPendiente = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
-					$stmt117->bind_param('ssi', $estadoCreado, $estadoPendiente, $id_cuota_credito_revision_aviso_x_mora_db);
-					$stmt117->execute();
-					$stmt117->store_result();
-						
-					$totR117 = $stmt117->num_rows;
-
-					if($totR117 > 0)
+					if ($stmt117 = $mysqli->prepare("SELECT axm.id FROM finan_cli.aviso_x_mora axm WHERE axm.estado IN (?,?) AND axm.id_cuota_credito = ?")) 
 					{
-						$stmt117->bind_result($id_aviso_x_mora_sin_efecto_db);
-						$stmt117->fetch();
-						
-						$stmt117->free_result();
-						$stmt117->close();
-					}
-					else
-					{
-						if ($stmt118 = $mysqli->prepare("SELECT id FROM finan_cli.parametros WHERE nombre = ?")) 
-						{
-							$nombreValPar = 'cantidad_dias_reactivacion_avisos_x_mora';
-							$stmt118->bind_param('s', $nombreValPar);
-							$stmt118->execute();    
-							$stmt118->store_result();
-								
-							$totR118 = $stmt118->num_rows;
-
-							if($totR118 > 0)
-							{
-								$stmt118->bind_result($cantidad_dias_reactivacion_aviso_x_mora);
-								$stmt118->fetch();
-
-								$stmt118->free_result();
-								$stmt118->close();				
-							}	
-							else
-							{
-								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-								return;				
-							}
-						}
-						else 
-						{
-							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-							return;
-						}						
-						
-						if(!empty($fecha_modificacion_revision_aviso_x_mora_db)) $fecha_comparacion_final_rev = $fecha_modificacion_revision_aviso_x_mora_db;
-						else $fecha_comparacion_final_rev = $fecha_revision_aviso_x_mora_db;
+						$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
+						$estadoPendiente = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
+						$stmt117->bind_param('ssi', $estadoCreado, $estadoPendiente, $id_cuota_credito_revision_aviso_x_mora_db);
+						$stmt117->execute();
+						$stmt117->store_result();
 							
-						$fechaObtDB = substr($fecha_comparacion_final_rev, 0, 4).'-'.substr($fecha_comparacion_final_rev, 4, 2).'-'.substr($fecha_comparacion_final_rev, 6, 2).' '.substr($fecha_comparacion_final_rev, 8, 2).':'.substr($fecha_comparacion_final_rev, 10, 2).':'.substr($fecha_comparacion_final_rev, 12, 2);
-						$fechaInfDB = new DateTime($fechaObtDB);
-						$fechaAct = new DateTime();
-						$difDias = $fechaAct->diff($fechaInfDB);
-						
-						if($difDias->days > $cantidad_dias_reactivacion_aviso_x_mora)
+						$totR117 = $stmt117->num_rows;
+
+						if($totR117 > 0)
 						{
-							$mysqli->autocommit(FALSE);
-							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-												
-							$date_registro = date("YmdHis");					
-							if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso,comentario) VALUES(?,?,?,?,?,?,?)"))
+							$stmt117->bind_result($id_aviso_x_mora_sin_efecto_db);
+							$stmt117->fetch();
+							
+							$stmt117->free_result();
+							$stmt117->close();
+						}
+						else
+						{
+							if ($stmt118 = $mysqli->prepare("SELECT id FROM finan_cli.parametros WHERE nombre = ?")) 
 							{
-								echo $mysqli->error;
-								$mysqli->autocommit(TRUE);
-								$stmt51->free_result();
-								$stmt51->close();
-								return;
-							}
-							else
-							{
-								if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
-								{
-									$stmt64->bind_param('i', $id_cuota_credito_revision_aviso_x_mora_db);
-									$stmt64->execute();    
-									$stmt64->store_result();
+								$nombreValPar = 'cantidad_dias_reactivacion_avisos_x_mora';
+								$stmt118->bind_param('s', $nombreValPar);
+								$stmt118->execute();    
+								$stmt118->store_result();
 									
-									$totR64 = $stmt64->num_rows;
-									if($totR64 == 1)
-									{
-										$stmt64->bind_result($monto_interes_anterior_cuota_credito_db);
-										$stmt64->fetch();
-																							
-										$stmt64->free_result();
-										$stmt64->close();				
-									}
-									else $monto_interes_anterior_cuota_credito_db = 0;
-								}
+								$totR118 = $stmt118->num_rows;
+
+								if($totR118 > 0)
+								{
+									$stmt118->bind_result($cantidad_dias_reactivacion_aviso_x_mora);
+									$stmt118->fetch();
+
+									$stmt118->free_result();
+									$stmt118->close();				
+								}	
 								else
 								{
 									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-									return;
-								}								
+									return;				
+								}
+							}
+							else 
+							{
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;
+							}						
+							
+							if(!empty($fecha_modificacion_revision_aviso_x_mora_db)) $fecha_comparacion_final_rev = $fecha_modificacion_revision_aviso_x_mora_db;
+							else $fecha_comparacion_final_rev = $fecha_revision_aviso_x_mora_db;
 								
-								$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
-								$comentario = translate('Msg_Notice_Late_Payment_Fee_Reactivated',$GLOBALS['lang']).': '.$id_revision_aviso_x_mora_db;
-								$mensajeNuevo = str_replace("%1",$numero_cuota_revision_aviso_x_mora_db,translate('Msg_Reactivated_Reported_Installment_Has_Pending_Debt',$GLOBALS['lang']));
-								$mensajeNuevo = str_replace("%2",$id_credito_revision_aviso_x_mora_db,$mensajeNuevo);
-								$mensajeNuevo = str_replace("%3",number_format((($monto_cuota_original_revision_aviso_x_mora_db+$monto_interes_anterior_cuota_credito_db)/100.00), 2, ',', '.'),$mensajeNuevo);								
-								
-								$stmt20->bind_param('issisis', $id_credito_revision_aviso_x_mora_db, $date_registro, $estadoCreado, $id_cuota_credito_revision_aviso_x_mora_db, $mensajeNuevo, $id_tipo_aviso_revision_aviso_x_mora_db, $comentario);
-								if(!$stmt20->execute())
+							$fechaObtDB = substr($fecha_comparacion_final_rev, 0, 4).'-'.substr($fecha_comparacion_final_rev, 4, 2).'-'.substr($fecha_comparacion_final_rev, 6, 2).' '.substr($fecha_comparacion_final_rev, 8, 2).':'.substr($fecha_comparacion_final_rev, 10, 2).':'.substr($fecha_comparacion_final_rev, 12, 2);
+							$fechaInfDB = new DateTime($fechaObtDB);
+							$fechaAct = new DateTime();
+							$difDias = $fechaAct->diff($fechaInfDB);
+							
+							if($difDias->days > $cantidad_dias_reactivacion_aviso_x_mora)
+							{
+								$mysqli->autocommit(FALSE);
+								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+													
+								$date_registro = date("YmdHis");					
+								if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso,comentario) VALUES(?,?,?,?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									$mysqli->autocommit(TRUE);
 									$stmt51->free_result();
 									$stmt51->close();
-									return;						
+									return;
 								}
-							}
-													
-							$mysqli->commit();
-							$mysqli->autocommit(TRUE);								
-						}						
+								else
+								{
+									if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+									{
+										$stmt64->bind_param('i', $id_cuota_credito_revision_aviso_x_mora_db);
+										$stmt64->execute();    
+										$stmt64->store_result();
+										
+										$totR64 = $stmt64->num_rows;
+										if($totR64 == 1)
+										{
+											$stmt64->bind_result($monto_interes_anterior_cuota_credito_db);
+											$stmt64->fetch();
+																								
+											$stmt64->free_result();
+											$stmt64->close();				
+										}
+										else $monto_interes_anterior_cuota_credito_db = 0;
+									}
+									else
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;
+									}								
+									
+									$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
+									$comentario = translate('Msg_Notice_Late_Payment_Fee_Reactivated',$GLOBALS['lang']).': '.$id_revision_aviso_x_mora_db;
+									$mensajeNuevo = str_replace("%1",$numero_cuota_revision_aviso_x_mora_db,translate('Msg_Reactivated_Reported_Installment_Has_Pending_Debt',$GLOBALS['lang']));
+									$mensajeNuevo = str_replace("%2",$id_credito_revision_aviso_x_mora_db,$mensajeNuevo);
+									$mensajeNuevo = str_replace("%3",number_format((($monto_cuota_original_revision_aviso_x_mora_db+$monto_interes_anterior_cuota_credito_db)/100.00), 2, ',', '.'),$mensajeNuevo);								
+									$mensajeNuevo = str_replace("%4",$nombre_cadena_revision_aviso_x_mora_db,$mensajeNuevo);
+									$stmt20->bind_param('issisis', $id_credito_revision_aviso_x_mora_db, $date_registro, $estadoCreado, $id_cuota_credito_revision_aviso_x_mora_db, $mensajeNuevo, $id_tipo_aviso_revision_aviso_x_mora_db, $comentario);
+									if(!$stmt20->execute())
+									{
+										echo $mysqli->error;
+										$mysqli->autocommit(TRUE);
+										$stmt51->free_result();
+										$stmt51->close();
+										return;						
+									}
+								}
+														
+								$mysqli->commit();
+								$mysqli->autocommit(TRUE);								
+							}						
+						}
 					}
-				}
-				else
-				{
-					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
-					return;					
-				}
-							
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;					
+					}
+				}		
 				$stmt107->free_result();
 				$stmt107->close();
 			}			

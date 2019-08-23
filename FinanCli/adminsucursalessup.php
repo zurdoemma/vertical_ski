@@ -4,7 +4,7 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
+if (!verificar_permisos_supervisor()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 ?>
 <!doctype html>
@@ -48,7 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevaSucursal()
 		{
-			var urlnt = "./acciones/nuevasucursal.php";
+			var urlnt = "./acciones/nuevasucursalsup.php";
 			var tagnt = $("<div id='dialognewtender'></div>");
 			$('#img_loader_5').show();
 			
@@ -89,7 +89,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function modificarSucursal(sucursal, nombre)
 		{
-			var urla = "./acciones/modificarsucursal.php";
+			var urla = "./acciones/modificarsucursalsup.php";
 			var tag = $("<div id='dialogmodifytender'></div>");
 			$('#img_loader').show();
 			
@@ -391,7 +391,7 @@ include("./menu/menu.php");
 				}					
 			}			
 			
-			var urlgmu = "./acciones/guardarmodificacionsucursal.php";
+			var urlgmu = "./acciones/guardarmodificacionsucursalsup.php";
 			$('#img_loader_9').show();
 			
 			$.ajax({
@@ -687,7 +687,7 @@ include("./menu/menu.php");
 			}
 		
 			
-			var urlggnu = "./acciones/guardarnuevasucursal.php";
+			var urlggnu = "./acciones/guardarnuevasucursalsup.php";
 			$('#img_loader_5').show();
 			
 			$.ajax({
@@ -759,7 +759,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function borrar_sucursal(sucursal)
 		{
-			var urlrdu = "./acciones/borrarsucursal.php";
+			var urlrdu = "./acciones/borrarsucursalsup.php";
 			$('#img_loader').show();
 			
 			$.ajax({
@@ -919,25 +919,42 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM finan_cli.cadena c, finan_cli.sucursal s  WHERE c.id = s.id_cadena UNION  SELECT s.id, s.codigo, s.nombre, '".translate('Lbl_Select_Chain_Tender_None',$GLOBALS['lang'])."' FROM finan_cli.sucursal s WHERE s.id_cadena IS NULL ORDER BY 2")) 
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
-								$stmt->execute();    // Ejecuta la consulta preparada.
-								$stmt->store_result();
+								$stmt500->bind_param('s', $_SESSION['username']);
+								$stmt500->execute();    
+								$stmt500->store_result();
 						 
-								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_tender, $codigo_tender, $nombre_tender, $nombre_cadena_tender);
-								
-								while($stmt->fetch())
-								{		
-									echo '<tr>';
-									echo '<td>'.$codigo_tender.'</td>';
-									echo '<td>'.$nombre_tender.'</td>';
-									echo '<td>'.$nombre_cadena_tender.'</td>';
-									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
-									echo '</tr>';
+								$totR500 = $stmt500->num_rows;
+								if($totR500 > 0)
+								{
+									$stmt500->bind_result($id_cadena_user);
+									$stmt500->fetch();
+															
+									if ($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM finan_cli.cadena c, finan_cli.sucursal s  WHERE c.id = s.id_cadena AND c.id = ?")) 
+									{
+										$stmt->bind_param('i', $id_cadena_user);
+										$stmt->execute();    // Ejecuta la consulta preparada.
+										$stmt->store_result();
+								 
+										// Obtiene las variables del resultado.
+										$stmt->bind_result($id_tender, $codigo_tender, $nombre_tender, $nombre_cadena_tender);
+										
+										while($stmt->fetch())
+										{		
+											echo '<tr>';
+											echo '<td>'.$codigo_tender.'</td>';
+											echo '<td>'.$nombre_tender.'</td>';
+											echo '<td>'.$nombre_cadena_tender.'</td>';
+											
+											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '</tr>';
+										}
+									}
+									$stmt500->free_result();
+									$stmt500->close();	
 								}
-							}
+							}									
 						?>						
 					</tbody>					
 				</table>

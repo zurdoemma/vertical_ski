@@ -1802,8 +1802,8 @@ include("./menu/menu.php");
 			<h3 class="panel-title" id="titulocreditoscliente"><?php  if(!empty($_GET['doc'])) echo translate('Lbl_Credits_Clients',$GLOBALS['lang']).': '.$_GET['doc']; else echo translate('Lbl_Credits_Clients',$GLOBALS['lang']);?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
-			<div id="toolbar" style="margin-left:-345px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCredito();" title="<?php echo translate('Lbl_New_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
+			<div id="toolbar" style="margin-left:-295px; margin-top:-1px;">
+				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tableadmindeuda" class="table-responsive">
@@ -1826,97 +1826,113 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>	
 						<?php
-							if(!empty($_GET['doc']))
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
-								$documento = htmlspecialchars($_GET['doc'], ENT_QUOTES, 'UTF-8');
-								if($stmt62 = $mysqli->prepare("SELECT c.id_titular FROM finan_cli.cliente c WHERE c.documento = ?"))
+								$stmt500->bind_param('s', $_SESSION['username']);
+								$stmt500->execute();    
+								$stmt500->store_result();
+						 
+								$totR500 = $stmt500->num_rows;
+								if($totR500 > 0)
 								{
-									$stmt62->bind_param('s', $documento);
-									$stmt62->execute();    
-									$stmt62->store_result();
+									$stmt500->bind_result($id_cadena_user);
+									$stmt500->fetch();
 									
-									$totR62 = $stmt62->num_rows;
-
-									if($totR62 > 0)
+									if(!empty($_GET['doc']))
 									{
-										$stmt62->bind_result($id_titular_cliente_db);
-										$stmt62->fetch();
-										
-										if(!empty($id_titular_cliente_db))
+										$documento = htmlspecialchars($_GET['doc'], ENT_QUOTES, 'UTF-8');
+										if($stmt62 = $mysqli->prepare("SELECT c.id_titular FROM finan_cli.cliente c WHERE c.documento = ?"))
 										{
-											if($stmt63 = $mysqli->prepare("SELECT c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+											$stmt62->bind_param('s', $documento);
+											$stmt62->execute();    
+											$stmt62->store_result();
+											
+											$totR62 = $stmt62->num_rows;
+
+											if($totR62 > 0)
 											{
-												$stmt63->bind_param('i', $id_titular_cliente_db);
-												$stmt63->execute();    
-												$stmt63->store_result();
+												$stmt62->bind_result($id_titular_cliente_db);
+												$stmt62->fetch();
 												
-												$totR63 = $stmt63->num_rows;
-
-												if($totR63 > 0)
+												if(!empty($id_titular_cliente_db))
 												{
-													$stmt63->bind_result($tipo_documento_titular, $documento_titular);
-													$stmt63->fetch();
-													
-													$stmt63->free_result();
-													$stmt63->close();				
-												}
-											}					
-										}
-										
-										$stmt62->free_result();
-										$stmt62->close();
-									}
-								}
-
-								if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
-								else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
-								
-								if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado, cc.tipo_documento_adicional, cc.documento_adicional FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
-								else $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cli.documento = ? ORDER BY cc.fecha DESC";
-								if ($stmt = $mysqli->prepare($selecBDC)) 
-								{
-									if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_param('iss', $tipo_documento_titular, $documento_titular, $documento);
-									else $stmt->bind_param('s', $documento);
-									$stmt->execute();    
-									$stmt->store_result();
-							 
-									if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client, $tipo_documento_adicional_client, $documento_adicional_client);			
-									else $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
-									
-									$totR = $stmt->num_rows;
-
-									if($totR == 0)
-									{
-										echo translate('Msg_Without_Credit_Client',$GLOBALS['lang']).'=::=::=::'.$documento;
-										return;	
-									}					
-									
-									$indiceTablaGD = 0;
-									while($stmt->fetch())
-									{
-										echo '<tr>';
-										echo '<td>'.substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4).'</td>';
-										if(!empty($tipo_documento_titular) && !empty($documento_titular))
-										{
-											echo '<td>'.$tipo_documento_adicional_client.'</td>';
-											echo '<td>'.$documento_adicional_client.'</td>';					
-										}
-										else
-										{
-											echo '<td>'.$type_documento_credit_client.'</td>';
-											echo '<td>'.$document_credit_client.'</td>';
-										}
-										echo '<td>'.$tipo_cuenta_texto_cliente.'</td>';
-										echo '<td>'.'$'.round(($amount_credit_client/100.00),2).'</td>';
-										echo '<td>'.$name_credit_plan_client.'</td>';
-										echo '<td>'.$fees_credit_client.'</td>';
-										echo '<td>'.$state_credit_client.'</td>';
+													if($stmt63 = $mysqli->prepare("SELECT c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+													{
+														$stmt63->bind_param('i', $id_titular_cliente_db);
+														$stmt63->execute();    
+														$stmt63->store_result();
 														
-										echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$indiceTablaGD.')"><i class="far fa-edit"></i></button></td>';													
-										$indiceTablaGD++;
-									}								
+														$totR63 = $stmt63->num_rows;
+
+														if($totR63 > 0)
+														{
+															$stmt63->bind_result($tipo_documento_titular, $documento_titular);
+															$stmt63->fetch();
+															
+															$stmt63->free_result();
+															$stmt63->close();				
+														}
+													}					
+												}
+												
+												$stmt62->free_result();
+												$stmt62->close();
+											}
+										}
+
+										if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
+										else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
+										
+										if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado, cc.tipo_documento_adicional, cc.documento_adicional FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
+										else $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cli.documento = ? ORDER BY cc.fecha DESC";
+										if ($stmt = $mysqli->prepare($selecBDC)) 
+										{
+											if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_param('iiss', $id_cadena_user, $tipo_documento_titular, $documento_titular, $documento);
+											else $stmt->bind_param('is', $id_cadena_user, $documento);
+											$stmt->execute();    
+											$stmt->store_result();
+									 
+											if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client, $tipo_documento_adicional_client, $documento_adicional_client);			
+											else $stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
+											
+											$totR = $stmt->num_rows;
+
+											if($totR == 0)
+											{
+												echo translate('Msg_Without_Credit_Client',$GLOBALS['lang']).'=::=::=::'.$documento;
+												return;	
+											}					
+											
+											$indiceTablaGD = 0;
+											while($stmt->fetch())
+											{
+												echo '<tr>';
+												echo '<td>'.substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4).'</td>';
+												if(!empty($tipo_documento_titular) && !empty($documento_titular))
+												{
+													echo '<td>'.$tipo_documento_adicional_client.'</td>';
+													echo '<td>'.$documento_adicional_client.'</td>';					
+												}
+												else
+												{
+													echo '<td>'.$type_documento_credit_client.'</td>';
+													echo '<td>'.$document_credit_client.'</td>';
+												}
+												echo '<td>'.$tipo_cuenta_texto_cliente.'</td>';
+												echo '<td>'.'$'.round(($amount_credit_client/100.00),2).'</td>';
+												echo '<td>'.$name_credit_plan_client.'</td>';
+												echo '<td>'.$fees_credit_client.'</td>';
+												echo '<td>'.$state_credit_client.'</td>';
+																
+												echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$indiceTablaGD.')"><i class="far fa-edit"></i></button></td>';													
+												$indiceTablaGD++;
+											}								
+										}
+									}
+									$stmt500->free_result();
+									$stmt500->close();	
 								}
-							}
+							}									
 						?>						
 					</tbody>					
 				</table>

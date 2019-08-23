@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -22,6 +22,8 @@
 				return;
 		}
 		
+		$idPlanCredito=htmlspecialchars($_POST["idPlanCredito"], ENT_QUOTES, 'UTF-8');
+		
 		$nombre=htmlspecialchars($_POST["nombre"], ENT_QUOTES, 'UTF-8');
 		$descripcion=htmlspecialchars($_POST["descripcion"], ENT_QUOTES, 'UTF-8');
 		$cantidadCuotas=htmlspecialchars($_POST["cantidadCuotas"], ENT_QUOTES, 'UTF-8');
@@ -33,14 +35,47 @@
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
-		}		
-			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id_cadena = ?"))
+		}
+
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
-			$stmt->bind_param('si', $nombre, $cadena);
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}		
+		
+		if ($id_cadena_user != $cadena) 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+		
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ? AND pc.id_cadena = ?"))
+		{
+			$stmt->bind_param('sii', $nombre, $idPlanCredito, $cadena);
 			$stmt->execute();    
 			$stmt->store_result();
-		
+								
 			$totR = $stmt->num_rows;
 
 			if($totR > 0)
@@ -85,10 +120,25 @@
 				$stmt2->free_result();
 				$stmt2->close();
 				
+				if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena FROM finan_cli.plan_credito pc WHERE pc.id = ?"))
+				{
+					$stmt3->bind_param('i', $idPlanCredito);
+					$stmt3->execute();    
+					$stmt3->store_result();
+					
+					$stmt3->bind_result($id_credit_plan_a, $name_credit_plan_a, $description_credit_plan_a, $cantidad_cuotas_credit_plan_a, $interes_fijo_credit_plan_a, $diferimiento_cuota_credit_plan_a, $cadena_credit_plan_a);				
+				}
+				else
+				{
+					$stmt->free_result();
+					$stmt->close();
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);					
+				}
+				
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.plan_credito SET nombre = ?, descripcion = ?, cantidad_cuotas = ?, interes_fijo = ?, id_tipo_diferimiento_cuota = ?, id_cadena = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -98,7 +148,7 @@
 				}
 				else 
 				{
-					$stmt10->bind_param('ssiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena);
+					$stmt10->bind_param('ssiiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena, $idPlanCredito);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -110,8 +160,9 @@
 				}
 
 				$date_registro = date("YmdHis");
-				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.")";
+				$date_registro2 = date("Y-m-d H:i:s");
+				$stmt3->fetch();					
+				$valor_log_user = "NUEVO: UPDATE finan_cli.plan_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", cantidad_cuotas = ".$cantidadCuotas.", interes_fijo = ".$interesFijo.", id_tipo_diferimiento_cuota = ".$tipoDiferimientoCuota.", id_cadena = ".$cadena." WHERE id = ".$idPlanCredito." -- ANTERIOR: UPDATE finan_cli.plan_credito SET nombre = ".$name_credit_plan_a.", descripcion = ".$description_credit_plan_a.", cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a.", interes_fijo = ".$interes_fijo_credit_plan_a.", id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a.", id_cadena = ".$cadena_credit_plan_a." WHERE id = ".$idPlanCredito;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
@@ -124,7 +175,7 @@
 				}
 				else
 				{
-					$motivo = 28;
+					$motivo = 29;
 					$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
 					if(!$stmt->execute())
 					{
@@ -140,8 +191,12 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id ORDER BY pc.cantidad_cuotas")) 
+				$stmt3->free_result();
+				$stmt3->close();				
+				
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id AND c.id = ? ORDER BY pc.cantidad_cuotas")) 
 				{
+					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    
 					$stmt->store_result();
 					
@@ -162,7 +217,7 @@
 						$posicion++;
 					}
 					
-					echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
+					echo translate('Msg_Modify_Credit_Plan_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($array);
 				}
 				else 
 				{
