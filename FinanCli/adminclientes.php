@@ -277,96 +277,99 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function autoCompletarCamposAuto()
 		{
-			var urlaccc = "./acciones/autocompletarcamposcliente.php";
-			$('#img_loader_12').show();
-			
-			$.ajax({
-				url: urlaccc,
-				method: "POST",
-				data: { tokenVECC: $("#tokenvecci").val(), genero: $("#generoclientni").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val().trim() },
-				success: function(dataresponse, statustext, response){
-					$('#img_loader_12').hide();
-					
-					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
-					{
-						window.location.replace("./login.php?result_ok=3");
-					}
-					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']); ?>') != -1)
-					{
-						var tokenACVECC = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9);
-						dataresponse = dataresponse.replace("<?php echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']); ?>=:=:=:","");
-						dataresponse = dataresponse.replace("=::=::=::"+tokenACVECC,"");
+			if($('#validarstatuscreditclienteni').is(":checked"))
+			{			
+				var urlaccc = "./acciones/autocompletarcamposcliente.php";
+				$('#img_loader_12').show();
+				
+				$.ajax({
+					url: urlaccc,
+					method: "POST",
+					data: { tokenVECC: $("#tokenvecci").val(), genero: $("#generoclientni").val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val().trim() },
+					success: function(dataresponse, statustext, response){
+						$('#img_loader_12').hide();
 						
-						var datosAutoComp = dataresponse.split("|");
-						$("#tokenvecci").val(tokenACVECC);
-						
-						if(datosAutoComp != undefined && datosAutoComp != null && datosAutoComp.length == 9)
+						if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
 						{
-							if(datosAutoComp[1] != undefined && datosAutoComp[1] != null) var nombreYApellidoC = separarNombreYApellido(mayusculasPrimeraLetraPalabras(datosAutoComp[1].toLowerCase()));
-						
-							if(datosAutoComp[0] != undefined && datosAutoComp[0] != null)
-							{
-								var tipDocACC = document.getElementById('tipodocumentoclientni');
-								for (var i = 0; i < tipDocACC.options.length; i++) {
-									if (tipDocACC.options[i].text === datosAutoComp[0].toUpperCase()) {
-										tipDocACC.selectedIndex = i;
-										break;
-									}
-								}
-							}
-							if(nombreYApellidoC != undefined && nombreYApellidoC != null)
-							{
-								if(nombreYApellidoC.secondLastName != undefined && nombreYApellidoC.secondLastName != null)
-								{
-									$("#nombreclientni").val(nombreYApellidoC.lastName+' '+nombreYApellidoC.secondLastName);
-									$("#apellidoclientni").val(nombreYApellidoC.name);
-								}
-								else
-								{
-									$("#nombreclientni").val(nombreYApellidoC.lastName);
-									$("#apellidoclientni").val(nombreYApellidoC.name);
-								}
-							}
-							if(datosAutoComp[2] != undefined && datosAutoComp[2] != null)
-							{
-								$("#fechanacimientoclientni").val(datosAutoComp[2]);
-							}
-							if(datosAutoComp[3] != undefined && datosAutoComp[3] != null) $("#cuitcuilclientni").val(datosAutoComp[3]);
-							if(datosAutoComp[4] != undefined && datosAutoComp[4] != null)
-							{								
-								var nombreYNumeroCalle = separarCalleYNumero(mayusculasPrimeraLetraPalabras(datosAutoComp[4].toLowerCase()));
-								
-								if(nombreYNumeroCalle != undefined && nombreYNumeroCalle != null)
-								{
-									if(nombreYNumeroCalle.nameAddress != undefined && nombreYNumeroCalle.nameAddress != null) $("#calleni").val(nombreYNumeroCalle.nameAddress);
-									if(nombreYNumeroCalle.numberAddress != undefined && nombreYNumeroCalle.numberAddress != null && !isNaN(nombreYNumeroCalle.numberAddress) && nombreYNumeroCalle.numberAddress % 1 == 0) $("#nrocalleni").val(nombreYNumeroCalle.numberAddress);
-								}
-							}
-							if(datosAutoComp[5] != undefined && datosAutoComp[5] != null)
-							{
-								var domProvACC = document.getElementById('domprovinciani');
-								for (var i = 0; i < domProvACC.options.length; i++) {
-									if (domProvACC.options[i].text === datosAutoComp[5].toUpperCase()) {
-										domProvACC.selectedIndex = i;
-										break;
-									}
-								}								
-							}
-							if(datosAutoComp[6] != undefined && datosAutoComp[6] != null) $("#domlocalidadni").val(datosAutoComp[6].toUpperCase());
-							if(datosAutoComp[7] != undefined && datosAutoComp[7] != null) $("#zipcodeni").val(datosAutoComp[7].toUpperCase());
-							if(datosAutoComp[8] != undefined && datosAutoComp[8] != null) $("#emailclientni").val(datosAutoComp[8].toLowerCase());
+							window.location.replace("./login.php?result_ok=3");
 						}
-					}
-					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						
-				},
-				error: function(request, errorcode, errortext){
-					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_12').hide();
-					return;
-				}
-			});						
+						if(dataresponse.indexOf('<?php echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']); ?>') != -1)
+						{
+							var tokenACVECC = dataresponse.substring(dataresponse.indexOf('=::=::=::')+9);
+							dataresponse = dataresponse.replace("<?php echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']); ?>=:=:=:","");
+							dataresponse = dataresponse.replace("=::=::=::"+tokenACVECC,"");
+							
+							var datosAutoComp = dataresponse.split("|");
+							$("#tokenvecci").val(tokenACVECC);
+							
+							if(datosAutoComp != undefined && datosAutoComp != null && datosAutoComp.length == 9)
+							{
+								if(datosAutoComp[1] != undefined && datosAutoComp[1] != null) var nombreYApellidoC = separarNombreYApellido(mayusculasPrimeraLetraPalabras(datosAutoComp[1].toLowerCase()));
+							
+								if(datosAutoComp[0] != undefined && datosAutoComp[0] != null)
+								{
+									var tipDocACC = document.getElementById('tipodocumentoclientni');
+									for (var i = 0; i < tipDocACC.options.length; i++) {
+										if (tipDocACC.options[i].text === datosAutoComp[0].toUpperCase()) {
+											tipDocACC.selectedIndex = i;
+											break;
+										}
+									}
+								}
+								if(nombreYApellidoC != undefined && nombreYApellidoC != null)
+								{
+									if(nombreYApellidoC.secondLastName != undefined && nombreYApellidoC.secondLastName != null)
+									{
+										$("#nombreclientni").val(nombreYApellidoC.lastName+' '+nombreYApellidoC.secondLastName);
+										$("#apellidoclientni").val(nombreYApellidoC.name);
+									}
+									else
+									{
+										$("#nombreclientni").val(nombreYApellidoC.lastName);
+										$("#apellidoclientni").val(nombreYApellidoC.name);
+									}
+								}
+								if(datosAutoComp[2] != undefined && datosAutoComp[2] != null)
+								{
+									$("#fechanacimientoclientni").val(datosAutoComp[2]);
+								}
+								if(datosAutoComp[3] != undefined && datosAutoComp[3] != null) $("#cuitcuilclientni").val(datosAutoComp[3]);
+								if(datosAutoComp[4] != undefined && datosAutoComp[4] != null)
+								{								
+									var nombreYNumeroCalle = separarCalleYNumero(mayusculasPrimeraLetraPalabras(datosAutoComp[4].toLowerCase()));
+									
+									if(nombreYNumeroCalle != undefined && nombreYNumeroCalle != null)
+									{
+										if(nombreYNumeroCalle.nameAddress != undefined && nombreYNumeroCalle.nameAddress != null) $("#calleni").val(nombreYNumeroCalle.nameAddress);
+										if(nombreYNumeroCalle.numberAddress != undefined && nombreYNumeroCalle.numberAddress != null && !isNaN(nombreYNumeroCalle.numberAddress) && nombreYNumeroCalle.numberAddress % 1 == 0) $("#nrocalleni").val(nombreYNumeroCalle.numberAddress);
+									}
+								}
+								if(datosAutoComp[5] != undefined && datosAutoComp[5] != null)
+								{
+									var domProvACC = document.getElementById('domprovinciani');
+									for (var i = 0; i < domProvACC.options.length; i++) {
+										if (domProvACC.options[i].text === datosAutoComp[5].toUpperCase()) {
+											domProvACC.selectedIndex = i;
+											break;
+										}
+									}								
+								}
+								if(datosAutoComp[6] != undefined && datosAutoComp[6] != null) $("#domlocalidadni").val(datosAutoComp[6].toUpperCase());
+								if(datosAutoComp[7] != undefined && datosAutoComp[7] != null) $("#zipcodeni").val(datosAutoComp[7].toUpperCase());
+								if(datosAutoComp[8] != undefined && datosAutoComp[8] != null) $("#emailclientni").val(datosAutoComp[8].toLowerCase());
+							}
+						}
+						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+					},
+					error: function(request, errorcode, errortext){
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+						$('#img_loader_12').hide();
+						return;
+					}
+				});
+			}				
 		}	
 	</script>
 	
