@@ -104,7 +104,7 @@
 			return;	
 		}
 				
-		if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
+		if(empty($tipo_documento_adicional_cliente_db) && empty($documento_adicional_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 		else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 		
 		echo translate('Msg_View_Credit_OK',$GLOBALS['lang']);	
@@ -119,7 +119,7 @@
 		if(!empty($id_titular_cliente_db) || (!empty($tipo_documento_adicional_cliente_db) && !empty($documento_adicional_cliente_db))) 
 		{
 			echo '				<div class="form-group form-inline">';		
-			echo '					<label class="control-label" for="tipodocumentocreditclientvt">'.translate('Lbl_Type_Document_Credit_Headline2',$GLOBALS['lang']).':</label>';
+			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocumentocreditclientvt">'.translate('Lbl_Type_Document_Credit_Headline2',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="tipodocumentocreditclientvt">';
 			echo '						<select class="form-control input-sm" name="tipodocumentocreditclientvti" id="tipodocumentocreditclientvti" style="width:190px;" disabled>';			 
 											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
@@ -144,7 +144,7 @@
 											}
 			echo '						</select>';
 			echo '					</div>';
-			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="documentoclientcreditvt">'.translate('Lbl_Document_Credit_Headline',$GLOBALS['lang']).':</label>';
+			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="documentoclientcreditvt">'.translate('Lbl_Document_Credit_Headline',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="documentoclientcreditvt">';
 			echo '						<input class="form-control input-sm green-border" id="documentoclientcreditvti" name="documentoclientcreditvti" type="text" maxlength="20" value="'.$documento.'" disabled/>';
 			echo '					</div>';			

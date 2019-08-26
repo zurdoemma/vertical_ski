@@ -324,8 +324,8 @@
 						{
 							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumentoTitular, $documentoTitular, $cuitCuilTitular, $idGeneroTitular);
 							else $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
-								
-							if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false)
+							
+							if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false && strpos($resultado_finan_cli_final, '560') === false)
 							{
 								$resultado_finan_cli_final = str_replace(translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']), "", $resultado_finan_cli_final);
 								
@@ -339,7 +339,7 @@
 									$mysqli->autocommit(TRUE);
 									$stmt->free_result();
 									$stmt->close();
-									echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 1';
+									echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 									return;
 								}
 								else
@@ -355,7 +355,7 @@
 										$mysqli->autocommit(TRUE);
 										$stmt->free_result();
 										$stmt->close();
-										echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 2';
+										echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 										return;						
 									}
 									
@@ -365,7 +365,7 @@
 							}
 							else
 							{
-								echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 3';
+								echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 								return;
 							}
 						}
@@ -386,8 +386,8 @@
 			{
 				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumentoTitular, $documentoTitular, $cuitCuilTitular, $idGeneroTitular);
 				else $resultado_finan_cli_final = consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCuil, $genero);
-					
-				if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false)
+								
+				if(strpos($resultado_finan_cli_final, translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang'])) !== false && strpos($resultado_finan_cli_final, '560') === false)
 				{
 					$resultado_finan_cli_final = str_replace(translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']), "", $resultado_finan_cli_final);
 					
@@ -399,7 +399,7 @@
 					else $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)";
 					if(!$stmt10 = $mysqli->prepare($insertEFCDB2))
 					{
-						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 4';
+						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 						$mysqli->autocommit(TRUE);
 						$stmt->free_result();
 						$stmt->close();
@@ -428,7 +428,7 @@
 				}
 				else
 				{
-					echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 6';
+					echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 					return;
 				}				
 			}				
@@ -1208,7 +1208,7 @@
 							}
 							else
 							{
-								echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 7';
+								echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 								return;
 							}
 						}
@@ -1946,7 +1946,7 @@
 								}
 								else
 								{
-									echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 8';
+									echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 									return;
 								}
 							}
@@ -2194,19 +2194,19 @@
 				}
 				else
 				{
-					echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 9';
+					echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 					return;
 				}
 			}
 			else
 			{
-				echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 10';
+				echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 				return;
 			}
 		}
 		else
 		{
-			echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']).'ACA 11';
+			echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 			return;			
 		}
 			

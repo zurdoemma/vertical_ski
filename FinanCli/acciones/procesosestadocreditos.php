@@ -197,7 +197,7 @@
 			return;
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id, cad.nombre FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.sucursal suc, finan_cli.cadena cad WHERE cc.id_credito = c.id AND suc.id_cadena = cad.id AND cc.id_sucursal = suc.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
+		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id, cad.razon_social FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.sucursal suc, finan_cli.cadena cad WHERE cc.id_credito = c.id AND suc.id_cadena = cad.id AND ccli.id_credito = c.id AND ccli.id_sucursal = suc.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
 		{
 			$estadoEM = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
 			$estadoPEND = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);

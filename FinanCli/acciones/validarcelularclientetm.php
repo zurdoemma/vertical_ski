@@ -30,6 +30,33 @@
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
 		
+		if ($stmt500 = $mysqli->prepare("SELECT c.id, c.razon_social FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user, $nombre_cadena_validacion_celular);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}		
+		
 		if($stmt4 = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono AND t.id = ?"))
 		{
 			$stmt4->bind_param('ii', $idCliente, $idTelefono);
@@ -110,7 +137,7 @@
 		
 		$digits = 4;
 		$codigo_validacion_vcc = str_pad(rand(0, pow(10, $digits)-1), $digits, '0', STR_PAD_LEFT);		
-		$resultado_env = envio_sms(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $prefijoTelefono.$nroTelefono, translate('Msg_Client_Modification_Phone_Verification_Code',$GLOBALS['lang']).': '.$codigo_validacion_vcc);
+		$resultado_env = envio_sms(translate('Lbl_From_SMS_ID_Sent',$GLOBALS['lang']), $prefijoTelefono.$nroTelefono, str_replace("%4",$nombre_cadena_validacion_celular,translate('Msg_Client_Modification_Phone_Verification_Code',$GLOBALS['lang'])).': '.$codigo_validacion_vcc);
 		
 		if(translate('Msg_Message_Sent_Succesfully',$GLOBALS['lang']) == $resultado_env)
 		{			
