@@ -19,7 +19,8 @@ include("./menu/menu.php");
 	<![endif]-->
 	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.op2.css" >
-	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >	
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-datetimepicker.css" >	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap-table.min.op2.css" >
 	<link rel="stylesheet" href="./css/fontawesome.min.css">
 	<link rel="stylesheet" href="./css/all.css">
@@ -31,8 +32,9 @@ include("./menu/menu.php");
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/JavaScript" src="./js/bootstrap.min.op2.js" ></script>
 	<script type="text/javascript" src="./js/jquery-ui.js"></script>
-	<script type="text/JavaScript" src="./js/bootstrap-multiselect.js" ></script>	
+	<script type="text/JavaScript" src="./js/bootstrap-multiselect.js" ></script>
 	<script type="text/JavaScript" src="./js/moment.op2.js" ></script>	
+	<script type="text/JavaScript" src="./js/bootstrap-datetimepicker.js" ></script>	
 	<script type="text/JavaScript" src="./js/bootstrap-table.min.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/locale/bootstrap-table-es-AR.js" ></script>	
 	<script type="text/JavaScript" src="./js/extensions/export/FileSaver.min.js" ></script>	
@@ -57,13 +59,83 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function generarReporte()
 		{						
+			if($("#reportescreditsni").val() == 1)
+			{
+				if($( "#datetimepickerfechadesdereporteni" ).val().length == 0)
+				{
+					$(function() {
+						$( "#datetimepickerfechadesdereporteni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#datetimepickerfechadesdereporteni" ).focus();
+					return;
+				}
+				else 
+				{
+					$(function() {
+						$( "#datetimepickerfechadesdereporteni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#datetimepickerfechadesdereporteni" ).tooltip('destroy');
+				}
+
+				if($( "#datetimepickerfechahastareporteni" ).val().length == 0)
+				{
+					$(function() {
+						$( "#datetimepickerfechahastareporteni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#datetimepickerfechahastareporteni" ).focus();
+					return;
+				}
+				else 
+				{
+					$(function() {
+						$( "#datetimepickerfechahastareporteni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#datetimepickerfechahastareporteni" ).tooltip('destroy');
+				}
+
+				var dateD = new Date($( "#datetimepickerfechadesdereporteni" ).val());
+				var dateH = new Date($( "#datetimepickerfechahastareporteni" ).val());
+				
+				if(dateD > dateH)
+				{
+					$( "#datetimepickerfechahastareporteni" ).val("");
+					$( "#datetimepickerfechahastareporteni" ).focus();
+					mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until',$GLOBALS['lang']);?>");
+					return;
+				}
+			}
+			
 			var urlgmu = "./acciones/mostrarreportespdf.php";
 			$('#img_loader').show();
 						
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idReporte: $( "#reportescreditsni" ).val() },
+				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -71,8 +143,10 @@ include("./menu/menu.php");
 					{
 						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Generate_Report_PDF_OK',$GLOBALS['lang']); ?>=:=:=:","");
-
-						window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text());
+						if($("#reportescreditsni").val() == 1)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val());
+						}
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 				},
@@ -142,6 +216,33 @@ include("./menu/menu.php");
 					$( "#okDialog" ).html("<div id='mensajeOK'>"+mensaje+"</div>");
 		}
     </script>
+	<script type="text/javascript">
+		$(function () 
+		{
+			var todayDate = new Date().getDate();
+			$("#datetimepickerfechadesdereporten").datetimepicker({
+					format: 'L',
+					locale: 'es',
+					viewMode: 'years',
+					minDate: new Date(new Date().setDate(todayDate - 1825)),
+					maxDate: new Date(new Date().setDate(todayDate + 0)),
+					widgetPositioning:{
+						horizontal: 'auto',
+						vertical: 'bottom'}
+			});
+			
+			$("#datetimepickerfechahastareporten").datetimepicker({
+					format: 'L',
+					locale: 'es',
+					viewMode: 'years',
+					minDate: new Date(new Date().setDate(todayDate - 1825)),
+					maxDate: new Date(new Date().setDate(todayDate + 0)),
+					widgetPositioning:{
+						horizontal: 'auto',
+						vertical: 'bottom'}
+			});			
+		});
+	</script>	
 </head>
 
 <body>
@@ -196,6 +297,24 @@ include("./menu/menu.php");
 							?>
 						</select>
 					</div>
+					<div class="form-group" id="fechadesdereporten">
+						&nbsp;&nbsp;<label class="control-label" for="fechadesdereporten"><?php echo translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': ' ?></label>			
+						<div class="input-group date" id="datetimepickerfechadesdereporten">
+							<input title="<?php echo translate('Msg_Date_Since_Report_Must_Enter',$GLOBALS['lang']); ?>" class="form-control input-sm" id="datetimepickerfechadesdereporteni" name="datetimepickerfechadesdereporteni" type="text" maxlength="10" placeholder="<?php echo translate('Lbl_Date_Since_Report',$GLOBALS['lang']); ?>"  style="width: 152px;" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>		
+						</div>
+					</div>
+					<div class="form-group" id="fechahastareporten">
+						&nbsp;<label class="control-label" for="fechahastareporten"><?php echo translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': ' ?></label>			
+						<div class="input-group date" id="datetimepickerfechahastareporten">
+							<input title="<?php echo translate('Msg_Date_Until_Report_Must_Enter',$GLOBALS['lang']); ?>" class="form-control input-sm" id="datetimepickerfechahastareporteni" name="datetimepickerfechahastareporteni" type="text" maxlength="10" placeholder="<?php echo translate('Lbl_Date_Until_Report',$GLOBALS['lang']); ?>"  style="width: 152px;" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>		
+						</div>
+					</div>					
 					&nbsp;<input type="button" class="btn btn-primary" name="btnGenerarReporte" id="btnGenerarReporte" value="<?php echo translate('Msg_Generate_Report_Credits',$GLOBALS['lang']); ?>" onClick="generarReporte();" style="margin-left:10px;" />				
 				</div>
 			</form>
@@ -211,5 +330,19 @@ include("./menu/menu.php");
 	<div id="atencionDialog" style="display:none;"></div>
 	<div id="okDialog" style="display:none;"></div>
 	<div id="confirmDialog" style="display:none;"></div>
+	<script type="text/javascript">
+		$( document ).ready(function() { 
+			if($("#reportescreditsni").val() == 1)
+			{
+				$("#fechadesdereporten").show();
+				$("#fechahastareporten").show();
+			}
+			else
+			{
+				$("#fechadesdereporten").hide();
+				$("#fechahastareporten").hide();
+			}
+		});
+	</script>
 </body>
 </html>

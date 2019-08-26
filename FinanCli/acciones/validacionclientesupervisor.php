@@ -66,8 +66,8 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
-			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-			else $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+			else $insertVCS = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 			if(!$stmt10 = $mysqli->prepare($insertVCS))
 			{
 				echo $mysqli->error;
@@ -79,12 +79,14 @@
 			else
 			{
 				$date_registro_a_s_db = date("YmdHis");
+				$tokenVCS = md5(uniqid(rand(), true));
+				$tokenVCS = hash('sha512', $tokenVCS);
 				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 				{
-					if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
-					else $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
+					if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisisiss', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento, $tokenVCS);
+					else $stmt10->bind_param('sisisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumento, $documento, $tokenVCS);
 				}
-				else $stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+				else $stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tokenVCS);
 				if(!$stmt10->execute())
 				{
 					echo $mysqli->error;

@@ -24,7 +24,10 @@
 		}
 		
 		$idReporte=htmlspecialchars($_POST["idReporte"], ENT_QUOTES, 'UTF-8');
-		if(empty($idReporte)) $idReporte=htmlspecialchars($_GET["idReporte"], ENT_QUOTES, 'UTF-8');
+		if(empty($idReporte))
+		{			
+			$idReporte=htmlspecialchars($_GET["idReporte"], ENT_QUOTES, 'UTF-8'); 
+		}
 				
 		if($stmt61 = $mysqli->prepare("SELECT r.id, r.nombre FROM finan_cli.reportes r WHERE r.id = ?"))
 		{
@@ -83,15 +86,28 @@
 		
 		if($id_reporte_db == 1)
 		{
-			if ($stmt = $mysqli->prepare("SELECT s.codigo, s.nombre, COUNT(c.id), SUM(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND s.id_cadena = ? GROUP BY s.codigo, s.nombre")) 
+			$selectReportID1 = "SELECT s.codigo, s.nombre, COUNT(c.id), SUM(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY s.codigo, s.nombre";
+			if ($stmt = $mysqli->prepare($selectReportID1)) 
 			{
-				$id_cadena_user = 5;
-				$stmt->bind_param('i', $id_cadena_user);
+				if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"])) 
+				{
+					$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+					$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				}
+				else
+				{
+					$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+					$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');					
+				}
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				
+				$stmt->bind_param('iss', $id_cadena_user, $fechaDesde, $fechaHasta);
+
 				$stmt->execute();    
 				$stmt->store_result();
 		 
-				$stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $cantidad_creditos_sucursal_reporte, $monto_creditos_sucursal_reporte);			
-				
+				$stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $cantidad_creditos_sucursal_reporte, $monto_creditos_sucursal_reporte);				
 				$totR = $stmt->num_rows;
 
 				if($totR == 0)
@@ -126,11 +142,13 @@
 				// Move to the right
 				$this->Cell(30);
 				// Title
-				$this->SetFillColor(0,000,255);
+				$this->SetFillColor(17,58,154);
 					
 				$fechaReporte = date("d-m-Y H:i:s");
 				$this->SetTextColor(255,255,255);
 				$this->Cell(200,11,iconv('UTF-8', 'windows-1252', $_GET["nombreReporte"]).' - '.translate('Lbl_Date_Credit',$GLOBALS['lang']).': '.$fechaReporte,1,0,'C',True);
+				$this->Ln(20);
+				$this->Cell(200,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
 				// Line break
 				$this->Ln(20);					
 			}
@@ -156,22 +174,25 @@
 		$pdf->AliasNbPages();
 		$pdf->SetFont('Helvetica','B',8);
 		
-		$pdf->SetFillColor(0,000,255);
-		$pdf->SetTextColor(255,255,255);
-		$pdf->Cell(50,10,'CÓDIGO',1,0,'C',True);
-		$pdf->Cell(100,10,'NOMBRE',1,0, 'C',True);
-		$pdf->Cell(50,10,'CANTIDAD',1,0, 'C',True);
-		$pdf->Cell(50,10,'MONTO',1, 0,'C',True);
-		$pdf->SetTextColor(0,0,0);
-		
-		while($stmt->fetch()) 
+		if($id_reporte_db == 1)
 		{
-			$pdf->Ln();
-			$pdf->Cell(50,10,$codigo_sucursal_reporte,1,0,'C');
-			$pdf->Cell(100,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
-			$pdf->Cell(50,10,$cantidad_creditos_sucursal_reporte,1,0,'C');
-			$pdf->Cell(50,10,'$'.number_format(($monto_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
-		}	
+			$pdf->SetFillColor(17,58,154);
+			$pdf->SetTextColor(255,255,255);
+			$pdf->Cell(50,10,'CÓDIGO',1,0,'C',True);
+			$pdf->Cell(100,10,'NOMBRE',1,0, 'C',True);
+			$pdf->Cell(50,10,'CANTIDAD',1,0, 'C',True);
+			$pdf->Cell(50,10,'MONTO',1, 0,'C',True);
+			$pdf->SetTextColor(0,0,0);
+			
+			while($stmt->fetch()) 
+			{
+				$pdf->Ln();
+				$pdf->Cell(50,10,$codigo_sucursal_reporte,1,0,'C');
+				$pdf->Cell(100,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
+				$pdf->Cell(50,10,$cantidad_creditos_sucursal_reporte,1,0,'C');
+				$pdf->Cell(50,10,'$'.number_format(($monto_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
+			}
+		}			
 		
 		$stmt->free_result();
 		$stmt->close();

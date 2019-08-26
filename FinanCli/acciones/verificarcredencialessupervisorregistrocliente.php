@@ -62,13 +62,74 @@
 						echo translate('Msg_Disable_User',$GLOBALS['lang']);
 						return;
 					}
+					
+					if ($stmt702 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+					{
+						$stmt702->bind_param('s', $_SESSION['username']);
+						$stmt702->execute();    
+						$stmt702->store_result();
+				 
+						$totR702 = $stmt702->num_rows;
+						if($totR702 > 0)
+						{
+							$stmt702->bind_result($id_cadena_user);
+							$stmt702->fetch();
+							
+							if ($stmt703 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							{
+								$stmt703->bind_param('s', $usuarioSupervisor);
+								$stmt703->execute();    
+								$stmt703->store_result();
+						 
+								$totR703 = $stmt703->num_rows;
+								if($totR703 > 0)
+								{
+									$stmt703->bind_result($id_cadena_user_supervisor);
+									$stmt703->fetch();
+									
+									if($id_cadena_user != $id_cadena_user_supervisor)
+									{
+										echo translate('Msg_Uer_Supervisor_Is_Incorrect',$GLOBALS['lang']);
+										return;											
+									}
+
+									$stmt703->free_result();
+									$stmt703->close();				
+								}
+								else 
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;				
+								}								
+							}
+							else 
+							{
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;				
+							}							
+
+							$stmt702->free_result();
+							$stmt702->close();				
+						}
+						else 
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;				
+						}	
+					}
+					else 
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;				
+					}
+					
 					if ($db_password == $password) 
 					{
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?,?)";
-						else $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?)";
+						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?,?)";
+						else $insertVCSRC = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,token) VALUES (?,?,?,?,?,?,?)";
 						if(!$stmt10 = $mysqli->prepare($insertVCSRC))
 						{
 							$mysqli->autocommit(TRUE);
@@ -80,12 +141,14 @@
 						else
 						{
 							$date_registro_a_s_db = date("YmdHis");
+							$tokenRC = md5(uniqid(rand(), true));
+							$tokenRC = hash('sha512', $tokenRC);
 							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) 
 							{
-								if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisissis', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumentoAdicional, $documentoAdicional);
-								else $stmt10->bind_param('sisissis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumento, $documento);
+								if($motivo == 37 || $motivo == 38) $stmt10->bind_param('sisississ', $date_registro_a_s_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumentoAdicional, $documentoAdicional, $tokenRC);
+								else $stmt10->bind_param('sisississ', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $tipoDocumento, $documento, $tokenRC);
 							}
-							else $stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor);
+							else $stmt10->bind_param('sisisss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $tokenRC);
 							if(!$stmt10->execute())
 							{
 								$mysqli->autocommit(TRUE);

@@ -33,8 +33,8 @@
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-		else $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+		else $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 		if(!$stmt10 = $mysqli->prepare($insertECA))
 		{
 			$mysqli->autocommit(TRUE);
@@ -44,8 +44,10 @@
 		else
 		{
 			$date_registro_a_s_db = date("YmdHis");
-			if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $stmt10->bind_param('sisisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumentoAdicional, $documentoAdicional);
-		    else $stmt10->bind_param('sisis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+			$tokenRCSS = md5(uniqid(rand(), true));
+			$tokenRCSS = hash('sha512', $tokenRCSS);
+			if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $stmt10->bind_param('sisisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tipoDocumentoAdicional, $documentoAdicional, $tokenRCSS);
+		    else $stmt10->bind_param('sisiss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tokenRCSS);
 			if(!$stmt10->execute())
 			{
 				$mysqli->autocommit(TRUE);

@@ -264,7 +264,7 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!$stmt43 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)"))
+							if(!$stmt43 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								$mysqli->autocommit(TRUE);
@@ -275,7 +275,9 @@
 							else
 							{
 								$date_registro_a_eccef_db = date("YmdHis");
-								$stmt43->bind_param('sisis', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+								$tokenVECE = md5(uniqid(rand(), true));
+								$tokenVECE = hash('sha512', $tokenVECE);
+								$stmt43->bind_param('sisiss', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tokenVECE);
 								if(!$stmt43->execute())
 								{
 									echo $mysqli->error;

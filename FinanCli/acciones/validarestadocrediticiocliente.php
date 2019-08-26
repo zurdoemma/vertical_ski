@@ -292,8 +292,8 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional) VALUES (?,?,?,?,?,?,?)";
-							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario) VALUES (?,?,?,?,?)";
+							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 							if(!$stmt43 = $mysqli->prepare($insertECCOP))
 							{
 								echo $mysqli->error;
@@ -305,8 +305,10 @@
 							else
 							{
 								$date_registro_a_eccef_db = date("YmdHis");
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt43->bind_param('sisisis', $date_registro_a_eccef_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento);
-								else $stmt43->bind_param('sisis', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username']);
+								$tokenVECCE = md5(uniqid(rand(), true));
+								$tokenVECCE = hash('sha512', $tokenVECCE);
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt43->bind_param('sisisiss', $date_registro_a_eccef_db, $tipoDocumentoTitular, $documentoTitular, $motivo, $_SESSION['username'], $tipoDocumento, $documento, $tokenVECCE);
+								else $stmt43->bind_param('sisiss', $date_registro_a_eccef_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $tokenVECCE);
 								if(!$stmt43->execute())
 								{
 									echo $mysqli->error;

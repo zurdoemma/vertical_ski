@@ -681,6 +681,12 @@
 		'Lbl_Actions_Default_Notice' => 'Acciones Avisos X Mora',
 		'Msg_Generate_Report_PDF_OK' => 'Generación de Reporte OK',
 		'Msg_Report_PDF_Not_Exist' => 'El reporte seleccionado no existe!!',
-		'Msg_Report_PDF_Not_Data_View' => 'No hay datos para el reporte seleccionado!!'		
+		'Msg_Report_PDF_Not_Data_View' => 'No hay datos para el reporte seleccionado!!',
+		'Msg_Uer_Supervisor_Is_Incorrect' => 'El usuario supervisor ingresado es incorrecto!!',
+		'Lbl_Date_Since_Report' => 'Fecha Desde',
+		'Lbl_Date_Until_Report' => 'Fecha Hasta',
+		'Msg_Date_Since_Report_Must_Enter' => 'Debe ingresar una fecha desde!!',
+		'Msg_Date_Until_Report_Must_Enter' => 'Debe ingresar una fecha hasta!!',
+		'Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until' => 'La fecha desde no puede ser mayor a la fecha hasta!!'
 	);
 ?>

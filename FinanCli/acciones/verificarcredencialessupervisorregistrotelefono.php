@@ -83,12 +83,73 @@
 						echo translate('Msg_Disable_User',$GLOBALS['lang']);
 						return;
 					}
+					
+					if ($stmt702 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+					{
+						$stmt702->bind_param('s', $_SESSION['username']);
+						$stmt702->execute();    
+						$stmt702->store_result();
+				 
+						$totR702 = $stmt702->num_rows;
+						if($totR702 > 0)
+						{
+							$stmt702->bind_result($id_cadena_user);
+							$stmt702->fetch();
+							
+							if ($stmt703 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							{
+								$stmt703->bind_param('s', $usuarioSupervisor);
+								$stmt703->execute();    
+								$stmt703->store_result();
+						 
+								$totR703 = $stmt703->num_rows;
+								if($totR703 > 0)
+								{
+									$stmt703->bind_result($id_cadena_user_supervisor);
+									$stmt703->fetch();
+									
+									if($id_cadena_user != $id_cadena_user_supervisor)
+									{
+										echo translate('Msg_Uer_Supervisor_Is_Incorrect',$GLOBALS['lang']);
+										return;											
+									}
+
+									$stmt703->free_result();
+									$stmt703->close();				
+								}
+								else 
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;				
+								}								
+							}
+							else 
+							{
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;				
+							}							
+
+							$stmt702->free_result();
+							$stmt702->close();				
+						}
+						else 
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;				
+						}	
+					}
+					else 
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;				
+					}
+					
 					if ($db_password == $password) 
 					{
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,nro_telefono) VALUES (?,?,?,?,?,?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,usuario_supervisor,nro_telefono,token) VALUES (?,?,?,?,?,?,?,?)"))
 						{
 							$mysqli->autocommit(TRUE);
 							$stmt->free_result();
@@ -100,7 +161,9 @@
 						{
 							$date_registro_a_s_db = date("YmdHis");
 							$telefonoFin = $prefijoTelefono.$nroTelefono;
-							$stmt10->bind_param('sisissi', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $telefonoFin);
+							$tokenRCT = md5(uniqid(rand(), true));
+							$tokenRCT = hash('sha512', $tokenRCT);
+							$stmt10->bind_param('sisissis', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $telefonoFin, $tokenRCT);
 							if(!$stmt10->execute())
 							{
 								$mysqli->autocommit(TRUE);

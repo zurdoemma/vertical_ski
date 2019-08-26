@@ -57,6 +57,67 @@
 						echo translate('Msg_Disable_User',$GLOBALS['lang']);
 						return;
 					}
+					
+					if ($stmt702 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+					{
+						$stmt702->bind_param('s', $_SESSION['username']);
+						$stmt702->execute();    
+						$stmt702->store_result();
+				 
+						$totR702 = $stmt702->num_rows;
+						if($totR702 > 0)
+						{
+							$stmt702->bind_result($id_cadena_user);
+							$stmt702->fetch();
+							
+							if ($stmt703 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							{
+								$stmt703->bind_param('s', $usuarioSupervisor);
+								$stmt703->execute();    
+								$stmt703->store_result();
+						 
+								$totR703 = $stmt703->num_rows;
+								if($totR703 > 0)
+								{
+									$stmt703->bind_result($id_cadena_user_supervisor);
+									$stmt703->fetch();
+									
+									if($id_cadena_user != $id_cadena_user_supervisor)
+									{
+										echo translate('Msg_Uer_Supervisor_Is_Incorrect',$GLOBALS['lang']);
+										return;											
+									}
+
+									$stmt703->free_result();
+									$stmt703->close();				
+								}
+								else 
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;				
+								}								
+							}
+							else 
+							{
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;				
+							}							
+
+							$stmt702->free_result();
+							$stmt702->close();				
+						}
+						else 
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;				
+						}	
+					}
+					else 
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;				
+					}
+					
 					if ($db_password == $password) 
 					{
 						if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.id_perfil_credito FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND c.tipo_documento = ? AND c.documento = ?"))
