@@ -55,7 +55,7 @@
 		echo '			<h3 class="panel-title">'.translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_11"></div>';
+		echo '			<div id="img_loader_20"></div>';
 		echo '			<form id="formulariompc" role="form">';
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nombreprofilecredit">'.translate('Lbl_Name_Profile_Credit',$GLOBALS['lang']).':</label>';

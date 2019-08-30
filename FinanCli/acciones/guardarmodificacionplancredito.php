@@ -30,10 +30,17 @@
 		$interesFijo=htmlspecialchars($_POST["interesFijo"], ENT_QUOTES, 'UTF-8');
 		$tipoDiferimientoCuota=htmlspecialchars($_POST["tipoDiferimientoCuota"], ENT_QUOTES, 'UTF-8');
 		$cadena=htmlspecialchars($_POST["cadena"], ENT_QUOTES, 'UTF-8');
+		$minimoEntrega=htmlspecialchars($_POST["minimoEntrega"], ENT_QUOTES, 'UTF-8');
 		
-		if($cantidadCuotas < 0 || $interesFijo < 0)
+		if($cantidadCuotas < 0 || $interesFijo < 0 || $minimoEntrega < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+		
+		if($minimoEntrega > 100)
+		{
+			echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Cannot_Be_Greater_Than',$GLOBALS['lang']);
 			return;
 		}
 			
@@ -87,13 +94,13 @@
 				$stmt2->free_result();
 				$stmt2->close();
 				
-				if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena FROM finan_cli.plan_credito pc WHERE pc.id = ?"))
+				if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM finan_cli.plan_credito pc WHERE pc.id = ?"))
 				{
 					$stmt3->bind_param('i', $idPlanCredito);
 					$stmt3->execute();    
 					$stmt3->store_result();
 					
-					$stmt3->bind_result($id_credit_plan_a, $name_credit_plan_a, $description_credit_plan_a, $cantidad_cuotas_credit_plan_a, $interes_fijo_credit_plan_a, $diferimiento_cuota_credit_plan_a, $cadena_credit_plan_a);				
+					$stmt3->bind_result($id_credit_plan_a, $name_credit_plan_a, $description_credit_plan_a, $cantidad_cuotas_credit_plan_a, $interes_fijo_credit_plan_a, $diferimiento_cuota_credit_plan_a, $cadena_credit_plan_a, $minimo_entrega_credit_plan_a);				
 				}
 				else
 				{
@@ -105,7 +112,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.plan_credito SET nombre = ?, descripcion = ?, cantidad_cuotas = ?, interes_fijo = ?, id_tipo_diferimiento_cuota = ?, id_cadena = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.plan_credito SET nombre = ?, descripcion = ?, cantidad_cuotas = ?, interes_fijo = ?, id_tipo_diferimiento_cuota = ?, id_cadena = ?, minimo_entrega = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -115,7 +122,7 @@
 				}
 				else 
 				{
-					$stmt10->bind_param('ssiiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena, $idPlanCredito);
+					$stmt10->bind_param('ssiiiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena, $minimoEntrega, $idPlanCredito );
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -129,7 +136,7 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
 				$stmt3->fetch();					
-				$valor_log_user = "NUEVO: UPDATE finan_cli.plan_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", cantidad_cuotas = ".$cantidadCuotas.", interes_fijo = ".$interesFijo.", id_tipo_diferimiento_cuota = ".$tipoDiferimientoCuota.", id_cadena = ".$cadena." WHERE id = ".$idPlanCredito." -- ANTERIOR: UPDATE finan_cli.plan_credito SET nombre = ".$name_credit_plan_a.", descripcion = ".$description_credit_plan_a.", cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a.", interes_fijo = ".$interes_fijo_credit_plan_a.", id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a.", id_cadena = ".$cadena_credit_plan_a." WHERE id = ".$idPlanCredito;
+				$valor_log_user = "NUEVO: UPDATE finan_cli.plan_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", cantidad_cuotas = ".$cantidadCuotas.", interes_fijo = ".$interesFijo.", id_tipo_diferimiento_cuota = ".$tipoDiferimientoCuota.", id_cadena = ".$cadena.", minimo_entrega = ".$minimoEntrega." WHERE id = ".$idPlanCredito." -- ANTERIOR: UPDATE finan_cli.plan_credito SET nombre = ".$name_credit_plan_a.", descripcion = ".$description_credit_plan_a.", cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a.", interes_fijo = ".$interes_fijo_credit_plan_a.", id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a.", id_cadena = ".$cadena_credit_plan_a.", minimo_entrega = ".$minimo_entrega_credit_plan_a." WHERE id = ".$idPlanCredito;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

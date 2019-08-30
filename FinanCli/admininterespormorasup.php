@@ -254,14 +254,14 @@ include("./menu/menu.php");
 			}			
 			
 			var urlgmu = "./acciones/guardarmodificacioninteresxmorasup.php";
-			$('#img_loader_11').show();
+			$('#img_loader_22').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
 				data: { idInteresXMora: interesxmora, cantidadDias: $( "#cantidaddiasinteresxmorai" ).val(), interes: $( "#interesxmorai" ).val(), planCredito: $( "#plancreditointeresxmorai" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
+					$('#img_loader_22').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Interest_For_Late_Payment_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -276,7 +276,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
+					$('#img_loader_22').hide();
 				}
 			});				
 		}			
@@ -409,14 +409,14 @@ include("./menu/menu.php");
 			}			
 						
 			var urlggnu = "./acciones/guardarnuevointeresxmorasup.php";
-			$('#img_loader_11').show();
+			$('#img_loader_22').show();
 			
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
 				data: { cantidadDias: $( "#cantidaddiasinteresxmorani" ).val(), interes: $( "#interesxmorani" ).val(), planCredito: $( "#plancreditointeresxmorani" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
+					$('#img_loader_22').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_New_Interest_For_Late_Payment_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -431,7 +431,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
+					$('#img_loader_22').hide();
 				}
 			});
 		}			

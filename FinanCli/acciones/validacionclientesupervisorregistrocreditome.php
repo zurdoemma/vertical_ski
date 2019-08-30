@@ -383,7 +383,7 @@
 			}
 			
 			$paso_seleccion_plan = 0;
-			if($stmt62 = $mysqli->prepare("SELECT pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.perfil_credito pcre WHERE pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = pcre.id AND pc.id_cadena = c.id AND pcre.id = ? AND c.id = ? AND pc.id = ?"))
+			if($stmt62 = $mysqli->prepare("SELECT pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.minimo_entrega FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.perfil_credito pcre WHERE pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = pcre.id AND pc.id_cadena = c.id AND pcre.id = ? AND c.id = ? AND pc.id = ?"))
 			{
 				$stmt62->bind_param('iii', $id_perfil_credito_cliente_db, $id_cadena_usuario, $planCredito);
 				$stmt62->execute();    
@@ -393,7 +393,7 @@
 
 				if($totR62 > 0)
 				{
-					$stmt62->bind_result($cantidad_cuotas_plan_credito_s_db, $interes_fijo_plan_credito_s_db, $id_tipo_diferiemiento_cuota_plan_credito_s_db);
+					$stmt62->bind_result($cantidad_cuotas_plan_credito_s_db, $interes_fijo_plan_credito_s_db, $id_tipo_diferiemiento_cuota_plan_credito_s_db, $minimo_entrega_plan_credito_s_db);
 					$stmt62->fetch();
 					
 					$paso_seleccion_plan = 1;
@@ -478,7 +478,7 @@
 				}
 			}
 			
-			echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']).'=::=::'.json_encode($array).'=:=:'.$montoTotalCredito.'=:::=:::'.$token3;	
+			echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']).'=::=::'.json_encode($array).'=:=:'.$minimo_entrega_plan_credito_s_db.'=::=::=::'.$montoTotalCredito.'=:::=:::'.$token3;	
 			return;
 		}
 		

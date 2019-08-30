@@ -31,6 +31,10 @@
 		$montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
 		$montoMaximoCompra=htmlspecialchars($_POST["montoMaximoCompra"], ENT_QUOTES, 'UTF-8');
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
+		$validacionPrimeraCuota=htmlspecialchars($_POST["validacionPrimeraCuota"], ENT_QUOTES, 'UTF-8');
+		
+		if($validacionPrimeraCuota == 'true') $pagaPrimeraCuota = 1;
+		else $pagaPrimeraCuota = 0;
 		
 		if($montoCompra < 0)
 		{
@@ -521,7 +525,7 @@
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado) VALUES (?,?,?,?,?,?)"))
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota) VALUES (?,?,?,?,?,?,?)"))
 		{
 			echo $mysqli->error;
 			$mysqli->autocommit(TRUE);
@@ -532,7 +536,7 @@
 		else
 		{
 			$estadoIC = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
-			$stmt10->bind_param('iiiiis', $cantidad_cuotas_plan_credito_s_db, $montoCompra, $planCredito, $interes_fijo_plan_credito_s_db, $montoTotalCredito, $estadoIC);
+			$stmt10->bind_param('iiiiisi', $cantidad_cuotas_plan_credito_s_db, $montoCompra, $planCredito, $interes_fijo_plan_credito_s_db, $montoTotalCredito, $estadoIC, $pagaPrimeraCuota);
 			if(!$stmt10->execute())
 			{
 				echo $mysqli->error;
@@ -545,7 +549,7 @@
 		}	
 
 		$date_registro = date("YmdHis");				
-		$valor_log_user = "INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado) VALUES (".$cantidad_cuotas_plan_credito_s_db.",".$montoCompra.",".$planCredito.",".$interes_fijo_plan_credito_s_db.",".$montoTotalCredito.",".$estadoIC.")";
+		$valor_log_user = "INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota) VALUES (".$cantidad_cuotas_plan_credito_s_db.",".$montoCompra.",".$planCredito.",".$interes_fijo_plan_credito_s_db.",".$montoTotalCredito.",".$estadoIC.",".$pagaPrimeraCuota.")";
 
 		if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 		{
@@ -683,6 +687,62 @@
 			}			
 		}
 		
+		if($pagaPrimeraCuota == 1)
+		{
+			$date_registro = date("YmdHis");
+			if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id_credito = ? AND numero_cuota = ?"))
+			{
+				echo $mysqli->error;
+				$mysqli->rollback();
+				$mysqli->autocommit(TRUE);
+				$stmt->free_result();
+				$stmt->close();
+				return;
+			}
+			else
+			{
+				$estadoIP = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+				$numeroCuotaPPC = 1;
+				$stmt10->bind_param('ssisii', $estadoIP, $date_registro, $array[0]['montocuota'], $_SESSION['username'], $idCreditoCliente, $numeroCuotaPPC);
+				if(!$stmt10->execute())
+				{
+					echo $mysqli->error;
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;						
+				}
+			}	
+				
+			$valor_log_user = "UPDATE finan_cli.cuota_credito SET estado = ".$estadoIP.", fecha_pago = ".$date_registro.", monto_pago = ".$array[0]['montocuota'].", usuario_registro_pago = ".$_SESSION['username']." WHERE id_credito = ".$idCreditoCliente." AND numero_cuota = 1";
+			$date_registro = date("YmdHis");
+			
+			if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+			{
+				echo $mysqli->error;
+				$mysqli->rollback();
+				$mysqli->autocommit(TRUE);
+				$stmt->free_result();
+				$stmt->close();
+				return;
+			}
+			else
+			{
+				$motivo = 86;
+				$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+				if(!$stmt->execute())
+				{
+					echo $mysqli->error;
+					$mysqli->rollback();
+					$mysqli->autocommit(TRUE);
+					$stmt->free_result();
+					$stmt->close();
+					return;						
+				}
+			}			
+		}
+		
 		$mysqli->commit();
 		$mysqli->autocommit(TRUE);
 		
@@ -715,7 +775,7 @@
 			
 			$fecha_cre_pi = date("d-m-Y H:i:s");
 			$montoInteresF = $montoTotalCredito-$montoCompra;
-			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF; 
+			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$pagaPrimeraCuota; 
 			echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion.'=::=::=::'.json_encode($arrayC);
 			return;
 		}

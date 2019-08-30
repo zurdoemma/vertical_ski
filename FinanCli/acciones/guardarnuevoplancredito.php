@@ -27,11 +27,18 @@
 		$cantidadCuotas=htmlspecialchars($_POST["cantidadCuotas"], ENT_QUOTES, 'UTF-8');
 		$interesFijo=htmlspecialchars($_POST["interesFijo"], ENT_QUOTES, 'UTF-8');
 		$tipoDiferimientoCuota=htmlspecialchars($_POST["tipoDiferimientoCuota"], ENT_QUOTES, 'UTF-8');
-		$cadena=htmlspecialchars($_POST["cadena"], ENT_QUOTES, 'UTF-8');
+		$cadena=htmlspecialchars($_POST["cadena"], ENT_QUOTES, 'UTF-8');	
+		$minimoEntrega=htmlspecialchars($_POST["minimoEntrega"], ENT_QUOTES, 'UTF-8');
 		
-		if($cantidadCuotas < 0 || $interesFijo < 0)
+		if($cantidadCuotas < 0 || $interesFijo < 0 || $minimoEntrega < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
+			return;
+		}
+		
+		if($minimoEntrega > 100)
+		{
+			echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Cannot_Be_Greater_Than',$GLOBALS['lang']);
 			return;
 		}		
 			
@@ -88,7 +95,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -98,7 +105,7 @@
 				}
 				else 
 				{
-					$stmt10->bind_param('ssiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena);
+					$stmt10->bind_param('ssiiiii', $nombre, $descripcion, $cantidadCuotas, $interesFijo, $tipoDiferimientoCuota, $cadena, $minimoEntrega);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -111,7 +118,7 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.")";
+				$valor_log_user = "INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.",".$minimoEntrega.")";
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{

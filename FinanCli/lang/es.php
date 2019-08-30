@@ -687,6 +687,12 @@
 		'Lbl_Date_Until_Report' => 'Fecha Hasta',
 		'Msg_Date_Since_Report_Must_Enter' => 'Debe ingresar una fecha desde!!',
 		'Msg_Date_Until_Report_Must_Enter' => 'Debe ingresar una fecha hasta!!',
-		'Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until' => 'La fecha desde no puede ser mayor a la fecha hasta!!'
+		'Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until' => 'La fecha desde no puede ser mayor a la fecha hasta!!',
+		'Msg_Pay_First_Fee' => 'Paga 1er. Cuota',
+		'Msg_First_Fee_Paid' => 'Primera Cuota ABONADA',
+		'Lbl_Minimum_Delivery' => 'Mínimo Entrega',
+		'Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter' => 'Debe ingresar un mínimo de entrega',
+		'Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter_A_Whole' => 'El mínimo de entrega debe ser un numero entero',
+		'Msg_A_Minimum_Delivery_Profile_Credit_Cannot_Be_Greater_Than' => 'El mínimo de entrega no puede ser mayor a 100'	
 	);
 ?>

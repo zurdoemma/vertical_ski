@@ -55,7 +55,7 @@
 		echo '			<h3 class="panel-title">'.translate('Lbl_New_Interest_For_Late_Payment',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_11"></div>';
+		echo '			<div id="img_loader_22"></div>';
 		echo '			<form id="formularionpc" role="form">';
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="cantidaddiasinteresxmoran">'.translate('Lbl_Amount_Days_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';

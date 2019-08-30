@@ -306,7 +306,8 @@ include("./menu/menu.php");
 									$( "#tipoclientcreditni" ).val("1");
 									$( "#telefonoclientcreditni" ).val("");
 									$( "#montomaximoclientcreditni" ).val("");
-									$( "#montocompraclientcreditni" ).val("");								
+									$( "#montocompraclientcreditni" ).val("");
+									$( "#minimoentregaclientcreditn" ).hide();
 								}
 								else
 								{
@@ -331,7 +332,7 @@ include("./menu/menu.php");
 									$('#tokenvalidsupcrei').val(tokenVECCC3);
 									$( "#plancreditclientni" ).prop( "disabled", false );
 									$( "#montocompraclientcreditni" ).focus();
-									
+																		
 									var planesCreCliA = planesCreCli.split(";;");
 									for (var i = 0; i < planesCreCliA.length; i++) {
 									   var datosPlanCreCli = planesCreCliA[i].split("|");
@@ -389,6 +390,7 @@ include("./menu/menu.php");
 								$( "#telefonoclientcreditni" ).val("");
 								$( "#montomaximoclientcreditni" ).val("");
 								$( "#montocompraclientcreditni" ).val("");
+								$( "#minimoentregaclientcreditn" ).hide();
 								
 								tagvcc.dialog('open');							
 							}
@@ -413,7 +415,8 @@ include("./menu/menu.php");
 								$( "#tipoclientcreditni" ).val("1");
 								$( "#telefonoclientcreditni" ).val("");
 								$( "#montomaximoclientcreditni" ).val("");
-								$( "#montocompraclientcreditni" ).val("");								
+								$( "#montocompraclientcreditni" ).val("");
+								$( "#minimoentregaclientcreditn" ).hide();								
 							}
 						},
 						error: function(request, errorcode, errortext){
@@ -550,7 +553,8 @@ include("./menu/menu.php");
 							$( "#tipoclientcreditni" ).val("1");
 							$( "#telefonoclientcreditni" ).val("");
 							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");								
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#minimoentregaclientcreditn" ).hide();							
 						}
 						else
 						{
@@ -654,7 +658,8 @@ include("./menu/menu.php");
 							$( "#tipoclientcreditni" ).val("1");
 							$( "#telefonoclientcreditni" ).val("");
 							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");								
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#minimoentregaclientcreditn" ).hide();							
 						}
 						else
 						{
@@ -725,10 +730,13 @@ include("./menu/menu.php");
 						{
 							$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
 							$( "#documentoclientcreditni" ).prop( "disabled", true );
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", false );
 														
 							dataresponse = dataresponse.replace("<?php echo translate('Msg_View_Info_Credit_Client_OK',$GLOBALS['lang']); ?>"+"=::=::","");
 							var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
 							dataresponse = dataresponse.replace(datTable+"=:=:","");
+							var minimoEnt = dataresponse.substring(0, dataresponse.indexOf('=:=:=:'));
+							dataresponse = dataresponse.replace(minimoEnt+"=:=:=:","");
 
 							var resF = JSON.parse(datTable);
 							for(var i in resF)
@@ -737,14 +745,23 @@ include("./menu/menu.php");
 								 resF[i]["fechavencimiento"] = resF[i]["fechavencimiento"].substring(8,10)+'/'+resF[i]["fechavencimiento"].substring(5,7)+'/'+resF[i]["fechavencimiento"].substring(0,4);
 							}								
 							$( "#montocreditoclientcreditni" ).val(dataresponse/100.00);
+							
+							if(minimoEnt != 0)
+							{
+								$( "#minimoentregaclientcreditn" ).show();
+								$( "#minimoentregaclientcreditni" ).val($( "#montocompraclientcreditni" ).val()*(minimoEnt/100.00));
+								$('#minimoentregaclientcreditni').maskNumber();						
+							}
 							$('#tablefeescreditclientt').bootstrapTable('load',resF);
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);?>') != -1)
 						{
+							$( "#minimoentregaclientcreditn" ).hide();
 							confirmar_accion_validar_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded',$GLOBALS['lang']);?>", 64);
 						}
 						else 
 						{
+							$( "#minimoentregaclientcreditn" ).hide();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
 						}
 					},
@@ -799,7 +816,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlbcc,
 					method: "POST",
-					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val(), validacionPrimeraCuota: $('#validarpagoprimeracuotani').is(":checked") },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_16').hide();
 						
@@ -821,7 +838,7 @@ include("./menu/menu.php");
 
 							var datosFinImpre = datosImpresion.split('|');
 
-							imprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13]);
+							imprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13], datosFinImpre[14]);
 							mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 						}
 						else 
@@ -845,14 +862,14 @@ include("./menu/menu.php");
     </script>	
 	
 	<script type="text/javascript">
-		function imprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres)
+		function imprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaprimeracuota)
 		{
 			var urlinc = "<?php echo $GLOBALS['imprimir_nuevo_credito']; ?>";
 
 			$.ajax({
 				url: urlinc,
 				method: "POST",
-				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres },
+				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres, pagaPrimeraCuota: pagaprimeracuota },
 				success: function(dataresponse, statustext, response){
 					
 					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
@@ -1056,7 +1073,8 @@ include("./menu/menu.php");
 							$( "#tipoclientcreditni" ).val("1");
 							$( "#telefonoclientcreditni" ).val("");
 							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");								
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#minimoentregaclientcreditn" ).hide();							
 						}
 						else
 						{
@@ -1106,7 +1124,8 @@ include("./menu/menu.php");
 						$( "#tipoclientcreditni" ).val("1");
 						$( "#telefonoclientcreditni" ).val("");
 						$( "#montomaximoclientcreditni" ).val("");
-						$( "#montocompraclientcreditni" ).val("");						
+						$( "#montocompraclientcreditni" ).val("");	
+						$( "#minimoentregaclientcreditn" ).hide();						
 					}
 				},
 				error: function(request, errorcode, errortext){
@@ -1137,6 +1156,7 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>') != -1)
 					{
+						$( "#minimoentregaclientcreditn" ).hide();
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Must_Authorize_Client_Registration_Credit',$GLOBALS['lang']); ?>","");
 						var tagarccme = $("<div id='dialogautorizacionregistrocreditoclienteme'></div>");
 						
@@ -1162,8 +1182,10 @@ include("./menu/menu.php");
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>"+"=::=::","");
 						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
 						dataresponse = dataresponse.replace(datTable+"=:=:","");
+						var minimoEnt = dataresponse.substring(0, dataresponse.indexOf('=::=::=::'));
+						dataresponse = dataresponse.replace(minimoEnt+"=::=::=::","");						
 						var montoTotCre = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
-						dataresponse = dataresponse.replace(montoTotCre+"=:::=:::","");
+						dataresponse = dataresponse.replace(montoTotCre+"=:::=:::","");					
 
 						$("#tokenvalidexcesomi").val(dataresponse);
 						var resF = JSON.parse(datTable);
@@ -1173,16 +1195,25 @@ include("./menu/menu.php");
 							 resF[i]["fechavencimiento"] = resF[i]["fechavencimiento"].substring(8,10)+'/'+resF[i]["fechavencimiento"].substring(5,7)+'/'+resF[i]["fechavencimiento"].substring(0,4);
 						}								
 						$( "#montocreditoclientcreditni" ).val(montoTotCre/100.00);
+						
+						if(minimoEnt != 0)
+						{
+							$( "#minimoentregaclientcreditn" ).show();
+							$( "#minimoentregaclientcreditni" ).val($( "#montocompraclientcreditni" ).val()*(minimoEnt/100.00));
+							$('#minimoentregaclientcreditni').maskNumber();						
+						}												
 						$('#tablefeescreditclientt').bootstrapTable('load',resF);
 					}
 					else 
 					{
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-						$( "#montocompraclientcreditni" ).focus();						
+						$( "#montocompraclientcreditni" ).focus();
+						$( "#minimoentregaclientcreditn" ).hide();
 					}
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$( "#minimoentregaclientcreditn" ).hide();
 					$('#img_loader_16').hide();
 				}
 			});			
@@ -1304,7 +1335,8 @@ include("./menu/menu.php");
 							$( "#tipoclientcreditni" ).val("1");
 							$( "#telefonoclientcreditni" ).val("");
 							$( "#montomaximoclientcreditni" ).val("");
-							$( "#montocompraclientcreditni" ).val("");								
+							$( "#montocompraclientcreditni" ).val("");
+							$( "#minimoentregaclientcreditn" ).hide();							
 						}
 						else
 						{
@@ -1457,9 +1489,12 @@ include("./menu/menu.php");
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
 						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
 						dataresponse = dataresponse.replace(datTable+"=:=:","");
+						var minimoEnt = dataresponse.substring(0, dataresponse.indexOf('=::=::=::'));
+						dataresponse = dataresponse.replace(minimoEnt+"=::=::=::","");												
 						var montoTotCre = dataresponse.substring(0, dataresponse.indexOf('=:::=:::'));
 						dataresponse = dataresponse.replace(montoTotCre+"=:::=:::","");
-
+						
+						
 						$("#tokenvalidexcesomi").val(dataresponse);
 						var resF = JSON.parse(datTable);
 						for(var i in resF)
@@ -1467,18 +1502,26 @@ include("./menu/menu.php");
 							 resF[i]["montocuota"] = '$'+(resF[i]["montocuota"]/100.00);
 							 resF[i]["fechavencimiento"] = resF[i]["fechavencimiento"].substring(8,10)+'/'+resF[i]["fechavencimiento"].substring(5,7)+'/'+resF[i]["fechavencimiento"].substring(0,4);
 						}								
-						$( "#montocreditoclientcreditni" ).val(montoTotCre/100.00);
+						$( "#montocreditoclientcreditni" ).val(montoTotCre/100.00);						
+						if(minimoEnt != 0)
+						{
+							$( "#minimoentregaclientcreditn" ).show();
+							$( "#minimoentregaclientcreditni" ).val($( "#montocompraclientcreditni" ).val()*(minimoEnt/100.00));
+							$('#minimoentregaclientcreditni').maskNumber();						
+						}
 						$('#tablefeescreditclientt').bootstrapTable('load',resF);
 					}
 					else
 					{
 						if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);?>') != -1)
 						{
+							$( "#minimoentregaclientcreditn" ).hide();
 							$('#usuariosupervisorn20i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						}
 						else 
 						{
+							$( "#minimoentregaclientcreditn" ).hide();
 							$('#usuariosupervisorn20i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						}					
@@ -1487,6 +1530,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					$('#usuariosupervisorn20i').focus();
+					$( "#minimoentregaclientcreditn" ).hide();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
 				}

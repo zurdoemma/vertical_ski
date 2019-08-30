@@ -310,15 +310,76 @@ include("./menu/menu.php");
 				}
 			}			
 			
+			if($( "#minimoentregaplancrediti" ).val().length == 0)
+			{
+				$('#minimoentregaplancrediti').prop('title', '<?php echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#minimoentregaplancrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#minimoentregaplancrediti" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#minimoentregaplancrediti" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#minimoentregaplancrediti" ).tooltip('destroy');
+			}			
+			
+			if($( "#minimoentregaplancrediti" ).val().length != 0)
+			{			
+				if (isNaN($( "#minimoentregaplancrediti" ).val()) || $( "#minimoentregaplancrediti" ).val() % 1 != 0)
+				{
+					$('#minimoentregaplancrediti').prop('title', '<?php echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#minimoentregaplancrediti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#minimoentregaplancrediti" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#minimoentregaplancrediti" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#minimoentregaplancrediti" ).tooltip('destroy');
+				}
+			}
+			
 			var urlgmu = "./acciones/guardarmodificacionplancredito.php";
-			$('#img_loader_11').show();
+			$('#img_loader_21').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idPlanCredito: plancredito, nombre: $( "#nombreplancrediti" ).val(), descripcion: $( "#descripcionplancrediti" ).val(), cantidadCuotas: $( "#cantidadcuotasplancrediti" ).val(), interesFijo: $( "#interesfijoplancrediti" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancrediti" ).val(), cadena: $( "#cadenaplancrediti" ).val() },
+				data: { idPlanCredito: plancredito, nombre: $( "#nombreplancrediti" ).val(), descripcion: $( "#descripcionplancrediti" ).val(), cantidadCuotas: $( "#cantidadcuotasplancrediti" ).val(), interesFijo: $( "#interesfijoplancrediti" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancrediti" ).val(), cadena: $( "#cadenaplancrediti" ).val(), minimoEntrega: $( "#minimoentregaplancrediti" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
+					$('#img_loader_21').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -333,7 +394,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
+					$('#img_loader_21').hide();
 				}
 			});				
 		}			
@@ -520,17 +581,78 @@ include("./menu/menu.php");
 					});					
 					$( "#interesfijoplancreditni" ).tooltip('destroy');
 				}
+			}
+
+			if($( "#minimoentregaplancreditni" ).val().length == 0)
+			{
+				$('#minimoentregaplancreditni').prop('title', '<?php echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#minimoentregaplancreditni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#minimoentregaplancreditni" ).focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#minimoentregaplancreditni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#minimoentregaplancreditni" ).tooltip('destroy');
+			}			
+			
+			if($( "#minimoentregaplancreditni" ).val().length != 0)
+			{			
+				if (isNaN($( "#minimoentregaplancreditni" ).val()) || $( "#minimoentregaplancreditni" ).val() % 1 != 0)
+				{
+					$('#minimoentregaplancreditni').prop('title', '<?php echo translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#minimoentregaplancreditni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#minimoentregaplancreditni" ).focus();
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#minimoentregaplancreditni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#minimoentregaplancreditni" ).tooltip('destroy');
+				}
 			}			
 						
 			var urlggnu = "./acciones/guardarnuevoplancredito.php";
-			$('#img_loader_11').show();
+			$('#img_loader_21').show();
 			
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val() },
+				data: { nombre: $( "#nombreplancreditni" ).val(), descripcion: $( "#descripcionplancreditni" ).val(), cantidadCuotas: $( "#cantidadcuotasplancreditni" ).val(), interesFijo: $( "#interesfijoplancreditni" ).val(), tipoDiferimientoCuota: $( "#tipodiferimientocuotasplancreditni" ).val(), cadena: $( "#cadenaplancreditni" ).val(), minimoEntrega: $( "#minimoentregaplancreditni" ).val() },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
+					$('#img_loader_21').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_New_Credit_Plan_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -545,7 +667,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
+					$('#img_loader_21').hide();
 				}
 			});
 		}			

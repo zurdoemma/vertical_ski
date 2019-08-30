@@ -55,7 +55,7 @@
 		echo '			<h3 class="panel-title">'.translate('Lbl_New_Credit_Plan',$GLOBALS['lang']).'</h3>';
 		echo ' 		</div>';
 		echo '		<div class="panel-body">';
-		echo '			<div id="img_loader_11"></div>';
+		echo '			<div id="img_loader_21"></div>';
 		echo '			<form id="formularionpc" role="form">';
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nombreplancreditn">'.translate('Lbl_Name_Credit_Plan',$GLOBALS['lang']).':</label>';
@@ -122,8 +122,13 @@
 											return;			
 										}
 		echo '						</select>';
+		echo '					</div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="minimoentregaplancreditn">'.translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="minimoentregaplancreditn">';
+		echo '						<input title="'.translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="minimoentregaplancreditni" name="minimoentregaplancreditni" type="text" maxlength="11" />';
 		echo '					</div>';		
-		echo '				</div>';		
+		echo '				</div>';
+		
 		echo '				<div class="form-group form-inline">';				
 		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarNPC" id="btnCancelarNPC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialognewcreditplan\').dialog(\'close\');" style="margin-left:10px;" />';
 		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarNPC" id="btnCargarNPC" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarNuevoPlanCredito(document.getElementById(\'formularionpc\'));"/>';										

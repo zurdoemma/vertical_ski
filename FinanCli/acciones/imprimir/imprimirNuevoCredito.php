@@ -21,9 +21,10 @@ $esCopia=htmlspecialchars($_POST["esCopia"], ENT_QUOTES, 'UTF-8');
 $montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
 $montoInteres=htmlspecialchars($_POST["montoInteres"], ENT_QUOTES, 'UTF-8');
 $datosCuotas=htmlspecialchars($_POST["datosCuotas"], ENT_QUOTES, 'UTF-8');
+$pagaPrimeraCuota=htmlspecialchars($_POST["pagaPrimeraCuota"], ENT_QUOTES, 'UTF-8');
 
 
-if(empty($fecha) || empty($numeroCredito) || empty($planCredito) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoCredito) || empty($cuotas) || empty($proximoPago) || empty($tipoDocumento) || empty($documento)) 
+if(empty($fecha) || empty($numeroCredito) || empty($planCredito) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoCredito) || empty($cuotas) || empty($proximoPago) || empty($tipoDocumento) || empty($documento) || empty($pagaPrimeraCuota)) 
 {
 	echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']);
 	//echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']).$fecha.' - '.$numeroCredito.' - '.$planCredito.' - '.$cliente.' - '.$tipoCliente.' - '.$usuario.' - '.$montoCredito.' - '.$cuotas.' - '.$proximoPago.' - '.$tipoDocumento.' - '.$documento;
@@ -118,19 +119,25 @@ try
 			$printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 		}
 		$printer -> feed();
+		if($pagaPrimeraCuota == 1)
+		{			
+			$printer -> text(translate('Msg_First_Fee_Paid',$GLOBALS['lang']).'.');
+			$printer -> feed();		
+		}		
 		$printer -> setJustification($justification[0]);
-		$printer -> setTextSize(1, 1);		
+		$printer -> setTextSize(1, 1);
 		$printer -> text('-------------------------------');
 		$printer -> feed();
-		$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
-		$printer -> feed();
-		$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));		
-		$printer -> feed();
+		//$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
+		//$printer -> feed();
+		//$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
+		//$printer -> feed();			
 		$printer -> setJustification($justification[1]);
 		$printer -> text('********************************');
-		$printer -> feed();
-		$printer -> setTextSize(1, 2);	
-		$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
+		$printer -> feed();	
+		$printer -> setTextSize(1, 2);
+		$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCompra, 2, ',', '.'));
+		//$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
 		$printer -> feed();
 		$printer -> setTextSize(1, 1);	
 		$printer -> text('********************************');	
@@ -235,15 +242,16 @@ try
 			$printer -> setTextSize(1, 1);		
 			$printer -> text('-------------------------------');
 			$printer -> feed();
-			$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
-			$printer -> feed();
-			$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
-			$printer -> feed();			
+			//$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
+			//$printer -> feed();
+			//$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
+			//$printer -> feed();			
 			$printer -> setJustification($justification[1]);
 			$printer -> text('********************************');
 			$printer -> feed();	
 			$printer -> setTextSize(1, 2);
-			$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
+			$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCompra, 2, ',', '.'));
+			//$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
 			$printer -> feed();	
 			$printer -> setTextSize(1, 1);
 			$printer -> text('********************************');	

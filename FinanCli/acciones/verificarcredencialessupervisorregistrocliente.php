@@ -151,10 +151,10 @@
 							else $stmt10->bind_param('sisisss', $date_registro_a_s_db, $tipoDocumento, $documento, $motivo, $_SESSION['username'], $usuarioSupervisor, $tokenRC);
 							if(!$stmt10->execute())
 							{
+								echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
 								$mysqli->autocommit(TRUE);
 								$stmt->free_result();
 								$stmt->close();
-								echo translate('Msg_Supervisor_Not_OK',$GLOBALS['lang']);
 								return;						
 							}
 							

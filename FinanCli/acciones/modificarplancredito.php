@@ -24,14 +24,14 @@
 		
 		$idPlanCredito=htmlspecialchars($_POST["idPlanCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena FROM finan_cli.plan_credito pc WHERE pc.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM finan_cli.plan_credito pc WHERE pc.id = ?")) 
 		{
 			$stmt->bind_param('i', $idPlanCredito);
 			$stmt->execute();    // Ejecuta la consulta preparada.
 			$stmt->store_result();
 	 
 			// Obtiene las variables del resultado.
-			$stmt->bind_result($id_credit_plan, $name_credit_plan, $description_credit_plan, $cantidad_cuotas_credit_plan, $interes_fijo_credit_plan, $diferimiento_cuota_credit_plan, $cadena_credit_plan);
+			$stmt->bind_result($id_credit_plan, $name_credit_plan, $description_credit_plan, $cantidad_cuotas_credit_plan, $interes_fijo_credit_plan, $diferimiento_cuota_credit_plan, $cadena_credit_plan, $minimo_entrega_credit_plan);
 			
 			$stmt->fetch();
 					
@@ -41,7 +41,7 @@
 			echo '			<h3 class="panel-title">'.translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']).'</h3>';
 			echo ' 		</div>';
 			echo '		<div class="panel-body">';
-			echo '			<div id="img_loader_11"></div>';
+			echo '			<div id="img_loader_21"></div>';
 			echo '			<form id="formularionpc" role="form">';
 			echo '				<div class="form-group form-inline">';
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nombreplancredit">'.translate('Lbl_Name_Credit_Plan',$GLOBALS['lang']).':</label>';
@@ -109,8 +109,12 @@
 												return;			
 											}
 			echo '						</select>';
-			echo '					</div>';		
-			echo '				</div>';		
+			echo '					</div>';
+			echo '					&nbsp;<label class="control-label" for="minimoentregaplancredit">'.translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).':</label>';
+			echo '					<div class="form-group" id="minimoentregaplancredit">';
+			echo '						<input title="'.translate('Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="minimoentregaplancrediti" name="minimoentregaplancrediti" type="text" maxlength="11" value="'.$minimo_entrega_credit_plan.'" />';
+			echo '					</div>';			
+			echo '				</div>';
 			echo '				<div class="form-group form-inline">';				
 			echo '					<input type="button" class="btn btn-primary pull-right" name="btnCancelarPC" id="btnCancelarPC" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogmodifycreditplan\').dialog(\'close\');" style="margin-left:10px;" />';
 			echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarPC" id="btnCargarPC" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarModificacionPlanCredito(document.getElementById(\'formularionpc\'),\''.$idPlanCredito.'\');"/>';										

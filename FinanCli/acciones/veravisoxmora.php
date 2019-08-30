@@ -112,9 +112,9 @@
 		echo '			<div id="img_loader_16"></div>';
 		echo '			<form id="formularioiaxm" role="form">';			
 		echo '				<div class="form-group form-inline">';
-		echo '					&nbsp;<label class="control-label" for="fechadefaultnoticev">'.translate('Lbl_Document_Credit',$GLOBALS['lang']).':</label>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="fechadefaultnoticev">'.translate('Lbl_Date',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="fechadefaultnoticev">';
-		echo '						<input title="'.translate('Msg_A_Document_Client_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm green-border" id="fechadefaultnoticevi" name="fechadefaultnoticevi" type="text" maxlength="20" value="'.substr($date_default_notice,6,2).'/'.substr($date_default_notice,4,2).'/'.substr($date_default_notice,0,4).' '.substr($date_default_notice,8,2).':'.substr($date_default_notice,10,2).':'.substr($date_default_notice,12,2).'" disabled/>';
+		echo '						<input class="form-control input-sm green-border" id="fechadefaultnoticevi" name="fechadefaultnoticevi" type="text" maxlength="20" value="'.substr($date_default_notice,6,2).'/'.substr($date_default_notice,4,2).'/'.substr($date_default_notice,0,4).' '.substr($date_default_notice,8,2).':'.substr($date_default_notice,10,2).':'.substr($date_default_notice,12,2).'" disabled/>';
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nombreclientdefaultnoticev">'.translate('Lbl_Names_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="nombreclientdefaultnoticev">';

@@ -378,14 +378,14 @@ include("./menu/menu.php");
 			}			
 			
 			var urlgmu = "./acciones/guardarmodificacionperfilcredito.php";
-			$('#img_loader_11').show();
+			$('#img_loader_20').show();
 			
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
 				data: { idPerfilCredito: perfilcredito, nombre: $( "#nombreprofilecrediti" ).val(), descripcion: $( "#descripcionprofilecrediti" ).val(), montoMaximo: (($( "#montomaximoprofilecrediti" ).val().replace(/,/g,""))*100.00) },
 				success: function(dataresponse, statustext, response){
-					$('#img_loader_11').hide();
+					$('#img_loader_20').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Profile_Credit_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -400,7 +400,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader_11').hide();
+					$('#img_loader_20').hide();
 				}
 			});				
 		}			
