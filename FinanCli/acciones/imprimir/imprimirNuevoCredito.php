@@ -17,17 +17,17 @@ $cuotas=htmlspecialchars($_POST["cuotas"], ENT_QUOTES, 'UTF-8');
 $proximoPago=htmlspecialchars($_POST["proximoPago"], ENT_QUOTES, 'UTF-8');
 $tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 $documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-$esCopia=htmlspecialchars($_POST["esCopia"], ENT_QUOTES, 'UTF-8');
+if(!empty($esCopia)) $esCopia=htmlspecialchars($_POST["esCopia"], ENT_QUOTES, 'UTF-8');
 $montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
 $montoInteres=htmlspecialchars($_POST["montoInteres"], ENT_QUOTES, 'UTF-8');
 $datosCuotas=htmlspecialchars($_POST["datosCuotas"], ENT_QUOTES, 'UTF-8');
 $pagaPrimeraCuota=htmlspecialchars($_POST["pagaPrimeraCuota"], ENT_QUOTES, 'UTF-8');
 
 
-if(empty($fecha) || empty($numeroCredito) || empty($planCredito) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoCredito) || empty($cuotas) || empty($proximoPago) || empty($tipoDocumento) || empty($documento) || empty($pagaPrimeraCuota)) 
+if(empty($fecha) || empty($numeroCredito) || empty($planCredito) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoCredito) || empty($cuotas) || empty($proximoPago) || empty($tipoDocumento) || empty($documento) || $pagaPrimeraCuota > 1 || $pagaPrimeraCuota < 0) 
 {
 	echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']);
-	//echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']).$fecha.' - '.$numeroCredito.' - '.$planCredito.' - '.$cliente.' - '.$tipoCliente.' - '.$usuario.' - '.$montoCredito.' - '.$cuotas.' - '.$proximoPago.' - '.$tipoDocumento.' - '.$documento;
+	//echo translate('Msg_Printing_Error_Incorrect_Parameters',$GLOBALS['lang']).$fecha.' - '.$numeroCredito.' - '.$planCredito.' - '.$cliente.' - '.$tipoCliente.' - '.$usuario.' - '.$montoCredito.' - '.$cuotas.' - '.$proximoPago.' - '.$tipoDocumento.' - '.$documento.' - '.$pagaPrimeraCuota;
 	return;
 }
 

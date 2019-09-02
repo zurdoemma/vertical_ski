@@ -32,15 +32,22 @@
 		$montoMaximoCompra=htmlspecialchars($_POST["montoMaximoCompra"], ENT_QUOTES, 'UTF-8');
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
 		$validacionPrimeraCuota=htmlspecialchars($_POST["validacionPrimeraCuota"], ENT_QUOTES, 'UTF-8');
+		$minimoEntrega=htmlspecialchars($_POST["minimoEntrega"], ENT_QUOTES, 'UTF-8');
 		
 		if($validacionPrimeraCuota == 'true') $pagaPrimeraCuota = 1;
 		else $pagaPrimeraCuota = 0;
 		
-		if($montoCompra < 0)
+		if($montoCompra < 0 || $minimoEntrega < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
 		}		
+		
+		if(intval($minimoEntrega) === false)
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;			
+		}
 
 		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
@@ -415,13 +422,13 @@
 			return;
 		}
 		
-		if($monto_credito_disponible != $montoMaximoCompra)
+		if($monto_credito_disponible != round($montoMaximoCompra,0))
 		{
 			echo translate('The_Amount_Of_Available_Credit_Is_Incosistent_Re_Register_Credit',$GLOBALS['lang']);
 			return;
 		}
 		
-		$montoTotalCredito = $montoCompra + ($montoCompra * ($interes_fijo_plan_credito_s_db/100.00));
+		$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));
 		
 		if($montoTotalCredito > $monto_credito_disponible)
 		{
@@ -516,7 +523,7 @@
 						return;
 					}					
 				}
-				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['fechavencimiento'] + '!';
+				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['fechavencimiento'].'!';
 				$array[$i-1]['montocuota'] = (round((($montoTotalCredito/100.00) - ($monto_acum_cuotas/100.00)),2)*100);
 				$cuotas_credito_plan_s = $cuotas_credito_plan_s.$array[$i-1]['montocuota'];
 			}
@@ -525,7 +532,7 @@
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota) VALUES (?,?,?,?,?,?,?)"))
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota,minimo_entrega) VALUES (?,?,?,?,?,?,?,?)"))
 		{
 			echo $mysqli->error;
 			$mysqli->autocommit(TRUE);
@@ -536,7 +543,7 @@
 		else
 		{
 			$estadoIC = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
-			$stmt10->bind_param('iiiiisi', $cantidad_cuotas_plan_credito_s_db, $montoCompra, $planCredito, $interes_fijo_plan_credito_s_db, $montoTotalCredito, $estadoIC, $pagaPrimeraCuota);
+			$stmt10->bind_param('iiiiisii', $cantidad_cuotas_plan_credito_s_db, $montoCompra, $planCredito, $interes_fijo_plan_credito_s_db, $montoTotalCredito, $estadoIC, $pagaPrimeraCuota, $minimoEntrega);
 			if(!$stmt10->execute())
 			{
 				echo $mysqli->error;
@@ -549,7 +556,7 @@
 		}	
 
 		$date_registro = date("YmdHis");				
-		$valor_log_user = "INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota) VALUES (".$cantidad_cuotas_plan_credito_s_db.",".$montoCompra.",".$planCredito.",".$interes_fijo_plan_credito_s_db.",".$montoTotalCredito.",".$estadoIC.",".$pagaPrimeraCuota.")";
+		$valor_log_user = "INSERT INTO finan_cli.credito(cantidad_cuotas,monto_compra,id_plan_credito,interes_fijo_plan_credito,monto_credito_original,estado,abona_primera_cuota,minimo_entrega) VALUES (".$cantidad_cuotas_plan_credito_s_db.",".$montoCompra.",".$planCredito.",".$interes_fijo_plan_credito_s_db.",".$montoTotalCredito.",".$estadoIC.",".$pagaPrimeraCuota.",".$minimoEntrega.")";
 
 		if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 		{

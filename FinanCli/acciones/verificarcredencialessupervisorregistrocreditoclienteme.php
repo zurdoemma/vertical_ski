@@ -530,13 +530,13 @@
 				return;
 			}
 			
-			if($monto_credito_disponible != $montoMaximoCompra)
+			if($monto_credito_disponible != round($montoMaximoCompra,0))
 			{
 				echo translate('The_Amount_Of_Available_Credit_Is_Incosistent_Re_Register_Credit',$GLOBALS['lang']);
 				return;
 			}
 			
-			$montoTotalCredito = $montoCompra + ($montoCompra * ($interes_fijo_plan_credito_s_db/100.00));
+			$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));
 		
 			
 			$array[0] = array();

@@ -418,7 +418,7 @@
 				return;
 			}
 						
-			$montoTotalCredito = $montoCompra + ($montoCompra * ($interes_fijo_plan_credito_s_db/100.00));
+			$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));
 						
 			$array[0] = array();
 			$monto_x_cuota = round((($montoTotalCredito/100.00)/$cantidad_cuotas_plan_credito_s_db),2);

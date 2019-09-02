@@ -388,15 +388,15 @@
 			echo translate('The_Selected_Credit_Plan_Is_Inconsistent_User_Client',$GLOBALS['lang']);
 			return;
 		}
-		
-		if($monto_credito_disponible != $montoMaximoCompra)
+				
+		if($monto_credito_disponible != round($montoMaximoCompra,0))
 		{
 			echo translate('The_Amount_Of_Available_Credit_Is_Incosistent_Re_Register_Credit',$GLOBALS['lang']);
 			return;
 		}
 		
-		$montoTotalCredito = $montoCompra + ($montoCompra * ($interes_fijo_plan_credito_s_db/100.00));
-		
+
+		$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));		
 		if($montoTotalCredito > $monto_credito_disponible)
 		{
 			$selectVCS = "SELECT e.id, e.token FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.token = ?";
