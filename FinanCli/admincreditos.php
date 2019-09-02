@@ -180,6 +180,7 @@ include("./menu/menu.php");
 						
 						tagvc.dialog('open');
 						$('#montocompraclientcreditvi').maskNumber();
+						$('#minimoentregaclientcreditvi').maskNumber();
 					}
 					else
 					{
@@ -872,7 +873,7 @@ include("./menu/menu.php");
 
 							var datosFinImpre = datosImpresion.split('|');
 
-							imprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13], datosFinImpre[14]);
+							imprimirNuevoCredito(datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], "<?php echo $_SESSION['username']; ?>", (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13], datosFinImpre[14], datosFinImpre[15]);
 							mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 						}
 						else 
@@ -896,14 +897,14 @@ include("./menu/menu.php");
     </script>	
 	
 	<script type="text/javascript">
-		function imprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaprimeracuota)
+		function imprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaprimeracuota, minimoEntrega)
 		{
 			var urlinc = "<?php echo $GLOBALS['imprimir_nuevo_credito']; ?>";
 
 			$.ajax({
 				url: urlinc,
 				method: "POST",
-				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres, pagaPrimeraCuota: pagaprimeracuota },
+				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres, pagaPrimeraCuota: pagaprimeracuota, minimoEntrega: minimoEntrega },
 				success: function(dataresponse, statustext, response){
 					
 					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
@@ -1629,7 +1630,7 @@ include("./menu/menu.php");
 						var datosImpresion = dataresponse.substring(0);
 
 						var datosFinImpre = datosImpresion.split('|');
-						confirmar_accion_reimprimir_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Reprint_The_Credit',$GLOBALS['lang']);?>", datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], datosFinImpre[14], (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13], datosFinImpre[15]);
+						confirmar_accion_reimprimir_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Reprint_The_Credit',$GLOBALS['lang']);?>", datosFinImpre[0], datosFinImpre[1], datosFinImpre[5], datosFinImpre[6], datosFinImpre[2], datosFinImpre[7], datosFinImpre[14], (datosFinImpre[8]/100.00), datosFinImpre[3], datosFinImpre[4], datosFinImpre[9], datosFinImpre[10], datosFinImpre[11], datosFinImpre[12], datosFinImpre[13], datosFinImpre[15], datosFinImpre[16]);
 					}
 					else 
 					{
@@ -1645,7 +1646,7 @@ include("./menu/menu.php");
     </script>
 
 	<script type="text/javascript">
-		function confirmar_accion_reimprimir_credito_cliente(titulo, mensaje, idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota)
+		function confirmar_accion_reimprimir_credito_cliente(titulo, mensaje, idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota, minimoEntrega)
 		{
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
@@ -1659,7 +1660,7 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										
-										reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota);                                                      
+										reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota, minimoEntrega);                                                      
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
@@ -1673,14 +1674,14 @@ include("./menu/menu.php");
 	</script>
 	
 	<script type="text/javascript">
-		function reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota)
+		function reImprimirNuevoCredito(idCreditoImp, fechaCreditoImp, planCreditoImp, datosCliCreditoImp, sucursalCreditoImp, tipoClienteCreditoImp, usuarioCreditoImp, montoCreditoImp, cuotasCreditoImp, proximoPagoCreditoImp, tipoDocumentoCreditoImp, documentoCreditoImp, datosCuotas, montoCompra, montoInteres, pagaPrimeraCuota, minimoEntrega)
 		{
 			var urlinc2 = "<?php echo $GLOBALS['imprimir_nuevo_credito']; ?>";
 
 			$.ajax({
 				url: urlinc2,
 				method: "POST",
-				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, esCopia: 1, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres, pagaPrimeraCuota: pagaPrimeraCuota },
+				data: { numeroCredito: idCreditoImp, fecha: fechaCreditoImp, planCredito: planCreditoImp, cliente: datosCliCreditoImp, sucursal: sucursalCreditoImp, tipoCliente: tipoClienteCreditoImp, usuario: usuarioCreditoImp, montoCredito: montoCreditoImp, cuotas: cuotasCreditoImp, proximoPago: proximoPagoCreditoImp, tipoDocumento: tipoDocumentoCreditoImp, documento: documentoCreditoImp, esCopia: 1, datosCuotas: datosCuotas, montoCompra: montoCompra, montoInteres: montoInteres, pagaPrimeraCuota: pagaPrimeraCuota, minimoEntrega: minimoEntrega },
 				success: function(dataresponse, statustext, response){
 					
 					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)

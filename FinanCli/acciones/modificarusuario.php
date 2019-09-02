@@ -94,10 +94,10 @@
 				echo '					<div class="form-group" id="documentuser">';
 				echo '						<input title="'.translate('Msg_A_User_Document_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="documentuseri" name="documentuseri" type="text" maxlength="20" value="'.$user_doc.'" />';
 				echo '					</div>';
-				echo '					&nbsp;&nbsp;<label class="control-label" for="homeaddressuser">'.translate('Lbl_Home_Address_And_Phone',$GLOBALS['lang']).':</label>';
+				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="homeaddressuser">'.translate('Lbl_Home_Address_And_Phone',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="homeaddressuser">';
 				echo '						<button type="button" class="btn" title="'.translate('Lbl_View_Home_Address',$GLOBALS['lang']).'" onclick="window.open(\'domiciliosusers.php?usuario='.$user_id.'\',\'_blank\');"><i class="fa fa-eye"></i></button>';
-				echo '						&nbsp;&nbsp<button type="button" class="btn" title="'.translate('Lbl_View_Phones',$GLOBALS['lang']).'" onclick="window.open(\'phonesusers.php?usuario='.$user_id.'\',\'_blank\');"><i class="fa fa-phone"></i></button>';
+				echo '						&nbsp;<button type="button" class="btn" title="'.translate('Lbl_View_Phones',$GLOBALS['lang']).'" onclick="window.open(\'phonesusers.php?usuario='.$user_id.'\',\'_blank\');"><i class="fa fa-phone"></i></button>';
 				echo '					</div>';				
 				echo '				</div>';
 				echo '				<div class="form-group form-inline">';

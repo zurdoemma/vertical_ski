@@ -27,13 +27,20 @@
 		$cantidadDias=htmlspecialchars($_POST["cantidadDias"], ENT_QUOTES, 'UTF-8');
 		$interesXMora=htmlspecialchars($_POST["interes"], ENT_QUOTES, 'UTF-8');
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
+		$recurrente=htmlspecialchars($_POST["recurrente"], ENT_QUOTES, 'UTF-8');
 		
 		if($cantidadDias < 0 || $interesXMora < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
 		}
-
+	
+		if($recurrente == 'true')
+		{
+			$esRecurrente = 1;
+		}
+		else $esRecurrente = 0; 
+			
 		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
@@ -173,13 +180,13 @@
 				$stmt3->free_result();
 				$stmt3->close();
 
-				if($stmt4 = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE ixm.id_plan_credito = pc.id AND ixm.id = ?"))
+				if($stmt4 = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE ixm.id_plan_credito = pc.id AND ixm.id = ?"))
 				{
 					$stmt4->bind_param('i', $idInteresXMora);
 					$stmt4->execute();    
 					$stmt4->store_result();
 					
-					$stmt4->bind_result($id_interes_x_mora_a, $cantidad_dias_interes_x_mora_a, $interes_x_mora_a, $plan_credito_interes_x_mora_a);									
+					$stmt4->bind_result($id_interes_x_mora_a, $cantidad_dias_interes_x_mora_a, $interes_x_mora_a, $plan_credito_interes_x_mora_a,  $recurrente_interes_x_mora_a);									
 				}
 				else
 				{
@@ -192,7 +199,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.interes_x_mora SET cantidad_dias = ?, interes = ?, id_plan_credito = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.interes_x_mora SET cantidad_dias = ?, interes = ?, id_plan_credito = ?, recurrente = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -202,7 +209,7 @@
 				}
 				else 
 				{
-					$stmt10->bind_param('iiii', $cantidadDias, $interesXMora, $planCredito, $idInteresXMora);
+					$stmt10->bind_param('iiiii', $cantidadDias, $interesXMora, $planCredito, $esRecurrente, $idInteresXMora);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
@@ -216,7 +223,7 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
 				$stmt4->fetch();
-				$valor_log_user = "ANTERIOR: UPDATE finan_cli.interes_x_mora SET cantidad_dias = ".$cantidad_dias_interes_x_mora_a.", interes = ".$interes_x_mora_a.", id_plan_credito = ".$plan_credito_interes_x_mora_a." WHERE id = ".$idInteresXMora. " - NUEVO: UPDATE finan_cli.interes_x_mora SET cantidad_dias = ".$cantidadDias.", interes = ".$interesXMora.", id_plan_credito = ".$planCredito." WHERE id = ".$idInteresXMora;
+				$valor_log_user = "ANTERIOR: UPDATE finan_cli.interes_x_mora SET cantidad_dias = ".$cantidad_dias_interes_x_mora_a.", interes = ".$interes_x_mora_a.", id_plan_credito = ".$plan_credito_interes_x_mora_a.", recurrente = ".$recurrente_interes_x_mora_a." WHERE id = ".$idInteresXMora. " - NUEVO: UPDATE finan_cli.interes_x_mora SET cantidad_dias = ".$cantidadDias.", interes = ".$interesXMora.", id_plan_credito = ".$planCredito.", recurrente = ".$esRecurrente." WHERE id = ".$idInteresXMora;
 
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
@@ -248,13 +255,13 @@
 				$stmt4->free_result();
 				$stmt4->close();
 				
-				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    
 					$stmt->store_result();
 					
-					$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
+					$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora, $recurrente_interes_x_mora);
 										
 					$array[0] = array();
 					$posicion = 0;
@@ -263,6 +270,8 @@
 						$array[$posicion]['cantidaddias'] = $cantidad_dias_interes_x_mora;
 						$array[$posicion]['interes'] = $interes_x_mora;
 						$array[$posicion]['plancredito'] = $plan_credito_interes_x_mora;
+						if($recurrente_interes_x_mora == 1) $array[$posicion]['recurrente'] = translate('Lbl_Button_YES',$GLOBALS['lang']);
+						else $array[$posicion]['recurrente'] = translate('Lbl_Button_NO',$GLOBALS['lang']);
 						
 						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button>';
 						

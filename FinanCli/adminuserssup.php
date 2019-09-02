@@ -20,7 +20,8 @@ include("./menu/menu.php");
 	<![endif]-->
 	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.op2.css" >
-	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >	
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.op2.css" >
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap-datetimepicker.css" >	
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap-table.min.op2.css" >
 	<link rel="stylesheet" href="./css/fontawesome.min.css">
 	<link rel="stylesheet" href="./css/all.css">
@@ -29,7 +30,8 @@ include("./menu/menu.php");
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/JavaScript" src="./js/bootstrap.min.op2.js" ></script>
 	<script type="text/javascript" src="./js/jquery-ui.js"></script>
-	<script type="text/JavaScript" src="./js/moment.op2.js" ></script>	
+	<script type="text/JavaScript" src="./js/moment.op2.js" ></script>
+	<script type="text/JavaScript" src="./js/bootstrap-datetimepicker.js" ></script>		
 	<script type="text/JavaScript" src="./js/bootstrap-table.min.op2.js" ></script>
 	<script type="text/JavaScript" src="./js/locale/bootstrap-table-es-AR.js" ></script>	
 	<script type="text/JavaScript" src="./js/extensions/export/FileSaver.min.js" ></script>	
@@ -75,6 +77,22 @@ include("./menu/menu.php");
 									tagnu.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					$("#datetimepickerhorarioingresousern").datetimepicker({
+							format: 'HH:mm',
+							locale: 'es',
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'top'}
+					});
+					
+					$("#datetimepickerhorarioegresousern").datetimepicker({
+							format: 'HH:mm',
+							locale: 'es',
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'top'}
+					});					
 					tagnu.dialog('open');
 				},
 				error: function(request, errorcode, errortext){

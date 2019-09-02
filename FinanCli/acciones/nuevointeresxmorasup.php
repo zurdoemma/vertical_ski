@@ -60,7 +60,7 @@
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="cantidaddiasinteresxmoran">'.translate('Lbl_Amount_Days_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="cantidaddiasinteresxmoran">';
-		echo '						<input title="'.translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="cantidaddiasinteresxmorani" name="cantidaddiasinteresxmorani" type="text" maxlength="11" />';
+		echo '						<input title="'.translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="cantidaddiasinteresxmorani" name="cantidaddiasinteresxmorani" type="text" maxlength="11" />&nbsp;&nbsp;<input type="checkbox" class="form-control" id="recurrenciainteresxmorani" name="recurrenciainteresxmorani" style="width:29px;" />';
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="interesxmoran">'.translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="interesxmoran">';

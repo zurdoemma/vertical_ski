@@ -52,7 +52,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento, c.monto_compra, cc.id_usuario, c.abona_primera_cuota FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento, c.monto_compra, cc.id_usuario, c.abona_primera_cuota, c.minimo_entrega FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
 		{
 			$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -60,7 +60,7 @@
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($id_credit_client, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento, $montoCompra, $usuario_otorga_credito, $abona_primera_cuota_credito);			
+			$stmt->bind_result($id_credit_client, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento, $montoCompra, $usuario_otorga_credito, $abona_primera_cuota_credito, $minimo_entrega_credito);			
 			
 			$totR = $stmt->num_rows;
 
@@ -169,7 +169,7 @@
 			else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);			
 			
 			$montoInteresF = $montoTotalCredito-$montoCompra;
-			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$usuario_otorga_credito.'|'.$pagaPrimeraCuota; 
+			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$usuario_otorga_credito.'|'.$pagaPrimeraCuota.'|'.$minimo_entrega_credito; 
 			echo translate('Msg_Reprint_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion;
 			$stmt->free_result();
 			$stmt->close();

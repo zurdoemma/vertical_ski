@@ -259,7 +259,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idInteresXMora: interesxmora, cantidadDias: $( "#cantidaddiasinteresxmorai" ).val(), interes: $( "#interesxmorai" ).val(), planCredito: $( "#plancreditointeresxmorai" ).val() },
+				data: { idInteresXMora: interesxmora, cantidadDias: $( "#cantidaddiasinteresxmorai" ).val(), interes: $( "#interesxmorai" ).val(), planCredito: $( "#plancreditointeresxmorai" ).val(), recurrente: $('#recurrenciainteresxmorai').is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_22').hide();
 					
@@ -414,7 +414,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { cantidadDias: $( "#cantidaddiasinteresxmorani" ).val(), interes: $( "#interesxmorani" ).val(), planCredito: $( "#plancreditointeresxmorani" ).val() },
+				data: { cantidadDias: $( "#cantidaddiasinteresxmorani" ).val(), interes: $( "#interesxmorani" ).val(), planCredito: $( "#plancreditointeresxmorani" ).val(), recurrente: $('#recurrenciainteresxmorani').is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_22').hide();
 					
@@ -608,18 +608,19 @@ include("./menu/menu.php");
 							<th class="col-xs-1 text-center" data-field="cantidaddias" data-sortable="true"><?php echo translate('Lbl_Amount_Days_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="interes" data-sortable="true"><?php echo translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
 							<th class="col-xs-2 text-center" data-field="plancredito" data-sortable="true"><?php echo translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="recurrente" data-sortable="true"><?php echo translate('Lbl_Recurrent_Interest',$GLOBALS['lang']);?></th>
 							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Interest_For_Late_Payment',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+							if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
 						 
 								// Obtiene las variables del resultado.
-								$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
+								$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora, $recurrente_interes_x_mora);
 								
 								while($stmt->fetch())
 								{		
@@ -627,7 +628,8 @@ include("./menu/menu.php");
 									echo '<td>'.$cantidad_dias_interes_x_mora.'</td>';
 									echo '<td>'.$interes_x_mora.'</td>';
 									echo '<td>'.$plan_credito_interes_x_mora.'</td>';
-									
+									if($recurrente_interes_x_mora == 1)	echo '<td>'.translate('Lbl_Button_YES',$GLOBALS['lang']).'</td>';
+									else echo '<td>'.translate('Lbl_Button_NO',$GLOBALS['lang']).'</td>';
 									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}

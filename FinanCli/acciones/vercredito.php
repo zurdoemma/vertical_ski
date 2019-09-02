@@ -52,13 +52,13 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_compra, cc.fecha, c.cantidad_cuotas, pc.id, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, cli.tipo_documento, cli.documento, t.numero, cc.tipo_documento_adicional, cc.documento_adicional, c.abona_primera_cuota FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.cliente_x_telefono cxt, finan_cli.telefono t WHERE cli.tipo_documento = cxt.tipo_documento AND cli.documento = cxt.documento AND cxt.id_telefono = t.id AND cxt.preferido = 1 AND pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_compra, cc.fecha, c.cantidad_cuotas, pc.id, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, cli.tipo_documento, cli.documento, t.numero, cc.tipo_documento_adicional, cc.documento_adicional, c.abona_primera_cuota, c.minimo_entrega FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.cliente_x_telefono cxt, finan_cli.telefono t WHERE cli.tipo_documento = cxt.tipo_documento AND cli.documento = cxt.documento AND cxt.id_telefono = t.id AND cxt.preferido = 1 AND pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCredito);
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($id_credit_client, $monto_compra_credito_cli, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento, $numero_telefono_cliente_db, $tipo_documento_adicional_cliente_db, $documento_adicional_cliente_db, $abona_primera_cuota_cliente_db);			
+			$stmt->bind_result($id_credit_client, $monto_compra_credito_cli, $fecha_cre_pi, $cantidad_cuotas_plan_credito_s_db, $nombre_plan_credito_s_db, $nombres_cliente_db, $apellidos_cliente_db, $id_titular_cliente_db, $montoTotalCredito, $nombre_tipo_documento_cliente_db, $documento, $numero_telefono_cliente_db, $tipo_documento_adicional_cliente_db, $documento_adicional_cliente_db, $abona_primera_cuota_cliente_db, $minimo_entrega_cliente_db);			
 			
 			$totR = $stmt->num_rows;
 
@@ -289,6 +289,10 @@
 		echo '						  <span class="slider round"></span>';
 		echo '						</label>';
 		echo '					</div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="minimoentregaclientcreditv">'.translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="minimoentregaclientcreditv">';
+		echo '						<input class="form-control input-sm" id="minimoentregaclientcreditvi" name="minimoentregaclientcreditvi" type="text" maxlength="11" value="'.round(($minimo_entrega_cliente_db/100.00),2).'" disabled />';
+		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline"><hr />';
 		echo '					<div class="panel-group">				

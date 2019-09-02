@@ -693,6 +693,20 @@
 		'Lbl_Minimum_Delivery' => 'Mínimo Entrega',
 		'Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter' => 'Debe ingresar un mínimo de entrega',
 		'Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter_A_Whole' => 'El mínimo de entrega debe ser un numero entero',
-		'Msg_A_Minimum_Delivery_Profile_Credit_Cannot_Be_Greater_Than' => 'El mínimo de entrega no puede ser mayor a 100'	
+		'Msg_A_Minimum_Delivery_Profile_Credit_Cannot_Be_Greater_Than' => 'El mínimo de entrega no puede ser mayor a 100',
+		'Lbl_Recurrent_Interest' => 'Recurrente',
+		'Lbl_Entry_Time_User' => 'Hora de Ingreso',
+		'Lbl_Departure_Time_User' => 'Hora de Salida',
+		'Msg_You_Must_Enter_The_User_Entry_Time' => 'Debe ingresar la hora de ingreso del usuario!!',
+		'Msg_You_Must_Enter_The_User_Departure_Time' => 'Debe ingresar la hora de salida del usuario!!',
+		'Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time' => 'La hora de salida no puede ser menor a la hora de entrada!!',
+		'Lbl_Format_Hour_Entry_And_Departure_User' => 'HH:mm',
+		'Lbl_Day_Monday_Check_Work_User' => 'Lunes',
+		'Lbl_Day_Thursday_Check_Work_User' => 'Martes',
+		'Lbl_Day_Wednesday_Check_Work_User' => 'Miercoles',
+		'Lbl_Day_Tuesday_Check_Work_User' => 'Jueves',
+		'Lbl_Day_Friday_Check_Work_User' => 'Viernes',
+		'Lbl_Day_Saturday_Check_Work_User' => 'Sabado',
+		'Lbl_Day_Sunday_Check_Work_User' => 'Domingo'
 	);
 ?>

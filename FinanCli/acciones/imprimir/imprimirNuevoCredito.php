@@ -22,7 +22,7 @@ $montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
 $montoInteres=htmlspecialchars($_POST["montoInteres"], ENT_QUOTES, 'UTF-8');
 $datosCuotas=htmlspecialchars($_POST["datosCuotas"], ENT_QUOTES, 'UTF-8');
 $pagaPrimeraCuota=htmlspecialchars($_POST["pagaPrimeraCuota"], ENT_QUOTES, 'UTF-8');
-
+$minimoEntrega=htmlspecialchars($_POST["minimoEntrega"], ENT_QUOTES, 'UTF-8');
 
 if(empty($fecha) || empty($numeroCredito) || empty($planCredito) || empty($cliente) || empty($tipoCliente) || empty($usuario) || empty($montoCredito) || empty($cuotas) || empty($proximoPago) || empty($tipoDocumento) || empty($documento) || $pagaPrimeraCuota > 1 || $pagaPrimeraCuota < 0) 
 {
@@ -128,6 +128,11 @@ try
 		$printer -> setTextSize(1, 1);
 		$printer -> text('-------------------------------');
 		$printer -> feed();
+		if($minimoEntrega != 0)
+		{
+			$printer -> text(translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).': $'.number_format(($minimoEntrega/100.00), 2, ',', '.'));
+			$printer -> feed();
+		}			
 		//$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 		//$printer -> feed();
 		//$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			
@@ -242,6 +247,11 @@ try
 			$printer -> setTextSize(1, 1);		
 			$printer -> text('-------------------------------');
 			$printer -> feed();
+			if($minimoEntrega != 0)
+			{
+				$printer -> text(translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).': $'.number_format(($minimoEntrega/100.00), 2, ',', '.'));
+				$printer -> feed();
+			}			
 			//$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 			//$printer -> feed();
 			//$printer -> text(translate('Lbl_Amount_Interest_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoInteres/100.00), 2, ',', '.'));			

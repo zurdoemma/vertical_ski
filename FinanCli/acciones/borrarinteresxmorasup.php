@@ -183,13 +183,13 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    
 					$stmt->store_result();
 					
-					$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
+					$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora, $recurrente_interes_x_mora);
 										
 					$array[0] = array();
 					$posicion = 0;
@@ -198,6 +198,8 @@
 						$array[$posicion]['cantidaddias'] = $cantidad_dias_interes_x_mora;
 						$array[$posicion]['interes'] = $interes_x_mora;
 						$array[$posicion]['plancredito'] = $plan_credito_interes_x_mora;
+						if($recurrente_interes_x_mora == 1) $array[$posicion]['recurrente'] = translate('Lbl_Button_YES',$GLOBALS['lang']);
+						else $array[$posicion]['recurrente'] = translate('Lbl_Button_NO',$GLOBALS['lang']);
 						
 						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button>';
 						

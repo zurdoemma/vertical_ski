@@ -51,14 +51,14 @@
 			return;				
 		}
 		
-		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito FROM finan_cli.interes_x_mora ixm WHERE ixm.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito, ixm.recurrente FROM finan_cli.interes_x_mora ixm WHERE ixm.id = ?")) 
 		{
 			$stmt->bind_param('i', $idInteresXMora);
 			$stmt->execute();    // Ejecuta la consulta preparada.
 			$stmt->store_result();
 	 
 			// Obtiene las variables del resultado.
-			$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora);
+			$stmt->bind_result($id_interes_x_mora, $cantidad_dias_interes_x_mora, $interes_x_mora, $plan_credito_interes_x_mora, $recurrente_interes_x_mora);
 			
 			$stmt->fetch();
 
@@ -100,7 +100,8 @@
 			echo '				<div class="form-group form-inline">';
 			echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="cantidaddiasinteresxmora">'.translate('Lbl_Amount_Days_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="cantidaddiasinteresxmora">';
-			echo '						<input title="'.translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="cantidaddiasinteresxmorai" name="cantidaddiasinteresxmorai" type="text" maxlength="11" value="'.$cantidad_dias_interes_x_mora.'" />';
+			if($recurrente_interes_x_mora == 0) echo '						<input title="'.translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="cantidaddiasinteresxmorai" name="cantidaddiasinteresxmorai" type="text" maxlength="11" value="'.$cantidad_dias_interes_x_mora.'" />&nbsp;&nbsp;<input type="checkbox" class="form-control" id="recurrenciainteresxmorai" name="recurrenciainteresxmorai" style="width:29px;" />';
+			else echo '						<input title="'.translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="cantidaddiasinteresxmorai" name="cantidaddiasinteresxmorai" type="text" maxlength="11" value="'.$cantidad_dias_interes_x_mora.'" />&nbsp;&nbsp;<input type="checkbox" class="form-control" id="recurrenciainteresxmorai" name="recurrenciainteresxmorai" style="width:29px;" checked />';
 			echo '					</div>';
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="interesxmora">'.translate('Lbl_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="interesxmora">';

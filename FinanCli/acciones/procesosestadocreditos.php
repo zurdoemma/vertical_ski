@@ -248,12 +248,42 @@
 				$pasoDiasVencidosCuota = 0;
 				while($stmt->fetch())
 				{
-					$fechaObtDB = substr($fecha_vencimiento_cuota_credito_db, 0, 4).'-'.substr($fecha_vencimiento_cuota_credito_db, 4, 2).'-'.substr($fecha_vencimiento_cuota_credito_db, 6, 2).' '.substr($fecha_vencimiento_cuota_credito_db, 8, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 10, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 12, 2);
+					if($stmt262 = $mysqli->prepare("SELECT MAX(ixmcc.fecha) FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.id_cuota_credito = ? HAVING MAX(ixmcc.fecha) IS NOT NULL"))
+					{
+						$stmt262->bind_param('i', $id_cuota_credito_db);
+						$stmt262->execute();    
+						$stmt262->store_result();
+						
+						$totR262 = $stmt262->num_rows;
+
+						if($totR262 > 0)
+						{
+							$stmt262->bind_result($ultima_fecha_interes_aplicado);
+							$stmt262->fetch();
+							
+							$fechaObtDB = substr($ultima_fecha_interes_aplicado, 0, 4).'-'.substr($ultima_fecha_interes_aplicado, 4, 2).'-'.substr($ultima_fecha_interes_aplicado, 6, 2).' '.substr($ultima_fecha_interes_aplicado, 8, 2).':'.substr($ultima_fecha_interes_aplicado, 10, 2).':'.substr($ultima_fecha_interes_aplicado, 12, 2);
+							
+							$stmt262->free_result();
+							$stmt262->close();							
+						}
+						else $fechaObtDB = substr($fecha_vencimiento_cuota_credito_db, 0, 4).'-'.substr($fecha_vencimiento_cuota_credito_db, 4, 2).'-'.substr($fecha_vencimiento_cuota_credito_db, 6, 2).' '.substr($fecha_vencimiento_cuota_credito_db, 8, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 10, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 12, 2);
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}						
+					
 					$fechaInfDB = new DateTime($fechaObtDB);
 					$fechaAct = new DateTime();
 					$difDias = $fechaAct->diff($fechaInfDB);
 					$fechaActNumber = strtotime(date("Y-m-d H:i:s"));
 					$fechaVencimCuotaAc = strtotime($fechaObtDB);
+					
+					
+					$fechaParaDENM = substr($fecha_vencimiento_cuota_credito_db, 0, 4).'-'.substr($fecha_vencimiento_cuota_credito_db, 4, 2).'-'.substr($fecha_vencimiento_cuota_credito_db, 6, 2).' '.substr($fecha_vencimiento_cuota_credito_db, 8, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 10, 2).':'.substr($fecha_vencimiento_cuota_credito_db, 12, 2);
+					$fechaInfParaDENM = new DateTime($fechaParaDENM);
+					$difDiasParaDENM = $fechaAct->diff($fechaInfParaDENM);
 					
 					if($stmt39 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
 					{
@@ -540,7 +570,7 @@
 						}
 						else
 						{
-							if($stmt40 = $mysqli->prepare("SELECT ixm.interes, ixm.cantidad_dias FROM finan_cli.interes_x_mora ixm WHERE ixm.id_plan_credito = ? AND ixm.cantidad_dias <= ?"))
+							if($stmt40 = $mysqli->prepare("SELECT ixm.interes, ixm.cantidad_dias, ixm.recurrente FROM finan_cli.interes_x_mora ixm WHERE ixm.id_plan_credito = ? AND ixm.cantidad_dias = ?"))
 							{
 								$stmt40->bind_param('ii', $id_plan_credito_db, $difDias->days);
 								$stmt40->execute();    
@@ -550,7 +580,7 @@
 
 								if($totR40 > 0)
 								{
-									$stmt40->bind_result($interes_x_mora_db, $cantidad_dias_interes_x_mora_db);
+									$stmt40->bind_result($interes_x_mora_db, $cantidad_dias_interes_x_mora_db, $es_recurrente_interes_x_mora_db);
 									while($stmt40->fetch())
 									{
 										if($stmt41 = $mysqli->prepare("SELECT ixmcc.id, ixmcc.fecha FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.cantidad_dias_mora = ? AND ixmcc.id_cuota_credito = ?"))
@@ -561,7 +591,7 @@
 											
 											$totR41 = $stmt41->num_rows;
 
-											if($totR41 > 0)
+											if($totR41 > 0 && $es_recurrente_interes_x_mora_db == 0)
 											{
 												$stmt41->bind_result($id_interes_x_mora_cc_db, $fecha_interes_x_mora_cc_db);
 												$stmt41->fetch();
@@ -647,7 +677,7 @@
 													}
 												}
 												
-												if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.interes_x_mora_cuota_credito(fecha,id_cuota_credito,cantidad_dias_mora,interes_x_mora,id_plan_credito,cantidad_dias_en_mora) VALUES (?,?,?,?,?,?)"))
+												if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.interes_x_mora_cuota_credito(fecha,id_cuota_credito,cantidad_dias_mora,interes_x_mora,id_plan_credito,cantidad_dias_en_mora,recurrente) VALUES (?,?,?,?,?,?,?)"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -659,7 +689,7 @@
 												else
 												{
 													$date_registro = date("YmdHis");
-													$stmt2->bind_param('siiiii', $date_registro, $id_cuota_credito_db, $cantidad_dias_interes_x_mora_db, $interes_x_mora_db, $id_plan_credito_db, $difDias->days);
+													$stmt2->bind_param('siiiiii', $date_registro, $id_cuota_credito_db, $cantidad_dias_interes_x_mora_db, $interes_x_mora_db, $id_plan_credito_db, $difDiasParaDENM->days, $es_recurrente_interes_x_mora_db);
 													if(!$stmt2->execute())
 													{
 														echo $mysqli->error;
