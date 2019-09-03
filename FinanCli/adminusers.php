@@ -154,6 +154,23 @@ include("./menu/menu.php");
 									tag.dialog('destroy').remove()
 							}
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					
+					$("#datetimepickerhorarioingresouser").datetimepicker({
+							format: 'HH:mm',
+							locale: 'es',
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'top'}
+					});
+					
+					$("#datetimepickerhorarioegresouser").datetimepicker({
+							format: 'HH:mm',
+							locale: 'es',
+							widgetPositioning:{
+								horizontal: 'auto',
+								vertical: 'top'}
+					});					
+					
 					tag.dialog('open');
 				},
 				error: function(request, errorcode, errortext){
