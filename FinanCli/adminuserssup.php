@@ -92,7 +92,31 @@ include("./menu/menu.php");
 							widgetPositioning:{
 								horizontal: 'auto',
 								vertical: 'top'}
-					});					
+					});	
+
+					$('#perfiluserni').on('change', function() {
+					  if($(this).val() == 2)
+					  {
+						  $('#horariolaboralusuarion').show();
+						  $('#diaslaboralesusuarion').show();
+					  }
+					  else
+					  {
+						  $('#horariolaboralusuarion').hide();
+						  $('#diaslaboralesusuarion').hide();
+						  $('#horarioingresouserni').val("");
+						  $('#horarioegresouserni').val("");
+						  $('#luneshorariolaboraluserni').prop('checked', false);
+						  $('#marteshorariolaboraluserni').prop('checked', false);
+						  $('#miercoleshorariolaboraluserni').prop('checked', false);
+						  $('#jueveshorariolaboraluserni').prop('checked', false);
+						  $('#vierneshorariolaboraluserni').prop('checked', false);
+						  $('#sabadohorariolaboraluserni').prop('checked', false);
+						  $('#domingohorariolaboraluserni').prop('checked', false);
+								
+					  }
+					});
+					
 					tagnu.dialog('open');
 				},
 				error: function(request, errorcode, errortext){
@@ -170,7 +194,19 @@ include("./menu/menu.php");
 								horizontal: 'auto',
 								vertical: 'top'}
 					});					
-					tagnu.dialog('open');					
+										
+					$('#perfiluseri').on('change', function() {
+					  if($(this).val() == 2)
+					  {
+						  $('#horariolaboralusuario').show();
+						  $('#diaslaboralesusuario').show();
+					  }
+					  else
+					  {
+						  $('#horariolaboralusuario').hide();
+						  $('#diaslaboralesusuario').hide();
+					  }
+					});
 					
 					tag.dialog('open');
 				},
@@ -505,6 +541,79 @@ include("./menu/menu.php");
 				$( "#claveuseri" ).val('');
 				$( "#rclaveuseri" ).val('');
 			}
+			
+			if($('#perfiluseri').val() == 2)
+			{
+				if($( "#horarioingresouseri" ).val().length == 0)
+				{
+					$('#horarioingresouseri').prop('title', '<?php echo translate('Msg_You_Must_Enter_The_User_Entry_Time',$GLOBALS['lang']);?>');				
+					$(function() {
+						$( "#horarioingresouseri" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#horarioingresouseri" ).focus();
+					return;
+				}
+				else 
+				{
+					$(function() {
+						$( "#horarioingresouseri" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#horarioingresouseri" ).tooltip('destroy');
+				}
+				
+				if($( "#horarioegresouseri" ).val().length == 0)
+				{
+					$('#horarioegresouseri').prop('title', '<?php echo translate('Msg_You_Must_Enter_The_User_Departure_Time',$GLOBALS['lang']);?>');				
+					$(function() {
+						$( "#horarioegresouseri" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#horarioegresouseri" ).focus();
+					return;
+				}
+				else 
+				{
+					$(function() {
+						$( "#horarioegresouseri" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});				
+					$( "#horarioegresouseri" ).tooltip('destroy');
+				}				
+
+				var dateD = new Date('2019-09-01 '+ $( "#horarioingresouseri" ).val() + ':00');
+				var dateH = new Date('2019-09-01 '+ $( "#horarioegresouseri" ).val() + ':00');
+				
+				if(dateD >= dateH)
+				{
+					$( "#horarioegresouseri" ).val("");
+					$( "#horarioegresouseri" ).focus();
+					mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time',$GLOBALS['lang']);?>");
+					return;
+				}				
+			}
+			
 			var urlgmu = "./acciones/guardarmodificacionusuariosup.php";
 			$('#img_loader_2').show();
 			

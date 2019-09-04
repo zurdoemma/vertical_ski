@@ -164,7 +164,7 @@
 		echo '						<input title="'.translate('Msg_A_Add_User_Confirm_New_Password_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="rclaveuserni" name="rclaveuserni" type="password" maxlength="128" />';
 		echo '					</div>';				
 		echo '				</div>';
-		echo '				<div class="form-group form-inline"><hr />';
+		echo '				<div class="form-group form-inline" id="horariolaboralusuarion" name="horariolaboralusuarion" ><hr />';
 		echo '					&nbsp;<label class="control-label" for="horarioingresousern">'.translate('Lbl_Entry_Time_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="horarioingresousern">';
 		echo '						<div class="input-group date" id="datetimepickerhorarioingresousern">';		
@@ -184,7 +184,7 @@
 		echo '					    </div>';
 		echo '					</div>';				
 		echo '				</div>';
-		echo '				<div class="form-group form-inline">';				
+		echo '				<div class="form-group form-inline" id="diaslaboralesusuarion" name="diaslaboralesusuarion" >';				
 		echo '				  <div class="form-group" id="luneshorariolaboralusern">';
 		echo '					  &nbsp;<input class="form-control input-sm" id="luneshorariolaboraluserni" name="luneshorariolaboraluserni" type="checkbox" style="width:20px;" checked />&nbsp;<label class="control-label" for="luneshorariolaboralusern">'.translate('Lbl_Day_Monday_Check_Work_User',$GLOBALS['lang']).'</label>';
 		echo '				  </div>';
