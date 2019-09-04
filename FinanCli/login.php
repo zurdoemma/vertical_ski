@@ -80,6 +80,7 @@ if(empty($_GET['result_ok']) || empty($_SESSION['username']))
 		<?php if($_GET['result_ok_register'] == 1) echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>'.translate('Msg_Close_Sesion_Error',$GLOBALS['lang']).' '.translate('Msg_Register_User_Success',$GLOBALS['lang']).'</div>' ?>		
 		<?php if($_GET['error_l'] == 12) echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>'.translate('Msg_Close_Sesion_Error',$GLOBALS['lang']).' '.translate('Msg_User_Or_Password_Incorrect',$GLOBALS['lang']).'</div>' ?>
 		<?php if($_GET['error_l'] == 13) echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>'.translate('Msg_Close_Sesion_Error',$GLOBALS['lang']).' '.translate('Msg_Disable_User',$GLOBALS['lang']).'</div>' ?>
+		<?php if($_GET['error_l'] == 14) echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>'.translate('Msg_Close_Sesion_Error',$GLOBALS['lang']).' '.translate('Msg_Working_Hours_Not_Allowed',$GLOBALS['lang']).'</div>' ?>
 	  </form>
 	</div>
 	<script type="text/javascript">

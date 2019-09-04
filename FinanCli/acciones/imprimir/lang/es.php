@@ -43,6 +43,6 @@
 		'Lbl_Print_Duplicate_Pay_Fees_Credit' => 'SI',
 		'Lbl_Amount_Interest_Fee_Print_Credit' => 'Interés',
 		'Msg_The_Selection_Fees_Pay_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!',
-		'Lbl_Minimum_Delivery' => 'Mínimo Entrega'
+		'Lbl_Minimum_Delivery' => 'Mínimo Entrega'	
 	);
 ?>

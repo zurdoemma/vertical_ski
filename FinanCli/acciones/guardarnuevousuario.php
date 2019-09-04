@@ -47,7 +47,24 @@
 		$piso = !empty($piso) ? "$piso" : "NULL";
 		$codigoPostal = !empty($codigoPostal) ? "$codigoPostal" : "---";
 		$entreCalle1 = !empty($entreCalle1) ? "$entreCalle1" : "---";
-		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";		
+		$entreCalle2 = !empty($entreCalle2) ? "$entreCalle2" : "---";
+
+		$horarioIngreso=htmlspecialchars($_POST["horarioIngreso"], ENT_QUOTES, 'UTF-8');
+		$horarioEgreso=htmlspecialchars($_POST["horarioEgreso"], ENT_QUOTES, 'UTF-8');
+		$trabLunes=htmlspecialchars($_POST["trabLunes"], ENT_QUOTES, 'UTF-8');
+		$trabMartes=htmlspecialchars($_POST["trabMartes"], ENT_QUOTES, 'UTF-8');
+		$trabMiercoles=htmlspecialchars($_POST["trabMiercoles"], ENT_QUOTES, 'UTF-8');
+		$trabJueves=htmlspecialchars($_POST["trabJueves"], ENT_QUOTES, 'UTF-8');
+		$trabViernes=htmlspecialchars($_POST["trabViernes"], ENT_QUOTES, 'UTF-8');
+		$trabSabado=htmlspecialchars($_POST["trabSabado"], ENT_QUOTES, 'UTF-8');
+		$trabDomingo=htmlspecialchars($_POST["trabDomingo"], ENT_QUOTES, 'UTF-8');
+		
+		if($perfil == 2 && (empty($horarioIngreso) || empty($horarioEgreso) || ($trabLunes == 'false' && $trabMartes == 'false' && $trabMiercoles == 'false' && $trabJueves == 'false' && $trabViernes == 'false' && $trabSabado == 'false' && $trabDomingo == 'false')))
+		{
+			//echo $perfil.' - '.$horarioIngreso.' - '.$horarioEgreso.' - '.$trabLunes.' - '.$trabMartes.' - '.$trabMiercoles.' - '.$trabJueves.' - '.$trabViernes.' - '.$trabSabado.' - '.$trabDomingo;
+			echo translate('Msg_You_Must_Correctly_Load_The_User_Work_Schedule',$GLOBALS['lang']);
+			return;				
+		}		
 				
 		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
 		{
@@ -196,7 +213,75 @@
 						return;						
 					}
 				}
-										
+				
+				if($perfil == 2)
+				{				
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (?,?,?,?,?,?,?,?,?,?)"))
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}
+					else
+					{							
+						$horarioIngresDB = '20190904'.str_replace(":","",$horarioIngreso).'00';
+						$horarioEgresDB = '20190904'.str_replace(":","",$horarioEgreso).'00';
+						if($trabLunes == 'true') $trabLunesDB = 1;
+						else $trabLunesDB = 0;
+						if($trabMartes == 'true') $trabMartesDB = 1;
+						else $trabMartesDB = 0;
+						if($trabMiercoles == 'true') $trabMiercolesDB = 1;
+						else $trabMiercolesDB = 0;
+						if($trabJueves == 'true') $trabJuevesDB = 1;
+						else $trabJuevesDB = 0;
+						if($trabViernes == 'true') $trabViernesDB = 1;
+						else $trabViernesDB = 0;
+						if($trabSabado == 'true') $trabSabadoDB = 1;
+						else $trabSabadoDB = 0;
+						if($trabDomingo == 'true') $trabDomingoDB = 1;
+						else $trabDomingoDB = 0;							
+						$stmt10->bind_param('sssiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB);
+						if(!$stmt10->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}						
+					}
+							
+					$date_registro = date("YmdHis");
+					$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.")";
+					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}
+					else
+					{
+						$motivo = 87;
+						$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+						if(!$stmt->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}
+					}						
+				}
+				
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				

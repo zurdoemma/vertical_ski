@@ -59,7 +59,7 @@
 		if ($cclave == 0) $cclave = login($usuario,$clave,$mysqli);
 		
 		
-		if($cclave == 1 || $cclave == 2 || $cclave == 11 || $cclave == 12 || $cclave == 13 ||$cusuario == 1 || $cusuario == 2 || $cclave == 3 || $cclave == -1)
+		if($cclave == 1 || $cclave == 2 || $cclave == 11 || $cclave == 12 || $cclave == 13 || $cclave == 14 ||$cusuario == 1 || $cusuario == 2 || $cclave == 3 || $cclave == -1)
 		{			
 			if($cusuario == 1)
 			{ 
@@ -112,6 +112,12 @@
 			if($cclave == 13 && $cusuario == 0)
 			{ 
 				header('Location:../login.php?error_l=13&usuario_el='.$usuario);
+				return;
+				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
+			}
+			if($cclave == 14 && $cusuario == 0)
+			{ 
+				header('Location:../login.php?error_l=14&usuario_el='.$usuario);
 				return;
 				//echo'<font color="#FF0000">&nbsp;*Error desconocido contacte al administrador!!&nbsp;&nbsp;</font>';
 			}			

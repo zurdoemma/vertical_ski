@@ -32,6 +32,23 @@
 		$perfil=htmlspecialchars($_POST["perfil"], ENT_QUOTES, 'UTF-8');
 		$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
 		$nclaveu=htmlspecialchars($_POST["claveu"], ENT_QUOTES, 'UTF-8');
+		
+		$horarioIngreso=htmlspecialchars($_POST["horarioIngreso"], ENT_QUOTES, 'UTF-8');
+		$horarioEgreso=htmlspecialchars($_POST["horarioEgreso"], ENT_QUOTES, 'UTF-8');
+		$trabLunes=htmlspecialchars($_POST["trabLunes"], ENT_QUOTES, 'UTF-8');
+		$trabMartes=htmlspecialchars($_POST["trabMartes"], ENT_QUOTES, 'UTF-8');
+		$trabMiercoles=htmlspecialchars($_POST["trabMiercoles"], ENT_QUOTES, 'UTF-8');
+		$trabJueves=htmlspecialchars($_POST["trabJueves"], ENT_QUOTES, 'UTF-8');
+		$trabViernes=htmlspecialchars($_POST["trabViernes"], ENT_QUOTES, 'UTF-8');
+		$trabSabado=htmlspecialchars($_POST["trabSabado"], ENT_QUOTES, 'UTF-8');
+		$trabDomingo=htmlspecialchars($_POST["trabDomingo"], ENT_QUOTES, 'UTF-8');
+		
+		if($perfil == 2 && (empty($horarioIngreso) || empty($horarioEgreso) || ($trabLunes == 'false' && $trabMartes == 'false' && $trabMiercoles == 'false' && $trabJueves == 'false' && $trabViernes == 'false' && $trabSabado == 'false' && $trabDomingo == 'false')))
+		{
+			//echo $perfil.' - '.$horarioIngreso.' - '.$horarioEgreso.' - '.$trabLunes.' - '.$trabMartes.' - '.$trabMiercoles.' - '.$trabJueves.' - '.$trabViernes.' - '.$trabSabado.' - '.$trabDomingo;
+			echo translate('Msg_You_Must_Correctly_Load_The_User_Work_Schedule',$GLOBALS['lang']);
+			return;				
+		}		
 				
 		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, p.nombre, s.nombre, u.clave, u.salt FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND u.id LIKE(?)"))
 		{
@@ -123,6 +140,174 @@
 						return;						
 					}
 				}
+				
+				if($perfil == 2)
+				{
+					if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+					{
+						$stmt401->bind_param('s', $usuario);
+						$stmt401->execute();    
+						$stmt401->store_result();
+				 
+						$tieneHorarioLaboralDB = 0;
+						$totR401 = $stmt401->num_rows;
+						if($totR401 > 0)
+						{
+							$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a);
+							$stmt401->fetch();
+							
+							$tieneHorarioLaboralDB = 1;
+							
+							$stmt401->free_result();
+							$stmt401->close();				
+						}
+						else 
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;				
+						}	
+					}
+					else 
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;				
+					}
+					
+					if($tieneHorarioLaboralDB == 1)
+					{
+						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ?, horario_salida = ?, lunes = ?, martes = ?, miercoles = ?, jueves = ?, viernes = ?, sabado = ?, domingo = ? WHERE id_usuario = ?"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{
+							$horarioIngresDB = '20190904'.str_replace(":","",$horarioIngreso).'00';
+							$horarioEgresDB = '20190904'.str_replace(":","",$horarioEgreso).'00';
+							if($trabLunes == 'true') $trabLunesDB = 1;
+							else $trabLunesDB = 0;
+							if($trabMartes == 'true') $trabMartesDB = 1;
+							else $trabMartesDB = 0;
+							if($trabMiercoles == 'true') $trabMiercolesDB = 1;
+							else $trabMiercolesDB = 0;
+							if($trabJueves == 'true') $trabJuevesDB = 1;
+							else $trabJuevesDB = 0;
+							if($trabViernes == 'true') $trabViernesDB = 1;
+							else $trabViernesDB = 0;
+							if($trabSabado == 'true') $trabSabadoDB = 1;
+							else $trabSabadoDB = 0;
+							if($trabDomingo == 'true') $trabDomingoDB = 1;
+							else $trabDomingoDB = 0;							
+							$stmt10->bind_param('ssiiiiiiis', $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB, $usuario);
+							if(!$stmt10->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;						
+							}						
+						}
+								
+						$date_registro = date("YmdHis");
+						$valor_log_user = "ANTERIOR: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horario_ingreso_horario_laboral_a.", horario_salida = ".$horario_egreso_horario_laboral_a.", lunes = ".$lunes_horario_laboral_a.", martes = ".$martes_horario_laboral_a.", miercoles = ".$miercoles_horario_laboral_a.", jueves = ".$jueves_horario_laboral_a.", viernes = ".$viernes_horario_laboral_a.", sabado = ".$sabado_horario_laboral_a.", domingo = ".$domingo_horario_laboral_a." WHERE id_usuario = ".$usuario." -- "."NUEVO: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horarioIngresDB.", horario_salida = ".$horarioEgresDB.", lunes = ".$trabLunesDB.", martes = ".$trabMartesDB.", miercoles = ".$trabMiercolesDB.", jueves = ".$trabJuevesDB.", viernes = ".$trabViernesDB.", sabado = ".$trabSabadoDB.", domingo = ".$trabDomingoDB." WHERE id_usuario = ".$usuario;
+						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{
+							$motivo = 88;
+							$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+							if(!$stmt->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;						
+							}
+						}				
+					}
+					else
+					{
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (?,?,?,?,?,?,?,?,?,?)"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{							
+							$horarioIngresDB = '20190904'.str_replace(":","",$horarioIngreso).'00';
+							$horarioEgresDB = '20190904'.str_replace(":","",$horarioEgreso).'00';
+							if($trabLunes == 'true') $trabLunesDB = 1;
+							else $trabLunesDB = 0;
+							if($trabMartes == 'true') $trabMartesDB = 1;
+							else $trabMartesDB = 0;
+							if($trabMiercoles == 'true') $trabMiercolesDB = 1;
+							else $trabMiercolesDB = 0;
+							if($trabJueves == 'true') $trabJuevesDB = 1;
+							else $trabJuevesDB = 0;
+							if($trabViernes == 'true') $trabViernesDB = 1;
+							else $trabViernesDB = 0;
+							if($trabSabado == 'true') $trabSabadoDB = 1;
+							else $trabSabadoDB = 0;
+							if($trabDomingo == 'true') $trabDomingoDB = 1;
+							else $trabDomingoDB = 0;							
+							$stmt10->bind_param('sssiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB);
+							if(!$stmt10->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;						
+							}						
+						}
+								
+						$date_registro = date("YmdHis");
+						$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.")";
+						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{
+							$motivo = 87;
+							$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+							if(!$stmt->execute())
+							{
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;						
+							}
+						}						
+					}
+				}				
 										
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);

@@ -699,7 +699,7 @@
 		'Lbl_Departure_Time_User' => 'Hora de Salida',
 		'Msg_You_Must_Enter_The_User_Entry_Time' => 'Debe ingresar la hora de ingreso del usuario!!',
 		'Msg_You_Must_Enter_The_User_Departure_Time' => 'Debe ingresar la hora de salida del usuario!!',
-		'Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time' => 'La hora de salida no puede ser menor a la hora de entrada!!',
+		'Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time' => 'La hora de salida no puede ser menor o igual a la hora de entrada!!',
 		'Lbl_Format_Hour_Entry_And_Departure_User' => 'HH:mm',
 		'Lbl_Day_Monday_Check_Work_User' => 'Lunes',
 		'Lbl_Day_Thursday_Check_Work_User' => 'Martes',
@@ -707,6 +707,8 @@
 		'Lbl_Day_Tuesday_Check_Work_User' => 'Jueves',
 		'Lbl_Day_Friday_Check_Work_User' => 'Viernes',
 		'Lbl_Day_Saturday_Check_Work_User' => 'Sabado',
-		'Lbl_Day_Sunday_Check_Work_User' => 'Domingo'
+		'Lbl_Day_Sunday_Check_Work_User' => 'Domingo',
+		'Msg_You_Must_Correctly_Load_The_User_Work_Schedule' => 'Debe cargar correctamente el horario laboral del usuario!!',
+		'Msg_Working_Hours_Not_Allowed' => 'Horario laboral no permitido!!'
 	);
 ?>

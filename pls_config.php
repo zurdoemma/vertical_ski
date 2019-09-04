@@ -6,7 +6,7 @@
 	$GLOBALS['token_envio_sms'] = '22bf063e3cee0344b294b9cd53257bc0892467b0552141d2669e921e8833b4ea';
 	$GLOBALS['url_envio_sms'] = 'https://apps.netelip.com/sms/api.php';	
 	$GLOBALS['url_status_envio_sms'] = 'https://apps.netelip.com/sms/status.php';	
-	$GLOBALS['path_certificado_envio_sms'] = 'C:\wamp64\cacert.pem';
+	$GLOBALS['path_certificado_envio_sms'] = 'C:\wamp\cacert.pem';
 	$GLOBALS['url_consulta_estado_financiero'] = 'https://www.pypdatos.com.ar/PypAPI/rest/serviciospyp/persona/';	
 	$GLOBALS['usuario_servicio_consulta_estado_financiero'] = 'wslibert';
 	$GLOBALS['clave_servicio_consulta_estado_financiero'] = 'edf444';	

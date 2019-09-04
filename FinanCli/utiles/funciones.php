@@ -1,6 +1,6 @@
 ﻿<?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 include('httpful.phar');
 
 function verificar_usuario($mysqli)
@@ -189,6 +189,71 @@ function login($usuario, $password, $mysqli) {
 				// con la contraseña que el usuario envió.
 				if ($db_password == $password) 
 				{
+					if($permiso == 2)
+					{
+						if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+						{
+							$stmt401->bind_param('s', $user_id);
+							$stmt401->execute();    
+							$stmt401->store_result();
+					 
+							$tieneHorarioLaboralDB = 0;
+							$totR401 = $stmt401->num_rows;
+							if($totR401 > 0)
+							{
+								$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a);
+								$stmt401->fetch();
+								
+								$diaDeSemana = date('w');
+								switch ($diaDeSemana) {
+									case 0:
+										if($domingo_horario_laboral_a == 0) return 14;
+										break;
+									case 1:
+										if($lunes_horario_laboral_a == 0) return 14;
+										break;
+									case 2:
+										if($martes_horario_laboral_a == 0) return 14;
+										break;
+									case 3:
+										if($miercoles_horario_laboral_a == 0) return 14;
+										break;
+									case 4:
+										if($jueves_horario_laboral_a == 0) return 14;
+										break;
+									case 5:
+										if($viernes_horario_laboral_a == 0) return 14;
+										break;
+									case 6:
+										if($sabado_horario_laboral_a == 0) return 14;
+										break;										
+								}
+								
+								$fechaObtInDB = substr($horario_ingreso_horario_laboral_a, 0, 4).'-'.substr($horario_ingreso_horario_laboral_a, 4, 2).'-'.substr($horario_ingreso_horario_laboral_a, 6, 2).' '.substr($horario_ingreso_horario_laboral_a, 8, 2).':'.substr($horario_ingreso_horario_laboral_a, 10, 2).':'.substr($horario_ingreso_horario_laboral_a, 12, 2);
+								$fechaInCDB = new DateTime($fechaObtInDB);
+								$fechaConHorAct = substr($horario_ingreso_horario_laboral_a, 0, 4).'-'.substr($horario_ingreso_horario_laboral_a, 4, 2).'-'.substr($horario_ingreso_horario_laboral_a, 6, 2).' '.date('H').':'.date('i').':'.substr($horario_ingreso_horario_laboral_a, 12, 2);
+								$fechaAct = new DateTime($fechaConHorAct);
+								if($fechaAct < $fechaInCDB) return 14;
+								
+								$fechaObtEgDB = substr($horario_egreso_horario_laboral_a, 0, 4).'-'.substr($horario_egreso_horario_laboral_a, 4, 2).'-'.substr($horario_egreso_horario_laboral_a, 6, 2).' '.substr($horario_egreso_horario_laboral_a, 8, 2).':'.substr($horario_egreso_horario_laboral_a, 10, 2).':'.substr($horario_egreso_horario_laboral_a, 12, 2);
+								$fechaEgCDB = new DateTime($fechaObtEgDB);
+								$fechaConHorAct = substr($horario_egreso_horario_laboral_a, 0, 4).'-'.substr($horario_egreso_horario_laboral_a, 4, 2).'-'.substr($horario_egreso_horario_laboral_a, 6, 2).' '.date('H').':'.date('i').':'.substr($horario_egreso_horario_laboral_a, 12, 2);
+								$fechaAct = new DateTime($fechaConHorAct);
+								if($fechaAct > $fechaEgCDB) return 14;								
+								
+								$stmt401->free_result();
+								$stmt401->close();				
+							}
+							else 
+							{
+								return 14;				
+							}	
+						}
+						else 
+						{
+							return 14;				
+						}
+					}
 					// ¡La contraseña es correcta!
 					// Obtén el agente de usuario.
 					sec_session_start();
