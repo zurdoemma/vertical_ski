@@ -101,8 +101,8 @@
 			return;
 		}
 		
-		if(empty($id_titular_cliente_db)) $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento = ? AND cc.documento = ? HAVING MAX(cc.fecha)";
-		else $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento_adicional = ? AND cc.documento_adicional = ? HAVING MAX(cc.fecha)";
+		if(empty($id_titular_cliente_db)) $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento = ? AND cc.documento = ? HAVING MAX(cc.fecha) IS NOT NULL";
+		else $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento_adicional = ? AND cc.documento_adicional = ? HAVING MAX(cc.fecha) IS NOT NULL";
 		if ($stmt702 = $mysqli->prepare($selectCreditoC)) 
 		{
 			$stmt702->bind_param('is', $tipoDocumento, $documento); 
@@ -148,8 +148,97 @@
 				
 				if($difDias->days >= $cantidad_dias_act_datos_clientes_db)
 				{
-					echo translate('Msg_Please_Verify_Customer_Information',$GLOBALS['lang']);
-					return;					
+					if($stmt703 = $mysqli->prepare("SELECT MAX(vdc.fecha) FROM finan_cli.verificacion_datos_cliente vdc WHERE vdc.tipo_documento = ? AND vdc.documento = ? HAVING MAX(vdc.fecha) IS NOT NULL"))
+					{
+						$stmt703->bind_param('is', $tipoDocumento, $documento);
+						$stmt703->execute();    
+						$stmt703->store_result();
+						
+						$totR703 = $stmt703->num_rows;
+						if($totR703 > 0)
+						{						
+							$stmt703->bind_result($ultima_fecha_control_cliente);
+							$stmt703->fetch();
+							
+							$fechaActCVC = date('Ymd');
+							if($ultima_fecha_control_cliente != $fechaActCVC)							
+							{
+								$mysqli->autocommit(FALSE);
+								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+								
+								$insertEFCDB = "INSERT INTO finan_cli.verificacion_datos_cliente(tipo_documento,documento,fecha) VALUES (?,?,?)";
+								if(!$stmt10 = $mysqli->prepare($insertEFCDB))
+								{
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}
+								else
+								{
+									$date_registro_cef_db = date("Ymd");
+									$stmt10->bind_param('iss', $tipoDocumento, $documento, $date_registro_cef_db);
+									if(!$stmt10->execute())
+									{
+										$mysqli->autocommit(TRUE);
+										$stmt->free_result();
+										$stmt->close();
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;						
+									}
+									
+									$mysqli->commit();
+									$mysqli->autocommit(TRUE);
+								}
+								
+								echo translate('Msg_Please_Verify_Customer_Information',$GLOBALS['lang']);
+								return;
+							}
+							
+							$stmt703->free_result();
+							$stmt703->close();
+						}
+						else
+						{
+							$mysqli->autocommit(FALSE);
+							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+							
+							$insertEFCDB = "INSERT INTO finan_cli.verificacion_datos_cliente(tipo_documento,documento,fecha) VALUES (?,?,?)";
+							if(!$stmt10 = $mysqli->prepare($insertEFCDB))
+							{
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+								return;
+							}
+							else
+							{
+								$date_registro_cef_db = date("Ymd");
+								$stmt10->bind_param('iss', $tipoDocumento, $documento, $date_registro_cef_db);
+								if(!$stmt10->execute())
+								{
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;						
+								}
+								
+								$mysqli->commit();
+								$mysqli->autocommit(TRUE);
+							}
+							
+							echo translate('Msg_Please_Verify_Customer_Information',$GLOBALS['lang']);
+							return;
+						}
+					}
+					else 
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;				
+					}					
 				}	
 				
 				$stmt702->free_result();
