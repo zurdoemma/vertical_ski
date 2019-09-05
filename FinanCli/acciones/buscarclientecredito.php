@@ -28,7 +28,8 @@
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
-
+		
+		
 		if($stmt47 = $mysqli->prepare("SELECT c.id, c.estado, c.id_titular, c.monto_maximo_credito, c.nombres, c.apellidos, t.numero, c.cuil_cuit, c.id_perfil_credito FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND t.id = ct.id_telefono AND ct.preferido = 1 AND c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt47->bind_param('is', $tipoDocumento, $documento);
@@ -98,6 +99,67 @@
 		{
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
 			return;
+		}
+		
+		if(empty($id_titular_cliente_db)) $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento = ? AND cc.documento = ? HAVING MAX(cc.fecha)";
+		else $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento_adicional = ? AND cc.documento_adicional = ? HAVING MAX(cc.fecha)";
+		if ($stmt702 = $mysqli->prepare($selectCreditoC)) 
+		{
+			$stmt702->bind_param('is', $tipoDocumento, $documento); 
+			$stmt702->execute();    
+			$stmt702->store_result();
+	 
+			$totR702 = $stmt702->num_rows;
+			if($totR702 > 0)
+			{
+				$stmt702->bind_result($ultima_fecha_credito_cliente);
+				$stmt702->fetch();
+
+				$fechaObtUCCDB = substr($ultima_fecha_credito_cliente, 0, 4).'-'.substr($ultima_fecha_credito_cliente, 4, 2).'-'.substr($ultima_fecha_credito_cliente, 6, 2).' '.substr($ultima_fecha_credito_cliente, 8, 2).':'.substr($ultima_fecha_credito_cliente, 10, 2).':'.substr($ultima_fecha_credito_cliente, 12, 2);
+				$fechaUCCDB = new DateTime($fechaObtUCCDB);
+				$fechaAct = new DateTime();	
+				$difDias = $fechaAct->diff($fechaUCCDB);
+				
+				if($stmt703 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'cantidad_dias_actualizacion_datos_cliente'"))
+				{
+					$stmt703->execute();    
+					$stmt703->store_result();
+					
+					$totR703 = $stmt703->num_rows;
+					if($totR703 > 0)
+					{						
+						$stmt703->bind_result($cantidad_dias_act_datos_clientes_db);
+						$stmt703->fetch();
+						
+						$stmt703->free_result();
+						$stmt703->close();
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}
+				}
+				else 
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+				
+				if($difDias->days >= $cantidad_dias_act_datos_clientes_db)
+				{
+					echo translate('Msg_Please_Verify_Customer_Information',$GLOBALS['lang']);
+					return;					
+				}	
+				
+				$stmt702->free_result();
+				$stmt702->close();				
+			}
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
 		}
 			
 		if(empty($id_titular_cliente_db)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);

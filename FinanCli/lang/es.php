@@ -709,6 +709,7 @@
 		'Lbl_Day_Saturday_Check_Work_User' => 'Sabado',
 		'Lbl_Day_Sunday_Check_Work_User' => 'Domingo',
 		'Msg_You_Must_Correctly_Load_The_User_Work_Schedule' => 'Debe cargar correctamente el horario laboral del usuario!!',
-		'Msg_Working_Hours_Not_Allowed' => 'Horario laboral no permitido!!'
+		'Msg_Working_Hours_Not_Allowed' => 'Horario laboral no permitido!!',
+		'Msg_Please_Verify_Customer_Information' => 'Favor de verificar los datos del cliente!!'
 	);
 ?>
