@@ -602,16 +602,19 @@ include("./menu/menu.php");
 					$( "#horarioegresouseri" ).tooltip('destroy');
 				}				
 
-				var dateD = new Date('2019-09-01 '+ $( "#horarioingresouseri" ).val() + ':00');
-				var dateH = new Date('2019-09-01 '+ $( "#horarioegresouseri" ).val() + ':00');
-				
-				if(dateD >= dateH)
+				if($('#validarcambiodediai').is(":checked") == false)
 				{
-					$( "#horarioegresouseri" ).val("");
-					$( "#horarioegresouseri" ).focus();
-					mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time',$GLOBALS['lang']);?>");
-					return;
-				}				
+					var dateD = new Date('2019-09-01 '+ $( "#horarioingresouseri" ).val() + ':00');
+					var dateH = new Date('2019-09-01 '+ $( "#horarioegresouseri" ).val() + ':00');
+					
+					if(dateD >= dateH)
+					{
+						$( "#horarioegresouseri" ).val("");
+						$( "#horarioegresouseri" ).focus();
+						mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time',$GLOBALS['lang']);?>");
+						return;
+					}
+				}					
 			}
 			
 			var urlgmu = "./acciones/guardarmodificacionusuariosup.php";
@@ -620,7 +623,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { usuario: $( "#iduseri" ).val(), nombre: $( "#nameuseri" ).val(), apellido: $( "#surnameuseri" ).val(), tipoDocumento: $( "#tipodocuseri" ).val(), documento: $( "#documentuseri" ).val(), email: $( "#emailuseri" ).val(), perfil: $( "#perfiluseri" ).val(), sucursal: $( "#sucursaluseri" ).val(), claveu: passwmu, horarioIngreso: $( "#horarioingresouseri" ).val(), horarioEgreso: $( "#horarioegresouseri" ).val(), trabLunes: $('#luneshorariolaboraluseri').is(":checked"), trabMartes: $('#marteshorariolaboraluseri').is(":checked"), trabMiercoles: $('#miercoleshorariolaboraluseri').is(":checked"), trabJueves: $('#jueveshorariolaboraluseri').is(":checked"), trabViernes: $('#vierneshorariolaboraluseri').is(":checked"), trabSabado: $('#sabadohorariolaboraluseri').is(":checked"), trabDomingo: $('#domingohorariolaboraluseri').is(":checked") },
+				data: { usuario: $( "#iduseri" ).val(), nombre: $( "#nameuseri" ).val(), apellido: $( "#surnameuseri" ).val(), tipoDocumento: $( "#tipodocuseri" ).val(), documento: $( "#documentuseri" ).val(), email: $( "#emailuseri" ).val(), perfil: $( "#perfiluseri" ).val(), sucursal: $( "#sucursaluseri" ).val(), claveu: passwmu, horarioIngreso: $( "#horarioingresouseri" ).val(), horarioEgreso: $( "#horarioegresouseri" ).val(), trabLunes: $('#luneshorariolaboraluseri').is(":checked"), trabMartes: $('#marteshorariolaboraluseri').is(":checked"), trabMiercoles: $('#miercoleshorariolaboraluseri').is(":checked"), trabJueves: $('#jueveshorariolaboraluseri').is(":checked"), trabViernes: $('#vierneshorariolaboraluseri').is(":checked"), trabSabado: $('#sabadohorariolaboraluseri').is(":checked"), trabDomingo: $('#domingohorariolaboraluseri').is(":checked"), cambDia: $('#validarcambiodediai').is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_2').hide();
 					
@@ -1160,16 +1163,19 @@ include("./menu/menu.php");
 					$( "#horarioegresouserni" ).tooltip('destroy');
 				}				
 
-				var dateD = new Date('2019-09-01 '+ $( "#horarioingresouserni" ).val() + ':00');
-				var dateH = new Date('2019-09-01 '+ $( "#horarioegresouserni" ).val() + ':00');
-				
-				if(dateD >= dateH)
+				if($('#validarcambiodediani').is(":checked") == false)
 				{
-					$( "#horarioegresouserni" ).val("");
-					$( "#horarioegresouserni" ).focus();
-					mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time',$GLOBALS['lang']);?>");
-					return;
-				}				
+					var dateD = new Date('2019-09-01 '+ $( "#horarioingresouserni" ).val() + ':00');
+					var dateH = new Date('2019-09-01 '+ $( "#horarioegresouserni" ).val() + ':00');
+					
+					if(dateD >= dateH)
+					{
+						$( "#horarioegresouserni" ).val("");
+						$( "#horarioegresouserni" ).focus();
+						mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Departure_Time_Cannot_Be_Less_Than_Entry_Time',$GLOBALS['lang']);?>");
+						return;
+					}
+				}					
 			}			
 			
 			var urlggnu = "./acciones/guardarnuevousuariosup.php";
@@ -1178,7 +1184,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlggnu,
 				method: "POST",
-				data: { usuario: $( "#iduserni" ).val(), nombre: $( "#nameuserni" ).val(), apellido: $( "#surnameuserni" ).val(), tipoDocumento: $( "#tipodocuserni" ).val(), documento: $( "#documentuserni" ).val(), email: $( "#emailuserni" ).val(), perfil: $( "#perfiluserni" ).val(), sucursal: $( "#sucursaluserni" ).val(), claveu: passwmu, calle: $( "#callei" ).val(), nroCalle: $( "#nrocallei" ).val(), provincia: $( "#domprovinciai" ).val(), localidad: $( "#domlocalidadi" ).val(), departamento: $( "#domdepartamentoi" ).val(), piso: $( "#domfloori" ).val(), codigoPostal: $( "#zipcodei" ).val(), entreCalle1: $( "#entrecalle1i" ).val(), entreCalle2: $( "#entrecalle2i" ).val(), horarioIngreso: $( "#horarioingresouserni" ).val(), horarioEgreso: $( "#horarioegresouserni" ).val(), trabLunes: $('#luneshorariolaboraluserni').is(":checked"), trabMartes: $('#marteshorariolaboraluserni').is(":checked"), trabMiercoles: $('#miercoleshorariolaboraluserni').is(":checked"), trabJueves: $('#jueveshorariolaboraluserni').is(":checked"), trabViernes: $('#vierneshorariolaboraluserni').is(":checked"), trabSabado: $('#sabadohorariolaboraluserni').is(":checked"), trabDomingo: $('#domingohorariolaboraluserni').is(":checked") },
+				data: { usuario: $( "#iduserni" ).val(), nombre: $( "#nameuserni" ).val(), apellido: $( "#surnameuserni" ).val(), tipoDocumento: $( "#tipodocuserni" ).val(), documento: $( "#documentuserni" ).val(), email: $( "#emailuserni" ).val(), perfil: $( "#perfiluserni" ).val(), sucursal: $( "#sucursaluserni" ).val(), claveu: passwmu, calle: $( "#callei" ).val(), nroCalle: $( "#nrocallei" ).val(), provincia: $( "#domprovinciai" ).val(), localidad: $( "#domlocalidadi" ).val(), departamento: $( "#domdepartamentoi" ).val(), piso: $( "#domfloori" ).val(), codigoPostal: $( "#zipcodei" ).val(), entreCalle1: $( "#entrecalle1i" ).val(), entreCalle2: $( "#entrecalle2i" ).val(), horarioIngreso: $( "#horarioingresouserni" ).val(), horarioEgreso: $( "#horarioegresouserni" ).val(), trabLunes: $('#luneshorariolaboraluserni').is(":checked"), trabMartes: $('#marteshorariolaboraluserni').is(":checked"), trabMiercoles: $('#miercoleshorariolaboraluserni').is(":checked"), trabJueves: $('#jueveshorariolaboraluserni').is(":checked"), trabViernes: $('#vierneshorariolaboraluserni').is(":checked"), trabSabado: $('#sabadohorariolaboraluserni').is(":checked"), trabDomingo: $('#domingohorariolaboraluserni').is(":checked"), cambDia: $('#validarcambiodediani').is(":checked") },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
 					

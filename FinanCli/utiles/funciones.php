@@ -1,6 +1,6 @@
 ﻿<?php
 error_reporting(E_ALL ^ E_NOTICE);
-include_once 'c:\wamp64\www\pls_config.php';
+include_once 'c:\wamp\www\pls_config.php';
 include('httpful.phar');
 
 function verificar_usuario($mysqli)
@@ -191,7 +191,7 @@ function login($usuario, $password, $mysqli) {
 				{
 					if($permiso == 2)
 					{
-						if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+						if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
 						{
 							$stmt401->bind_param('s', $user_id);
 							$stmt401->execute();    
@@ -201,7 +201,7 @@ function login($usuario, $password, $mysqli) {
 							$totR401 = $stmt401->num_rows;
 							if($totR401 > 0)
 							{
-								$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a);
+								$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a, $cambio_dia_a);
 								$stmt401->fetch();
 								
 								$diaDeSemana = date('w');
@@ -239,8 +239,10 @@ function login($usuario, $password, $mysqli) {
 								$fechaEgCDB = new DateTime($fechaObtEgDB);
 								$fechaConHorAct = substr($horario_egreso_horario_laboral_a, 0, 4).'-'.substr($horario_egreso_horario_laboral_a, 4, 2).'-'.substr($horario_egreso_horario_laboral_a, 6, 2).' '.date('H').':'.date('i').':'.substr($horario_egreso_horario_laboral_a, 12, 2);
 								$fechaAct = new DateTime($fechaConHorAct);
-								if($fechaAct > $fechaEgCDB) return 14;								
-								
+								if($fechaAct > $fechaEgCDB)
+								{
+									if($cambio_dia_a == 0) return 14;								
+								}								
 								$stmt401->free_result();
 								$stmt401->close();				
 							}

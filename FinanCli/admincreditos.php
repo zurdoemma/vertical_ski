@@ -141,6 +141,56 @@ include("./menu/menu.php");
     </script>
 	
 	<script type="text/javascript">
+		function cancelarCredito(idCredito)
+		{
+			var urlcc = "./acciones/cancelarcredito.php";
+			var tagcc = $("<div id='dialogcancelcredit'></div>");
+			$('#img_loader_5').show();
+			
+			$.ajax({
+				url: urlcc,
+				method: "POST",
+				data: { idCredito: idCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_5').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Cancel_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Cancel_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagcc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Msg_Cancel_Credit_Client',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagcc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");					
+						tagcc.dialog('open');
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_5').hide();
+				}
+			});	
+		}
+    </script>	
+	
+	<script type="text/javascript">
 		function verCredito(idCredito)
 		{
 			var urlvc = "./acciones/vercredito.php";
@@ -1701,6 +1751,102 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+				}
+			});
+		}
+    </script>
+
+	<script type="text/javascript">
+		function confirmar_accion_cancelar_credito_cliente(titulo, mensaje, formulariocc, idCredito)
+		{
+			if($('#motivocancelcrediti').val().length == 0)
+			{
+				$(function() {
+					$('#motivocancelcrediti').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#motivocancelcrediti').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#motivocancelcrediti').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#motivocancelcrediti').tooltip('destroy');
+			}			
+			
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										guardarCancelacionCredito(formulariocc, idCredito);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+
+	<script type="text/javascript">
+		function guardarCancelacionCredito(formulariocc, idCredito)
+		{			
+			var urlgcc = "./acciones/guardarcancelacioncredito.php";
+			$('#img_loader_23').show();
+												
+			$.ajax({
+				url: urlgcc,
+				method: "POST",
+				data: { idCredito: idCredito, motivoCancelacion: $( "#motivocancelcrediti" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_23').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						$('#dialogcancelcredit').dialog('destroy').remove();
+													
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']); ?>"+"=::=::","");						
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",'<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']);?>');
+						$('#tablefeescreditclientt').bootstrapTable('load',dataresponse);
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);				
+					}
+					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_23').hide();
 				}
 			});
 		}

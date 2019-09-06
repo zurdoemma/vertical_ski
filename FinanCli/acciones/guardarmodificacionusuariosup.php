@@ -42,6 +42,7 @@
 		$trabViernes=htmlspecialchars($_POST["trabViernes"], ENT_QUOTES, 'UTF-8');
 		$trabSabado=htmlspecialchars($_POST["trabSabado"], ENT_QUOTES, 'UTF-8');
 		$trabDomingo=htmlspecialchars($_POST["trabDomingo"], ENT_QUOTES, 'UTF-8');
+		$cambDia=htmlspecialchars($_POST["cambDia"], ENT_QUOTES, 'UTF-8');
 		
 		if($perfil == 2 && (empty($horarioIngreso) || empty($horarioEgreso) || ($trabLunes == 'false' && $trabMartes == 'false' && $trabMiercoles == 'false' && $trabJueves == 'false' && $trabViernes == 'false' && $trabSabado == 'false' && $trabDomingo == 'false')))
 		{
@@ -197,7 +198,7 @@
 				
 				if($perfil == 2)
 				{
-					if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+					if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
 					{
 						$stmt401->bind_param('s', $usuario);
 						$stmt401->execute();    
@@ -207,7 +208,7 @@
 						$totR401 = $stmt401->num_rows;
 						if($totR401 > 0)
 						{
-							$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a);
+							$stmt401->bind_result($id_usuario_horario_laboral, $horario_ingreso_horario_laboral_a, $horario_egreso_horario_laboral_a, $lunes_horario_laboral_a, $martes_horario_laboral_a, $miercoles_horario_laboral_a, $jueves_horario_laboral_a, $viernes_horario_laboral_a, $sabado_horario_laboral_a, $domingo_horario_laboral_a, $cambio_dia_a);
 							$stmt401->fetch();
 							
 							$tieneHorarioLaboralDB = 1;
@@ -229,7 +230,7 @@
 					
 					if($tieneHorarioLaboralDB == 1)
 					{
-						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ?, horario_salida = ?, lunes = ?, martes = ?, miercoles = ?, jueves = ?, viernes = ?, sabado = ?, domingo = ? WHERE id_usuario = ?"))
+						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ?, horario_salida = ?, lunes = ?, martes = ?, miercoles = ?, jueves = ?, viernes = ?, sabado = ?, domingo = ?, cambio_dia = ? WHERE id_usuario = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -255,8 +256,10 @@
 							if($trabSabado == 'true') $trabSabadoDB = 1;
 							else $trabSabadoDB = 0;
 							if($trabDomingo == 'true') $trabDomingoDB = 1;
-							else $trabDomingoDB = 0;							
-							$stmt10->bind_param('ssiiiiiiis', $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB, $usuario);
+							else $trabDomingoDB = 0;
+							if($cambDia == 'true') $cambDiaDB = 1;
+							else $cambDiaDB = 0;							
+							$stmt10->bind_param('ssiiiiiiiis', $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB, $cambDiaDB, $usuario);
 							if(!$stmt10->execute())
 							{
 								echo $mysqli->error;
@@ -269,7 +272,7 @@
 						}
 								
 						$date_registro = date("YmdHis");
-						$valor_log_user = "ANTERIOR: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horario_ingreso_horario_laboral_a.", horario_salida = ".$horario_egreso_horario_laboral_a.", lunes = ".$lunes_horario_laboral_a.", martes = ".$martes_horario_laboral_a.", miercoles = ".$miercoles_horario_laboral_a.", jueves = ".$jueves_horario_laboral_a.", viernes = ".$viernes_horario_laboral_a.", sabado = ".$sabado_horario_laboral_a.", domingo = ".$domingo_horario_laboral_a." WHERE id_usuario = ".$usuario." -- "."NUEVO: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horarioIngresDB.", horario_salida = ".$horarioEgresDB.", lunes = ".$trabLunesDB.", martes = ".$trabMartesDB.", miercoles = ".$trabMiercolesDB.", jueves = ".$trabJuevesDB.", viernes = ".$trabViernesDB.", sabado = ".$trabSabadoDB.", domingo = ".$trabDomingoDB." WHERE id_usuario = ".$usuario;
+						$valor_log_user = "ANTERIOR: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horario_ingreso_horario_laboral_a.", horario_salida = ".$horario_egreso_horario_laboral_a.", lunes = ".$lunes_horario_laboral_a.", martes = ".$martes_horario_laboral_a.", miercoles = ".$miercoles_horario_laboral_a.", jueves = ".$jueves_horario_laboral_a.", viernes = ".$viernes_horario_laboral_a.", sabado = ".$sabado_horario_laboral_a.", domingo = ".$domingo_horario_laboral_a.", cambio_dia = ".$cambio_dia_a." WHERE id_usuario = ".$usuario." -- "."NUEVO: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horarioIngresDB.", horario_salida = ".$horarioEgresDB.", lunes = ".$trabLunesDB.", martes = ".$trabMartesDB.", miercoles = ".$trabMiercolesDB.", jueves = ".$trabJuevesDB.", viernes = ".$trabViernesDB.", sabado = ".$trabSabadoDB.", domingo = ".$trabDomingoDB.", cambio_dia = ".$cambDiaDB." WHERE id_usuario = ".$usuario;
 						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
@@ -296,7 +299,7 @@
 					}
 					else
 					{
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (?,?,?,?,?,?,?,?,?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -322,8 +325,10 @@
 							if($trabSabado == 'true') $trabSabadoDB = 1;
 							else $trabSabadoDB = 0;
 							if($trabDomingo == 'true') $trabDomingoDB = 1;
-							else $trabDomingoDB = 0;							
-							$stmt10->bind_param('sssiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB);
+							else $trabDomingoDB = 0;
+							if($cambDia == 'true') $cambDiaDB = 1;
+							else $cambDiaDB = 0;							
+							$stmt10->bind_param('sssiiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB, $cambDiaDB);
 							if(!$stmt10->execute())
 							{
 								echo $mysqli->error;
@@ -336,7 +341,7 @@
 						}
 								
 						$date_registro = date("YmdHis");
-						$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.")";
+						$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
 						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;

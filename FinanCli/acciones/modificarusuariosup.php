@@ -200,7 +200,7 @@
 				echo '				</div>';
 				if($user_perfil == 2)
 				{
-					if ($stmt59 = $mysqli->prepare("SELECT horario_ingreso, horario_salida, lunes, martes, miercoles, jueves, viernes, sabado, domingo FROM finan_cli.horario_laboral_x_usuario WHERE id_usuario = ?")) 
+					if ($stmt59 = $mysqli->prepare("SELECT horario_ingreso, horario_salida, lunes, martes, miercoles, jueves, viernes, sabado, domingo, cambio_dia FROM finan_cli.horario_laboral_x_usuario WHERE id_usuario = ?")) 
 					{ 
 						$stmt59->bind_param('s', $usuario);
 						$stmt59->execute();    
@@ -210,7 +210,7 @@
 
 						if($totR59 > 0)
 						{				 
-							$stmt59->bind_result($horario_ingreso_usuario_db, $horario_egreso_usuario_db, $trabaja_lunes_usuario_db, $trabaja_martes_usuario_db, $trabaja_miercoles_usuario_db, $trabaja_jueves_usuario_db, $trabaja_viernes_usuario_db, $trabaja_sabado_usuario_db, $trabaja_domingo_usuario_db);
+							$stmt59->bind_result($horario_ingreso_usuario_db, $horario_egreso_usuario_db, $trabaja_lunes_usuario_db, $trabaja_martes_usuario_db, $trabaja_miercoles_usuario_db, $trabaja_jueves_usuario_db, $trabaja_viernes_usuario_db, $trabaja_sabado_usuario_db, $trabaja_domingo_usuario_db, $cambio_dia_usuario_db);
 							$stmt59->fetch();
 							
 							$stmt59->free_result();
@@ -246,7 +246,15 @@
 						echo '								<span class="glyphicon glyphicon-time"></span>';
 						echo '							</span>';		
 						echo '					    </div>';
-						echo '					</div>';				
+						echo '					</div>';
+						echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="validarcambiodedia">'.translate('Msg_Change_Day_Time_Work',$GLOBALS['lang']).':</label>';			
+						echo '					<div class="form-group" id="validarcambiodedia">';	
+						echo '						<label class="switch">';
+						if($cambio_dia_usuario_db == 1) echo '						  <input type="checkbox" id="validarcambiodediai" name="validarcambiodediai" checked />';
+						else echo '						  <input type="checkbox" id="validarcambiodediai" name="validarcambiodediai" />';
+						echo '						  <span class="slider round"></span>';
+						echo '						</label>';
+						echo '					</div>';						
 						echo '				</div>';
 						echo '				<div class="form-group form-inline" id="diaslaboralesusuario" name="diaslaboralesusuario" >';				
 						echo '				  <div class="form-group" id="luneshorariolaboraluser">';

@@ -154,7 +154,14 @@
 		echo '								<span class="glyphicon glyphicon-time"></span>';
 		echo '							</span>';		
 		echo '					    </div>';
-		echo '					</div>';				
+		echo '					</div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="validarcambiodedian">'.translate('Msg_Change_Day_Time_Work',$GLOBALS['lang']).':</label>';			
+		echo '					<div class="form-group" id="validarcambiodedian">';	
+		echo '						<label class="switch">';
+		echo '						  <input type="checkbox" id="validarcambiodediani" name="validarcambiodediani" />';
+		echo '						  <span class="slider round"></span>';
+		echo '						</label>';
+		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline" id="diaslaboralesusuarion" name="diaslaboralesusuarion" >';				
 		echo '				  <div class="form-group" id="luneshorariolaboralusern">';

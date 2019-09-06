@@ -324,6 +324,20 @@ h1 {
     margin-left:57%;
 }
 
+#img_loader_23
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:145px;
+    margin-left:52%;
+}
+
 #mensajeError
 {
     background-image: url("../images/errorDialog.png");	

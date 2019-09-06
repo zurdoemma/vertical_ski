@@ -58,6 +58,7 @@
 		$trabViernes=htmlspecialchars($_POST["trabViernes"], ENT_QUOTES, 'UTF-8');
 		$trabSabado=htmlspecialchars($_POST["trabSabado"], ENT_QUOTES, 'UTF-8');
 		$trabDomingo=htmlspecialchars($_POST["trabDomingo"], ENT_QUOTES, 'UTF-8');
+		$cambDia=htmlspecialchars($_POST["cambDia"], ENT_QUOTES, 'UTF-8');
 		
 		if($perfil == 2 && (empty($horarioIngreso) || empty($horarioEgreso) || ($trabLunes == 'false' && $trabMartes == 'false' && $trabMiercoles == 'false' && $trabJueves == 'false' && $trabViernes == 'false' && $trabSabado == 'false' && $trabDomingo == 'false')))
 		{
@@ -270,7 +271,7 @@
 				
 				if($perfil == 2)
 				{				
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (?,?,?,?,?,?,?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -296,8 +297,10 @@
 						if($trabSabado == 'true') $trabSabadoDB = 1;
 						else $trabSabadoDB = 0;
 						if($trabDomingo == 'true') $trabDomingoDB = 1;
-						else $trabDomingoDB = 0;							
-						$stmt10->bind_param('sssiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB);
+						else $trabDomingoDB = 0;
+						if($cambDia == 'true') $cambDiaDB = 1;
+						else $cambDiaDB = 0;						
+						$stmt10->bind_param('sssiiiiiiii', $usuario, $horarioIngresDB, $horarioEgresDB, $trabLunesDB, $trabMartesDB, $trabMiercolesDB, $trabJuevesDB, $trabViernesDB, $trabSabadoDB, $trabDomingoDB, $cambDiaDB);
 						if(!$stmt10->execute())
 						{
 							echo $mysqli->error;
@@ -310,7 +313,7 @@
 					}
 							
 					$date_registro = date("YmdHis");
-					$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.")";
+					$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
 					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;

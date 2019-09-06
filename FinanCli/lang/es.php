@@ -691,6 +691,7 @@
 		'Msg_Date_Until_Report_Must_Enter' => 'Debe ingresar una fecha hasta!!',
 		'Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until' => 'La fecha desde no puede ser mayor a la fecha hasta!!',
 		'Msg_Pay_First_Fee' => 'Paga 1er. Cuota',
+		'Msg_Change_Day_Time_Work' => 'Cambio Día',
 		'Msg_First_Fee_Paid' => 'Primera Cuota ABONADA',
 		'Lbl_Minimum_Delivery' => 'Mínimo Entrega',
 		'Msg_A_Minimum_Delivery_Profile_Credit_Must_Enter' => 'Debe ingresar un mínimo de entrega',
@@ -712,6 +713,12 @@
 		'Lbl_Day_Sunday_Check_Work_User' => 'Domingo',
 		'Msg_You_Must_Correctly_Load_The_User_Work_Schedule' => 'Debe cargar correctamente el horario laboral del usuario!!',
 		'Msg_Working_Hours_Not_Allowed' => 'Horario laboral no permitido!!',
-		'Msg_Please_Verify_Customer_Information' => 'Favor de verificar los datos del cliente!!'
+		'Msg_Please_Verify_Customer_Information' => 'Favor de verificar los datos del cliente!!',
+		'Msg_View_Cancel_Credit_OK'  => 'Se encontro el credito a cancelar!!',
+		'Lbl_Cancelation_Credit' => 'Cancelación de crédito',
+		'Lbl_Reason_Cancel_Credit' => 'Motivo para cancelar',
+		'Msg_A_Reason_Cancel_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación del crédito',
+		'Msg_Be_Sure_To_Cancel_The_Credit' => 'Esta seguro de cancelar el crédito',
+		'Msg_Cancel_Credit_Client_OK' => 'El crédito se cancelo correctamente!!'
 	);
 ?>
