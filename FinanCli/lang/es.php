@@ -459,6 +459,8 @@
 		'Lbl_Actions_Credit' => 'Acciones Crédito',
 		'Msg_View_Credit_Client' => 'Ver Crédito',
 		'Msg_Cancel_Credit_Client' => 'Cancelar Crédito',
+		'Msg_Cancel_Fee_Credit_Client' => 'Cancelar Cuota',
+		'Msg_Cancel_Pay_Fee_Credit' => 'Cancelar Pago',
 		'Lbl_Number_Phone_Credit_Client' => 'Teléfono',
 		'Lbl_Purchase_Amount_Client' => 'Monto Compra',
 		'Lbl_Amount_Credit_Client' => 'Monto Crédito',
@@ -508,6 +510,7 @@
 		'Msg_Reprint_Credit_Client_OK' => 'Reimpresión de credito OK!!',
 		'Msg_Reprint_Credit_Client_OK2' => 'El crédito seleccionado se reimprimió correctamente!!',
 		'Msg_Credit_Client_Not_Exist' => 'El crédito no existe o tiene un estado incorrecto!!',
+		'Msg_Credit_Client_Fee_Not_Exist' => 'La cuota no existe o tiene un estado incorrecto!!',
 		'Msg_Default_Notice_Not_Exist' => 'El aviso x mora no existe!!',
 		'Msg_Default_Notice_SMS_Not_Exist' => 'No existen avisos x SMS!!',		
 		'Msg_Fee_Credit_Client_Not_Exist' => 'La cuota no existe!!',
@@ -719,6 +722,12 @@
 		'Lbl_Reason_Cancel_Credit' => 'Motivo para cancelar',
 		'Msg_A_Reason_Cancel_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación del crédito',
 		'Msg_Be_Sure_To_Cancel_The_Credit' => 'Esta seguro de cancelar el crédito',
-		'Msg_Cancel_Credit_Client_OK' => 'El crédito se cancelo correctamente!!'
+		'Msg_Cancel_Credit_Client_OK' => 'El crédito se cancelo correctamente!!',
+		'Msg_View_Cancel_Fee_Credit_OK'  => 'Se encontro la cuota a cancelar!!',
+		'Lbl_Cancelation_Fee_Credit' => 'Cancelación de cuota',
+		'Lbl_Reason_Cancel_Fee_Credit' => 'Motivo para cancelar',
+		'Msg_A_Reason_Cancel_Fee_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación de la cuota',
+		'Msg_Be_Sure_To_Cancel_Fee_The_Credit' => 'Esta seguro de cancelar la cuota',
+		'Msg_Cancel_Credit_Fee_Client_OK' => 'La cuota se cancelo correctamente!!'		
 	);
 ?>

@@ -27,6 +27,32 @@
 		$genero=htmlspecialchars($_POST["genero"], ENT_QUOTES, 'UTF-8');
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 		
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}		
 				
 		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento, c.cuil_cuit FROM finan_cli.cliente c WHERE c.id = ?"))
 		{
@@ -143,7 +169,7 @@
 								$mysqli->autocommit(FALSE);
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)"))
+								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)"))
 								{
 									$mysqli->autocommit(TRUE);
 									$stmt->free_result();
@@ -157,7 +183,7 @@
 									$tokenECF = md5(uniqid(rand(), true));
 									$tokenECF = hash('sha512', $tokenECF);
 									$validadoECF = 0;
-									$stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+									$stmt10->bind_param('issssisii', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF, $id_cadena_user);
 									if(!$stmt10->execute())
 									{
 										echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
@@ -201,7 +227,7 @@
 					$mysqli->autocommit(FALSE);
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)"))
 					{
 						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 						$mysqli->autocommit(TRUE);
@@ -215,7 +241,7 @@
 						$tokenECF = md5(uniqid(rand(), true));
 						$tokenECF = hash('sha512', $tokenECF);
 						$validadoECF = 0;
-						$stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+						$stmt10->bind_param('issssisii', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF, $id_cadena_user);
 						if(!$stmt10->execute())
 						{
 							$mysqli->autocommit(TRUE);

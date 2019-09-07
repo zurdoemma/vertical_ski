@@ -133,6 +133,7 @@
 			$posicion = 0;
 			while($stmt->fetch())
 			{
+				$arrayC[$posicion]['idcredito'] = $id_credit_client;
 				$arrayC[$posicion]['fecha'] = substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4);
 				if(!empty($tipo_documento_titular) && !empty($documento_titular))
 				{

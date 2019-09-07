@@ -1834,9 +1834,9 @@ include("./menu/menu.php");
 					{
 						$('#dialogcancelcredit').dialog('destroy').remove();
 													
-						dataresponse = dataresponse.replace("<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']); ?>"+"=::=::","");						
+						dataresponse = dataresponse.replace("<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']); ?>"+"=::=::","");
+						$('#tableadmincreditst').bootstrapTable('load',JSON.parse(dataresponse));						
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",'<?php echo translate('Msg_Cancel_Credit_Client_OK',$GLOBALS['lang']);?>');
-						$('#tablefeescreditclientt').bootstrapTable('load',dataresponse);
 					}
 					else
 					{

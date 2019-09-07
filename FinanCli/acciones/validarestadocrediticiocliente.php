@@ -32,6 +32,33 @@
 		$genero=htmlspecialchars($_POST["genero"], ENT_QUOTES, 'UTF-8');
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 		
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}		
+		
 		if($stmt4 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt4->bind_param('is', $tipoDocumento, $documento);
@@ -163,8 +190,8 @@
 								$mysqli->autocommit(FALSE);
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional, documento_adicional,validado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-								else $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)";
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+								else $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
 								if(!$stmt10 = $mysqli->prepare($insertEFCDB))
 								{
 									$mysqli->autocommit(TRUE);
@@ -179,8 +206,8 @@
 									$tokenECF = md5(uniqid(rand(), true));
 									$tokenECF = hash('sha512', $tokenECF);
 									$validadoECF = 0;
-									if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisi', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF);
-									else $stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+									if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisii', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF, $id_cadena_user);
+									else $stmt10->bind_param('issssisii', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF, $id_cadena_user);
 									if(!$stmt10->execute())
 									{
 										$mysqli->autocommit(TRUE);
@@ -226,8 +253,8 @@
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 					
 					
-					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado) VALUES (?,?,?,?,?,?,?,?,?,?)";
-					else $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado) VALUES (?,?,?,?,?,?,?,?)";
+					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+					else $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
 					if(!$stmt10 = $mysqli->prepare($insertEFCDB2))
 					{
 						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
@@ -242,8 +269,8 @@
 						$tokenECF = md5(uniqid(rand(), true));
 						$tokenECF = hash('sha512', $tokenECF);
 						$validadoECF = 0;
-						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisi', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF);
-						else $stmt10->bind_param('issssisi', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF);
+						if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt10->bind_param('issssisisii', $tipoDocumentoTitular, $documentoTitular, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuilTitular, $tokenECF, $tipoDocumento, $documento, $validadoECF, $id_cadena_user);
+						else $stmt10->bind_param('issssisii', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF, $id_cadena_user);
 						if(!$stmt10->execute())
 						{
 							$mysqli->autocommit(TRUE);

@@ -247,6 +247,56 @@ include("./menu/menu.php");
     </script>
 
 	<script type="text/javascript">
+		function cancelarPagoCuotaCredito(idCuotaCredito)
+		{
+			var urlccc = "./acciones/cancelarcuotacredito.php";
+			var tagccc = $("<div id='dialogcancelfeecredit'></div>");
+			$('#img_loader_17').show();
+			
+			$.ajax({
+				url: urlccc,
+				method: "POST",
+				data: { idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_17').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_View_Cancel_Fee_Credit_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_View_Cancel_Fee_Credit_OK',$GLOBALS['lang']);?>',"");
+						
+						tagccc.html(dataresponse).dialog({
+						  show: "blind",
+						  hide: "explode",
+						  height: "auto",
+						  width: "auto",					  
+						  modal: true, 
+						  title: "<?php echo translate('Msg_Cancel_Fee_Credit_Client',$GLOBALS['lang']);?>",
+						  autoResize:true,
+								close: function(){
+										tagccc.dialog('destroy').remove()
+								}
+						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");					
+						tagccc.dialog('open');
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_17').hide();
+				}
+			});	
+		}
+    </script>
+	
+	<script type="text/javascript">
 		function pagarCuotaCredito(idCredito, idCuotaCredito)
 		{
 			if($('#idcreditovi').val() != idCredito) return;
@@ -1773,6 +1823,123 @@ include("./menu/menu.php");
 				}
 			});	
 		}
+    </script>
+
+	<script type="text/javascript">
+		function confirmar_accion_cancelar_cuota_credito(titulo, mensaje, formularioccc, idCuotaCredito)
+		{
+			if($('#motivocancelfeecrediti').val().length == 0)
+			{
+				$(function() {
+					$('#motivocancelfeecrediti').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$('#motivocancelfeecrediti').focus();
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$('#motivocancelfeecrediti').tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$('#motivocancelfeecrediti').tooltip('destroy');
+			}			
+			
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										guardarCancelacionCuotaCredito(formularioccc, idCuotaCredito);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader').hide();
+		}
+	</script>
+
+	<script type="text/javascript">
+		function guardarCancelacionCuotaCredito(formularioccc, idCuotaCredito)
+		{			
+			var urlpcc = "./acciones/guardarcancelacioncuotacredito.php";
+			$('#img_loader_23').show();
+			
+			$.ajax({
+				url: urlpcc,
+				method: "POST",
+				data: { idCuotaCredito: idCuotaCredito },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_23').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1)
+					{					
+						var menR = dataresponse.substring(0, dataresponse.indexOf('=:=:='));
+						dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
+						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
+						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
+						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
+						dataresponse = dataresponse.replace(datosTablaCuotas+'=::::=::::=',"");
+						var cantidadCuotasP = parseInt(dataresponse);
+						
+						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
+						$('#estadocreditvi').val(estadoCredAc);
+						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
+						if(cantidadCuotasP == 1) 
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+						}
+						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
+						if(cantidadCuotasP == 1) 
+						{
+							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
+							$('#btnPagoSeleccionCD').hide();
+							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
+						}
+						
+						//VER QUE ESTE TODO LO QUE SE NECESITA AL CANCELAR LA CUOTA -- QUE SE ACTUALICEN TODOS LOS DATOS EN FORMA CORRECTA
+						$('#dialogcancelfeecredit').dialog('destroy').remove();
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else
+					{
+						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+					}					
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_23').hide();
+				}
+			});	
+		}
     </script>	
 </head>
 
@@ -1802,7 +1969,7 @@ include("./menu/menu.php");
 			<h3 class="panel-title" id="titulocreditoscliente"><?php  if(!empty($_GET['doc'])) echo translate('Lbl_Credits_Clients',$GLOBALS['lang']).': '.$_GET['doc']; else echo translate('Lbl_Credits_Clients',$GLOBALS['lang']);?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
-			<div id="toolbar" style="margin-left:-295px; margin-top:-1px;">
+			<div id="toolbar" style="margin-left:-300px; margin-top:-1px;">
 				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>
 			<div id="img_loader"></div>
@@ -1813,6 +1980,7 @@ include("./menu/menu.php");
 				   data-search="true" data-search-align="right" data-toolbar="#toolbar" data-toolbar-align="right">
 					<thead>
 						<tr>
+							<th class="col-xs-1 text-center" data-field="idcredito" data-sortable="true"><?php echo translate('Lbl_Credit_Number',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="fecha" data-sortable="true"><?php echo translate('Lbl_Date_Credit',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="tipodocumento" data-sortable="true"><?php echo translate('Lbl_Type_Document_Credit',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="documento" data-sortable="true"><?php echo translate('Lbl_Document_Credit',$GLOBALS['lang']);?></th>
@@ -1907,6 +2075,7 @@ include("./menu/menu.php");
 											while($stmt->fetch())
 											{
 												echo '<tr>';
+												echo '<td>'.$id_credit_client.'</td>';
 												echo '<td>'.substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4).'</td>';
 												if(!empty($tipo_documento_titular) && !empty($documento_titular))
 												{
