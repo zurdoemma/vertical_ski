@@ -1890,7 +1890,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlpcc,
 				method: "POST",
-				data: { idCuotaCredito: idCuotaCredito },
+				data: { idCuotaCredito: idCuotaCredito, motivoCancelacion: $("#motivocancelfeecrediti").val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_23').hide();
 					

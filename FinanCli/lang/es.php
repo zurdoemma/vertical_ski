@@ -728,6 +728,7 @@
 		'Lbl_Reason_Cancel_Fee_Credit' => 'Motivo para cancelar',
 		'Msg_A_Reason_Cancel_Fee_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación de la cuota',
 		'Msg_Be_Sure_To_Cancel_Fee_The_Credit' => 'Esta seguro de cancelar la cuota',
-		'Msg_Cancel_Credit_Fee_Client_OK' => 'La cuota se cancelo correctamente!!'		
+		'Msg_Cancel_Credit_Fee_Client_OK' => 'La cuota se cancelo correctamente!!',
+		'Msg_Unable_To_Get_The_Form_Of_Payment_Fee' => 'No se puede obtener la forma de pago de la cuota!!'
 	);
 ?>
