@@ -1899,10 +1899,11 @@ include("./menu/menu.php");
 						window.location.replace("./login.php?result_ok=3");
 					}
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1 || dataresponse.indexOf('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{					
 						var menR = dataresponse.substring(0, dataresponse.indexOf('=:=:='));
-						dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
+						if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1) dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
+						else dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
 						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
 						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
 						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
@@ -1912,20 +1913,22 @@ include("./menu/menu.php");
 						$('#tablefeescreditclienttv').bootstrapTable('load',JSON.parse(datosTablaCuotas));
 						$('#estadocreditvi').val(estadoCredAc);
 						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
-						if(cantidadCuotasP == 1) 
-						{
-							$('#btnPagoTotalCD').hide();
-							document.getElementById("btnPagoTotalCD").disabled = true;
-						}
-						if(cantidadCuotasP >= 1) document.getElementById("btnPagoSeleccionCD").disabled = true;
-						if(cantidadCuotasP == 1) 
-						{
-							document.getElementById("seleccioncuotanro"+$('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows).disabled = true;
-							$('#btnPagoSeleccionCD').hide();
-							$('#tablefeescreditclienttv').bootstrapTable('updateCell', {index: ($('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows-1), field: 'seleccioncuota', value: '-'});							
-						}
 						
-						//VER QUE ESTE TODO LO QUE SE NECESITA AL CANCELAR LA CUOTA -- QUE SE ACTUALICEN TODOS LOS DATOS EN FORMA CORRECTA
+						$('#btnPagoTotalCD').show();
+						document.getElementById("btnPagoTotalCD").disabled = false;
+						
+						document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
+						$('#btnReimpresionPagoTotalCD').hide();
+						
+						document.getElementById("btnPDFPagoTotalCD").disabled = true;						
+						$('#btnPDFPagoTotalCD').hide();	
+						
+						if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+						{
+							$('#btnPagoSeleccionCD').show();
+							document.getElementById("btnPagoSeleccionCD").disabled = true;
+						}
+												
 						$('#dialogcancelfeecredit').dialog('destroy').remove();
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
 					}

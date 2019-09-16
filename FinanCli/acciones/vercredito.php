@@ -245,13 +245,13 @@
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;<label class="control-label" for="montocompraclientcreditv">'.translate('Lbl_Purchase_Amount_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="montomaximoclientcreditv">';
-		echo '						<input class="form-control input-sm" id="montocompraclientcreditvi" name="montocompraclientcreditvi" type="text" maxlength="11" value="'.round(($monto_compra_credito_cli/100.00),2).'" disabled />';
+		echo '						<input class="form-control input-sm" id="montocompraclientcreditvi" name="montocompraclientcreditvi" type="text" maxlength="11" value="'.str_replace(",",".",round(($monto_compra_credito_cli/100.00),2)).'" disabled />';
 		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="montocreditoclientcreditv">'.translate('Lbl_Amount_Credit_Client',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="montocreditoclientcreditv">';
-		echo '						<input class="form-control input-sm" id="montocreditoclientcreditvi" name="montocreditoclientcreditvi" type="text" maxlength="11" value="'.round(($montoTotalCredito/100.00),2).'" disabled />';
+		echo '						<input class="form-control input-sm" id="montocreditoclientcreditvi" name="montocreditoclientcreditvi" type="text" maxlength="11" value="'.str_replace(",",".",round(($montoTotalCredito/100.00),2)).'" disabled />';
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="plancreditclientv">'.translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditclientv">';
@@ -291,7 +291,7 @@
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="minimoentregaclientcreditv">'.translate('Lbl_Minimum_Delivery',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="minimoentregaclientcreditv">';
-		echo '						<input class="form-control input-sm" id="minimoentregaclientcreditvi" name="minimoentregaclientcreditvi" type="text" maxlength="11" value="'.round(($minimo_entrega_cliente_db/100.00),2).'" disabled />';
+		echo '						<input class="form-control input-sm" id="minimoentregaclientcreditvi" name="minimoentregaclientcreditvi" type="text" maxlength="11" value="'.str_replace(",",".",round(($minimo_entrega_cliente_db/100.00),2)).'" disabled />';
 		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline"><hr />';

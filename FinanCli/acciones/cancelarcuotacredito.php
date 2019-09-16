@@ -79,7 +79,30 @@
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 			return;	
 		}
-						
+		
+		if($stmt63 = $mysqli->prepare("SELECT id_pago_total_credito FROM finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
+		{
+			$stmt63->bind_param('i', $idCuotaCredito);
+			$stmt63->execute();    
+			$stmt63->store_result();
+			
+			$totR63 = $stmt63->num_rows;
+
+			if($totR63 > 0)
+			{
+				$stmt63->bind_result($id_pago_total_cuota_credito_db);
+				$stmt63->fetch();
+								
+				$stmt63->free_result();
+				$stmt63->close();
+			}
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+		
 		echo translate('Msg_View_Cancel_Fee_Credit_OK',$GLOBALS['lang']);	
 		echo '<div class="panel-group">';				
 		echo '	<div class="panel panel-default">';
@@ -89,6 +112,12 @@
 		echo '		<div class="panel-body">';
 		echo '			<div id="img_loader_23"></div>';
 		echo '			<form id="formularioccc" role="form">';
+		if($totR63 > 0)
+		{
+			echo '				<div class="alert alert-warning">';
+			echo '					<strong>'.translate('Lbl_Warning',$GLOBALS['lang']).'!</strong> '.translate('Msg_Payment_Of_All_Fees_Included_In_The_Total_Payment_Is_Canceled',$GLOBALS['lang']).'.';
+			echo '				</div>';
+		}
 		echo '				<div class="form-group form-inline">';		
 		echo '					&nbsp;<label class="control-label" for="nrofeecreditcancel">'.translate('Lbl_Number_Fee_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="nrofeecreditcancel">';

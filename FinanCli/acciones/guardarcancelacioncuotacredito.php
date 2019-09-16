@@ -217,7 +217,7 @@
 				
 				if($estadoFormaPagoCuota == 'T')
 				{					
-					if($stmt163 = $mysqli->prepare("SELECT pt.id_cuota_credito, pt.fecha, pt.monto, pt.usuario, pt.supervisor, pt.token, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago FROM finan_cli.pago_total_credito_x_cuota pt, finan_cli.cuota_credito cc WHERE pt.id_cuota_credito = cc.id AND pt.id_pago_total_credito = ? AND cc.estado = ?"))
+					if($stmt163 = $mysqli->prepare("SELECT pt.id_cuota_credito, pt.fecha, pt.monto, pt.usuario, pt.supervisor, pt.token, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM finan_cli.pago_total_credito_x_cuota pt, finan_cli.cuota_credito cc, finan_cli.credito c WHERE pt.id_cuota_credito = cc.id AND cc.id_credito = c.id AND pt.id_pago_total_credito = ? AND cc.estado = ?"))
 					{
 						$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt163->bind_param('is', $id_pago_total_credito_db, $estContrCPagada);
@@ -228,7 +228,7 @@
 
 						if($totR163 > 0)
 						{
-							$stmt163->bind_result($id_cuota_credito_anular_pago_db, $fecha_pago_total_borrar_db, $monto_pago_total_borrar_db, $usuario_pago_total_borrar_db, $supervisor_pago_total_borrar_db, $token_pago_total_borrar_db, $id_credito_anular_pago_db, $numero_cuota_anular_pago_db, $fecha_vencimiento_anular_pago_db, $monto_cuota_original_anular_pago_db, $estado_cuota_anular_pago_db, $fecha_pago_anular_db, $monto_pago_anular_db, $usuario_registro_pago_anular_db);
+							$stmt163->bind_result($id_cuota_credito_anular_pago_db, $fecha_pago_total_borrar_db, $monto_pago_total_borrar_db, $usuario_pago_total_borrar_db, $supervisor_pago_total_borrar_db, $token_pago_total_borrar_db, $id_credito_anular_pago_db, $numero_cuota_anular_pago_db, $fecha_vencimiento_anular_pago_db, $monto_cuota_original_anular_pago_db, $estado_cuota_anular_pago_db, $fecha_pago_anular_db, $monto_pago_anular_db, $usuario_registro_pago_anular_db, $estado_credito_pago_anular_db);
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
@@ -370,7 +370,7 @@
 										}
 							
 										$date_registro = date("YmdHis");
-										$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+										$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 											
 										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 										{
@@ -405,11 +405,85 @@
 									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 									return;
 								}
+								
+								if($stmt165 = $mysqli->prepare("SELECT ptcxc.id_pago_total_credito, ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								{
+									$stmt165->bind_param('i', $id_cuota_credito_anular_pago_db);
+									$stmt165->execute();    
+									$stmt165->store_result();
+									
+									$totR165 = $stmt165->num_rows;
+
+									if($totR165 > 0)
+									{
+										$stmt165->bind_result($id_pago_total_credito_borrar_db, $id_cuota_credito_borrar_db);
+										$stmt165->fetch();
+										
+										if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
+										{
+											echo $mysqli->error;
+											if($posWhileR != 0) $mysqli->rollback();
+											$mysqli->autocommit(TRUE);
+											$stmt->free_result();
+											$stmt->close();
+											return;
+										}
+										else
+										{
+											
+											$stmt10->bind_param('i', $id_cuota_credito_anular_pago_db);
+											if(!$stmt10->execute())
+											{
+												echo $mysqli->error;
+												if($posWhileR != 0) $mysqli->rollback();
+												$mysqli->autocommit(TRUE);
+												$stmt->free_result();
+												$stmt->close();
+												return;						
+											}
+										}
+							
+										$date_registro = date("YmdHis");
+										$valor_log_user = "ANTERIOR: finan_cli.pago_total_credito_x_cuota SET id_pago_total_credito = ".$id_pago_total_credito_borrar_db.", id_cuota_credito = ".$id_cuota_credito_borrar_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+											
+										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+										{
+											echo $mysqli->error;
+											if($posWhileR != 0) $mysqli->rollback();
+											$mysqli->autocommit(TRUE);
+											$stmt->free_result();
+											$stmt->close();
+											return;
+										}
+										else
+										{
+											$motivo = 92;
+											$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+											if(!$stmt->execute())
+											{
+												echo $mysqli->error;
+												if($posWhileR != 0) $mysqli->rollback();
+												$mysqli->autocommit(TRUE);
+												$stmt->free_result();
+												$stmt->close();
+												return;						
+											}
+										}										
+										
+										$stmt165->free_result();
+										$stmt165->close();
+									}
+								}
+								else
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}								
 																
 								$posWhileR++;
 							}
 							
-							if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_total WHERE id_cuota_credito = ?"))
+							if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_total_credito WHERE id_credito = ?"))
 							{
 								echo $mysqli->error;
 								if($posWhileR != 0) $mysqli->rollback();
@@ -421,7 +495,7 @@
 							else
 							{
 								
-								$stmt10->bind_param('i', $id_cuota_credito_anular_pago_db);
+								$stmt10->bind_param('i', $id_credito_anular_pago_db);
 								if(!$stmt10->execute())
 								{
 									echo $mysqli->error;
@@ -434,7 +508,7 @@
 							}
 				
 							$date_registro = date("YmdHis");
-							$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+							$valor_log_user = "ANTERIOR: finan_cli.pago_total_credito SET id = ".$id_pago_total_credito_borrar_db.", id_credito = ".$id_credito_anular_pago_db.", fecha = ".$fecha_pago_total_borrar_db.", monto = ".$monto_pago_total_borrar_db.", usuario = ".$usuario_pago_total_borrar_db.", supervisor = ".$supervisor_pago_total_borrar_db.", token = ".$token_pago_total_borrar_db." WHERE id_credito = ".$id_credito_anular_pago_db." -- DELETE finan_cli.pago_total_credito WHERE id_credito = ".$id_credito_anular_pago_db;
 								
 							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 							{
@@ -447,7 +521,7 @@
 							}
 							else
 							{
-								$motivo = 91;
+								$motivo = 93;
 								$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
 								if(!$stmt->execute())
 								{
@@ -458,7 +532,59 @@
 									$stmt->close();
 									return;						
 								}
-							}							
+							}
+
+							if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+							{
+								echo $mysqli->error;
+								if($posWhileR != 0) $mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;
+							}
+							else
+							{
+								$estNewCred = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+								$stmt10->bind_param('si', $estNewCred, $id_credito_anular_pago_db);
+								if(!$stmt10->execute())
+								{
+									echo $mysqli->error;
+									if($posWhileR != 0) $mysqli->rollback();
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									return;						
+								}
+							}
+				
+							$date_registro = date("YmdHis");
+							$valor_log_user = "ANTERIOR: finan_cli.credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE finan_cli.credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
+								
+							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							{
+								echo $mysqli->error;
+								if($posWhileR != 0) $mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;
+							}
+							else
+							{
+								$motivo = 94;
+								$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+								if(!$stmt->execute())
+								{
+									echo $mysqli->error;
+									if($posWhileR != 0) $mysqli->rollback();
+									$mysqli->autocommit(TRUE);
+									$stmt->free_result();
+									$stmt->close();
+									return;						
+								}
+							}
+							
 							$mysqli->commit();
 							$mysqli->autocommit(TRUE);
 							
@@ -475,7 +601,370 @@
 					{
 						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 						return;						
+					}
+
+					
+					
+					
+					
+					
+					
+					
+					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+					{
+						$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+						$stmt353->bind_param('is', $id_credito_anular_pago_db, $estadoPagadoControlCuo);
+						$stmt353->execute();    
+						$stmt353->store_result();
+						
+						$totR353 = $stmt353->num_rows;
+
+						if($totR353 > 0)
+						{
+							$stmt353->bind_result($ultimo_numero_cuota_pagada_db);
+							$stmt353->fetch();
+							
+							$stmt353->free_result();
+							$stmt353->close();
+						}								
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}			
+					
+					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM finan_cli.credito c WHERE c.id = ?"))
+					{
+						$stmt68->bind_param('i', $id_credito_anular_pago_db);
+						$stmt68->execute();    
+						$stmt68->store_result();
+						
+						$totR68 = $stmt68->num_rows;
+
+						if($totR68 > 0)
+						{
+							$stmt68->bind_result($estado_credito_db_res);
+							$stmt68->fetch();
+							
+							$stmt68->free_result();
+							$stmt68->close();
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}								
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}
+								
+					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+					{
+						$stmt62->bind_param('i', $id_credito_anular_pago_db);
+						$stmt62->execute();    
+						$stmt62->store_result();
+						
+						$totR62 = $stmt62->num_rows;
+
+						if($totR62 > 0)
+						{
+							$stmt62->bind_result($id_cuota_credito_db, $numero_cuota_db_r, $fecha_vencimiento_cuota_db, $monto_original_cuota_db, $estado_cuota_db, $fecha_pago_cuota_db);
+							
+							$pasoPrimeraCuota = 0;
+							$array[0] = array();
+							$posicion = 0;
+							while($stmt62->fetch())
+							{		
+								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+								{
+									$stmt67->bind_param('ii', $id_credito_anular_pago_db, $id_cuota_credito_db);
+									$stmt67->execute();    
+									$stmt67->store_result();
+									
+									$totR67 = $stmt67->num_rows;
+
+									if($totR67 > 0)
+									{
+										$stmt67->bind_result($monto_interes_cuota_credito_db);
+										$stmt67->fetch();
+									}
+									else $monto_interes_cuota_credito_db = 0;
+								}
+								else
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}
+
+								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								{
+									$stmt66->bind_param('i', $id_cuota_credito_db);
+									$stmt66->execute();    
+									$stmt66->store_result();
+									
+									$totR66 = $stmt66->num_rows;
+								}
+								else
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}
+
+								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+								{
+									$stmt105->bind_param('i', $id_cuota_credito_db);
+									$stmt105->execute();    
+									$stmt105->store_result();
+									
+									$totR105 = $stmt105->num_rows;
+								}
+								else
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;
+								}						
+								
+								if($estado_cuota_db == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']))
+								{
+									if($pasoPrimeraCuota == 0)
+									{
+										$array[$posicion]['seleccioncuota'] = '<label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db_r.'" name="seleccioncuotanro'.$numero_cuota_db_r.'" /><span class="slider round"></span></label>';
+										$array[$posicion]['nrocuota'] = $numero_cuota_db_r;
+										$array[$posicion]['fechavencimientov'] = substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4);
+										$array[$posicion]['montototalcuotav'] = '$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2);															
+										$array[$posicion]['interesescuotav'] = '$'.round(($monto_interes_cuota_credito_db/100.00),2);
+										if(!empty($fecha_pago_cuota_db)) $array[$posicion]['fechapagov'] = substr($fecha_pago_cuota_db,6,2).'/'.substr($fecha_pago_cuota_db,4,2).'/'.substr($fecha_pago_cuota_db,0,4);
+										else $array[$posicion]['fechapagov'] = '---';
+										if($monto_interes_cuota_credito_db == 0)
+										{
+											if($totR105 > 0)
+											{
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';										
+											}
+											else
+											{
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>';
+											}
+										}
+										else
+										{
+											if($totR105 > 0)
+											{									
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+											}
+											else
+											{
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button id="pagoCuotaNro'.$numero_cuota_db_r.'" type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Payment_Fee_Credit',$GLOBALS['lang']).'" onclick="pagarCuotaCredito('.$idCredito.','.$id_cuota_credito_db.')"><i class="fas fa-cash-register"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>';										
+											}
+										}
+										$pasoPrimeraCuota = 1;
+									}
+									else
+									{
+										$array[$posicion]['seleccioncuota'] = '<label class="switch"><input type="checkbox" id="seleccioncuotanro'.$numero_cuota_db_r.'" name="seleccioncuotanro'.$numero_cuota_db_r.'" /><span class="slider round"></span></label>';
+										$array[$posicion]['nrocuota'] = $numero_cuota_db_r;
+										$array[$posicion]['fechavencimientov'] = substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4);
+										$array[$posicion]['montototalcuotav'] = '$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2);															
+										$array[$posicion]['interesescuotav'] = '$'.round(($monto_interes_cuota_credito_db/100.00),2);
+										if(!empty($fecha_pago_cuota_db)) $array[$posicion]['fechapagov'] = substr($fecha_pago_cuota_db,6,2).'/'.substr($fecha_pago_cuota_db,4,2).'/'.substr($fecha_pago_cuota_db,0,4);
+										else $array[$posicion]['fechapagov'] = '---';
+										if($monto_interes_cuota_credito_db == 0)
+										{
+											//if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>';
+											//else $array[$posicion]['accionesv'] = '---';
+											if($totR105 > 0)
+											{
+												$array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+											}
+											else
+											{									
+												$array[$posicion]['accionesv'] = '---';
+											}
+										}
+										else
+										{
+											//if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Change_State_Fee_Credit',$GLOBALS['lang']).'" onclick="cambiarEstadoCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-sign-in-alt"></i></button>';
+											if($totR105 > 0)
+											{
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';										
+											}
+											else
+											{
+												if($estado_cuota_db == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>';
+												else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>';
+											}
+										}																		
+									}
+									$array[$posicion]['estadov'] = $estado_cuota_db;
+								}
+								else
+								{
+									$array[$posicion]['seleccioncuotanro'] = '---';
+									$array[$posicion]['nrocuota'] = $numero_cuota_db_r;
+									$array[$posicion]['fechavencimientov'] = substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4);
+									$array[$posicion]['montototalcuotav'] = '$'.round((($monto_original_cuota_db+$monto_interes_cuota_credito_db)/100.00),2);															
+									$array[$posicion]['interesescuotav'] = '$'.round(($monto_interes_cuota_credito_db/100.00),2);
+									if(!empty($fecha_pago_cuota_db)) $array[$posicion]['fechapagov'] = substr($fecha_pago_cuota_db,6,2).'/'.substr($fecha_pago_cuota_db,4,2).'/'.substr($fecha_pago_cuota_db,0,4);
+									else $array[$posicion]['fechapagov'] = '---';
+									if($monto_interes_cuota_credito_db == 0)
+									{
+										if($totR105 > 0)
+										{
+											if($estado_cuota_db == translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']))
+											{
+												if(($estado_credito_db_res == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_db_res == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) && $numero_cuota_db_r == $ultimo_numero_cuota_pagada_db && ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3))
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';											
+												}
+												else
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+												}
+											}
+											else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';									
+										}
+										else
+										{
+											if($estado_cuota_db == translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']))
+											{
+												if(($estado_credito_db_res == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_db_res == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) && $numero_cuota_db_r == $ultimo_numero_cuota_pagada_db && ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3))
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+												}
+												else
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>';
+													else $array[$posicion]['accionesv'] = '---';
+												}
+											}
+											else $array[$posicion]['accionesv'] = '---';
+										}
+									}
+									else
+									{
+										if($totR105 > 0)
+										{	
+											if($estado_cuota_db == translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']))
+											{
+												if(($estado_credito_db_res == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_db_res == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) && $numero_cuota_db_r == $ultimo_numero_cuota_pagada_db && ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3))
+												{	
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+												}
+												else
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';											
+												}
+											}
+											else 
+											{
+												$array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Debt_Notices',$GLOBALS['lang']).'" onclick="verAvisosDeuda('.$id_cuota_credito_db.')"><i class="fas fa-diagnoses"></i></button>';
+											}							
+										}
+										else
+										{
+											if($estado_cuota_db == translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']))
+											{
+												if(($estado_credito_db_res == translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) || $estado_credito_db_res == translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang'])) && $numero_cuota_db_r == $ultimo_numero_cuota_pagada_db && ($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3))
+												{
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Pay_Fee_Credit',$GLOBALS['lang']).'" onclick="cancelarPagoCuotaCredito('.$id_cuota_credito_db.')"><i class="far fa-window-close"></i></button>';											
+												}
+												else
+												{											
+													if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>';
+													else $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>';
+												}
+											}
+											else 
+											{
+												$array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Interest_Fee_Credit',$GLOBALS['lang']).'" onclick="verInteresesCuotaCredito('.$id_cuota_credito_db.')"><i class="fas fa-money-check-alt"></i></button>';
+											}
+										}
+									}
+									$array[$posicion]['estadov'] = $estado_cuota_db;																	
+								}
+								
+								$stmt67->free_result();
+								$stmt67->close();
+								
+								$stmt66->free_result();
+								$stmt66->close();
+								
+								$posicion++;
+							}
+							$stmt62->free_result();
+							$stmt62->close();
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
+					}
+					
+					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+					{
+						$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
+						$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+						$stmt69->bind_param('iss', $idCredito, $estado_p_1, $estado_p_2);
+						$stmt69->execute();    
+						$stmt69->store_result();
+						
+						$totR69 = $stmt69->num_rows;
+
+						if($totR69 > 0)
+						{
+							$stmt69->bind_result($fecha_vencimiento_cuota_db_res);
+							$stmt69->fetch();
+											
+							$stmt69->free_result();
+							$stmt69->close();
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+						return;
 					}					
+					echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.json_encode($array).'=::::=::::='.$totR69;
+					return;					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 				}
 				
 				$stmt->free_result();

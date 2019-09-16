@@ -136,7 +136,7 @@
 		echo '					</div>';
 		echo '					 &nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="montodeudacuotacredito">'.translate('Lbl_Total_Amount_Debt_Default_Notice',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="montodeudacuotacredito">';
-		echo '						<input class="form-control input-sm" id="montodeudacuotacreditoi" name="montodeudacuotacreditoi" type="text" maxlength="11" value="'.round(($montoTotalConInteresesCredito/100.00),2).'" disabled />';
+		echo '						<input class="form-control input-sm" id="montodeudacuotacreditoi" name="montodeudacuotacreditoi" type="text" maxlength="11" value="'.str_replace(",",".",round(($montoTotalConInteresesCredito/100.00),2)).'" disabled />';
 		echo '					 </div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline">';

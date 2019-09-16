@@ -52,7 +52,8 @@
 		'Msg_Enable_User' => 'Habilitar Usuario',
 		'Msg_Disable_User' => 'El usuario se encuentra deshabilitado.',
 		'Lbl_Error' => 'Error',
-		'Lbl_Attention' => 'Atención',		
+		'Lbl_Attention' => 'Atención',
+		'Lbl_Warning' => 'Advertencia',
 		'Lbl_OK' => 'Aceptar',
 		'Lbl_Current_Password' => 'Clave Actual',
 		'Lbl_New_Password' => 'Nueva Clave',
@@ -728,7 +729,9 @@
 		'Lbl_Reason_Cancel_Fee_Credit' => 'Motivo para cancelar',
 		'Msg_A_Reason_Cancel_Fee_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación de la cuota',
 		'Msg_Be_Sure_To_Cancel_Fee_The_Credit' => 'Esta seguro de cancelar la cuota',
-		'Msg_Cancel_Credit_Fee_Client_OK' => 'La cuota se cancelo correctamente!!',
-		'Msg_Unable_To_Get_The_Form_Of_Payment_Fee' => 'No se puede obtener la forma de pago de la cuota!!'
+		'Msg_Cancel_Credit_Fee_Client_OK' => 'El pago de la cuota se cancelo correctamente!!',
+		'Msg_Cancel_Total_Amount_Debt_Credit_Client_OK' => 'El pago total se cancelo correctamente!!',		
+		'Msg_Unable_To_Get_The_Form_Of_Payment_Fee' => 'No se puede obtener la forma de pago de la cuota!!',
+		'Msg_Payment_Of_All_Fees_Included_In_The_Total_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en el pago total'
 	);
 ?>
