@@ -4,7 +4,7 @@ require("../parametrosbasedatosfc.php");
 $mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);
 mysqli_set_charset($mysqli,"utf8");
 if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
-if (!verificar_permisos_admin()){header('Location:./sinautorizacion.php?activauto=1');return;}
+if (!verificar_permisos_supervisor()){header('Location:./sinautorizacion.php?activauto=1');return;}
 if(empty(htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8'))){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
@@ -56,6 +56,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function guardarNuevoDomicilio(formulariod)
 		{
+			document.getElementById("btnCargar").disabled = true;
 			if($( "#callei" ).val().length == 0)
 			{
 				$(function() {
@@ -68,6 +69,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#callei" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -97,6 +99,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrocallei" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -114,6 +117,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrocallei" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;
 				}
 				else
@@ -143,6 +147,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#domlocalidadi" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -173,6 +178,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#domfloori" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;
 				}
 				else
@@ -216,14 +222,14 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_3').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargar").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarModificacionDomicilio(formulariod, idDomicilio)
 		{
+			document.getElementById("btnCargarm").disabled = true;
 			if($( "#callemi" ).val().length == 0)
 			{
 				$(function() {
@@ -236,6 +242,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#callemi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -265,6 +272,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrocallemi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -282,6 +290,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrocallemi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -311,6 +320,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#domlocalidadmi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -341,6 +351,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#domfloormi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -384,14 +395,14 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_4').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarm").disabled = false;
 		}			
 	</script>	
 	
 	<script type="text/javascript">
 		function nuevoDomicilio(usuario)
 		{
+			document.getElementById("btnNuevoDomicilioU").disabled = true;
 			var urlnd = "./acciones/nuevodomicilio.php";
 			var tagnd = $("<div id='dialognewaddress'></div>");
 			$('#img_loader').show();
@@ -433,13 +444,15 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoDomicilioU").disabled = false;			
 		}
     </script>
 	
 	<script type="text/javascript">
 		function modificarDomicilio(usuario, idDomicilio)
 		{
+			document.getElementById("modificarDomicilio"+idDomicilio).disabled = true;	
 			var urlnd = "./acciones/modificardomicilio.php";
 			var tagmd = $("<div id='dialogmodifyaddress'></div>");
 			$('#img_loader').show();
@@ -474,7 +487,8 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("modificarDomicilio"+idDomicilio).disabled = false;			
 		}
     </script>	
 	
@@ -539,6 +553,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, usuario, idDomicilio)
 		{
+			document.getElementById("borrarDomicilio"+idDomicilio).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -555,12 +570,14 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("borrarDomicilio"+idDomicilio).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarDomicilio"+idDomicilio).disabled = false;			
 		}
 	</script>
 	<script type="text/javascript">
@@ -622,7 +639,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-95px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoDomicilio('<?php echo $_GET['usuario']; ?>');" title="<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>" ><i class="fas fa-map-marker-alt"></i></button>
+				<button type="button" id="btnNuevoDomicilioU" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoDomicilio('<?php echo $_GET['usuario']; ?>');" title="<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>" ><i class="fas fa-map-marker-alt"></i></button>
 			</div>
 			<div id="img_loader"></div>	
 			<div id="tablaadminaddressusers" class="table-responsive">
@@ -667,7 +684,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 									else echo '<td>'.$user_domicilio_piso.'</td>';
 									if(empty($user_domicilio_codigo_postal)) echo '<td> --- </td>'; 
 									else echo '<td>'.$user_domicilio_codigo_postal.'</td>';	
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$_GET['usuario'].'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$_GET['usuario'].'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" id="borrarDomicilio'.$id_domicilio.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$_GET['usuario'].'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="modificarDomicilio'.$id_domicilio.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$_GET['usuario'].'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}

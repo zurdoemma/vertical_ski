@@ -133,18 +133,18 @@
 						
 						if(!empty($tokenVS))
 						{
-							if($stmt65 = $mysqli->prepare("SELECT tpc.validado FROM finan_cli.token_pago_cuota tpc WHERE tpc.token = ? AND tpc.validado = ?"))
+							if($stmt650 = $mysqli->prepare("SELECT tpc.validado FROM finan_cli.token_pago_cuota tpc WHERE tpc.token = ? AND tpc.validado = ?"))
 							{
 								$validadoC = 0;
-								$stmt65->bind_param('si', $tokenVS, $validadoC);
-								$stmt65->execute();    
-								$stmt65->store_result();
+								$stmt650->bind_param('si', $tokenVS, $validadoC);
+								$stmt650->execute();    
+								$stmt650->store_result();
 								
-								$totR65 = $stmt65->num_rows;
-								if($totR65 > 0)
+								$totR650 = $stmt650->num_rows;
+								if($totR650 > 0)
 								{
-									$stmt65->free_result();
-									$stmt65->close();
+									$stmt650->free_result();
+									$stmt650->close();
 									
 									$mysqli->autocommit(FALSE);
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -393,6 +393,23 @@
 										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 										return;
 									}									
+									
+									if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+									{
+										$stmt65->bind_param('i', $idCredito);
+										$stmt65->execute();    
+										$stmt65->store_result();
+										
+										$totR65 = $stmt65->num_rows;
+										
+										$stmt65->free_result();
+										$stmt65->close();			
+									}
+									else
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;
+									}
 									
 									if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
 									{
@@ -733,6 +750,9 @@
 									if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 									else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 									
+									$stmt650->free_result();
+									$stmt650->close();			
+	
 									echo translate('Msg_Supervisor_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$montoPago.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
 									return;
 								}

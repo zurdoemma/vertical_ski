@@ -59,6 +59,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function generarReporte()
 		{						
+			document.getElementById("btnGenerarReporte").disabled = true;
 			if($("#reportescreditsni").val() == 1)
 			{
 				if($( "#datetimepickerfechadesdereporteni" ).val().length == 0)
@@ -73,6 +74,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#datetimepickerfechadesdereporteni" ).focus();
+					document.getElementById("btnGenerarReporte").disabled = false;
 					return;
 				}
 				else 
@@ -101,6 +103,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#datetimepickerfechahastareporteni" ).focus();
+					document.getElementById("btnGenerarReporte").disabled = false;
 					return;
 				}
 				else 
@@ -125,6 +128,7 @@ include("./menu/menu.php");
 					$( "#datetimepickerfechahastareporteni" ).val("");
 					$( "#datetimepickerfechahastareporteni" ).focus();
 					mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Date_From_Cannot_Be_Greater_Than_The_Date_Until',$GLOBALS['lang']);?>");
+					document.getElementById("btnGenerarReporte").disabled = false;
 					return;
 				}
 			}
@@ -149,12 +153,16 @@ include("./menu/menu.php");
 						}
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+					
+					document.getElementById("btnGenerarReporte").disabled = false;
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
+					document.getElementById("btnGenerarReporte").disabled = false;
 				}
-			});				
+			});
+			document.getElementById("btnGenerarReporte").disabled = false;			
 		}			
 	</script>
 	

@@ -530,6 +530,13 @@
 				echo '			<input type="button" class="btn btn-primary pull-left" name="btnReimpresionPagoTotalCD" id="btnReimpresionPagoTotalCD" value="'.translate('Lbl_Reprint_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="reimprimirPagoTotalDeuda('.$idCredito.');" style="display:none; margin-right:10px;" disabled/>';
 				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPDFPagoTotalCD" id="btnPDFPagoTotalCD" value="'.translate('Lbl_PDF_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="window.open(\'acciones/mostrarpdfpagototaldeudacredito.php?idCredito='.$idCredito.'\');" style="display:none;" disabled/>';				
 			}
+			else if($cantidadCuotasPendientes <= 1)
+			{
+				echo '			<input type="button" class="btn btn-primary pull-right" name="btnPagoSeleccionCD" id="btnPagoSeleccionCD" value="'.translate('Lbl_Payment_Selection_Fees_Credit',$GLOBALS['lang']).'" onClick="confirmar_accion_pago_seleccion_cuotas(\''.translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']).'\',\''.translate('Msg_Be_Sure_To_Pay_Fees_Credit_Selection',$GLOBALS['lang']).'\');" style="margin-left:10px; display:none;" disabled />';				
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPagoTotalCD" id="btnPagoTotalCD" value="'.translate('Lbl_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoTotalDeuda('.$idCredito.');" style="margin-right:10px; display:none;" disabled />';
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnReimpresionPagoTotalCD" id="btnReimpresionPagoTotalCD" value="'.translate('Lbl_Reprint_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="reimprimirPagoTotalDeuda('.$idCredito.');" style="display:none; margin-right:10px;" disabled/>';
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPDFPagoTotalCD" id="btnPDFPagoTotalCD" value="'.translate('Lbl_PDF_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="window.open(\'acciones/mostrarpdfpagototaldeudacredito.php?idCredito='.$idCredito.'\');" style="display:none;" disabled/>';								
+			}
 		}
 		else
 		{
@@ -537,6 +544,8 @@
 			{
 				echo '			<input type="button" class="btn btn-primary pull-left" name="btnReimpresionPagoTotalCD" id="btnReimpresionPagoTotalCD" value="'.translate('Lbl_Reprint_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="reimprimirPagoTotalDeuda('.$idCredito.');" style="margin-right:10px;" />';
 				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPDFPagoTotalCD" id="btnPDFPagoTotalCD" value="'.translate('Lbl_PDF_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="window.open(\'acciones/mostrarpdfpagototaldeudacredito.php?idCredito='.$idCredito.'\');" />';				
+				echo '			<input type="button" class="btn btn-primary pull-left" name="btnPagoTotalCD" id="btnPagoTotalCD" value="'.translate('Lbl_Payment_Total_Amount_Fees_Credit',$GLOBALS['lang']).'" onClick="pagoTotalDeuda('.$idCredito.');" style="margin-right:10px; display: none;" disabled />';
+				echo '			<input type="button" class="btn btn-primary pull-right" name="btnPagoSeleccionCD" id="btnPagoSeleccionCD" value="'.translate('Lbl_Payment_Selection_Fees_Credit',$GLOBALS['lang']).'" onClick="confirmar_accion_pago_seleccion_cuotas(\''.translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']).'\',\''.translate('Msg_Be_Sure_To_Pay_Fees_Credit_Selection',$GLOBALS['lang']).'\');" style="margin-left:10px; display: none;" disabled />';
 			}
 			echo '				<input type="button" class="btn btn-primary pull-right" name="btnSalirCD" id="btnSalirCD" value="'.translate('Lbl_Exit',$GLOBALS['lang']).'" onClick="$(\'#dialogviewcredit\').dialog(\'close\');" style="margin-left:10px;" />';										
 		}

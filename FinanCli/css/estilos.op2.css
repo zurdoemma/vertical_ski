@@ -329,13 +329,13 @@ h1 {
     z-index:89;
     position:absolute;
     display:none;
-    background-image: url("../images/cargando.gif");
+    background-image: url("../images/cargando2.gif");
     background-size:100%;
     background-repeat:no-repeat;
-    width:55px;
-    height:55px;
-    margin-top:145px;
-    margin-left:52%;
+    width:15px;
+    height:15px;
+    margin-top:-12px;
+    margin-left:-12px;
 }
 
 #mensajeError

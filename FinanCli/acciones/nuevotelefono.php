@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 

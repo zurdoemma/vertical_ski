@@ -460,7 +460,7 @@
 		'Lbl_Actions_Credit' => 'Acciones Crédito',
 		'Msg_View_Credit_Client' => 'Ver Crédito',
 		'Msg_Cancel_Credit_Client' => 'Cancelar Crédito',
-		'Msg_Cancel_Fee_Credit_Client' => 'Cancelar Cuota',
+		'Msg_Cancel_Fee_Credit_Client' => 'Cancelar Pago',
 		'Msg_Cancel_Pay_Fee_Credit' => 'Cancelar Pago',
 		'Lbl_Number_Phone_Credit_Client' => 'Teléfono',
 		'Lbl_Purchase_Amount_Client' => 'Monto Compra',
@@ -725,13 +725,18 @@
 		'Msg_Be_Sure_To_Cancel_The_Credit' => 'Esta seguro de cancelar el crédito',
 		'Msg_Cancel_Credit_Client_OK' => 'El crédito se cancelo correctamente!!',
 		'Msg_View_Cancel_Fee_Credit_OK'  => 'Se encontro la cuota a cancelar!!',
-		'Lbl_Cancelation_Fee_Credit' => 'Cancelación de cuota',
+		'Lbl_Cancelation_Fee_Credit' => 'Cancelación de pago',
 		'Lbl_Reason_Cancel_Fee_Credit' => 'Motivo para cancelar',
 		'Msg_A_Reason_Cancel_Fee_Credit_Must_Enter' => 'Debe ingresar el motivo de cancelación de la cuota',
 		'Msg_Be_Sure_To_Cancel_Fee_The_Credit' => 'Esta seguro de cancelar la cuota',
+		'Msg_Be_Sure_To_Cancel_Total_Amount_Fees_Debt_The_Credit' => 'Esta seguro de cancelar el pago total',
+		'Msg_Be_Sure_To_Cancel_Selection_Amount_Fees_Debt_The_Credit' => 'Esta seguro de cancelar el pago por selección',		
 		'Msg_Cancel_Credit_Fee_Client_OK' => 'El pago de la cuota se cancelo correctamente!!',
-		'Msg_Cancel_Total_Amount_Debt_Credit_Client_OK' => 'El pago total se cancelo correctamente!!',		
+		'Msg_Cancel_Total_Amount_Debt_Credit_Client_OK' => 'El pago total se cancelo correctamente!!',	
+		'Msg_Cancel_Selection_Amount_Debt_Credit_Client_OK' => 'El pago de las cuotas seleccionadas se cancelo correctamente!!',		
 		'Msg_Unable_To_Get_The_Form_Of_Payment_Fee' => 'No se puede obtener la forma de pago de la cuota!!',
-		'Msg_Payment_Of_All_Fees_Included_In_The_Total_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en el pago total'
+		'Msg_Payment_Of_All_Fees_Included_In_The_Total_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en el pago total',
+		'Msg_Payment_Of_All_Fees_Included_In_The_Selection_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en la seleccion',
+		'Msg_Action_Not_Allowed_User' => 'Acción no permitida para el usuario!!'
 	);
 ?>

@@ -120,18 +120,18 @@
 		
 		if(!empty($tokenVS))
 		{
-			if($stmt65 = $mysqli->prepare("SELECT tpc.validado, tpc.usuario_supervisor FROM finan_cli.token_pago_cuota tpc WHERE tpc.token = ? AND tpc.documento = ? AND tpc.tipo_documento = ? AND fecha LIKE ?"))
+			if($stmt650 = $mysqli->prepare("SELECT tpc.validado, tpc.usuario_supervisor FROM finan_cli.token_pago_cuota tpc WHERE tpc.token = ? AND tpc.documento = ? AND tpc.tipo_documento = ? AND fecha LIKE ?"))
 			{
 				$date_registro_a_c_db = date("Ymd").'%';
-				$stmt65->bind_param('ssis', $tokenVS, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $date_registro_a_c_db);
-				$stmt65->execute();    
-				$stmt65->store_result();
+				$stmt650->bind_param('ssis', $tokenVS, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $date_registro_a_c_db);
+				$stmt650->execute();    
+				$stmt650->store_result();
 				
-				$totR65 = $stmt65->num_rows;
-				if($totR65 > 0)
+				$totR650 = $stmt650->num_rows;
+				if($totR650 > 0)
 				{
-					$stmt65->bind_result($validacion_token_pago_cuota_db, $usuario_supervisor_token_pago_cuota_db);
-					$stmt65->fetch();
+					$stmt650->bind_result($validacion_token_pago_cuota_db, $usuario_supervisor_token_pago_cuota_db);
+					$stmt650->fetch();
 					
 					if($validacion_token_pago_cuota_db == 0)
 					{
@@ -163,8 +163,8 @@
 						echo '	</div>';
 						echo '</div>';	
 												
-						$stmt65->free_result();
-						$stmt65->close();
+						$stmt650->free_result();
+						$stmt650->close();
 						
 						return;
 					}
@@ -457,6 +457,23 @@
 							return;
 						}						
 						
+						if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+						{
+							$stmt65->bind_param('i', $idCredito);
+							$stmt65->execute();    
+							$stmt65->store_result();
+							
+							$totR65 = $stmt65->num_rows;
+							
+							$stmt65->free_result();
+							$stmt65->close();			
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}
+						
 						if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 						{
 							$stmt68->bind_param('i', $idCredito);
@@ -744,8 +761,8 @@
 							return;
 						}
 
-						$stmt65->free_result();
-						$stmt65->close();
+						$stmt650->free_result();
+						$stmt650->close();
 												
 						if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 						else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
@@ -1078,6 +1095,23 @@
 					return;
 				}				
 				
+				if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+				{
+					$stmt65->bind_param('i', $idCredito);
+					$stmt65->execute();    
+					$stmt65->store_result();
+					
+					$totR65 = $stmt65->num_rows;
+					
+					$stmt65->free_result();
+					$stmt65->close();			
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;
+				}
+				
 				if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 				{
 					$stmt68->bind_param('i', $idCredito);
@@ -1289,6 +1323,7 @@
 											}
 											else
 											{												
+												
 												if($totR65 == 0 || $totR66 == 0) $array[$posicion]['accionesv'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_Credit',$GLOBALS['lang']).'" onclick="reImprimirPagoCuotaCreditoCliente('.$id_cuota_credito_db.')"><i class="fas fa-print"></i></button>&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Payment_Amount_Fee_PDF_Credit',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfpagocuotacredito.php?idCredito='.$idCredito.'&idCuotaCredito='.$id_cuota_credito_db.'\')"><i class="far fa-file-pdf"></i></button>';
 												else $array[$posicion]['accionesv'] = '---';
 											}
@@ -1751,6 +1786,23 @@
 				return;
 			}			
 			
+			if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+			{
+				$stmt65->bind_param('i', $idCredito);
+				$stmt65->execute();    
+				$stmt65->store_result();
+				
+				$totR65 = $stmt65->num_rows;
+				
+				$stmt65->free_result();
+				$stmt65->close();			
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+						
 			if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, ptc.usuario, td.nombre, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.pago_total_credito ptc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = ptc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ?"))
 			{
 				$stmt68->bind_param('i', $idCredito);

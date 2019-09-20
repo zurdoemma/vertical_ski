@@ -70,7 +70,7 @@
 		echo '				<div class="form-group form-inline">';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="creditplansxprofile">'.translate('Lbl_View_Credit_Plan_X_Profile',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id=creditplansxprofile">';
-		echo '						<button type="button" class="btn" title="'.translate('Msg_View_Credit_Plan_X_Profile',$GLOBALS['lang']).'" onclick="verPlanesCredito(\''.$id_perfil_credito.'\',\''.$nombre_perfil_credito.'\');"><i class="fa fa-eye"></i></button>';
+		echo '						<button type="button" id="verPlanesCredito" class="btn" title="'.translate('Msg_View_Credit_Plan_X_Profile',$GLOBALS['lang']).'" onclick="verPlanesCredito(\''.$id_perfil_credito.'\',\''.$nombre_perfil_credito.'\');"><i class="fa fa-eye"></i></button>';
 		echo '					</div>';		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';

@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -54,6 +54,69 @@
 				return;
 			}
 		}		
+		
+		if ($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user, $id_perfil_usuario_logueado);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+
+		if($id_perfil_usuario_logueado == 3)
+		{
+			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+			{
+				$stmt531->bind_param('s', $usuario);
+				$stmt531->execute();    
+				$stmt531->store_result();
+		 
+				$totR531 = $stmt531->num_rows;
+				if($totR531 > 0)
+				{
+					$stmt531->bind_result($id_cadena_user_nuevo_domicilio);
+					$stmt531->fetch();
+
+					$stmt531->free_result();
+					$stmt531->close();				
+				}
+				else 
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}	
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}
+			
+			if($id_cadena_user != $id_cadena_user_nuevo_domicilio)
+			{
+				echo translate('Msg_Action_Not_Allowed_User',$GLOBALS['lang']);
+				return;			
+			}
+		}
 		
 		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
 		{
@@ -218,7 +281,7 @@
 						if(empty($user_dom_codigo_postal)) $array[$posicion]['codigopostal'] = '---';
 						else $array[$posicion]['codigopostal'] = $user_dom_codigo_postal;
 						
-						$array[$posicion]['acciones'] = '<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-edit"></i></button>';
+						$array[$posicion]['acciones'] = '<button type="button" id="borrarDomicilio'.$id_domicilio_user.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="modificarDomicilio'.$id_domicilio_user.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$usuario.'\',\''.$id_domicilio_user.'\')"><i class="fas fa-edit"></i></button>';
 						
 						$posicion++;
 					}

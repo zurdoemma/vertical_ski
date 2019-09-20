@@ -305,7 +305,7 @@
 						if($client_preference_telefono == 1) $array[$posicion]['preferencia'] = translate('Lbl_Button_YES',$GLOBALS['lang']);
 						else $array[$posicion]['preferencia'] = translate('Lbl_Button_NO',$GLOBALS['lang']);
 						
-						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$idCliente.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$idCliente.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button>';
+						$array[$posicion]['acciones'] = '<button type="button" id="btnBorrarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$idCliente.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$idCliente.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button>';
 						
 						$posicion++;
 					}
