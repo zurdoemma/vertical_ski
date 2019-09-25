@@ -48,6 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoPlanCredito()
 		{
+			document.getElementById("btnNuevoPlanCredito").disabled = true;
 			var urlnpc = "./acciones/nuevoplancreditosup.php";
 			var tagnpc = $("<div id='dialognewcreditplan'></div>");
 			$('#img_loader_5').show();
@@ -82,13 +83,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoPlanCredito").disabled = false;			
 		}
     </script>
 			
 	<script type="text/javascript">
 		function modificarPlanCredito(plancredito, nombre)
 		{
+			document.getElementById("modificarPlanCredito"+plancredito).disabled = true;
 			var urla = "./acciones/modificarplancreditosup.php";
 			var tag = $("<div id='dialogmodifycreditplan'></div>");
 			$('#img_loader').show();
@@ -124,12 +127,14 @@ include("./menu/menu.php");
 					$('#img_loader').hide();
 				}
 			});
+			document.getElementById("modificarPlanCredito"+plancredito).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionPlanCredito(formulariod, plancredito)
 		{
+			document.getElementById("btnCargarPC").disabled = true;
 			if($( "#nombreplancrediti" ).val().length == 0)
 			{
 				$(function() {
@@ -142,6 +147,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreplancrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -170,6 +176,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#descripcionplancrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -200,6 +207,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cantidadcuotasplancrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -231,6 +239,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cantidadcuotasplancrediti" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -262,6 +271,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#interesfijoplancrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -293,6 +303,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#interesfijoplancrediti" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -323,6 +334,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#minimoentregaplancrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -354,6 +366,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#minimoentregaplancrediti" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -396,13 +409,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_21').hide();
 				}
-			});				
+			});
+			document.getElementById("btnCargarPC").disabled = false;	
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevoPlanCredito(formulariod)
 		{
+			document.getElementById("btnCargarNPC").disabled = true;
 			if($( "#nombreplancreditni" ).val().length == 0)
 			{
 				$(function() {
@@ -415,6 +430,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreplancreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -443,6 +459,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#descripcionplancreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -473,6 +490,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cantidadcuotasplancreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -504,6 +522,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cantidadcuotasplancreditni" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -535,6 +554,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#interesfijoplancreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -566,6 +586,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#interesfijoplancreditni" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -596,6 +617,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#minimoentregaplancreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -627,6 +649,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#minimoentregaplancreditni" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -670,6 +693,7 @@ include("./menu/menu.php");
 					$('#img_loader_21').hide();
 				}
 			});
+			document.getElementById("btnCargarNPC").disabled = false;
 		}			
 	</script>
 		
@@ -777,6 +801,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, plancredito, nombre)
 		{
+			document.getElementById("borrarPlanCredito"+plancredito).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -800,6 +825,7 @@ include("./menu/menu.php");
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarPlanCredito"+plancredito).disabled = false;
 		}
 	</script>	
 </head>
@@ -831,7 +857,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPlanCredito();" title="<?php echo translate('Lbl_New_Credit_Plan',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
+				<button type="button" id="btnNuevoPlanCredito" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPlanCredito();" title="<?php echo translate('Lbl_New_Credit_Plan',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadmincreditplan" class="table-responsive">
@@ -881,7 +907,7 @@ include("./menu/menu.php");
 											echo '<td>'.$diferimiento_cuota_credit_plan.'</td>';
 											echo '<td>'.$cadena_credit_plan.'</td>';
 											
-											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Credit_Plan',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Credit_Plan',$GLOBALS['lang']).'\',\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']).'" onclick="modificarPlanCredito(\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '<td><button type="button" id="borrarPlanCredito'.$id_credit_plan.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Credit_Plan',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Credit_Plan',$GLOBALS['lang']).'\',\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="modificarPlanCredito'.$id_credit_plan.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Credit_Plan',$GLOBALS['lang']).'" onclick="modificarPlanCredito(\''.$id_credit_plan.'\',\''.$name_credit_plan.'\')"><i class="fas fa-edit"></i></button></td>';
 											echo '</tr>';
 										}
 									}

@@ -97,7 +97,7 @@ include("./menu/menu.php");
 						var totalRTab = $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows;
 						for(var i=0; i<totalRTab; i++)
 						{
-							if(primerSeleccionE == 1 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+							if(primerSeleccionE == 1 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota != undefined && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
 							{								
 								document.getElementById("seleccioncuotanro"+(i+1)).disabled = true;
 								$('#seleccioncuotanro'+(i+1)).change(function() {
@@ -129,7 +129,7 @@ include("./menu/menu.php");
 								});									
 							}
 							
-							if(primerSeleccionE == 0 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+							if(primerSeleccionE == 0 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota != undefined && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
 							{
 								document.getElementById("seleccioncuotanro"+(i+1)).disabled = false;
 								
@@ -815,13 +815,16 @@ include("./menu/menu.php");
 			var montoTotalAPagar = 0.00;
 			for(var i=0; i < $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows; i++)
 			{
-				if($('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+				if($('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota != undefined && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota != null)
 				{
-					if($('#seleccioncuotanro'+(i+1)).is(":checked"))
+					if($('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
 					{
-						if(cuotas == '') cuotas = ''+(i+1);
-						else cuotas = cuotas + '|' + (i+1);
-						montoTotalAPagar = montoTotalAPagar + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].montototalcuotav.replace("$","")) + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].interesescuotav.replace("$",""));
+						if($('#seleccioncuotanro'+(i+1)).is(":checked"))
+						{
+							if(cuotas == '') cuotas = ''+(i+1);
+							else cuotas = cuotas + '|' + (i+1);
+							montoTotalAPagar = montoTotalAPagar + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].montototalcuotav.replace("$","")) + parseFloat($('#tablefeescreditclienttv').bootstrapTable('getData')[i].interesescuotav.replace("$",""));
+						}
 					}
 				}
 			}
@@ -1899,11 +1902,12 @@ include("./menu/menu.php");
 						window.location.replace("./login.php?result_ok=3");
 					}
 					
-					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1 || dataresponse.indexOf('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
+					if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1 || dataresponse.indexOf('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>') != -1 || dataresponse.indexOf('<?php echo translate('Msg_Cancel_Selection_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>') != -1)
 					{					
 						var menR = dataresponse.substring(0, dataresponse.indexOf('=:=:='));
 						if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>') != -1) dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Credit_Fee_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
-						else dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
+						else if(dataresponse.indexOf('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>') != -1) dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Total_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
+						else dataresponse = dataresponse.replace('<?php echo translate('Msg_Cancel_Selection_Amount_Debt_Credit_Client_OK',$GLOBALS['lang']);?>=:=:=',"");
 						var estadoCredAc = dataresponse.substring(0, dataresponse.indexOf('=::=::='));
 						dataresponse = dataresponse.replace(estadoCredAc+'=::=::=',"");
 						var datosTablaCuotas = dataresponse.substring(0, dataresponse.indexOf('=::::=::::='));
@@ -1914,20 +1918,121 @@ include("./menu/menu.php");
 						$('#estadocreditvi').val(estadoCredAc);
 						$('#tableadmindeudat').bootstrapTable('updateCell', {index: $('#indicetablaacesti').val(), field: 'estado', value: estadoCredAc});
 						
-						$('#btnPagoTotalCD').show();
-						document.getElementById("btnPagoTotalCD").disabled = false;
-						
-						document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
-						$('#btnReimpresionPagoTotalCD').hide();
-						
-						document.getElementById("btnPDFPagoTotalCD").disabled = true;						
-						$('#btnPDFPagoTotalCD').hide();	
-						
-						if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+						if(cantidadCuotasP > 1)
 						{
-							$('#btnPagoSeleccionCD').show();
-							document.getElementById("btnPagoSeleccionCD").disabled = true;
+							$('#btnPagoTotalCD').show();
+							document.getElementById("btnPagoTotalCD").disabled = false;
+							
+							document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
+							$('#btnReimpresionPagoTotalCD').hide();
+							
+							document.getElementById("btnPDFPagoTotalCD").disabled = true;						
+							$('#btnPDFPagoTotalCD').hide();	
+							
+							if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+							{
+								$('#btnPagoSeleccionCD').show();
+								document.getElementById("btnPagoSeleccionCD").disabled = true;
+							}
 						}
+						else
+						{
+							$('#btnPagoTotalCD').hide();
+							document.getElementById("btnPagoTotalCD").disabled = true;
+												
+							document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
+							$('#btnReimpresionPagoTotalCD').hide();
+							
+							document.getElementById("btnPDFPagoTotalCD").disabled = true;						
+							$('#btnPDFPagoTotalCD').hide();	
+							
+							if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+							{
+								$('#btnPagoSeleccionCD').hide();
+								document.getElementById("btnPagoSeleccionCD").disabled = true;
+							}							
+						}
+						
+						if(cantidadCuotasP > 1)
+						{
+							var primerSeleccionE = 0;
+							var totalRTab = $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows;
+							var cantIni = (totalRTab-cantidadCuotasP);
+							if(cantidadCuotasP <= totalRTab)
+							{
+								for(var i=cantIni; i<totalRTab; i++)
+								{
+									if(primerSeleccionE == 1 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+									{								
+										document.getElementById("seleccioncuotanro"+(i+1)).disabled = true;
+										$('#seleccioncuotanro'+(i+1)).change(function() {
+											if($(this).is(":checked")) 
+											{
+												var idCS = $(this).attr('id');
+												var idCSSig = parseInt(idCS[idCS.length -1]);
+												
+												if((idCSSig+1) <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+												{
+													document.getElementById("seleccioncuotanro"+(idCSSig+1)).disabled = false;
+												}
+												
+											}
+											else
+											{
+												var idCS = $(this).attr('id');
+												var idCSSig = parseInt(idCS[idCS.length -1]);
+												
+												idCSSig = idCSSig + 1;
+												while(idCSSig <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+												{
+													document.getElementById("seleccioncuotanro"+idCSSig).checked = false;
+													document.getElementById("seleccioncuotanro"+idCSSig).disabled = true;
+													
+													idCSSig++;
+												}
+											}										
+										});									
+									}
+									
+									if(primerSeleccionE == 0 && $('#tablefeescreditclienttv').bootstrapTable('getData')[i].seleccioncuota.indexOf('seleccioncuotanro') != -1)
+									{
+										document.getElementById("seleccioncuotanro"+(i+1)).disabled = false;
+										
+										$('#seleccioncuotanro'+(i+1)).change(function() {
+											if($(this).is(":checked")) 
+											{
+												document.getElementById("btnPagoSeleccionCD").disabled = false;
+												var idCS = $(this).attr('id');
+												var idCSSig = parseInt(idCS[idCS.length -1]);
+												
+												if((idCSSig+1) <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+												{
+													document.getElementById("seleccioncuotanro"+(idCSSig+1)).disabled = false;
+												}
+												
+											}
+											else
+											{
+												document.getElementById("btnPagoSeleccionCD").disabled = true;
+												var idCS = $(this).attr('id');
+												var idCSSig = parseInt(idCS[idCS.length -1]);
+												
+												idCSSig = idCSSig + 1;
+												while(idCSSig <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
+												{
+													document.getElementById("seleccioncuotanro"+idCSSig).checked = false;
+													document.getElementById("seleccioncuotanro"+idCSSig).disabled = true;
+													
+													idCSSig++;
+												}
+											}										
+										});
+										
+										primerSeleccionE = 1;
+									}
+								}
+							}
+						}							
 												
 						$('#dialogcancelfeecredit').dialog('destroy').remove();
 						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);

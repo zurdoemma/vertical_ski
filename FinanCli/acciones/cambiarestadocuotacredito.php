@@ -120,18 +120,18 @@
 		
 		if(!empty($tokenVSCE))
 		{
-			if($stmt65 = $mysqli->prepare("SELECT tcec.validado FROM finan_cli.token_cambio_estado_cuota tcec WHERE tcec.token = ? AND tcec.documento = ? AND tcec.tipo_documento = ? AND tcec.fecha LIKE ?"))
+			if($stmt650 = $mysqli->prepare("SELECT tcec.validado FROM finan_cli.token_cambio_estado_cuota tcec WHERE tcec.token = ? AND tcec.documento = ? AND tcec.tipo_documento = ? AND tcec.fecha LIKE ?"))
 			{
 				$date_registro_a_c_db = date("Ymd").'%';
-				$stmt65->bind_param('ssis', $tokenVSCE, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $date_registro_a_c_db);
-				$stmt65->execute();    
-				$stmt65->store_result();
+				$stmt650->bind_param('ssis', $tokenVSCE, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $date_registro_a_c_db);
+				$stmt650->execute();    
+				$stmt650->store_result();
 				
-				$totR65 = $stmt65->num_rows;
-				if($totR65 > 0)
+				$totR650 = $stmt650->num_rows;
+				if($totR650 > 0)
 				{
-					$stmt65->bind_result($validacion_token_pago_cuota_db);
-					$stmt65->fetch();
+					$stmt650->bind_result($validacion_token_pago_cuota_db);
+					$stmt650->fetch();
 					
 					if($validacion_token_pago_cuota_db == 0)
 					{
@@ -163,8 +163,8 @@
 						echo '	</div>';
 						echo '</div>';
 						
-						$stmt65->free_result();
-						$stmt65->close();
+						$stmt650->free_result();
+						$stmt650->close();
 						
 						return;
 					}
@@ -343,7 +343,23 @@
 							return;
 						}		
 
-						
+						if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+						{
+							$stmt65->bind_param('i', $idCredito);
+							$stmt65->execute();    
+							$stmt65->store_result();
+							
+							$totR65 = $stmt65->num_rows;
+							
+							$stmt65->free_result();
+							$stmt65->close();			
+						}
+						else
+						{
+							echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+							return;
+						}
+											
 						if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 						{
 							$stmt62->bind_param('i', $idCredito);
@@ -609,8 +625,8 @@
 							return;
 						}
 
-						$stmt65->free_result();
-						$stmt65->close();
+						$stmt650->free_result();
+						$stmt650->close();
 						
 						if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 						{
@@ -846,7 +862,24 @@
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 				return;
 			}			
-						
+			
+			if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+			{
+				$stmt65->bind_param('i', $idCredito);
+				$stmt65->execute();    
+				$stmt65->store_result();
+				
+				$totR65 = $stmt65->num_rows;
+				
+				$stmt65->free_result();
+				$stmt65->close();			
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;
+			}
+			
 			if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 			{
 				$stmt62->bind_param('i', $idCredito);
@@ -1112,8 +1145,8 @@
 				return;
 			}
 
-			$stmt65->free_result();
-			$stmt65->close();
+			$stmt650->free_result();
+			$stmt650->close();
 						
 			if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 			{

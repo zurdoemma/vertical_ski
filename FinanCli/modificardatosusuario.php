@@ -68,6 +68,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function guardarModificacionUsuario(formulariod)
 		{
+			document.getElementById("btnCargarMU").disabled = true;
 			if($( "#nameuseri" ).val().length == 0)
 			{
 				$(function() {
@@ -80,6 +81,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nameuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			else 
@@ -108,6 +110,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#surnameuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			else 
@@ -136,6 +139,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#documentuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			else 
@@ -166,6 +170,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#emailuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			else 
@@ -195,6 +200,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#emailuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;				
 			}
 			else
@@ -224,6 +230,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#claveactualuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			else 
@@ -256,6 +263,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 							});
 						});
 						$( "#rclaveuseri" ).focus();
+						document.getElementById("btnCargarMU").disabled = false;
 						return;
 					}
 					else 
@@ -285,6 +293,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 							});
 						});
 						$( "#claveuseri" ).focus();
+						document.getElementById("btnCargarMU").disabled = false;
 						return;
 					}
 					else
@@ -330,6 +339,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 							});
 						});
 						$( "#claveuseri" ).focus();
+						document.getElementById("btnCargarMU").disabled = false;
 						return;
 					}
 					else 
@@ -359,6 +369,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 							});
 						});
 						$( "#rclaveuseri" ).focus();
+						document.getElementById("btnCargarMU").disabled = false;
 						return;
 					}
 					else
@@ -404,6 +415,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				$( "#claveuseri" ).val('');
 				$( "#rclaveuseri" ).val('');
 				$( "#claveuseri" ).focus();
+				document.getElementById("btnCargarMU").disabled = false;
 				return;
 			}
 			
@@ -457,14 +469,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_6').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarMU").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevoDomicilio(formulariod)
 		{
+			document.getElementById("btnCargar").disabled = true;
 			if($( "#callei" ).val().length == 0)
 			{
 				$(function() {
@@ -477,6 +489,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#callei" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -506,6 +519,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrocallei" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -523,6 +537,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrocallei" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;
 				}
 				else
@@ -552,6 +567,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#domlocalidadi" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -582,6 +598,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#domfloori" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;
 				}
 				else
@@ -625,14 +642,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_3').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargar").disabled = false;			
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarModificacionDomicilio(formulariod, idDomicilio)
 		{
+			document.getElementById("btnCargarm").disabled = true;
 			if($( "#callemi" ).val().length == 0)
 			{
 				$(function() {
@@ -645,6 +662,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#callemi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -674,6 +692,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrocallemi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -691,6 +710,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrocallemi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -720,6 +740,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#domlocalidadmi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -750,6 +771,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#domfloormi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -793,14 +815,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_4').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarm").disabled = false;
 		}			
 	</script>	
 	
 	<script type="text/javascript">
 		function nuevoDomicilio(usuario)
 		{
+			document.getElementById("btnNuevoDomicilioU").disabled = true;
 			var urlnd = "./acciones/nuevodomiciliou.php";
 			var tagnd = $("<div id='dialognewaddress'></div>");
 			$('#img_loader').show();
@@ -843,12 +865,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader').hide();
 				}
 			});	
+			document.getElementById("btnNuevoDomicilioU").disabled = false;			
 		}
     </script>
 	
 	<script type="text/javascript">
 		function modificarDomicilio(usuario, idDomicilio)
 		{
+			document.getElementById("modificarDomicilio"+idDomicilio).disabled = true;
 			var urlnd = "./acciones/modificardomiciliou.php";
 			var tagmd = $("<div id='dialogmodifyaddress'></div>");
 			$('#img_loader').show();
@@ -883,7 +907,8 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("modificarDomicilio"+idDomicilio).disabled = false;			
 		}
     </script>	
 	
@@ -948,6 +973,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, usuario, idDomicilio)
 		{
+			document.getElementById("borrarDomicilio"+idDomicilio).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -964,12 +990,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("borrarDomicilio"+idDomicilio).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarDomicilio"+idDomicilio).disabled = false;	
 		}
 	</script>
 	<script type="text/javascript">
@@ -1005,6 +1033,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function nuevoTelefono(usuario)
 		{
+			document.getElementById("btnNuevoDomicilioU").disabled = true;
 			var urlnt = "./acciones/nuevotelefonou.php";
 			var tagnt = $("<div id='dialognewphone'></div>");
 			$('#img_loader_8').show();
@@ -1047,13 +1076,15 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_8').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoDomicilioU").disabled = false;			
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarNuevoTelefono(formulariod)
 		{			
+			document.getElementById("btnCargarN").disabled = true;
 			if($( "#prefijotelefonoi" ).val().length == 0)
 			{
 				$('#prefijotelefonoi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']);?>');
@@ -1067,6 +1098,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#prefijotelefonoi" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -1084,6 +1116,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#prefijotelefonoi" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;
 				}
 				else
@@ -1114,6 +1147,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrotelefonoi" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -1131,6 +1165,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrotelefonoi" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;
 				}
 				else
@@ -1173,12 +1208,14 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_7').hide();
 				}
-			});					
+			});
+			document.getElementById("btnCargarN").disabled = false;			
 		}			
 	</script>
 	<script type="text/javascript">
 		function confirmar_accion_2(titulo, mensaje, usuario, idTelefono)
 		{
+			document.getElementById("btnBorrarTelefonoU"+idTelefono).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -1201,6 +1238,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnBorrarTelefonoU"+idTelefono).disabled = false;
 		}
 	</script>
 	<script type="text/javascript">
@@ -1255,6 +1293,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	<script type="text/javascript">
 		function modificarTelefono(usuario, idTelefono)
 		{
+			document.getElementById("btnModificarTelefonoU"+idTelefono).disabled = true;
 			var urlmt = "./acciones/modificartelefonou.php";
 			var tagmt = $("<div id='dialogmodifyphone'></div>");
 			$('#img_loader_8').show();
@@ -1284,11 +1323,13 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_8').hide();
 				}
 			});	
+			document.getElementById("btnModificarTelefonoU"+idTelefono).disabled = false;			
 		}
     </script>
 	<script type="text/javascript">
 		function guardarModificacionTelefono(formulariod, idTelefono)
 		{
+			document.getElementById("btnCargarm").disabled = true;
 			if($( "#prefijotelefonomi" ).val().length == 0)
 			{
 				$('#prefijotelefonomi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']);?>');
@@ -1302,6 +1343,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#prefijotelefonomi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -1319,6 +1361,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#prefijotelefonomi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -1349,6 +1392,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					});
 				});
 				$( "#nrotelefonomi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -1366,6 +1410,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						});
 					});
 					$( "#nrotelefonomi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -1409,8 +1454,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					$('#img_loader_7').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarm").disabled = false;	
 		}			
 	</script>	
 </head>
@@ -1531,7 +1575,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-95px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoDomicilio('<?php echo $_SESSION['username']; ?>');" title="<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>" ><i class="fas fa-map-marker-alt"></i></button>
+				<button type="button" id="btnNuevoDomicilioU" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoDomicilio('<?php echo $_SESSION['username']; ?>');" title="<?php echo translate('Lbl_New_Home_Address',$GLOBALS['lang']);?>" ><i class="fas fa-map-marker-alt"></i></button>
 			</div>
 			<div id="img_loader"></div>	
 			<div id="tablaadminaddressusers" class="table-responsive">
@@ -1575,7 +1619,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 									else echo '<td>'.$user_domicilio_piso.'</td>';
 									if(empty($user_domicilio_codigo_postal)) echo '<td> --- </td>'; 
 									else echo '<td>'.$user_domicilio_codigo_postal.'</td>';	
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$_SESSION['username'].'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$_SESSION['username'].'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" id="borrarDomicilio'.$id_domicilio.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Address',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Domicilio',$GLOBALS['lang']).'\',\''.$_SESSION['username'].'\',\''.$id_domicilio.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="modificarDomicilio'.$id_domicilio.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Address',$GLOBALS['lang']).'" onclick="modificarDomicilio(\''.$_SESSION['username'].'\',\''.$id_domicilio.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}
@@ -1593,7 +1637,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 		  </div>
 		  <div id="apDiv2" class="panel-body">
 			<div id="toolbar2" style="margin-left:-95px; margin-top:-2px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoTelefono('<?php echo $_SESSION['username']; ?>');" title="<?php echo translate('Lbl_New_Phone',$GLOBALS['lang']);?>" ><i class="fas fa-phone"></i></button>
+				<button type="button" id="btnNuevoTelefonoU" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoTelefono('<?php echo $_SESSION['username']; ?>');" title="<?php echo translate('Lbl_New_Phone',$GLOBALS['lang']);?>" ><i class="fas fa-phone"></i></button>
 			</div>
 			<div id="img_loader_8"></div>	
 			<div id="tablaadminphonesusers" class="table-responsive">
@@ -1624,7 +1668,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 									echo '<tr>';
 									echo '<td>'.$user_tipo_telefono.'</td>';
 									echo '<td>'.$user_numero_telefono.'</td>';
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion_2(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$_SESSION['username'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$_SESSION['username'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button></td>';
+									echo '<td><button type="button" id="btnBorrarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion_2(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$_SESSION['username'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$_SESSION['username'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button></td>';
 									echo '</tr>';
 								}
 							}

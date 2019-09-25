@@ -142,7 +142,7 @@
 				{
 					$date_registro = date("YmdHis");
 					$tokenCC = md5(uniqid(rand(), true));
-					$tokenCC = hash('sha512', $tokenECF);
+					$tokenCC = hash('sha512', $tokenCC);
 					$stmt10->bind_param('sisss', $date_registro, $idCredito, $_SESSION['username'], $tokenCC, $motivoCancelacion);
 					if(!$stmt10->execute())
 					{

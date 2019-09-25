@@ -5,7 +5,7 @@
 		mysqli_set_charset($mysqli,"utf8");
 		
 		if (!verificar_usuario($mysqli)){header('Location:../sesionusuario.php');return;}
-		if (!verificar_permisos_admin()){header('Location:../sinautorizacion.php?activauto=1');return;}
+		if (!verificar_permisos_supervisor()){header('Location:../sinautorizacion.php?activauto=1');return;}
 
 		// ¡Oh, no! Existe un error 'connect_errno', fallando así el intento de conexión
 		if ($mysqli->connect_errno) 
@@ -34,7 +34,70 @@
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
 			return;
 		}
-				
+		
+		if($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		{
+			$stmt500->bind_param('s', $_SESSION['username']);
+			$stmt500->execute();    
+			$stmt500->store_result();
+	 
+			$totR500 = $stmt500->num_rows;
+			if($totR500 > 0)
+			{
+				$stmt500->bind_result($id_cadena_user, $id_perfil_usuario_logueado);
+				$stmt500->fetch();
+
+				$stmt500->free_result();
+				$stmt500->close();				
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+
+		if($id_perfil_usuario_logueado == 3)
+		{
+			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+			{
+				$stmt531->bind_param('s', $usuario);
+				$stmt531->execute();    
+				$stmt531->store_result();
+		 
+				$totR531 = $stmt531->num_rows;
+				if($totR531 > 0)
+				{
+					$stmt531->bind_result($id_cadena_user_nuevo_telefono);
+					$stmt531->fetch();
+
+					$stmt531->free_result();
+					$stmt531->close();				
+				}
+				else 
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}	
+			}
+			else 
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+				return;				
+			}
+			
+			if($id_cadena_user != $id_cadena_user_nuevo_telefono)
+			{
+				echo translate('Msg_Action_Not_Allowed_User',$GLOBALS['lang']);
+				return;			
+			}
+		}
+		
 		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE ut.id_usuario = u.id AND ut.id_telefono = t.id AND u.id LIKE(?) AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);
@@ -152,7 +215,7 @@
 						$array[$posicion]['tipotelefono'] = $user_tipo_telefono;
 						$array[$posicion]['nrotelefono'] = $user_numero_telefono;
 						
-						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$usuario.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$usuario.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button>';
+						$array[$posicion]['acciones'] = '<button type="button" id="btnBorrarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$usuario.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$usuario.'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button>';
 						
 						$posicion++;
 					}

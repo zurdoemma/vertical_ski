@@ -48,6 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevaSucursal()
 		{
+			document.getElementById("btnNuevaSucursal").disabled = true;
 			var urlnt = "./acciones/nuevasucursalsup.php";
 			var tagnt = $("<div id='dialognewtender'></div>");
 			$('#img_loader_5').show();
@@ -82,13 +83,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevaSucursal").disabled = false;			
 		}
     </script>
 			
 	<script type="text/javascript">
 		function modificarSucursal(sucursal, nombre)
 		{
+			document.getElementById("modificarSucursal"+sucursal).disabled = true;
 			var urla = "./acciones/modificarsucursalsup.php";
 			var tag = $("<div id='dialogmodifytender'></div>");
 			$('#img_loader').show();
@@ -124,12 +127,14 @@ include("./menu/menu.php");
 					$('#img_loader').hide();
 				}
 			});
+			document.getElementById("modificarSucursal"+sucursal).disabled = false;			
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionSucursal(formulariod, sucursal, idDomicilio)
 		{
+			document.getElementById("btnCargarS").disabled = true;
 			if($( "#nombretenderi" ).val().length == 0)
 			{
 				$(function() {
@@ -142,6 +147,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombretenderi" ).focus();
+				document.getElementById("btnCargarS").disabled = false;
 				return;
 			}
 			else 
@@ -171,6 +177,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#codigotenderi" ).focus();
+				document.getElementById("btnCargarS").disabled = false;
 				return;
 			}
 			else 
@@ -202,6 +209,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#codigotenderi" ).focus();
+					document.getElementById("btnCargarS").disabled = false;
 					return;
 				}
 				else
@@ -233,6 +241,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailtenderi" ).focus();
+					document.getElementById("btnCargarS").disabled = false;
 					return;				
 				}
 				else
@@ -269,6 +278,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#callei" ).focus();
+				document.getElementById("btnCargarS").disabled = false;
 				return;
 			}
 			else 
@@ -298,6 +308,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nrocallei" ).focus();
+				document.getElementById("btnCargarS").disabled = false;
 				return;
 			}
 			else 
@@ -315,6 +326,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#nrocallei" ).focus();
+					document.getElementById("btnCargarS").disabled = false;
 					return;
 				}
 				else
@@ -344,6 +356,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#domlocalidadi" ).focus();
+				document.getElementById("btnCargarS").disabled = false;
 				return;
 			}
 			else 
@@ -374,6 +387,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#domfloori" ).focus();
+					document.getElementById("btnCargarS").disabled = false;
 					return;
 				}
 				else
@@ -417,14 +431,14 @@ include("./menu/menu.php");
 					$('#img_loader_9').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarS").disabled = false;	
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevaSucursal(formulariod)
 		{
+			document.getElementById("btnCargarNS").disabled = true;
 			if($( "#nombretenderni" ).val().length == 0)
 			{
 				$(function() {
@@ -437,6 +451,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombretenderni" ).focus();
+				document.getElementById("btnCargarNS").disabled = false;
 				return;
 			}
 			else 
@@ -466,6 +481,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#codigotenderni" ).focus();
+				document.getElementById("btnCargarNS").disabled = false;
 				return;
 			}
 			else 
@@ -497,6 +513,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#codigotenderni" ).focus();
+					document.getElementById("btnCargarNS").disabled = false;
 					return;
 				}
 				else
@@ -528,6 +545,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailtenderni" ).focus();
+					document.getElementById("btnCargarNS").disabled = false;
 					return;				
 				}
 				else
@@ -564,6 +582,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#calleni" ).focus();
+				document.getElementById("btnCargarNS").disabled = false;
 				return;
 			}
 			else 
@@ -593,6 +612,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nrocalleni" ).focus();
+				document.getElementById("btnCargarNS").disabled = false;
 				return;
 			}
 			else 
@@ -610,6 +630,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#nrocalleni" ).focus();
+					document.getElementById("btnCargarNS").disabled = false;
 					return;
 				}
 				else
@@ -639,6 +660,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#domlocalidadni" ).focus();
+				document.getElementById("btnCargarNS").disabled = false;
 				return;
 			}
 			else 
@@ -669,6 +691,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#domfloorni" ).focus();
+					document.getElementById("btnCargarNS").disabled = false;
 					return;
 				}
 				else
@@ -713,6 +736,7 @@ include("./menu/menu.php");
 					$('#img_loader_5').hide();
 				}
 			});
+			document.getElementById("btnCargarNS").disabled = false;			
 		}			
 	</script>
 	
@@ -847,6 +871,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, sucursal, nombresucu)
 		{
+			document.getElementById("borrarSucursal"+sucursal).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -864,12 +889,14 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("borrarSucursal"+sucursal).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombresucu+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarSucursal"+sucursal).disabled = false;
 		}
 	</script>	
 </head>
@@ -901,7 +928,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaSucursal();" title="<?php echo translate('Lbl_New_Tender',$GLOBALS['lang']);?>" ><i class="far fa-hospital"></i></button>
+				<button type="button" id="btnNuevaSucursal" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaSucursal();" title="<?php echo translate('Lbl_New_Tender',$GLOBALS['lang']);?>" ><i class="far fa-hospital"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadmintenders" class="table-responsive">
@@ -947,7 +974,7 @@ include("./menu/menu.php");
 											echo '<td>'.$nombre_tender.'</td>';
 											echo '<td>'.$nombre_cadena_tender.'</td>';
 											
-											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '<td><button type="button" id="borrarSucursal'.$id_tender.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Tender',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Tender',$GLOBALS['lang']).'\',\''.$id_tender.'\',\''.$nombre_tender.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="modificarSucursal'.$id_tender.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Tender',$GLOBALS['lang']).'" onclick="modificarSucursal(\''.$id_tender.'\',\''.$codigo_tender.'\')"><i class="fas fa-edit"></i></button></td>';
 											echo '</tr>';
 										}
 									}

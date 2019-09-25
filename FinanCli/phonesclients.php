@@ -70,6 +70,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function guardarNuevoTelefono(formulariod)
 		{			
+			document.getElementById("btnCargarN").disabled = true;
 			if($( "#prefijotelefonoi" ).val().length == 0)
 			{
 				$('#prefijotelefonoi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']);?>');
@@ -83,6 +84,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$( "#prefijotelefonoi" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -100,6 +102,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						});
 					});
 					$( "#prefijotelefonoi" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;
 				}
 				else
@@ -130,6 +133,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$( "#nrotelefonoi" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -147,6 +151,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						});
 					});
 					$( "#nrotelefonoi" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;
 				}
 				else
@@ -222,6 +227,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					error: function(request, errorcode, errortext){
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 						$('#img_loader_15').hide();
+						document.getElementById("btnCargarN").disabled = false;
 						return;
 					}
 				});	
@@ -231,12 +237,14 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 				if($('#tipotelefonoi').val() == 1) confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 54);
 				else confirmar_accion_validar_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 55);
 			}
+			document.getElementById("btnCargarN").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function verificarValidacionSMSAltaTelefono(formulariovsms)
 		{
+			document.getElementById("btnValidarVSMS").disabled = true;
 			if($('#codigovalidsmsi').val().length == 0)
 			{
 				$(function() {
@@ -249,6 +257,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#codigovalidsmsi').focus();
+				document.getElementById("btnValidarVSMS").disabled = false;
 				return;
 			}
 			else 
@@ -298,6 +307,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#img_loader_15').hide();
 				}
 			});
+			document.getElementById("btnValidarVSMS").disabled = false;
 		}
     </script>	
 	
@@ -336,6 +346,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function guardarModificacionTelefono(formulariod, idTelefono)
 		{
+			document.getElementById("btnCargarm").disabled = true;
 			if($( "#prefijotelefonomi" ).val().length == 0)
 			{
 				$('#prefijotelefonomi').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']);?>');
@@ -349,6 +360,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$( "#prefijotelefonomi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -366,6 +378,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						});
 					});
 					$( "#prefijotelefonomi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -396,6 +409,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$( "#nrotelefonomi" ).focus();
+				document.getElementById("btnCargarm").disabled = false;
 				return;
 			}
 			else 
@@ -413,6 +427,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						});
 					});
 					$( "#nrotelefonomi" ).focus();
+					document.getElementById("btnCargarm").disabled = false;
 					return;
 				}
 				else
@@ -488,6 +503,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					error: function(request, errorcode, errortext){
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 						$('#img_loader_15').hide();
+						document.getElementById("btnCargarm").disabled = false;
 						return;
 					}
 				});	
@@ -496,7 +512,8 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 			{
 				if($('#tipotelefonomi').val() == 1) confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 56, idTelefono);
 				else confirmar_accion_validar_cliente_m("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Modify_The_Phone_Without_Validating',$GLOBALS['lang']);?>", 57, idTelefono);
-			}						
+			}
+			document.getElementById("btnCargarm").disabled = false;			
 		}			
 	</script>
 	<script type="text/javascript">
@@ -534,6 +551,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function verificarValidacionSMSModificacionTelefono(formulariovsmsm, idTelefono)
 		{
+			document.getElementById("btnValidarVSMSM").disabled = true;
 			if($('#codigovalidsmsmi').val().length == 0)
 			{
 				$(function() {
@@ -546,6 +564,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#codigovalidsmsmi').focus();
+				document.getElementById("btnValidarVSMSM").disabled = false;
 				return;
 			}
 			else 
@@ -595,12 +614,14 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#img_loader_15').hide();
 				}
 			});
+			document.getElementById("btnValidarVSMSM").disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function nuevoTelefono(idCliente)
 		{
+			document.getElementById("nuevoTelefonoPU").disabled = true;
 			var urlnt = "./acciones/nuevotelefonoc.php";
 			var tagnt = $("<div id='dialognewphone'></div>");
 			$('#img_loader').show();
@@ -658,12 +679,14 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#img_loader').hide();
 				}
 			});	
+			document.getElementById("nuevoTelefonoPU").disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function modificarTelefono(idCliente, idTelefono)
 		{
+			document.getElementById("btnModificarTelefonoU"+idTelefono).disabled = true;
 			var urlmt = "./acciones/modificartelefonoc.php";
 			var tagmt = $("<div id='dialogmodifyphone'></div>");
 			$('#img_loader').show();
@@ -711,7 +734,8 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("btnModificarTelefonoU"+idTelefono).disabled = false;			
 		}
     </script>	
 	
@@ -776,6 +800,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, idCliente, idTelefono)
 		{
+			document.getElementById("btnBorrarTelefonoU"+idTelefono).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -792,12 +817,14 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("btnBorrarTelefonoU"+idTelefono).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnBorrarTelefonoU"+idTelefono).disabled = false;	
 		}
 	</script>
 	<script type="text/javascript">
@@ -1014,6 +1041,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroTelefono(formularionacrt, motivo)
 		{
+			document.getElementById("btnValidarS2").disabled = true;
 			if($('#usuariosupervisorn2i').val().length == 0)
 			{
 				$(function() {
@@ -1026,6 +1054,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#usuariosupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1054,6 +1083,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#passwordsupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1099,6 +1129,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
+						document.getElementById("btnValidarS2").disabled = false;
 						$('#dialogautorizacionregistrotelefono').dialog('destroy').remove();
 						guardarNuevoTelefonoFinal();
 					}
@@ -1108,11 +1139,13 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						{
 							$('#usuariosupervisorn2i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							document.getElementById("btnValidarS2").disabled = false;
 						}
 						else 
 						{
 							$('#usuariosupervisorn2i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							document.getElementById("btnValidarS2").disabled = false;
 						}					
 					}
 					
@@ -1121,6 +1154,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#usuariosupervisorn2i').focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
+					document.getElementById("btnValidarS2").disabled = false;
 				}
 			});
 		}
@@ -1129,6 +1163,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorModificacionTelefono(formularionacrtm, motivo, idTelefono)
 		{
+			document.getElementById("btnValidarS2M").disabled = true;
 			if($('#usuariosupervisorn2mi').val().length == 0)
 			{
 				$(function() {
@@ -1141,6 +1176,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#usuariosupervisorn2mi').focus();
+				document.getElementById("btnValidarS2M").disabled = false;
 				return;
 			}
 			else 
@@ -1169,6 +1205,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					});
 				});
 				$('#passwordsupervisorn2mi').focus();
+				document.getElementById("btnValidarS2M").disabled = false;
 				return;
 			}
 			else 
@@ -1214,6 +1251,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
+						document.getElementById("btnValidarS2M").disabled = false;
 						$('#dialogautorizacionregistrotelefonom').dialog('destroy').remove();
 						guardarModificacionTelefonoFinal(idTelefono);
 					}
@@ -1223,11 +1261,13 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 						{
 							$('#usuariosupervisorn2mi').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							document.getElementById("btnValidarS2M").disabled = false;
 						}
 						else 
 						{
 							$('#usuariosupervisorn2mi').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							document.getElementById("btnValidarS2M").disabled = false;
 						}					
 					}
 					
@@ -1236,6 +1276,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					$('#usuariosupervisorn2mi').focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
+					document.getElementById("btnValidarS2M").disabled = false;
 				}
 			});
 		}
@@ -1269,7 +1310,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-95px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoTelefono('<?php echo $_GET['idCliente']; ?>');" title="<?php echo translate('Lbl_New_Phone',$GLOBALS['lang']);?>" ><i class="fas fa-phone"></i></button>
+				<button type="button" id="nuevoTelefonoPU" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoTelefono('<?php echo $_GET['idCliente']; ?>');" title="<?php echo translate('Lbl_New_Phone',$GLOBALS['lang']);?>" ><i class="fas fa-phone"></i></button>
 			</div>
 			<div id="img_loader"></div>	
 			<div id="tablaadminphonesclients" class="table-responsive">
@@ -1305,7 +1346,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 									if($client_preference_telefono == 1) $preferenciaTel = translate('Lbl_Button_YES',$GLOBALS['lang']);
 									else $preferenciaTel = translate('Lbl_Button_NO',$GLOBALS['lang']);
 									echo '<td>'.$preferenciaTel.'</td>';									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$_GET['idCliente'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$_GET['idCliente'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button></td>';
+									echo '<td><button type="button" id="btnBorrarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Phone',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Telefono',$GLOBALS['lang']).'\',\''.$_GET['idCliente'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-slash"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarTelefonoU'.$id_telefono.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Phone',$GLOBALS['lang']).'" onclick="modificarTelefono(\''.$_GET['idCliente'].'\',\''.$id_telefono.'\')"><i class="fas fa-phone-volume"></i></button></td>';
 									echo '</tr>';
 								}
 							}

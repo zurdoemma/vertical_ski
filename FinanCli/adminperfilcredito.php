@@ -49,6 +49,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoPerfilCredito()
 		{
+			document.getElementById("btnNuevoPerfilCredito").disabled = true;
 			var urlnpc = "./acciones/nuevoperfilcredito.php";
 			var tagnpc = $("<div id='dialognewprofilecredit'></div>");
 			$('#img_loader_5').show();
@@ -84,7 +85,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoPerfilCredito").disabled = false;			
 		}
     </script>
 	
@@ -129,6 +131,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verPlanesCredito(perfilCredito, nombre)
 		{
+			document.getElementById("verPlanesCredito").disabled = true;
 			var urlmtc = "./acciones/verplanescredito.php";
 			var tagmtc = $("<div id='dialogmodcreditplanxprofile'></div>");
 			$('#img_loader_10').show();
@@ -177,6 +180,7 @@ include("./menu/menu.php");
 					$('#img_loader_10').hide();
 				}
 			});
+			document.getElementById("verPlanesCredito").disabled = false;
 		}
     </script>
 	
@@ -700,7 +704,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPerfilCredito();" title="<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
+				<button type="button" id="btnNuevoPerfilCredito" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoPerfilCredito();" title="<?php echo translate('Lbl_New_Profile_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadminprofilescredit" class="table-responsive">

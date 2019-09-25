@@ -121,18 +121,18 @@
 					{
 						if(!empty($tokenVSCE))
 						{
-							if($stmt65 = $mysqli->prepare("SELECT tcec.validado FROM finan_cli.token_cambio_estado_cuota tcec WHERE tcec.token = ? AND tcec.validado = ?"))
+							if($stmt650 = $mysqli->prepare("SELECT tcec.validado FROM finan_cli.token_cambio_estado_cuota tcec WHERE tcec.token = ? AND tcec.validado = ?"))
 							{
 								$validadoC = 0;
-								$stmt65->bind_param('si', $tokenVSCE, $validadoC);
-								$stmt65->execute();    
-								$stmt65->store_result();
+								$stmt650->bind_param('si', $tokenVSCE, $validadoC);
+								$stmt650->execute();    
+								$stmt650->store_result();
 								
-								$totR65 = $stmt65->num_rows;
-								if($totR65 > 0)
+								$totR650 = $stmt650->num_rows;
+								if($totR650 > 0)
 								{
-									$stmt65->free_result();
-									$stmt65->close();
+									$stmt650->free_result();
+									$stmt650->close();
 									
 									if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original, c.cantidad_cuotas, ccli.documento, ccli.tipo_documento, cc.estado FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND cc.id = ? AND cc.id_credito = ? AND cc.estado = ?"))
 									{
@@ -390,6 +390,22 @@
 										return;
 									}									
 									
+									if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+									{
+										$stmt65->bind_param('i', $idCredito);
+										$stmt65->execute();    
+										$stmt65->store_result();
+										
+										$totR65 = $stmt65->num_rows;
+										
+										$stmt65->free_result();
+										$stmt65->close();			
+									}
+									else
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;
+									}
 									
 									if($stmt68 = $mysqli->prepare("SELECT c.estado FROM finan_cli.credito c WHERE c.id = ?"))
 									{
@@ -702,7 +718,10 @@
 										echo translate('Msg_Unknown_Error',$GLOBALS['lang']).'ACA 1';
 										return;
 									}						
-																					
+										
+									$stmt650->free_result();
+									$stmt650->close();
+									
 									echo translate('Msg_Supervisor_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.json_encode($array).'=:::=:::='.$totR69;
 									return;																		
 								}
