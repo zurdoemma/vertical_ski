@@ -17,7 +17,7 @@ $cuotas=htmlspecialchars($_POST["cuotas"], ENT_QUOTES, 'UTF-8');
 $proximoPago=htmlspecialchars($_POST["proximoPago"], ENT_QUOTES, 'UTF-8');
 $tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 $documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-if(!empty($esCopia)) $esCopia=htmlspecialchars($_POST["esCopia"], ENT_QUOTES, 'UTF-8');
+if(!empty($_POST["esCopia"])) $esCopia=htmlspecialchars($_POST["esCopia"], ENT_QUOTES, 'UTF-8');
 $montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
 $montoInteres=htmlspecialchars($_POST["montoInteres"], ENT_QUOTES, 'UTF-8');
 $datosCuotas=htmlspecialchars($_POST["datosCuotas"], ENT_QUOTES, 'UTF-8');
@@ -141,7 +141,7 @@ try
 		$printer -> text('********************************');
 		$printer -> feed();	
 		$printer -> setTextSize(1, 2);
-		$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCompra, 2, ',', '.'));
+		$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 		//$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
 		$printer -> feed();
 		$printer -> setTextSize(1, 1);	
@@ -260,7 +260,7 @@ try
 			$printer -> text('********************************');
 			$printer -> feed();	
 			$printer -> setTextSize(1, 2);
-			$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCompra, 2, ',', '.'));
+			$printer -> text(translate('Lbl_Amount_Purchase_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoCompra/100.00), 2, ',', '.'));
 			//$printer -> text(translate('Lbl_Amount_Print_Credit',$GLOBALS['lang']).': $'.number_format($montoCredito, 2, ',', '.'));
 			$printer -> feed();	
 			$printer -> setTextSize(1, 1);

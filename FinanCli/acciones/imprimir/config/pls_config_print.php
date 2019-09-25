@@ -1,6 +1,6 @@
 <?php 
 	$GLOBALS['lang'] = 'es';
-	$GLOBALS['nameprint'] = 'ImpresoraTermicaFC';
+	$GLOBALS['nameprint'] = 'PrinterBlueNew';
 	$GLOBALS['tipoimpresora'] = 'China';
 	
 	date_default_timezone_set("America/Argentina/Buenos_Aires");
