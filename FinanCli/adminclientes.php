@@ -91,6 +91,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoCliente()
 		{
+			document.getElementById("btnNuevoCliente").disabled = true;
 			var urlnpc = "./acciones/nuevocliente.php";
 			var tagnpc = $("<div id='dialognewclient'></div>");
 			$('#img_loader').show();
@@ -270,7 +271,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoCliente").disabled = false;
 		}
     </script>
 	
@@ -516,6 +518,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarNuevoCliente(formulariod)
 		{
+			document.getElementById("btnCargarNC").disabled = true;
 			if($( "#documentoni" ).val().length == 0)
 			{
 				$(function() {
@@ -528,6 +531,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#documentoni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -556,6 +560,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreclientni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -584,6 +589,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#apellidoclientni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -612,6 +618,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#fechanacimientoclientni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -641,6 +648,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cuitcuilclientni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -658,6 +666,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cuitcuilclientni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -687,6 +696,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cuitcuilclientni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -719,6 +729,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailclientni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;				
 				}
 				else
@@ -749,6 +760,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#montomaximoclientni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -780,6 +792,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#montomaximoclientni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -816,6 +829,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#calleni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -845,6 +859,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nrocalleni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -862,6 +877,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#nrocalleni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -891,6 +907,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#domlocalidadni" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -921,6 +938,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#domfloorni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -958,6 +976,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#prefijotelefonoi" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -975,6 +994,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#prefijotelefonoi" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -1005,6 +1025,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nrotelefonoi" ).focus();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;
 			}
 			else 
@@ -1022,6 +1043,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#nrotelefonoi" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				else
@@ -1047,6 +1069,7 @@ include("./menu/menu.php");
 				{
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('The_Additional_Client_Can_Not_Have_The_Same_Type_And_Document_Number',$GLOBALS['lang']);?>");
 					$( "#documentoni" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				
@@ -1068,6 +1091,7 @@ include("./menu/menu.php");
 						if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 						{
 							guardarNuevoClienteUC();
+							document.getElementById("btnCargarNC").disabled = false;
 							return;
 						}
 						else
@@ -1099,11 +1123,13 @@ include("./menu/menu.php");
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 						$('#img_loader_12').hide();
 					}
-				});					
+				});
+				document.getElementById("btnCargarNC").disabled = false;				
 			}
 			else
 			{
 				guardarNuevoClienteUC();
+				document.getElementById("btnCargarNC").disabled = false;
 				return;				
 			}
 		}			
@@ -1112,6 +1138,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarNuevoClienteConSupervisor(formularionaac)
 		{
+			document.getElementById("btnValidarS").disabled = true;
 			if($('#usuariosupervisorni').val().length == 0)
 			{
 				$(function() {
@@ -1124,6 +1151,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorni').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -1152,6 +1180,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorni').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -1203,6 +1232,7 @@ include("./menu/menu.php");
 						$('#tokenasi').val(tokenR);
 						$('#dialogautorizacionadicional').dialog('destroy').remove();
 						guardarNuevoClienteUC();
+						document.getElementById("btnValidarS").disabled = false;
 						return;
 					}
 					else
@@ -1226,6 +1256,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS").disabled = false;
 		}
     </script>
 
@@ -1304,6 +1335,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verificarValidacionSMSAltaCliente(formulariovsms)
 		{
+			document.getElementById("btnValidarVSMS").disabled = true;
 			if($('#codigovalidsmsi').val().length == 0)
 			{
 				$(function() {
@@ -1316,6 +1348,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#codigovalidsmsi').focus();
+				document.getElementById("btnValidarVSMS").disabled = false;
 				return;
 			}
 			else 
@@ -1365,6 +1398,7 @@ include("./menu/menu.php");
 					$('#img_loader_14').hide();
 				}
 			});
+			document.getElementById("btnValidarVSMS").disabled = false;
 		}
     </script>	
 
@@ -1519,6 +1553,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroCliente(formularionacr, motivo)
 		{
+			document.getElementById("btnValidarS2").disabled = true;
 			if($('#usuariosupervisorn2i').val().length == 0)
 			{
 				$(function() {
@@ -1531,6 +1566,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1559,6 +1595,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1651,12 +1688,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS2").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorEstadoFinancieroCliente(formulariocefc, motivo)
 		{
+			document.getElementById("btnValidarEFC").disabled = true;
 			if($('#usuariosupervisorn3i').val().length == 0)
 			{
 				$(function() {
@@ -1669,6 +1708,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn3i').focus();
+				document.getElementById("btnValidarEFC").disabled = false;
 				return;
 			}
 			else 
@@ -1697,6 +1737,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn3i').focus();
+				document.getElementById("btnValidarEFC").disabled = false;
 				return;
 			}
 			else 
@@ -1800,12 +1841,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFC").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarSinSupervisorEstadoFinancieroCliente(motivo)
 		{				
+			document.getElementById("btnValidarEFC").disabled = true;
 			var tipoDocumentoCEA = null;
 			var documentoCEA = null;
 			
@@ -1861,6 +1904,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFC").disabled = false;
 		}
     </script>	
 	
@@ -1904,6 +1948,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verAdicionalesCliente(idCliente, documento)
 		{			
+			document.getElementById("btnVerAdicionalesCliente"+idCliente).disabled = true;
 			var urlvac = "./acciones/adminadicionalescliente.php";
 			$('#img_loader_5').show();
 									
@@ -1946,13 +1991,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});			
+			});
+			document.getElementById("btnVerAdicionalesCliente"+idCliente).disabled = false;
 		}	
 	</script>	
 	
 	<script type="text/javascript">
 		function modificarCliente(idCliente, documento)
 		{
+			document.getElementById("btnModificarCliente"+idCliente).disabled = true;
 			var urlmpc = "./acciones/modificarcliente.php";
 			var tagmpc = $("<div id='dialogmodifyclient'></div>");
 			$('#img_loader_5').show();
@@ -2008,13 +2055,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnModificarCliente"+idCliente).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionCliente(formulariod, plancredito)
 		{
+			document.getElementById("btnCargarC").disabled = true;
 			if($( "#documentoi" ).val().length == 0)
 			{
 				$(function() {
@@ -2027,6 +2076,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#documentoi" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2055,6 +2105,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreclienti" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2083,6 +2134,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#apellidoclienti" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2111,6 +2163,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#fechanacimientoclienti" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2140,6 +2193,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cuitcuilclienti" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2157,6 +2211,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cuitcuilclienti" ).focus();
+					document.getElementById("btnCargarC").disabled = false;
 					return;
 				}
 				else
@@ -2186,6 +2241,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cuitcuilclienti" ).focus();
+					document.getElementById("btnCargarC").disabled = false;
 					return;
 				}
 				else
@@ -2218,6 +2274,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailclienti" ).focus();
+					document.getElementById("btnCargarC").disabled = false;
 					return;				
 				}
 				else
@@ -2248,6 +2305,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#montomaximoclienti" ).focus();
+				document.getElementById("btnCargarC").disabled = false;
 				return;
 			}
 			else 
@@ -2279,6 +2337,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#montomaximoclienti" ).focus();
+					document.getElementById("btnCargarC").disabled = false;
 					return;
 				}
 				else
@@ -2314,6 +2373,7 @@ include("./menu/menu.php");
 					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 					{
 						guardarModificacionClienteUC();
+						document.getElementById("btnCargarC").disabled = false;
 						return;
 					}
 					else
@@ -2345,13 +2405,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_12').hide();
 				}
-			});					
+			});
+			document.getElementById("btnCargarC").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorCambioCuenta(formularioncc)
 		{
+			document.getElementById("btnValidarS").disabled = true;
 			if($('#usuariosupervisori').val().length == 0)
 			{
 				$(function() {
@@ -2364,6 +2426,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisori').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -2392,6 +2455,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisori').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -2443,6 +2507,7 @@ include("./menu/menu.php");
 						$('#tokenvctci').val(tokenR);
 						$('#dialogautorizarcambiotipocuenta').dialog('destroy').remove();
 						guardarModificacionClienteUC();
+						document.getElementById("btnValidarS").disabled = false;
 						return;
 					}
 					else
@@ -2466,6 +2531,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS").disabled = false;
 		}
     </script>
 
@@ -2555,6 +2621,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorEstadoFinancieroClienteM(formulariocefcm, motivo)
 		{
+			document.getElementById("btnValidarEFCM").disabled = true;
 			if($('#usuariosupervisorn30i').val().length == 0)
 			{
 				$(function() {
@@ -2567,6 +2634,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn30i').focus();
+				document.getElementById("btnValidarEFCM").disabled = false;
 				return;
 			}
 			else 
@@ -2595,6 +2663,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn30i').focus();
+				document.getElementById("btnValidarEFCM").disabled = false;
 				return;
 			}
 			else 
@@ -2665,12 +2734,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFCM").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarSinSupervisorEstadoFinancieroClienteM(motivo)
 		{							
+			document.getElementById("btnValidarEFCM").disabled = true;
 			var urlasrc3 = "./acciones/grabarmodificacionclientesinsupervisorestadofinancierom.php";
 			$('#img_loader_13').show();
 			
@@ -2698,6 +2769,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFCM").disabled = false;
 		}
     </script>	
 			
@@ -2759,6 +2831,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorModificacionCliente(formularionacm, motivo)
 		{
+			document.getElementById("btnValidarSM2").disabled = true;
 			if($('#usuariosupervisorn21i').val().length == 0)
 			{
 				$(function() {
@@ -2771,6 +2844,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn21i').focus();
+				document.getElementById("btnValidarSM2").disabled = false;
 				return;
 			}
 			else 
@@ -2799,6 +2873,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn21i').focus();
+				document.getElementById("btnValidarSM2").disabled = false;
 				return;
 			}
 			else 
@@ -2868,6 +2943,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarSM2").disabled = false;
 		}
     </script>
 
@@ -2911,6 +2987,9 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function baja_cliente(idCliente)
 		{
+			if(document.getElementById("desactivarCliente"+idCliente) != undefined && document.getElementById("desactivarCliente"+idCliente) != null) document.getElementById("desactivarCliente"+idCliente).disabled = true;
+			else document.getElementById("activarCliente"+idCliente).disabled = true;
+			
 			var urlbc = "./acciones/bajacliente.php";
 			$('#img_loader').show();
 			
@@ -2935,7 +3014,9 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			if(document.getElementById("desactivarCliente"+idCliente) != undefined && document.getElementById("desactivarCliente"+idCliente) != null) document.getElementById("desactivarCliente"+idCliente).disabled = false;
+			else document.getElementById("activarCliente"+idCliente).disabled = false;			
 		}
 	</script>	
     <script type="text/javascript">
@@ -3109,7 +3190,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCliente();" title="<?php echo translate('Lbl_New_Client',$GLOBALS['lang']);?>" ><i class="fas fa-id-card-alt"></i></button>
+				<button type="button" id="btnNuevoCliente" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCliente();" title="<?php echo translate('Lbl_New_Client',$GLOBALS['lang']);?>" ><i class="fas fa-id-card-alt"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadminclient" class="table-responsive">
@@ -3160,14 +3241,14 @@ include("./menu/menu.php");
 
 											if($totR90 > 0)
 											{
-												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
-												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
+												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" id="desactivarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnVerAdicionalesCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
+												else echo '<td><button type="button" id="activarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnVerAdicionalesCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_Additional_Client',$GLOBALS['lang']).'" onclick="verAdicionalesCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-eye"></i></button></td>';
 												echo '</tr>';
 											}
 											else
 											{
-												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
-												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+												if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" id="desactivarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+												else echo '<td><button type="button" id="activarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
 												echo '</tr>';												
 											}
 										}
@@ -3177,8 +3258,8 @@ include("./menu/menu.php");
 									}
 									else
 									{
-										if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
-										else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+										if($state_client == translate('State_User',$GLOBALS['lang'])) echo '<td><button type="button" id="desactivarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Deactivate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Deactivate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-times"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
+										else echo '<td><button type="button" id="activarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Activate_Client',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Activate_Client',$GLOBALS['lang']).'\',\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-check"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCliente'.$id_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Client',$GLOBALS['lang']).'" onclick="modificarCliente(\''.$id_client.'\',\''.$document_client.'\')"><i class="fas fa-user-cog"></i></button></td>';
 										echo '</tr>';
 									}
 								}

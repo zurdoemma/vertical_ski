@@ -57,6 +57,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verCredito(idCredito, indiceTabla)
 		{
+			document.getElementById("btnEditarDeuda"+idCredito).disabled = true;
 			$('#indicetablaacesti').val(indiceTabla);
 			var urlvc = "./acciones/gestiondeudacredito.php";
 			var tagvc = $("<div id='dialogviewcredit'></div>");
@@ -143,8 +144,7 @@ include("./menu/menu.php");
 										if((idCSSig+1) <= $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows)
 										{
 											document.getElementById("seleccioncuotanro"+(idCSSig+1)).disabled = false;
-										}
-										
+										}	
 									}
 									else
 									{
@@ -180,17 +180,20 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
+			document.getElementById("btnEditarDeuda"+idCredito).disabled = false;
 		}
     </script>	
 	
 	<script type="text/javascript">
 		function buscarCreditosCliente()
 		{
+			document.getElementById("btnBuscarCreditosCliente").disabled = true;
 			if($('.search').find(':input').val().length == 0)
 			{
 				$('.search').find(':input').focus();
 				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Search_Credits',$GLOBALS['lang']);?>");
+				document.getElementById("btnBuscarCreditosCliente").disabled = false;
 				return;
 			}
 
@@ -242,13 +245,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnBuscarCreditosCliente").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function cancelarPagoCuotaCredito(idCuotaCredito)
 		{
+			document.getElementById("btnCancelarPagoCuota"+idCuotaCredito).disabled = true;
 			var urlccc = "./acciones/cancelarcuotacredito.php";
 			var tagccc = $("<div id='dialogcancelfeecredit'></div>");
 			$('#img_loader_17').show();
@@ -292,13 +297,18 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			document.getElementById("btnCancelarPagoCuota"+idCuotaCredito).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function pagarCuotaCredito(idCredito, idCuotaCredito)
 		{
+			for(var n=0; n < $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows; n++)
+			{
+				if(document.getElementById("pagoCuotaNro"+n) != undefined && document.getElementById("pagoCuotaNro"+n) != null) document.getElementById("pagoCuotaNro"+n).disabled = true;
+			}
 			if($('#idcreditovi').val() != idCredito) return;
 			var urlpcc = "./acciones/buscarcuotacredito.php";
 			var tagpcc = $("<div id='dialogviewfeecredit'></div>");
@@ -346,13 +356,19 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			
+			for(var n=0; n < $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows; n++)
+			{
+				if(document.getElementById("pagoCuotaNro"+n) != undefined && document.getElementById("pagoCuotaNro"+n) != null) document.getElementById("pagoCuotaNro"+n).disabled = false;
+			}			
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarPagoCuotaCredito(formulariopcc)
 		{
+			document.getElementById("btnConfirmarNC").disabled = true;
 			if($('#idcreditovi').val() != formulariopcc.idcreditovc2i.value) return;
 			
 			if(formulariopcc.montototalcuotacreditvi.value.length == 0)
@@ -367,6 +383,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#montototalcuotacreditvi').focus();
+				document.getElementById("btnConfirmarNC").disabled = false;
 				return;
 			}
 			else 
@@ -465,7 +482,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_18').hide();
 				}
-			});	
+			});
+			document.getElementById("btnConfirmarNC").disabled = false;	
 		}
     </script>
 
@@ -504,6 +522,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorPagoCuota(formularionaspcc)
 		{
+			document.getElementById("btnValidarS").disabled = true;
 			if($('#usuariosupervisorni').val().length == 0)
 			{
 				$(function() {
@@ -516,6 +535,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorni').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -544,6 +564,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorni').focus();
+				document.getElementById("btnValidarS").disabled = false;
 				return;
 			}
 			else 
@@ -645,6 +666,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS").disabled = false;
 		}
     </script>	
 						
@@ -710,6 +732,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function reImprimirPagoCuotaCreditoCliente(idCuotaCredito)
 		{				
+			document.getElementById("btnReimprimirPagoCuota"+idCuotaCredito).disabled = true;
 			var urlripcc = "./acciones/reimprimirpagocuotacreditocliente.php";
 			$('#img_loader_17').show();
 			
@@ -744,6 +767,7 @@ include("./menu/menu.php");
 					$('#img_loader_17').hide();
 				}
 			});
+			document.getElementById("btnReimprimirPagoCuota"+idCuotaCredito).disabled = false;
 		}
     </script>
 
@@ -811,6 +835,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion_pago_seleccion_cuotas(titulo, mensaje)
 		{
+			document.getElementById("btnPagoSeleccionCD").disabled = true;
 			var cuotas = '';
 			var montoTotalAPagar = 0.00;
 			for(var i=0; i < $('#tablefeescreditclienttv').bootstrapTable('getOptions').totalRows; i++)
@@ -829,12 +854,17 @@ include("./menu/menu.php");
 				}
 			}
 			
-			if(cuotas == '') return;
+			if(cuotas == '') 
+			{
+				document.getElementById("btnPagoSeleccionCD").disabled = false;
+				return;
+			}
 			var cuotasVis = '';
 			var cuotasRecV = cuotas.split('|');
 			if(cuotasRecV.length == 1)
 			{				
 				$('#pagoCuotaNro'+cuotasRecV[0]).click();
+				document.getElementById("btnPagoSeleccionCD").disabled = false;
 				return;
 			}
 			
@@ -867,6 +897,7 @@ include("./menu/menu.php");
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje.replace(":cuotasM",cuotasVis)+": $"+montoTotalAPagar+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnPagoSeleccionCD").disabled = false;
 		}
 	</script>
 
@@ -987,6 +1018,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function pagoTotalDeuda(idCredito)
 		{
+			document.getElementById("btnPagoTotalCD").disabled = true;
 			if($('#idcreditovi').val() != idCredito) return;
 			var urlpccs = "./acciones/buscarcuotascredito.php";
 			var tagpccs = $("<div id='dialogviewfeescredit'></div>");
@@ -1034,14 +1066,20 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			document.getElementById("btnPagoTotalCD").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarPagoCuotasCredito(formulariopccs)
 		{
-			if($('#idcreditovi').val() != formulariopccs.idcreditosvc3i.value) return;
+			document.getElementById("btnConfirmarNC2").disabled = true;
+			if($('#idcreditovi').val() != formulariopccs.idcreditosvc3i.value)
+			{
+				document.getElementById("btnConfirmarNC2").disabled = false;
+				return;
+			}
 			if(formulariopccs.montototalcuotascreditvi.value.length == 0)
 			{
 				$(function() {
@@ -1054,6 +1092,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#montototalcuotascreditvi').focus();
+				document.getElementById("btnConfirmarNC2").disabled = false;
 				return;
 			}
 			else 
@@ -1152,7 +1191,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_18').hide();
 				}
-			});	
+			});
+			document.getElementById("btnConfirmarNC2").disabled = false;			
 		}
     </script>
 
@@ -1192,7 +1232,12 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function reimprimirPagoTotalDeuda(idCredito)
 		{				
-			if(idCredito != $('#idcreditovi').val()) return;
+			document.getElementById("btnReimpresionPagoTotalCD").disabled = true;
+			if(idCredito != $('#idcreditovi').val())
+			{
+				document.getElementById("btnReimpresionPagoTotalCD").disabled = false;
+				return;
+			}
 			var urlriptd = "./acciones/reimprimirpagototaldeudacreditocliente.php";
 			$('#img_loader_17').show();
 			
@@ -1227,6 +1272,7 @@ include("./menu/menu.php");
 					$('#img_loader_17').hide();
 				}
 			});
+			document.getElementById("btnReimpresionPagoTotalCD").disabled = false;
 		}
     </script>	
 	
@@ -1294,6 +1340,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorPagoTotalDeuda(formularionasptd)
 		{
+			document.getElementById("btnValidarS2").disabled = true;
 			if($('#usuariosupervisorn2i').val().length == 0)
 			{
 				$(function() {
@@ -1306,6 +1353,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1334,6 +1382,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn2i').focus();
+				document.getElementById("btnValidarS2").disabled = false;
 				return;
 			}
 			else 
@@ -1435,12 +1484,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS2").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function cambiarEstadoCuotaCredito(idCredito, idCuotaCredito)
 		{
+			document.getElementById("btnCambiarEstadoCuota"+idCuotaCredito).disabled = true;
 			if($('#idcreditovi').val() != idCredito) return;
 			var urlbecc = "./acciones/buscarestadoscuotacredito.php";
 			var tagvfecc = $("<div id='dialogviewfeestatuschangecredit'></div>");
@@ -1485,13 +1536,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			document.getElementById("btnCambiarEstadoCuota"+idCuotaCredito).disabled = false;			
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarCambioEstadoCuotaCredito(formulariocecc)
 		{
+			document.getElementById("btnConfirmarNCE").disabled = true;
 			if($('#idcreditovi').val() != formulariocecc.idcreditovcec2i.value) return;
 			
 			var urlpcc = "./acciones/cambiarestadocuotacredito.php";
@@ -1571,13 +1624,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_19').hide();
 				}
-			});	
+			});
+			document.getElementById("btnConfirmarNCE").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorCambioEstadoCuota(formularionaspcec)
 		{
+			document.getElementById("btnValidarS3").disabled = true;
 			if($('#usuariosupervisorn3i').val().length == 0)
 			{
 				$(function() {
@@ -1590,6 +1645,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn3i').focus();
+				document.getElementById("btnValidarS3").disabled = false;
 				return;
 			}
 			else 
@@ -1618,6 +1674,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn3i').focus();
+				document.getElementById("btnValidarS3").disabled = false;
 				return;
 			}
 			else 
@@ -1713,12 +1770,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS3").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function verInteresesCuotaCredito(idCuotaCredito)
 		{
+			document.getElementById("btnVerInteresesCuota"+idCuotaCredito).disabled = true;
 			var urlvicc = "./acciones/verinteresescuotacredito.php";
 			var tagvicc = $("<div id='dialogviewinterestfeecredit'></div>");
 			$('#img_loader_17').show();
@@ -1768,13 +1827,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			document.getElementById("btnVerInteresesCuota"+idCuotaCredito).disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function verAvisosDeuda(idCuotaCredito)
 		{
+			document.getElementById("btnVerAvisosDeudaCuota"+idCuotaCredito).disabled = true;
 			var urlvadcc = "./acciones/veravisosdeudacuotacredito.php";
 			var tagvadcc = $("<div id='dialogseedebtnoticesfeecredit'></div>");
 			$('#img_loader_17').show();
@@ -1824,13 +1885,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_17').hide();
 				}
-			});	
+			});
+			document.getElementById("btnVerAvisosDeudaCuota"+idCuotaCredito).disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function confirmar_accion_cancelar_cuota_credito(titulo, mensaje, formularioccc, idCuotaCredito)
 		{
+			document.getElementById("btnGuardarCCC").disabled = true;
 			if($('#motivocancelfeecrediti').val().length == 0)
 			{
 				$(function() {
@@ -1843,6 +1906,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#motivocancelfeecrediti').focus();
+				document.getElementById("btnGuardarCCC").disabled = false;
 				return;
 			}
 			else 
@@ -1881,12 +1945,14 @@ include("./menu/menu.php");
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnGuardarCCC").disabled = false;
 		}
 	</script>
 
 	<script type="text/javascript">
 		function guardarCancelacionCuotaCredito(formularioccc, idCuotaCredito)
 		{			
+			document.getElementById("btnGuardarCCC").disabled = false;
 			var urlpcc = "./acciones/guardarcancelacioncuotacredito.php";
 			$('#img_loader_23').show();
 			
@@ -2078,7 +2144,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-300px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
+				<button type="button" id="btnBuscarCreditosCliente" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tableadmindeuda" class="table-responsive">
@@ -2201,7 +2267,7 @@ include("./menu/menu.php");
 												echo '<td>'.$fees_credit_client.'</td>';
 												echo '<td>'.$state_credit_client.'</td>';
 																
-												echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$indiceTablaGD.')"><i class="far fa-edit"></i></button></td>';													
+												echo '<td><button type="button" id="btnEditarDeuda'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Debt_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.','.$indiceTablaGD.')"><i class="far fa-edit"></i></button></td>';													
 												$indiceTablaGD++;
 											}								
 										}

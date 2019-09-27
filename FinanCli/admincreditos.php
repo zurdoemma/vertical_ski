@@ -74,6 +74,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoCredito()
 		{
+			document.getElementById("btnNuevoCredito").disabled = true;
 			var urlnc = "./acciones/nuevocredito.php";
 			var tagnc = $("<div id='dialognewcredit'></div>");
 			$('#img_loader_5').show();
@@ -125,6 +126,21 @@ include("./menu/menu.php");
 						if(keycode == '13'){
 							cargarInfoCredito(); 
 						}
+					});
+
+					$( "#validarpagoprimeracuotani" ).change(function() 
+					{
+						if(document.getElementById("minimoentregaclientcreditni") != undefined && document.getElementById("minimoentregaclientcreditni") != null) 
+						{
+							var montoMinimoEntNum = (($( "#minimoentregaclientcreditni" ).val().replace(/,/g,""))*100.00);
+							if(montoMinimoEntNum > 0)
+							{
+								var montoCompraNum = (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00);
+								if(this.checked) $( "#montocompraclientcreditni" ).val((montoCompraNum + montoMinimoEntNum)/100);
+								cargarInfoCredito();
+							}
+							else if(montoMinimoEntNum == 0) cargarInfoCredito();
+						}
 					});					
 					
 					tagnc.dialog('open');
@@ -137,12 +153,14 @@ include("./menu/menu.php");
 					$('#img_loader_5').hide();
 				}
 			});	
+			document.getElementById("btnNuevoCredito").disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function cancelarCredito(idCredito)
 		{
+			document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = true;
 			var urlcc = "./acciones/cancelarcredito.php";
 			var tagcc = $("<div id='dialogcancelcredit'></div>");
 			$('#img_loader_5').show();
@@ -186,13 +204,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = false;			
 		}
     </script>	
 	
 	<script type="text/javascript">
 		function verCredito(idCredito)
 		{
+			document.getElementById("btnVerCreditoClient"+idCredito).disabled = true;
 			var urlvc = "./acciones/vercredito.php";
 			var tagvc = $("<div id='dialogviewcredit'></div>");
 			$('#img_loader_5').show();
@@ -241,17 +261,20 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnVerCreditoClient"+idCredito).disabled = false;			
 		}
     </script>	
 	
 	<script type="text/javascript">
 		function buscarCreditosCliente()
 		{
+			document.getElementById("btnBuscarCreditosCliente").disabled = true;
 			if($('.search').find(':input').val().length == 0)
 			{
 				$('.search').find(':input').focus();
 				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Search_Credits',$GLOBALS['lang']);?>");
+				document.getElementById("btnBuscarCreditosCliente").disabled = false;
 				return;
 			}
 
@@ -303,7 +326,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnBuscarCreditosCliente").disabled = false;
 		}
     </script>	
 	
@@ -505,6 +529,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorEstadoFinancieroCliente(formulariocefc, motivo)
 		{
+			document.getElementById("btnValidarEFC").disabled = true;
 			if($('#usuariosupervisorn3i').val().length == 0)
 			{
 				$(function() {
@@ -517,6 +542,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn3i').focus();
+				document.getElementById("btnValidarEFC").disabled = false;
 				return;
 			}
 			else 
@@ -545,6 +571,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn3i').focus();
+				document.getElementById("btnValidarEFC").disabled = false;
 				return;
 			}
 			else 
@@ -680,12 +707,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFC").disabled = false;
 		}
     </script>	
 
 	<script type="text/javascript">
 		function guardarSinSupervisorEstadoFinancieroCliente(motivo)
 		{							
+			document.getElementById("btnValidarEFC").disabled = true;
 			var urlasrc3 = "./acciones/grabarregistrocreditoclientesinsupervisorestadofinanciero.php";
 			$('#img_loader_13').show();
 			
@@ -782,6 +811,7 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarEFC").disabled = false;
 		}
     </script>
 	
@@ -796,7 +826,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlbcc,
 					method: "POST",
-					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val(), validacionPrimeraCuota: $('#validarpagoprimeracuotani').is(":checked") },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_16').hide();
 						
@@ -828,8 +858,21 @@ include("./menu/menu.php");
 							if(minimoEnt != 0)
 							{
 								$( "#minimoentregaclientcreditn" ).show();
+
 								$( "#minimoentregaclientcreditni" ).val((($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*(minimoEnt/100.00)).toFixed(2));
-								$('#minimoentregaclientcreditni').maskNumber();						
+								$('#minimoentregaclientcreditni').maskNumber();
+								var montoCompraNum = (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00);
+								var minimoEntregaNum = (($( "#minimoentregaclientcreditni" ).val().replace(/,/g,""))*100.00);
+
+								if($('#validarpagoprimeracuotani').is(":checked"))
+								{
+									$('#minimoentregaclientcreditni').val("0");
+									//$('#montocompraclientcreditni').val(((montoCompraNum + minimoEntregaNum)/100.00).toFixed(2));
+								}
+								else
+								{
+									$('#montocompraclientcreditni').val((((montoCompraNum - minimoEntregaNum)/100.00)).toFixed(2));
+								}					
 							}
 							else 
 							{
@@ -862,10 +905,12 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarNuevoCredito()
 		{
+			document.getElementById("btnCargarNC").disabled = true;
 			if((!document.getElementById('documentoclientcreditni').disabled && $( "#documentoclientcreditni" ).val().length == 0) || $( "#nombreclientcreditni" ).val().length == 0)
 			{
 				$( "#documentoclientcreditni" ).focus();
 				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Register_The_Credit',$GLOBALS['lang']);?>");
+				document.getElementById("btnCargarNC").disabled = false;
 				return;					
 			}			
 
@@ -885,6 +930,7 @@ include("./menu/menu.php");
 				{
 					$( "#montocompraclientcreditni" ).focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+					document.getElementById("btnCargarNC").disabled = false;
 					return;					
 				}
 				
@@ -892,6 +938,7 @@ include("./menu/menu.php");
 				{
 					$( "#montocompraclientcreditni" ).focus();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+					document.getElementById("btnCargarNC").disabled = false;
 					return;
 				}
 				
@@ -941,8 +988,10 @@ include("./menu/menu.php");
 			{
 				$( "#montocompraclientcreditni" ).focus();
 				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_You_Must_Confirm_The_Amount_Of_The_Purchase',$GLOBALS['lang']);?>");
+				document.getElementById("btnCargarNC").disabled = false;
 				return;				
 			}
+			document.getElementById("btnCargarNC").disabled = false;
 		}
     </script>	
 	
@@ -1325,6 +1374,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroCreditoCliente(formularionacrc, motivo)
 		{
+			document.getElementById("btnValidarS4").disabled = true;
 			if($('#usuariosupervisorn2i').val().length == 0)
 			{
 				$(function() {
@@ -1337,6 +1387,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn2i').focus();
+				document.getElementById("btnValidarS4").disabled = false;
 				return;
 			}
 			else 
@@ -1365,6 +1416,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn2i').focus();
+				document.getElementById("btnValidarS4").disabled = false;
 				return;
 			}
 			else 
@@ -1501,12 +1553,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS4").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function guardarAutorizacionSupervisorRegistroCreditoClienteME(formularionacrcme, motivo)
 		{
+			document.getElementById("btnValidarS40").disabled = true;
 			if($('#usuariosupervisorn20i').val().length == 0)
 			{
 				$(function() {
@@ -1519,6 +1573,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#usuariosupervisorn20i').focus();
+				document.getElementById("btnValidarS40").disabled = false;
 				return;
 			}
 			else 
@@ -1547,6 +1602,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#passwordsupervisorn20i').focus();
+				document.getElementById("btnValidarS40").disabled = false;
 				return;
 			}
 			else 
@@ -1652,12 +1708,14 @@ include("./menu/menu.php");
 					$('#img_loader_13').hide();
 				}
 			});
+			document.getElementById("btnValidarS40").disabled = false;
 		}
     </script>
 
 	<script type="text/javascript">
 		function reImprimirCreditoCliente(idCredito)
 		{				
+			document.getElementById("btnReimprimirCreditoClient"+idCredito).disabled = true;
 			var urlricc = "./acciones/reimprimircreditocliente.php";
 			$('#img_loader_5').show();
 			
@@ -1692,6 +1750,7 @@ include("./menu/menu.php");
 					$('#img_loader_5').hide();
 				}
 			});
+			document.getElementById("btnReimprimirCreditoClient"+idCredito).disabled = false;
 		}
     </script>
 
@@ -1759,6 +1818,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion_cancelar_credito_cliente(titulo, mensaje, formulariocc, idCredito)
 		{
+			document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = true;
 			if($('#motivocancelcrediti').val().length == 0)
 			{
 				$(function() {
@@ -1771,6 +1831,7 @@ include("./menu/menu.php");
 					});
 				});
 				$('#motivocancelcrediti').focus();
+				document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = false;
 				return;
 			}
 			else 
@@ -1803,12 +1864,14 @@ include("./menu/menu.php");
 								},
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
+										document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnCancelarCreditoClient"+idCredito).disabled = false;
 		}
 	</script>
 
@@ -1880,7 +1943,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-345px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCredito();" title="<?php echo translate('Lbl_New_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
+				<button type="button" id="btnNuevoCredito" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoCredito();" title="<?php echo translate('Lbl_New_Credit',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>&nbsp;&nbsp;<button type="button" id="btnBuscarCreditosCliente" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarCreditosCliente();" title="<?php echo translate('Lbl_Search_Credits_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadmincredits" class="table-responsive">
@@ -1913,7 +1976,7 @@ include("./menu/menu.php");
 								{
 									$stmt500->bind_result($id_cadena_user);
 									$stmt500->fetch();
-									if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 10")) 
+									if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 50")) 
 									{
 										$stmt->bind_param('i', $id_cadena_user);
 										$stmt->execute();    // Ejecuta la consulta preparada.
@@ -1935,14 +1998,14 @@ include("./menu/menu.php");
 											
 											if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
 											{
-												if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Generate_PDF_Credit_Client',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfcredito.php?idCredito='.$id_credit_client.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Credit_Client',$GLOBALS['lang']).'" onclick="cancelarCredito('.$id_credit_client.')"><i class="far fa-window-close"></i></button></td>';
-												else if(translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Condoned',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Incobrable',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Insolvent',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Credit_Client',$GLOBALS['lang']).'" onclick="cancelarCredito('.$id_credit_client.')"><i class="far fa-window-close"></i></button></td>'; 
-												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button></td>';
+												if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" id="btnVerCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" id="btnReimprimirCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>&nbsp;&nbsp;<button type="button" id="btnReimprimirPDFCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Generate_PDF_Credit_Client',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfcredito.php?idCredito='.$id_credit_client.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;&nbsp;<button type="button" id="btnGestionDeudaCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button>&nbsp;&nbsp;<button type="button" id="btnCancelarCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Credit_Client',$GLOBALS['lang']).'" onclick="cancelarCredito('.$id_credit_client.')"><i class="far fa-window-close"></i></button></td>';
+												else if(translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Condoned',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Incobrable',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_Insolvent',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" id="btnVerCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" id="btnGestionDeudaCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button>&nbsp;&nbsp;<button type="button" id="btnCancelarCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Cancel_Credit_Client',$GLOBALS['lang']).'" onclick="cancelarCredito('.$id_credit_client.')"><i class="far fa-window-close"></i></button></td>'; 
+												else echo '<td><button type="button" id="btnVerCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button></td>';
 											}
 											else
 											{
-												if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Generate_PDF_Credit_Client',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfcredito.php?idCredito='.$id_credit_client.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button></td>';
-												else echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button></td>';												
+												if(translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']) == $state_credit_client || translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']) == $state_credit_client) echo '<td><button type="button" id="btnVerCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" id="btnReimprimirCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Reprint_Credit_Client',$GLOBALS['lang']).'" onclick="reImprimirCreditoCliente('.$id_credit_client.')"><i class="fas fa-print"></i></button>&nbsp;&nbsp;<button type="button" id="btnReimprimirPDFCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Generate_PDF_Credit_Client',$GLOBALS['lang']).'" onclick="window.open(\'acciones/mostrarpdfcredito.php?idCredito='.$id_credit_client.'\')"><i class="far fa-file-pdf"></i></button>&nbsp;&nbsp;<button type="button" id="btnGestionDeudaCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button></td>';
+												else echo '<td><button type="button" id="btnVerCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Credit_Client',$GLOBALS['lang']).'" onclick="verCredito('.$id_credit_client.')"><i class="fas fa-eye"></i></button>&nbsp;&nbsp;<button type="button" id="btnGestionDeudaCreditoClient'.$id_credit_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Lbl_Debt_Management2',$GLOBALS['lang']).'" onclick="window.open(\'gestiondeuda.php?doc='.$document_credit_client.'\')"><i class="fas fa-link"></i></button></td>';												
 											}
 											echo '</tr>';
 										}

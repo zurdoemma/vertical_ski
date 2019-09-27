@@ -57,6 +57,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verAvisoXMoraCuotaCredito(idAvisoXMora)
 		{
+			document.getElementById("verAvisoXM"+idAvisoXMora).disabled = true;
 			var urlvaxm = "./acciones/veravisoxmora.php";
 			var tagvaxm = $("<div id='dialogviewdefaultnotice'></div>");
 			$('#img_loader_5').show();
@@ -102,13 +103,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("verAvisoXM"+idAvisoXMora).disabled = false;			
 		}
     </script>
 	
 	<script type="text/javascript">
 		function verEnviosSMS(idAvisoXMora)
 		{
+			document.getElementById("btnVerAvisosXSMS").disabled = true;
 			var urlvaxsms = "./acciones/veravisoxsms.php";
 			var tagvaxsms = $("<div id='dialogviewdefaultnoticesms'></div>");
 			$('#img_loader_5').show();
@@ -155,17 +158,20 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnVerAvisosXSMS").disabled = false;
 		}
     </script>	
 	
 	<script type="text/javascript">
 		function buscarAvisosXMoraCliente()
 		{
+			document.getElementById("btnBuscarAvisosXMC").disabled = true;
 			if($('.search').find(':input').val().length == 0)
 			{
 				$('.search').find(':input').focus();
 				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_A_Customer_Must_Enter_To_Search_Default_Notices',$GLOBALS['lang']);?>");
+				document.getElementById("btnBuscarAvisosXMC").disabled = false;
 				return;
 			}
 
@@ -217,7 +223,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnBuscarAvisosXMC").disabled = false;
 		}
     </script>
 
@@ -308,7 +315,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-295px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarAvisosXMoraCliente();" title="<?php echo translate('Lbl_Search_Default_Notices_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
+				<button type="button" id="btnBuscarAvisosXMC" class="btn" data-toggle="tooltip" data-placement="top" onclick="buscarAvisosXMoraCliente();" title="<?php echo translate('Lbl_Search_Default_Notices_Client',$GLOBALS['lang']);?>" ><i class="fas fa-search"></i></button>
 			</div>		  
 			<div id="img_loader"></div>
 			<div id="tablaadminavisosxmora" class="table-responsive">
@@ -359,7 +366,7 @@ include("./menu/menu.php");
 											echo '<td>'.$numero_cuota_default_notice_client.'</td>';									
 											echo '<td>'.$state_default_notice_client.'</td>';
 											
-											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Detail_Default_Notice',$GLOBALS['lang']).'" onclick="verAvisoXMoraCuotaCredito('.$id_default_notice_client.')"><i class="fas fa-eye"></i></button></td>';
+											echo '<td><button type="button" id="verAvisoXM'.$id_default_notice_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Detail_Default_Notice',$GLOBALS['lang']).'" onclick="verAvisoXMoraCuotaCredito('.$id_default_notice_client.')"><i class="fas fa-eye"></i></button></td>';
 											echo '</tr>';
 										}
 									}

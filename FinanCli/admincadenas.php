@@ -48,6 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevaCadena()
 		{
+			document.getElementById("btnNuevaCadena").disabled = true;
 			var urlnc = "./acciones/nuevacadena.php";
 			var tagnc = $("<div id='dialognewchain'></div>");
 			$('#img_loader_5').show();
@@ -82,7 +83,8 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevaCadena").disabled = false;
 		}
     </script>
 	
@@ -127,6 +129,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verSucursalesCadena(cadena, razonSocial)
 		{
+			document.getElementById("btnVerSucursalesCadena").disabled = true;
 			var urlmtc = "./acciones/versucursalescadena.php";
 			var tagmtc = $("<div id='dialogmodtenderchain'></div>");
 			$('#img_loader_10').show();
@@ -175,15 +178,14 @@ include("./menu/menu.php");
 					$('#img_loader_10').hide();
 				}
 			});
-
-
-			
+			document.getElementById("btnVerSucursalesCadena").disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarSucursalesCadena(idCadena)
 		{
+			document.getElementById("btnCargar").disabled = true;
 			var sucursales = "";
 			$("#boot-multiselect-sucursales-asignadas > option").each(function(){
 			   if(!sucursales) sucursales = this.value;
@@ -213,15 +215,14 @@ include("./menu/menu.php");
 					$('#img_loader_10').hide();
 				}
 			});
-
-
-			
+			document.getElementById("btnCargar").disabled = false;
 		}
     </script>	
 	
 	<script type="text/javascript">
 		function modificarCadena(cadena, razonSocial)
 		{
+			document.getElementById("btnModificarCadena"+cadena).disabled = true;
 			var urla = "./acciones/modificarcadena.php";
 			var tag = $("<div id='dialogmodchain'></div>");
 			$('#img_loader').show();
@@ -257,15 +258,14 @@ include("./menu/menu.php");
 					$('#img_loader').hide();
 				}
 			});
-
-
-			
+			document.getElementById("btnModificarCadena"+cadena).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionCadena(formulariod, cadena)
 		{
+			document.getElementById("btnCargar").disabled = true;
 			if($( "#razonsocialchaini" ).val().length == 0)
 			{
 				$(function() {
@@ -278,6 +278,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#razonsocialchaini" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -306,6 +307,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cuitcuilchaini" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -334,6 +336,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombrefantasiachaini" ).focus();
+				document.getElementById("btnCargar").disabled = false;
 				return;
 			}
 			else 
@@ -365,6 +368,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailchaini" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;				
 				}
 				else
@@ -396,6 +400,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#telefonochaini" ).focus();
+					document.getElementById("btnCargar").disabled = false;
 					return;
 				}
 				else
@@ -439,14 +444,14 @@ include("./menu/menu.php");
 					$('#img_loader_9').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargar").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevaCadena(formulariod)
 		{
+			document.getElementById("btnCargarN").disabled = true;
 			if($( "#razonsocialchainni" ).val().length == 0)
 			{
 				$(function() {
@@ -459,6 +464,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#razonsocialchainni" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -488,6 +494,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cuitcuilchainni" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -517,6 +524,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cuitcuilchainni" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else
@@ -545,6 +553,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombrefantasiachainni" ).focus();
+				document.getElementById("btnCargarN").disabled = false;
 				return;
 			}
 			else 
@@ -576,6 +585,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#emailchainni" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;				
 				}
 				else
@@ -607,6 +617,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#telefonochainni" ).focus();
+					document.getElementById("btnCargarN").disabled = false;
 					return;
 				}
 				else
@@ -651,8 +662,7 @@ include("./menu/menu.php");
 					$('#img_loader_5').hide();
 				}
 			});				
-			
-			
+			document.getElementById("btnCargarN").disabled = false;
 		}			
 	</script>
 	
@@ -751,6 +761,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, cadena, razonsocial)
 		{
+			document.getElementById("btnBorrarCadena"+cadena).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -768,12 +779,14 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("btnBorrarCadena"+cadena).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+razonsocial+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("btnBorrarCadena"+cadena).disabled = false;
 		}
 	</script>	
 </head>
@@ -805,7 +818,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaCadena();" title="<?php echo translate('Lbl_New_Chain',$GLOBALS['lang']);?>" ><i class="fas fa-plus-circle"></i></button>
+				<button type="button" id="btnNuevaCadena" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevaCadena();" title="<?php echo translate('Lbl_New_Chain',$GLOBALS['lang']);?>" ><i class="fas fa-plus-circle"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadminchains" class="table-responsive">
@@ -838,7 +851,7 @@ include("./menu/menu.php");
 									echo '<td>'.$cuit_cuil_chain.'</td>';
 									echo '<td>'.$nombre_fantasia_chain.'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Chain',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Chain',$GLOBALS['lang']).'\',\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-unlink"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" id="btnBorrarCadena'.$id_chain.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Chain',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Chain',$GLOBALS['lang']).'\',\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-unlink"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCadena'.$id_chain.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}

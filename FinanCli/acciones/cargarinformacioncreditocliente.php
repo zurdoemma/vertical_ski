@@ -33,6 +33,7 @@
 		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
 		
 		$validacionEC=htmlspecialchars($_POST["validacionEC"], ENT_QUOTES, 'UTF-8');
+		$validacionPrimeraCuota=htmlspecialchars($_POST["validacionPrimeraCuota"], ENT_QUOTES, 'UTF-8');
 		
 		if($montoCompra < 0)
 		{
@@ -395,8 +396,18 @@
 			return;
 		}
 		
-
-		$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));		
+		if(!empty($minimo_entrega_plan_credito_s_db) && $minimo_entrega_plan_credito_s_db > 0 && $validacionPrimeraCuota == 'false')
+		{
+			$montoMinimoEntregaC = round(($montoCompra/100.00) * ($minimo_entrega_plan_credito_s_db/100.00),2);
+			$montoMinimoEntregaC = ($montoMinimoEntregaC * 100);
+			if($montoMinimoEntregaC > $montoCompra)
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).' - ME';
+				return;
+			}
+			$montoCompra = $montoCompra - $montoMinimoEntregaC;
+		}
+		$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));
 		if($montoTotalCredito > $monto_credito_disponible)
 		{
 			$selectVCS = "SELECT e.id, e.token FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.token = ?";

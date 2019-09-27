@@ -338,6 +338,20 @@ h1 {
     margin-left:-12px;
 }
 
+#img_loader_24
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:77%;
+}
+
 #mensajeError
 {
     background-image: url("../images/errorDialog.png");	

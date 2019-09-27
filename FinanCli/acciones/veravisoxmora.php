@@ -146,7 +146,7 @@
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tiposavisodefaultnoticev">'.translate('Lbl_Types_Of_Notice',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tiposavisodefaultnoticev">';
-		echo '						<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_SMS_Shipments_Default_Notice',$GLOBALS['lang']).'" onclick="verEnviosSMS('.$idAvisoXMora.')"><i class="fas fa-sms"></i></button>';
+		echo '						<button type="button" id="btnVerAvisosXSMS" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_See_SMS_Shipments_Default_Notice',$GLOBALS['lang']).'" onclick="verEnviosSMS('.$idAvisoXMora.')"><i class="fas fa-sms"></i></button>';
 		echo '					</div>';		
 		echo '				</div>';
 		echo '				<div class="form-group form-inline"><hr />';

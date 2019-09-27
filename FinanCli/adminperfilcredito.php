@@ -187,6 +187,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarPlanesCreditoPerfil(idPerfilCredito)
 		{
+			document.getElementById("btnCargarPCP").disabled = true;
 			var planes = "";
 			$("#boot-multiselect-planes-asignados > option").each(function(){
 			   if(!planes) planes = this.value;
@@ -215,13 +216,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_10').hide();
 				}
-			});	
+			});
+			document.getElementById("btnCargarPCP").disabled = false;
 		}
     </script>	
 			
 	<script type="text/javascript">
 		function modificarPerfilCredito(perfilcredito, nombre)
 		{
+			document.getElementById("modificarPerfilCredit"+perfilcredito).disabled = true;
 			var urla = "./acciones/modificarperfilcredito.php";
 			var tag = $("<div id='dialogmodifyprofilecredit'></div>");
 			$('#img_loader').show();
@@ -258,12 +261,14 @@ include("./menu/menu.php");
 					$('#img_loader').hide();
 				}
 			});
+			document.getElementById("modificarPerfilCredit"+perfilcredito).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionPerfilCredito(formulariod, perfilcredito)
 		{
+			document.getElementById("btnCargarPC").disabled = true;
 			if($( "#nombreprofilecrediti" ).val().length == 0)
 			{
 				$(function() {
@@ -276,6 +281,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreprofilecrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -304,6 +310,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#descripcionprofilecrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -333,6 +340,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#montomaximoprofilecrediti" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -364,6 +372,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#montomaximoprofilecrediti" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -406,13 +415,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_20').hide();
 				}
-			});				
+			});	
+			document.getElementById("btnCargarPC").disabled = false;			
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevoPerfilCredito(formulariod)
 		{
+			document.getElementById("btnCargarNPC").disabled = true;
 			if($( "#nombreprofilecreditni" ).val().length == 0)
 			{
 				$(function() {
@@ -425,6 +436,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#nombreprofilecreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -453,6 +465,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#descripcionprofilecreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -482,6 +495,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#montomaximoprofilecreditni" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -513,6 +527,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#montomaximoprofilecreditni" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -556,6 +571,7 @@ include("./menu/menu.php");
 					$('#img_loader_11').hide();
 				}
 			});
+			document.getElementById("btnCargarNPC").disabled = false;
 		}			
 	</script>
 		
@@ -586,7 +602,7 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader').hide();
 				}
-			});	
+			});
 		}
 	</script>	
     <script type="text/javascript">
@@ -650,6 +666,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, perfilcredito, nombre)
 		{
+			document.getElementById("borrarPerfilCredit"+perfilcredito).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -667,12 +684,14 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("borrarPerfilCredit"+perfilcredito).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+nombre+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarPerfilCredit"+perfilcredito).disabled = false;
 		}
 	</script>	
 </head>
@@ -737,7 +756,7 @@ include("./menu/menu.php");
 									echo '<td>'.$description_profile_credit.'</td>';
 									echo '<td>$'.number_format(($limit_amount_profile_credit/100.00),2).'</td>';
 									
-									echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Profile_Credit',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Profile_Credit',$GLOBALS['lang']).'\',\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']).'" onclick="modificarPerfilCredito(\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-edit"></i></button></td>';
+									echo '<td><button type="button" id="borrarPerfilCredit'.$id_profile_credit.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Profile_Credit',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Profile_Credit',$GLOBALS['lang']).'\',\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;&nbsp;<button type="button"  id="modificarPerfilCredit'.$id_profile_credit.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Profile_Credit',$GLOBALS['lang']).'" onclick="modificarPerfilCredito(\''.$id_profile_credit.'\',\''.$name_profile_credit.'\')"><i class="fas fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}

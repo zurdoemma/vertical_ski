@@ -60,7 +60,7 @@ include("./menu/menu.php");
 		function generarReporte()
 		{						
 			document.getElementById("btnGenerarReporte").disabled = true;
-			if($("#reportescreditsni").val() == 1)
+			if($("#reportescreditsni").val() == 1 || $("#reportescreditsni").val() == 2 || $("#reportescreditsni").val() == 3)
 			{
 				if($( "#datetimepickerfechadesdereporteni" ).val().length == 0)
 				{
@@ -139,7 +139,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val()},
+				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val(), sucursal:  $( "#sucursalsni" ).val(), planCredito:  $( "#tipoplanni" ).val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -151,6 +151,16 @@ include("./menu/menu.php");
 						{
 							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val());
 						}
+						
+						if($("#reportescreditsni").val() == 2)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&sucursal='+$( "#sucursalsni" ).val()+'&nombreSucursal='+$( "#sucursalsni option:selected" ).text()+'&planCredito='+$( "#tipoplanni" ).val()+'&nombrePlanCredito='+$( "#tipoplanni option:selected" ).text());
+						}
+						
+						if($("#reportescreditsni").val() == 3)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&sucursal='+$( "#sucursalsni" ).val()+'&nombreSucursal='+$( "#sucursalsni option:selected" ).text());
+						}						
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 					
@@ -279,7 +289,7 @@ include("./menu/menu.php");
 			<h3 class="panel-title" id="tituloreportescreditos"><?php  echo translate('Lbl_Selection_Reports',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
-			<div id="img_loader"></div>
+			<div id="img_loader_24"></div>
 			<form id="formularior" role="form">
 				<div class="form-group form-inline">
 					&nbsp;&nbsp;<label class="control-label" for="reportescreditsn"><?php echo translate('Lbl_Reports_Credits',$GLOBALS['lang']).': '; ?></label>
@@ -306,7 +316,7 @@ include("./menu/menu.php");
 						</select>
 					</div>
 					<div class="form-group" id="fechadesdereporten">
-						&nbsp;&nbsp;<label class="control-label" for="fechadesdereporten"><?php echo translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': ' ?></label>			
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="fechadesdereporten"><?php echo translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': ' ?></label>			
 						<div class="input-group date" id="datetimepickerfechadesdereporten">
 							<input title="<?php echo translate('Msg_Date_Since_Report_Must_Enter',$GLOBALS['lang']); ?>" class="form-control input-sm" id="datetimepickerfechadesdereporteni" name="datetimepickerfechadesdereporteni" type="text" maxlength="10" placeholder="<?php echo translate('Lbl_Date_Since_Report',$GLOBALS['lang']); ?>"  style="width: 152px;" />
 							<span class="input-group-addon">
@@ -325,6 +335,89 @@ include("./menu/menu.php");
 					</div>					
 					&nbsp;<input type="button" class="btn btn-primary" name="btnGenerarReporte" id="btnGenerarReporte" value="<?php echo translate('Msg_Generate_Report_Credits',$GLOBALS['lang']); ?>" onClick="generarReporte();" style="margin-left:10px;" />				
 				</div>
+				<div class="form-group form-inline">
+					<div class="form-group" id="sucursalsn">
+						&nbsp;&nbsp;<label class="control-label" for="sucursalsn"><?php echo translate('Lbl_Tender_User',$GLOBALS['lang']).': '; ?></label>
+						<select class="form-control input-sm" name="sucursalsni" id="sucursalsni" style="width:313px;">		 
+							<?php 
+								if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+								{
+									$stmt500->bind_param('s', $_SESSION['username']);
+									$stmt500->execute();    
+									$stmt500->store_result();
+							 
+									$totR500 = $stmt500->num_rows;
+									if($totR500 > 0)
+									{
+										$stmt500->bind_result($id_cadena_user);
+										$stmt500->fetch();
+
+										$stmt500->free_result();
+										$stmt500->close();				
+									}
+									else 
+									{
+										echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+										return;				
+									}	
+								}
+								else 
+								{
+									echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+									return;				
+								}
+		
+								if ($stmt = $mysqli->prepare("SELECT codigo, nombre FROM finan_cli.sucursal WHERE id_cadena = ? ORDER BY nombre")) 
+								{ 
+									$stmt->bind_param('s', $id_cadena_user);
+									$stmt->execute();    
+									$stmt->store_result();
+							 
+									$stmt->bind_result($id_sucursal,$nombre_sucursal);
+									while($stmt->fetch())
+									{
+										echo '<option value="'.$id_sucursal.'">'.$nombre_sucursal.'</option>';
+									}
+									echo '<option value="'.translate('Lbl_All_Selection',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection',$GLOBALS['lang']).'</option>';
+								}
+								else  
+								{
+									echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+									return;			
+								}
+							?>
+						</select>
+					</div>
+					<div class="form-group" id="tipoplann">
+						&nbsp;<label class="control-label" for="tipoplann"><?php echo translate('Lbl_Credit_Plan',$GLOBALS['lang']).': '; ?></label>
+						<select class="form-control input-sm" name="tipoplanni" id="tipoplanni" style="width:193px;">		 
+							<?php 		
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito WHERE id_cadena = ? ORDER BY nombre")) 
+								{ 
+									$stmt->bind_param('s', $id_cadena_user);
+									$stmt->execute();    
+									$stmt->store_result();
+							 
+									$stmt->bind_result($id_plan_credito,$nombre_plan_credito);
+									$ii = 0;
+									while($stmt->fetch())
+									{
+										if($ii == 0) echo '<option selected value="'.$id_plan_credito.'">'.$nombre_plan_credito.'</option>';
+										else echo '<option value="'.$id_plan_credito.'">'.$nombre_plan_credito.'</option>';
+										
+										$ii++;
+									}
+									echo '<option value="'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'</option>';
+								}
+								else  
+								{
+									echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+									return;			
+								}
+							?>
+						</select>
+					</div>						
+				</div>				
 			</form>
 		  </div>
 		</div>
@@ -344,12 +437,41 @@ include("./menu/menu.php");
 			{
 				$("#fechadesdereporten").show();
 				$("#fechahastareporten").show();
+				
+				$("#sucursalsn").hide();
+				$("#tipoplann").hide();
 			}
-			else
+
+			
+			$( "#reportescreditsni" ).change(function() 
 			{
-				$("#fechadesdereporten").hide();
-				$("#fechahastareporten").hide();
-			}
+				if($("#reportescreditsni").val() == 1)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					
+					$("#sucursalsn").hide();
+					$("#tipoplann").hide();
+				}
+				
+				if($("#reportescreditsni").val() == 2)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					$("#tipoplann").show();
+				}
+
+				
+				if($("#reportescreditsni").val() == 3)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					
+					$("#tipoplann").hide();
+				}				
+			});
 		});
 	</script>
 </body>

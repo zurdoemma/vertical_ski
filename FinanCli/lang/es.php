@@ -451,6 +451,7 @@
 		'Lbl_Document_Credit_Headline' => 'Doc. Titular',		
 		'Lbl_Amount_Credit' => 'Monto',
 		'Lbl_Name_Plan_Credit' => 'Plan Credito',
+		'Lbl_Name_Plan_Credit_2' => 'Plan Crédito',
 		'Lbl_Fees_Credit' => 'Cuotas',
 		'Lbl_Interest_Aplied_Fees_Credit' => 'Intereses Aplicados',
 		'Lbl_Msg_Send_Notices_Debt_Fees_Credit' => 'Mensajes',
@@ -737,6 +738,8 @@
 		'Msg_Unable_To_Get_The_Form_Of_Payment_Fee' => 'No se puede obtener la forma de pago de la cuota!!',
 		'Msg_Payment_Of_All_Fees_Included_In_The_Total_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en el pago total',
 		'Msg_Payment_Of_All_Fees_Included_In_The_Selection_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en la seleccion',
-		'Msg_Action_Not_Allowed_User' => 'Acción no permitida para el usuario!!'
+		'Msg_Action_Not_Allowed_User' => 'Acción no permitida para el usuario!!',
+		'Lbl_All_Selection' => 'Todas',
+		'Lbl_All_Selection2' => 'Todos'
 	);
 ?>

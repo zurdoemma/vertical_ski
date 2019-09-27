@@ -136,7 +136,7 @@
 				$arrayC[$posicion]['nrocuota'] = $numero_cuota_default_notice_client;
 				$arrayC[$posicion]['estado'] = $state_default_notice_client;
 								
-				$arrayC[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Detail_Default_Notice',$GLOBALS['lang']).'" onclick="verAvisoXMoraCuotaCredito('.$id_default_notice_client.')"><i class="fas fa-eye"></i></button>';													
+				$arrayC[$posicion]['acciones'] = '<button type="button" id="verAvisoXM'.$id_default_notice_client.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_View_Detail_Default_Notice',$GLOBALS['lang']).'" onclick="verAvisoXMoraCuotaCredito('.$id_default_notice_client.')"><i class="fas fa-eye"></i></button>';													
 
 				$posicion++;
 			}

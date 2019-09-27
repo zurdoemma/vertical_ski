@@ -109,7 +109,7 @@
 		echo '				</div>';	
 		echo '				<div class="form-group form-inline" style="margin-top:50%">';				
 		echo '					<input type="button" class="btn btn-primary pull-right pull-bottom" name="btnCancelar" id="btnCancelar" value="'.translate('Lbl_Cancel',$GLOBALS['lang']).'" onClick="$(\'#dialogmodcreditplanxprofile\').dialog(\'close\');" style="margin-left:10px;" />';
-		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargar" id="btnCargar" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarPlanesCreditoPerfil(\''.$idPerfilCredito.'\');"/>';										
+		echo '					<input type="button" class="btn btn-primary pull-right" name="btnCargarPCP" id="btnCargarPCP" value="'.translate('Lbl_Save',$GLOBALS['lang']).'" onClick="guardarPlanesCreditoPerfil(\''.$idPerfilCredito.'\');"/>';										
 		echo '				</div>';				
 		echo '			</form>';
 		echo '		</div>';

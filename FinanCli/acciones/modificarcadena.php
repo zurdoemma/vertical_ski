@@ -83,7 +83,7 @@
 		echo '					</div>';
 		echo '					&nbsp;&nbsp;<label class="control-label" for="tenderschain">'.translate('Lbl_View_Tenders_Chain',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tenderschain">';
-		echo '						<button type="button" class="btn" title="'.translate('Lbl_View_Tenders_Chain',$GLOBALS['lang']).'" onclick="verSucursalesCadena(\''.$id_cadena.'\',\''.$cadena_razon_social.'\');"><i class="fa fa-eye"></i></button>';
+		echo '						<button type="button" id="btnVerSucursalesCadena" class="btn" title="'.translate('Lbl_View_Tenders_Chain',$GLOBALS['lang']).'" onclick="verSucursalesCadena(\''.$id_cadena.'\',\''.$cadena_razon_social.'\');"><i class="fa fa-eye"></i></button>';
 		echo '					</div>';		
 		echo '				</div>';	
 		echo '				<div class="form-group form-inline">';				

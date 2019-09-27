@@ -52,7 +52,7 @@ try
 		$printer -> setTextSize(1, 1);
 		//$printer -> setJustification($justification[2]);
 		$printer -> text(translate('Lbl_Date_Print_Credit',$GLOBALS['lang']).': '.str_replace("-","/",$fecha));
-		if($esCopia == 1)
+		if(!empty($esCopia) && $esCopia == 1)
 		{
 			$printer -> feed();
 			$printer -> text('-------------------------------');
@@ -116,7 +116,8 @@ try
 		{
 			$printer -> feed();
 			$datosCuotX = explode("!",$cuotasArr[$i]);
-			$printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+			if(empty($esCopia)) $printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],8,2).'/'.substr($datosCuotX[1],5,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+			else $printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 		}
 		$printer -> feed();
 		if($pagaPrimeraCuota == 1)
@@ -174,7 +175,7 @@ try
 			$printer -> setTextSize(1, 1);
 			//$printer -> setJustification($justification[2]);
 			$printer -> text(translate('Lbl_Date_Print_Credit',$GLOBALS['lang']).': '.str_replace("-","/",$fecha));
-			if($esCopia == 1)
+			if(!empty($esCopia) && $esCopia == 1)
 			{
 				$printer -> feed();
 				$printer -> text('-------------------------------');
@@ -240,7 +241,8 @@ try
 			{
 				$printer -> feed();
 				$datosCuotX = explode("!",$cuotasArr[$i]);
-				$printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+				if(empty($esCopia)) $printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],8,2).'/'.substr($datosCuotX[1],5,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
+				else $printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 			}
 			$printer -> feed();
 			$printer -> setJustification($justification[0]);

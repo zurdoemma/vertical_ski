@@ -48,6 +48,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function nuevoInteresXMora()
 		{
+			document.getElementById("btnNuevoInteresXM").disabled = true;
 			var urlnpc = "./acciones/nuevointeresxmorasup.php";
 			var tagnpc = $("<div id='dialognewinteresxmora'></div>");
 			$('#img_loader_5').show();
@@ -82,13 +83,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_5').hide();
 				}
-			});	
+			});
+			document.getElementById("btnNuevoInteresXM").disabled = false;
 		}
     </script>
 			
 	<script type="text/javascript">
 		function modificarInteresXMora(interesxmora)
 		{
+			document.getElementById("modificarInteresXM"+interesxmora).disabled = true;
 			var urla = "./acciones/modificarinteresxmorasup.php";
 			var tag = $("<div id='dialogmodifyinteresxmora'></div>");
 			$('#img_loader').show();
@@ -124,12 +127,14 @@ include("./menu/menu.php");
 					$('#img_loader').hide();
 				}
 			});
+			document.getElementById("modificarInteresXM"+interesxmora).disabled = false;
 		}
     </script>
 	
 	<script type="text/javascript">
 		function guardarModificacionInteresXMora(formulariod, interesxmora)
 		{			
+			document.getElementById("btnCargarPC").disabled = true;
 			if($( "#cantidaddiasinteresxmorai" ).val().length == 0)
 			{
 				$('#cantidaddiasinteresxmorai').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
@@ -143,6 +148,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cantidaddiasinteresxmorai" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -174,6 +180,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cantidaddiasinteresxmorai" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -205,6 +212,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#interesxmorai" ).focus();
+				document.getElementById("btnCargarPC").disabled = false;
 				return;
 			}
 			else 
@@ -236,6 +244,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#interesxmorai" ).focus();
+					document.getElementById("btnCargarPC").disabled = false;
 					return;
 				}
 				else
@@ -278,13 +287,15 @@ include("./menu/menu.php");
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_22').hide();
 				}
-			});				
+			});
+			document.getElementById("btnCargarPC").disabled = false;
 		}			
 	</script>
 	
 	<script type="text/javascript">
 		function guardarNuevoInteresXMora(formulariod)
 		{
+			document.getElementById("btnCargarNPC").disabled = true;
 			if($( "#cantidaddiasinteresxmorani" ).val().length == 0)
 			{
 				$('#cantidaddiasinteresxmorani').prop('title', '<?php echo translate('Msg_Amount_Days_Interest_For_Late_Payment_Must_Enter',$GLOBALS['lang']);?>');
@@ -298,6 +309,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#cantidaddiasinteresxmorani" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -329,6 +341,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#cantidaddiasinteresxmorani" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -360,6 +373,7 @@ include("./menu/menu.php");
 					});
 				});
 				$( "#interesxmorani" ).focus();
+				document.getElementById("btnCargarNPC").disabled = false;
 				return;
 			}
 			else 
@@ -391,6 +405,7 @@ include("./menu/menu.php");
 						});
 					});
 					$( "#interesxmorani" ).focus();
+					document.getElementById("btnCargarNPC").disabled = false;
 					return;
 				}
 				else
@@ -434,6 +449,7 @@ include("./menu/menu.php");
 					$('#img_loader_22').hide();
 				}
 			});
+			document.getElementById("btnCargarNPC").disabled = false;
 		}			
 	</script>
 		
@@ -541,6 +557,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function confirmar_accion(titulo, mensaje, interesxmora)
 		{
+			document.getElementById("borrarInteresXM"+interesxmora).disabled = true;
 			$( "#confirmDialog" ).dialog({
 						title:titulo,
 						show:"blind",
@@ -558,12 +575,14 @@ include("./menu/menu.php");
 								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
 										$("#confirmDialog").dialog('close');
 										$('#img_loader').hide();
+										document.getElementById("borrarInteresXM"+interesxmora).disabled = false;
 										return;
 								}
 						}
 				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
 				$('#img_loader').hide();
+			document.getElementById("borrarInteresXM"+interesxmora).disabled = false;
 		}
 	</script>	
 </head>
@@ -595,7 +614,7 @@ include("./menu/menu.php");
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">
-				<button type="button" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoInteresXMora();" title="<?php echo translate('Lbl_New_Interest_For_Late_Payment',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
+				<button type="button" id="btnNuevoInteresXM" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoInteresXMora();" title="<?php echo translate('Lbl_New_Interest_For_Late_Payment',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>
 			</div>
 			<div id="img_loader"></div>
 			<div id="tablaadmininteresxmora" class="table-responsive">
@@ -644,7 +663,7 @@ include("./menu/menu.php");
 											if($recurrente_interes_x_mora == 1)	echo '<td>'.translate('Lbl_Button_YES',$GLOBALS['lang']).'</td>';
 											else echo '<td>'.translate('Lbl_Button_NO',$GLOBALS['lang']).'</td>';
 											
-											echo '<td><button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
+											echo '<td><button type="button" id="borrarInteresXM'.$id_interes_x_mora.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Interest_For_Late_Payment',$GLOBALS['lang']).'\',\''.$id_interes_x_mora.'\')"><i class="fas fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" id="modificarInteresXM'.$id_interes_x_mora.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Interest_For_Late_Payment',$GLOBALS['lang']).'" onclick="modificarInteresXMora(\''.$id_interes_x_mora.'\')"><i class="fas fa-edit"></i></button></td>';
 											echo '</tr>';
 										}
 									}

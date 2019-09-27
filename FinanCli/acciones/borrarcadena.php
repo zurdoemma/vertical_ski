@@ -173,7 +173,7 @@
 						$array[$posicion]['cuitcuil'] = $cuit_cuil_chain;
 						$array[$posicion]['nombrefantasia'] = $nombre_fantasia_chain;
 						
-						$array[$posicion]['acciones'] = '<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Chain',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Chain',$GLOBALS['lang']).'\',\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-unlink"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-edit"></i></button>';
+						$array[$posicion]['acciones'] = '<button type="button" id="btnBorrarCadena'.$id_chain.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Chain',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Removed_Chain',$GLOBALS['lang']).'\',\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-unlink"></i></button>&nbsp;&nbsp;&nbsp;<button type="button" id="btnModificarCadena'.$id_chain.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Edit_Chain',$GLOBALS['lang']).'" onclick="modificarCadena(\''.$id_chain.'\',\''.$razon_social_chain.'\')"><i class="fas fa-edit"></i></button>';
 						
 						$posicion++;
 					}
