@@ -195,10 +195,10 @@
 				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
 			}
 				
-			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $selectReportID2 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING AVG(c.monto_credito_original) IS NOT NULL";
-			else $selectReportID2 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY s.codigo, s.nombre HAVING AVG(c.monto_credito_original) IS NOT NULL";
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $selectReportID3 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING AVG(c.monto_credito_original) IS NOT NULL";
+			else $selectReportID3 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY s.codigo, s.nombre HAVING AVG(c.monto_credito_original) IS NOT NULL";
 				
-			if ($stmt = $mysqli->prepare($selectReportID2)) 
+			if ($stmt = $mysqli->prepare($selectReportID3)) 
 			{
 				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
 				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
@@ -223,8 +223,666 @@
 				echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
 				return;	
 			}			
+		}
+
+
+		if($id_reporte_db == 4)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"]) && !empty($_GET["tipoDocumento"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) 
+				{
+					$selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original)";
+				}
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli))
+				{
+					$selectReportID4 = "SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL UNION ALL SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				}
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) 
+				{
+					$selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				}
+				else 
+				{
+					$selectReportID4 = "SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL UNION ALL SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				}
+			}
+			else
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID4 = "SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING AVG(c.monto_credito_original) IS NOT NULL";
+				else $selectReportID4 = "SELECT AVG(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos HAVING AVG(c.monto_credito_original) IS NOT NULL";				
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID4)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoCanceladoS = translate('Lbl_Status_Fee_Canceled',$GLOBALS['lang']);
+				
+				if(empty($id_titular_cliente_db))
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiississiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissississis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissisissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('sisssiss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+
+				}
+				else
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('siss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+				}
+				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+				else $stmt->bind_result($monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}
+
+		if($id_reporte_db == 5)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"]) && !empty($_GET["tipoDocumento"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) 
+				{
+					$selectReportID5 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original)";
+				}
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli))
+				{
+					$selectReportID5 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) 
+				{
+					$selectReportID5 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+				else 
+				{
+					$selectReportID5 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+			}
+			else
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID5 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID5 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $selectReportID5 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else $selectReportID5 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";				
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID5)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoCanceladoS = translate('Lbl_Status_Fee_Canceled',$GLOBALS['lang']);
+				
+				if(empty($id_titular_cliente_db))
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiississiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissississis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissisissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('sisssiss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+
+				}
+				else
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('siss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+				}
+				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+				else $stmt->bind_result($monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
 		}		
 
+		if($id_reporte_db == 6)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"]) && !empty($_GET["tipoDocumento"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) 
+				{
+					$selectReportID6 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original)";
+				}
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli))
+				{
+					$selectReportID6 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) 
+				{
+					$selectReportID6 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+				else 
+				{
+					$selectReportID6 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL UNION ALL SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				}
+			}
+			else
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID6 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID6 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $selectReportID6 = "SELECT s.codigo, s.nombre, COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";
+				else $selectReportID6 = "SELECT COUNT(c.monto_credito_original), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado = ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos HAVING COUNT(c.monto_credito_original) IS NOT NULL";				
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID6)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoCanceladoS = translate('Lbl_Status_Fee_Canceled',$GLOBALS['lang']);
+				
+				if(empty($id_titular_cliente_db))
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiississiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissississis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissisissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('sisssiss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+
+				}
+				else
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('siss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+				}
+				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+				else $stmt->bind_result($monto_promedio_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}
+		
+		if($id_reporte_db == 7)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["tipoDocumento2"]) && !empty($_GET["documento2"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento2"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento2"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento2"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento2"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				$selectReportID7 = "SELECT c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.fecha_pago, ccre.monto_pago, ccre.usuario_registro_pago FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.cuota_credito ccre, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND c.id = ccre.id_credito AND cc.id_sucursal = s.id AND ccre.estado = ? AND s.id_cadena = ? AND ccre.fecha_pago BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.monto_pago, ccre.usuario_registro_pago ORDER BY ccre.fecha_pago";
+			}
+			else
+			{
+				$selectReportID7 = "SELECT c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.fecha_pago, ccre.monto_pago, ccre.usuario_registro_pago FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.cuota_credito ccre, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND c.id = ccre.id_credito AND cc.id_sucursal = s.id AND ccre.estado = ? AND s.id_cadena = ? AND ccre.fecha_pago BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.monto_pago, ccre.usuario_registro_pago ORDER BY ccre.fecha_pago";			
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID7)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoPagadoS = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
+				
+
+				$stmt->bind_param('sissis', $estadoPagadoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				$stmt->bind_result($id_credito_reporte, $cantidad_cuotas_credito_reporte, $numero_cuota_pagada_reporte, $fecha_vencimiento_cuota_pagada_reporte, $fecha_pago_cuota_reporte, $monto_pago_cuota_reporte, $usuario_registra_pago_cuota_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}
+
+		if($id_reporte_db == 8)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["tipoDocumento2"]) && !empty($_GET["documento2"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento2"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento2"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento2"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento2"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				$selectReportID8 = "SELECT c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.estado, ccre.fecha_vencimiento, ccre.monto_cuota_original, cc.id_usuario FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.cuota_credito ccre, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND c.id = ccre.id_credito AND cc.id_sucursal = s.id AND ccre.estado IN (?,?) AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.monto_pago, ccre.usuario_registro_pago ORDER BY c.id, ccre.numero_cuota, cc.fecha";
+			}
+			else
+			{
+				$selectReportID8 = "SELECT c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.estado, ccre.fecha_vencimiento, ccre.monto_cuota_original, cc.id_usuario FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.cuota_credito ccre, finan_cli.sucursal s WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND c.id = ccre.id_credito AND cc.id_sucursal = s.id AND ccre.estado IN (?,?) AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY c.id, c.cantidad_cuotas, ccre.numero_cuota, ccre.fecha_vencimiento, ccre.monto_pago, ccre.usuario_registro_pago ORDER BY c.id, ccre.numero_cuota, cc.fecha";			
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID8)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoPendienteS = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
+				$estadoEnMoraS = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+				
+
+				$stmt->bind_param('ssissis', $estadoPendienteS, $estadoEnMoraS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				$stmt->bind_result($id_credito_reporte, $cantidad_cuotas_credito_reporte, $numero_cuota_pendiente_reporte, $estado_cuota_pendiente_reporte, $fecha_vencimiento_cuota_pendiente_reporte, $monto_cuota_pendiente_reporte, $usuario_registra_credito_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}		
+		
+		if($id_reporte_db == 9)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"]) && !empty($_GET["tipoDocumento"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_GET["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_GET["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+				$tipoDocumentoCli=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
+				$documentoCli=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
+			}
+			
+			if(!empty($documentoCli))
+			{
+				if($stmt47 = $mysqli->prepare("SELECT c.id_titular, c.nombres, c.apellidos FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+				{
+					$stmt47->bind_param('is', $tipoDocumentoCli, $documentoCli);
+					$stmt47->execute();    
+					$stmt47->store_result();
+					
+					$totR47 = $stmt47->num_rows;
+
+					if($totR47 == 0)
+					{
+						echo translate('Msg_Client_Not_Exist',$GLOBALS['lang']);
+						return;
+					}
+					else
+					{
+						$stmt47->bind_result($id_titular_cliente_db, $nombres_cliente_db, $apellidos_cliente_db);
+						$stmt47->fetch();
+						
+						$stmt47->free_result();
+						$stmt47->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+					return;				
+				}
+			}
+			
+			if(empty($id_titular_cliente_db))
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) 
+				{
+					$selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra)";
+				}
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli))
+				{
+					$selectReportID4 = "SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL UNION ALL SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL";
+				}
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) 
+				{
+					$selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL UNION ALL SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL";
+				}
+				else 
+				{
+					$selectReportID4 = "SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento AND cli.documento = cc.documento AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL UNION ALL SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos, cli.tipo_documento, cli.documento HAVING AVG(c.monto_compra) IS NOT NULL";
+				}
+			}
+			else
+			{
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING AVG(c.monto_compra) IS NOT NULL";
+				else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $selectReportID4 = "SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND cli.tipo_documento = ? AND cli.documento = ? GROUP BY cli.nombres, cli.apellidos HAVING AVG(c.monto_compra) IS NOT NULL";
+				else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $selectReportID4 = "SELECT s.codigo, s.nombre, AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre, cli.nombres, cli.apellidos HAVING AVG(c.monto_compra) IS NOT NULL";
+				else $selectReportID4 = "SELECT AVG(c.monto_compra), cli.nombres, cli.apellidos, cli.id_titular, cli.tipo_documento, cli.documento FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.cliente cli WHERE c.id = cc.id_credito AND cli.tipo_documento = cc.tipo_documento_adicional AND cli.documento = cc.documento_adicional AND cc.id_sucursal = s.id AND c.estado <> ? AND s.id_cadena = ? AND cc.fecha BETWEEN ? AND ? GROUP BY cli.nombres, cli.apellidos HAVING AVG(c.monto_compra) IS NOT NULL";				
+			}
+			
+			if ($stmt = $mysqli->prepare($selectReportID4)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				$estadoCanceladoS = translate('Lbl_Status_Fee_Canceled',$GLOBALS['lang']);
+				
+				if(empty($id_titular_cliente_db))
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiississiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissississis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissisissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('sisssiss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+
+				}
+				else
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissiis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal == translate('Lbl_All_Selection',$GLOBALS['lang']) && !empty($documentoCli)) $stmt->bind_param('sissis', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $tipoDocumentoCli, $documentoCli);
+					else if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']) && empty($documentoCli)) $stmt->bind_param('sissi', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmt->bind_param('siss', $estadoCanceladoS, $id_cadena_user, $fechaDesde, $fechaHasta);
+				}
+				
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $monto_promedio_compra_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+				else $stmt->bind_result($monto_promedio_compra_creditos_sucursal_reporte, $nombres_cliente_reporte, $apellidos_cliente_reporte, $id_titular_cliente_reporte, $tipo_documento_cliente_reporte, $documento_cliente_reporte);
+			
+				$totR = $stmt->num_rows;
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}
+		
 		if(!empty($_POST["idReporte"]))
 		{
 			echo translate('Msg_Generate_Report_PDF_OK',$GLOBALS['lang']);
@@ -253,6 +911,15 @@
 				if($_GET["idReporte"] == 1) $this->Cell(200,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
 				if($_GET["idReporte"] == 2) $this->Cell(230,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Tender_User',$GLOBALS['lang']).': '.$_GET["nombreSucursal"].'  ||  '.iconv('UTF-8', 'windows-1252', translate('Lbl_Name_Plan_Credit_2',$GLOBALS['lang'])).': '.$_GET["nombrePlanCredito"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
 				if($_GET["idReporte"] == 3) $this->Cell(230,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Tender_User',$GLOBALS['lang']).': '.$_GET["nombreSucursal"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
+				if($_GET["idReporte"] == 4 || $_GET["idReporte"] == 5 || $_GET["idReporte"] == 6 || $_GET["idReporte"] == 9) 
+				{
+					if(!empty($_GET["documento"])) $this->Cell(240,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Tender_User',$GLOBALS['lang']).': '.$_GET["nombreSucursal"].'  ||  '.translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '.$_GET["nombreTipoDocumento"].'  ||  '.translate('Lbl_Document_Client',$GLOBALS['lang']).': '.$_GET["documento"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
+					else $this->Cell(240,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Tender_User',$GLOBALS['lang']).': '.$_GET["nombreSucursal"].'  ||  '.translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '.translate('Lbl_All_Selection2',$GLOBALS['lang']).'  ||  '.translate('Lbl_Document_Client',$GLOBALS['lang']).': '.translate('Lbl_All_Selection2',$GLOBALS['lang']).'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
+				}
+				if($_GET["idReporte"] == 7 || $_GET["idReporte"] == 8) 
+				{
+					$this->Cell(240,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '.$_GET["nombreTipoDocumento"].'  ||  '.translate('Lbl_Document_Client',$GLOBALS['lang']).': '.$_GET["documento2"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
+				}
 				// Line break
 				$this->Ln(20);					
 			}
@@ -336,7 +1003,125 @@
 				$pdf->Cell(120,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
 				$pdf->Cell(70,10,'$'.number_format(($monto_promedio_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
 			}
-		}		
+		}
+
+		if($id_reporte_db == 4 || $id_reporte_db == 5 || $id_reporte_db == 6 || $id_reporte_db == 9)
+		{
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']))
+			{
+				$pdf->SetFillColor(17,58,154);
+				$pdf->SetTextColor(255,255,255);
+				$pdf->Cell(15,10,'CÓDIGO',1,0,'C',True);
+				$pdf->Cell(35,10,'NOMBRE SUCURSAL',1,0, 'C',True);
+				$pdf->Cell(30,10,'TIPO DOCUMENTO',1,0,'C',True);
+				$pdf->Cell(25,10,'DOCUMENTO',1,0,'C',True);
+				$pdf->Cell(40,10,'NOMBRES',1,0,'C',True);
+				$pdf->Cell(35,10,'APELLIDOS',1,0, 'C',True);
+				$pdf->Cell(25,10,'TIPO CUENTA',1,0, 'C',True);
+				if($id_reporte_db == 4) $pdf->Cell(35,10,'MONTO PROMEDIO',1, 0,'C',True);
+				else if($id_reporte_db == 9) $pdf->Cell(35,10,'MONTO PROMEDIO',1, 0,'C',True);
+				else $pdf->Cell(35,10,'CANTIDAD CRÉDITOS',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{
+					$pdf->Ln();
+					$pdf->Cell(15,10,$codigo_sucursal_reporte,1,0,'C');
+					$pdf->Cell(35,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
+					$pdf->Cell(30,10,iconv('UTF-8', 'windows-1252', $tipo_documento_cliente_reporte),1,0,'C');
+					$pdf->Cell(25,10,$documento_cliente_reporte,1,0,'C');					
+					$pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', $nombres_cliente_reporte),1,0,'C');
+					$pdf->Cell(35,10,iconv('UTF-8', 'windows-1252', $apellidos_cliente_reporte),1,0,'C');
+					if(empty($id_titular_cliente_reporte)) $pdf->Cell(25,10,iconv('UTF-8', 'windows-1252', translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])),1,0,'C');
+					else $pdf->Cell(25,10,iconv('UTF-8', 'windows-1252', translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])),1,0,'C');
+					if($id_reporte_db == 4) $pdf->Cell(35,10,'$'.number_format(($monto_promedio_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
+					else if($id_reporte_db == 9) $pdf->Cell(35,10,'$'.number_format(($monto_promedio_compra_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
+					else $pdf->Cell(35,10,$monto_promedio_creditos_sucursal_reporte,1,0,'C');
+				}
+			}
+			else
+			{
+				$pdf->SetFillColor(17,58,154);
+				$pdf->SetTextColor(255,255,255);
+				$pdf->Cell(30,10,'TIPO DOCUMENTO',1,0,'C',True);
+				$pdf->Cell(30,10,'DOCUMENTO',1,0,'C',True);
+				$pdf->Cell(45,10,'NOMBRES',1,0,'C',True);
+				$pdf->Cell(45,10,'APELLIDOS',1,0, 'C',True);
+				$pdf->Cell(40,10,'TIPO CUENTA',1,0, 'C',True);
+				if($id_reporte_db == 4) $pdf->Cell(50,10,'MONTO PROMEDIO',1, 0,'C',True);
+				else if($id_reporte_db == 9) $pdf->Cell(50,10,'MONTO PROMEDIO',1, 0,'C',True);
+				else $pdf->Cell(50,10,'CANTIDAD CRÉDITOS',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{
+					$pdf->Ln();
+					$pdf->Cell(30,10,iconv('UTF-8', 'windows-1252', $tipo_documento_cliente_reporte),1,0,'C');
+					$pdf->Cell(30,10,$documento_cliente_reporte,1,0,'C');
+					$pdf->Cell(45,10,iconv('UTF-8', 'windows-1252', $nombres_cliente_reporte),1,0,'C');
+					$pdf->Cell(45,10,iconv('UTF-8', 'windows-1252', $apellidos_cliente_reporte),1,0,'C');
+					if(empty($id_titular_cliente_reporte)) $pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])),1,0,'C');
+					else $pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])),1,0,'C');					
+					if($id_reporte_db == 4) $pdf->Cell(50,10,'$'.number_format(($monto_promedio_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
+					else if($id_reporte_db == 9) $pdf->Cell(50,10,'$'.number_format(($monto_promedio_compra_creditos_sucursal_reporte/100.00), 2, ',', '.'),1,0,'C');
+					else $pdf->Cell(50,10,$monto_promedio_creditos_sucursal_reporte,1,0,'C');
+				}
+			}
+		}			
+		
+		if($id_reporte_db == 7)
+		{
+			$pdf->SetFillColor(17,58,154);
+			$pdf->SetTextColor(255,255,255);
+						
+			$pdf->Cell(30,10,'CRÉDITO',1,0,'C',True);
+			$pdf->Cell(30,10,'CUOTAS',1,0, 'C',True);
+			$pdf->Cell(30,10,'NRO. CUOTA',1, 0,'C',True);			
+			$pdf->Cell(40,10,'FECHA VENC.',1,0,'C',True);
+			$pdf->Cell(40,10,'FECHA PAGO',1,0, 'C',True);
+			$pdf->Cell(30,10,'MONTO PAGO',1, 0,'C',True);
+			$pdf->Cell(40,10,'USUARIO',1, 0,'C',True);
+			$pdf->SetTextColor(0,0,0);
+			
+			while($stmt->fetch()) 
+			{
+				$pdf->Ln();
+				$pdf->Cell(30,10,$id_credito_reporte,1,0,'C');
+				$pdf->Cell(30,10,$cantidad_cuotas_credito_reporte,1,0,'C');
+				$pdf->Cell(30,10,$numero_cuota_pagada_reporte,1,0,'C');
+				$pdf->Cell(40,10,substr($fecha_vencimiento_cuota_pagada_reporte, 6, 2).'-'.substr($fecha_vencimiento_cuota_pagada_reporte, 4, 2).'-'.substr($fecha_vencimiento_cuota_pagada_reporte, 0, 4).' '.substr($fecha_vencimiento_cuota_pagada_reporte, 8, 2).':'.substr($fecha_vencimiento_cuota_pagada_reporte, 10, 2).':'.substr($fecha_vencimiento_cuota_pagada_reporte, 12, 2),1,0,'C');
+				$pdf->Cell(40,10,substr($fecha_pago_cuota_reporte, 6, 2).'-'.substr($fecha_pago_cuota_reporte, 4, 2).'-'.substr($fecha_pago_cuota_reporte, 0, 4).' '.substr($fecha_pago_cuota_reporte, 8, 2).':'.substr($fecha_pago_cuota_reporte, 10, 2).':'.substr($fecha_pago_cuota_reporte, 12, 2),1,0,'C');
+				$pdf->Cell(30,10,'$'.number_format(($monto_pago_cuota_reporte/100.00), 2, ',', '.'),1,0,'C');
+				$pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', $usuario_registra_pago_cuota_reporte),1,0,'C');
+			}
+		}
+		
+		if($id_reporte_db == 8)
+		{
+			$pdf->SetFillColor(17,58,154);
+			$pdf->SetTextColor(255,255,255);
+						
+			$pdf->Cell(30,10,'CRÉDITO',1,0,'C',True);
+			$pdf->Cell(30,10,'CUOTAS',1,0, 'C',True);
+			$pdf->Cell(30,10,'NRO. CUOTA',1, 0,'C',True);			
+			$pdf->Cell(40,10,'ESTADO',1,0,'C',True);
+			$pdf->Cell(40,10,'FECHA VENC.',1,0, 'C',True);
+			$pdf->Cell(30,10,'MONTO CUOTA',1, 0,'C',True);
+			$pdf->Cell(40,10,'USUARIO',1, 0,'C',True);
+			$pdf->SetTextColor(0,0,0);
+			
+			while($stmt->fetch()) 
+			{
+				$pdf->Ln();
+				$pdf->Cell(30,10,$id_credito_reporte,1,0,'C');
+				$pdf->Cell(30,10,$cantidad_cuotas_credito_reporte,1,0,'C');
+				$pdf->Cell(30,10,$numero_cuota_pendiente_reporte,1,0,'C');
+				$pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', $estado_cuota_pendiente_reporte),1,0,'C');
+				$pdf->Cell(40,10,substr($fecha_vencimiento_cuota_pendiente_reporte, 6, 2).'-'.substr($fecha_vencimiento_cuota_pendiente_reporte, 4, 2).'-'.substr($fecha_vencimiento_cuota_pendiente_reporte, 0, 4).' '.substr($fecha_vencimiento_cuota_pendiente_reporte, 8, 2).':'.substr($fecha_vencimiento_cuota_pendiente_reporte, 10, 2).':'.substr($fecha_vencimiento_cuota_pendiente_reporte, 12, 2),1,0,'C');
+				$pdf->Cell(30,10,'$'.number_format(($monto_cuota_pendiente_reporte/100.00), 2, ',', '.'),1,0,'C');
+				$pdf->Cell(40,10,iconv('UTF-8', 'windows-1252', $usuario_registra_credito_reporte),1,0,'C');
+			}
+		}
 		
 		$stmt->free_result();
 		$stmt->close();

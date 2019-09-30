@@ -60,7 +60,7 @@ include("./menu/menu.php");
 		function generarReporte()
 		{						
 			document.getElementById("btnGenerarReporte").disabled = true;
-			if($("#reportescreditsni").val() == 1 || $("#reportescreditsni").val() == 2 || $("#reportescreditsni").val() == 3)
+			if($("#reportescreditsni").val() >= 1 && $("#reportescreditsni").val() <= 9)
 			{
 				if($( "#datetimepickerfechadesdereporteni" ).val().length == 0)
 				{
@@ -131,6 +131,38 @@ include("./menu/menu.php");
 					document.getElementById("btnGenerarReporte").disabled = false;
 					return;
 				}
+				
+				if($("#reportescreditsni").val() == 7 || $("#reportescreditsni").val() == 8)
+				{
+					if($( "#nrodocumentclientn2i" ).val().length == 0)
+					{
+						$(function() {
+							$( "#nrodocumentclientn2i" ).tooltip({
+							   position: {
+								  my: "center bottom",
+								  at: "center top-10",
+								  collision: "none"
+							   }
+							});
+						});
+						$( "#nrodocumentclientn2i" ).focus();
+						document.getElementById("btnGenerarReporte").disabled = false;
+						return;
+					}
+					else 
+					{
+						$(function() {
+							$( "#nrodocumentclientn2i" ).tooltip({
+							   position: {
+								  my: "center bottom",
+								  at: "center top-10",
+								  collision: "none"
+							   }
+							});
+						});				
+						$( "#nrodocumentclientn2i" ).tooltip('destroy');
+					}
+				}					
 			}
 			
 			var urlgmu = "./acciones/mostrarreportespdf.php";
@@ -139,7 +171,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
-				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val(), sucursal:  $( "#sucursalsni" ).val(), planCredito:  $( "#tipoplanni" ).val()},
+				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val(), sucursal:  $( "#sucursalsni" ).val(), planCredito:  $( "#tipoplanni" ).val(), tipoDocumento:  $( "#tipodocclientni" ).val(), documento:  $( "#nrodocumentclientni" ).val(), tipoDocumento2:  $( "#tipodocclientn2i" ).val(), documento2:  $( "#nrodocumentclientn2i" ).val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader').hide();
 					
@@ -160,6 +192,21 @@ include("./menu/menu.php");
 						if($("#reportescreditsni").val() == 3)
 						{
 							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&sucursal='+$( "#sucursalsni" ).val()+'&nombreSucursal='+$( "#sucursalsni option:selected" ).text());
+						}
+
+						if($("#reportescreditsni").val() == 4 || $("#reportescreditsni").val() == 5 || $("#reportescreditsni").val() == 6 || $("#reportescreditsni").val() == 9)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&sucursal='+$( "#sucursalsni" ).val()+'&nombreSucursal='+$( "#sucursalsni option:selected" ).text()+'&tipoDocumento='+$( "#tipodocclientni" ).val()+'&nombreTipoDocumento='+$( "#tipodocclientni option:selected" ).text()+'&documento='+$( "#nrodocumentclientni" ).val());
+						}
+
+						if($("#reportescreditsni").val() == 7)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&tipoDocumento2='+$( "#tipodocclientn2i" ).val()+'&nombreTipoDocumento='+$( "#tipodocclientn2i option:selected" ).text()+'&documento2='+$( "#nrodocumentclientn2i" ).val());
+						}
+
+						if($("#reportescreditsni").val() == 8)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&tipoDocumento2='+$( "#tipodocclientn2i" ).val()+'&nombreTipoDocumento='+$( "#tipodocclientn2i option:selected" ).text()+'&documento2='+$( "#nrodocumentclientn2i" ).val());
 						}						
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -378,7 +425,7 @@ include("./menu/menu.php");
 									{
 										echo '<option value="'.$id_sucursal.'">'.$nombre_sucursal.'</option>';
 									}
-									echo '<option value="'.translate('Lbl_All_Selection',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection',$GLOBALS['lang']).'</option>';
+									echo '<option selected value="'.translate('Lbl_All_Selection',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection',$GLOBALS['lang']).'</option>';
 								}
 								else  
 								{
@@ -407,7 +454,7 @@ include("./menu/menu.php");
 										
 										$ii++;
 									}
-									echo '<option value="'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'</option>';
+									echo '<option selected value="'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'">'.translate('Lbl_All_Selection2',$GLOBALS['lang']).'</option>';
 								}
 								else  
 								{
@@ -416,7 +463,71 @@ include("./menu/menu.php");
 								}
 							?>
 						</select>
-					</div>						
+					</div>
+					<div class="form-group" id="tipodocclientn">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocclientn"><?php echo translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '; ?></label>
+						<select class="form-control input-sm" name="tipodocclientni" id="tipodocclientni" style="width:193px;">		 
+							<?php 		
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento ORDER BY id")) 
+								{ 
+									$stmt->bind_param('s', $id_cadena_user);
+									$stmt->execute();    
+									$stmt->store_result();
+							 
+									$stmt->bind_result($id_tipo_documento,$nombre_tipo_documento);
+									$ii = 0;
+									while($stmt->fetch())
+									{
+										if($ii == 0) echo '<option selected value="'.$id_tipo_documento.'">'.$nombre_tipo_documento.'</option>';
+										else echo '<option value="'.$id_tipo_documento.'">'.$nombre_tipo_documento.'</option>';
+										
+										$ii++;
+									}
+								}
+								else  
+								{
+									echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+									return;			
+								}
+							?>
+						</select>
+					</div>
+					<div class="form-group" id="nrodocumentclientn">
+						&nbsp;&nbsp;<label class="control-label" for="nrodocumentclientn"><?php echo translate('Lbl_Document_Client',$GLOBALS['lang']).': '; ?></label>
+						<input class="form-control input-sm" id="nrodocumentclientni" name="nrodocumentclientni" type="text" maxlength="16" style="width:191px;" />
+					</div>
+					<div class="form-group" id="tipodocclientn2">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocclientn2"><?php echo translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '; ?></label>
+						<select class="form-control input-sm" name="tipodocclientn2i" id="tipodocclientn2i" style="width:313px;">		 
+							<?php 		
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento ORDER BY id")) 
+								{ 
+									$stmt->bind_param('s', $id_cadena_user);
+									$stmt->execute();    
+									$stmt->store_result();
+							 
+									$stmt->bind_result($id_tipo_documento,$nombre_tipo_documento);
+									$ii = 0;
+									while($stmt->fetch())
+									{
+										if($ii == 0) echo '<option selected value="'.$id_tipo_documento.'">'.$nombre_tipo_documento.'</option>';
+										else echo '<option value="'.$id_tipo_documento.'">'.$nombre_tipo_documento.'</option>';
+										
+										$ii++;
+									}
+								}
+								else  
+								{
+									echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+									return;			
+								}
+							?>
+						</select>
+					</div>
+					<div class="form-group" id="nrodocumentclientn2">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nrodocumentclientn2"><?php echo translate('Lbl_Document_Client',$GLOBALS['lang']).': '; ?></label>
+						<input title="<?php echo translate('Msg_A_Document_Client_Must_Enter',$GLOBALS['lang']); ?>" class="form-control input-sm" id="nrodocumentclientn2i" name="nrodocumentclientn2i" type="text" maxlength="16" style="width:191px;" />
+					</div>					
 				</div>				
 			</form>
 		  </div>
@@ -433,15 +544,6 @@ include("./menu/menu.php");
 	<div id="confirmDialog" style="display:none;"></div>
 	<script type="text/javascript">
 		$( document ).ready(function() { 
-			if($("#reportescreditsni").val() == 1)
-			{
-				$("#fechadesdereporten").show();
-				$("#fechahastareporten").show();
-				
-				$("#sucursalsn").hide();
-				$("#tipoplann").hide();
-			}
-
 			
 			$( "#reportescreditsni" ).change(function() 
 			{
@@ -452,6 +554,10 @@ include("./menu/menu.php");
 					
 					$("#sucursalsn").hide();
 					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
 				}
 				
 				if($("#reportescreditsni").val() == 2)
@@ -460,6 +566,11 @@ include("./menu/menu.php");
 					$("#fechahastareporten").show();
 					$("#sucursalsn").show();
 					$("#tipoplann").show();
+					
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
 				}
 
 				
@@ -470,8 +581,109 @@ include("./menu/menu.php");
 					$("#sucursalsn").show();
 					
 					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 4)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					$("#tipodocclientn").show();
+					$("#nrodocumentclientn").show();
+					$("#nrodocumentclientni").focus();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 5)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					$("#tipodocclientn").show();
+					$("#nrodocumentclientn").show();
+					$("#nrodocumentclientni").focus();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 6)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					$("#tipodocclientn").show();
+					$("#nrodocumentclientn").show();
+					$("#nrodocumentclientni").focus();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 7)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#tipodocclientn2").show();
+					$("#nrodocumentclientn2").show();
+					$("#nrodocumentclientn2i").focus();
+					
+					$("#sucursalsn").hide();
+					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+				}
+
+				if($("#reportescreditsni").val() == 8)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#tipodocclientn2").show();
+					$("#nrodocumentclientn2").show();
+					$("#nrodocumentclientn2i").focus();
+					
+					$("#sucursalsn").hide();
+					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+				}
+
+				if($("#reportescreditsni").val() == 9)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					$("#tipodocclientn").show();
+					$("#nrodocumentclientn").show();
+					$("#nrodocumentclientni").focus();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
 				}				
 			});
+			
+			if($("#reportescreditsni").val() == 1)
+			{
+				$("#fechadesdereporten").show();
+				$("#fechahastareporten").show();
+				
+				$("#sucursalsn").hide();
+				$("#tipoplann").hide();
+				$("#tipodocclientn").hide();
+				$("#nrodocumentclientn").hide();
+				$("#tipodocclientn2").hide();
+				$("#nrodocumentclientn2").hide();
+			}
 		});
 	</script>
 </body>
