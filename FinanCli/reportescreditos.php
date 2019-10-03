@@ -60,7 +60,7 @@ include("./menu/menu.php");
 		function generarReporte()
 		{						
 			document.getElementById("btnGenerarReporte").disabled = true;
-			if($("#reportescreditsni").val() >= 1 && $("#reportescreditsni").val() <= 9)
+			if($("#reportescreditsni").val() >= 1 && $("#reportescreditsni").val() <= 11)
 			{
 				if($( "#datetimepickerfechadesdereporteni" ).val().length == 0)
 				{
@@ -166,14 +166,14 @@ include("./menu/menu.php");
 			}
 			
 			var urlgmu = "./acciones/mostrarreportespdf.php";
-			$('#img_loader').show();
+			$('#img_loader_24').show();
 						
 			$.ajax({
 				url: urlgmu,
 				method: "POST",
 				data: { idReporte: $( "#reportescreditsni" ).val(), fechaDesde: $( "#datetimepickerfechadesdereporteni" ).val(), fechaHasta:  $( "#datetimepickerfechahastareporteni" ).val(), sucursal:  $( "#sucursalsni" ).val(), planCredito:  $( "#tipoplanni" ).val(), tipoDocumento:  $( "#tipodocclientni" ).val(), documento:  $( "#nrodocumentclientni" ).val(), tipoDocumento2:  $( "#tipodocclientn2i" ).val(), documento2:  $( "#nrodocumentclientn2i" ).val()},
 				success: function(dataresponse, statustext, response){
-					$('#img_loader').hide();
+					$('#img_loader_24').hide();
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Generate_Report_PDF_OK',$GLOBALS['lang']);?>') != -1)
 					{
@@ -207,6 +207,11 @@ include("./menu/menu.php");
 						if($("#reportescreditsni").val() == 8)
 						{
 							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&tipoDocumento2='+$( "#tipodocclientn2i" ).val()+'&nombreTipoDocumento='+$( "#tipodocclientn2i option:selected" ).text()+'&documento2='+$( "#nrodocumentclientn2i" ).val());
+						}
+
+						if($("#reportescreditsni").val() == 10 || $("#reportescreditsni").val() == 11)
+						{
+							window.open('acciones/mostrarreportespdf.php?idReporte='+$( "#reportescreditsni" ).val()+'&nombreReporte='+$( "#reportescreditsni option:selected" ).text()+'&fechaDesde='+$( "#datetimepickerfechadesdereporteni" ).val()+'&fechaHasta='+$( "#datetimepickerfechahastareporteni" ).val()+'&sucursal='+$( "#sucursalsni" ).val()+'&nombreSucursal='+$( "#sucursalsni option:selected" ).text());
 						}						
 					}
 					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
@@ -215,7 +220,7 @@ include("./menu/menu.php");
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
-					$('#img_loader').hide();
+					$('#img_loader_24').hide();
 					document.getElementById("btnGenerarReporte").disabled = false;
 				}
 			});
@@ -667,6 +672,32 @@ include("./menu/menu.php");
 					$("#nrodocumentclientni").focus();
 					
 					$("#tipoplann").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 10)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
+					$("#tipodocclientn2").hide();
+					$("#nrodocumentclientn2").hide();
+				}
+
+				if($("#reportescreditsni").val() == 11)
+				{
+					$("#fechadesdereporten").show();
+					$("#fechahastareporten").show();
+					$("#sucursalsn").show();
+					
+					$("#tipoplann").hide();
+					$("#tipodocclientn").hide();
+					$("#nrodocumentclientn").hide();
 					$("#tipodocclientn2").hide();
 					$("#nrodocumentclientn2").hide();
 				}				

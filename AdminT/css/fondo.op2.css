@@ -1,0 +1,19 @@
+footer {
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+#fondoPage {
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align:right;
+  padding-right:30px;
+  background-color: #efefef;
+  height:50px;
+}

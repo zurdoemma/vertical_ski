@@ -883,6 +883,131 @@
 			}			
 		}
 		
+		if($id_reporte_db == 10)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+			}
+				
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $selectReportID10 = "SELECT s.codigo, s.nombre, COUNT(es.id) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.aviso_x_mora axm, finan_cli.envio_sms es WHERE axm.id = es.id_aviso_x_mora AND axm.id_credito = c.id AND c.id = cc.id_credito AND cc.id_sucursal = s.id AND s.id_cadena = ? AND es.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING COUNT(es.id) IS NOT NULL";
+			else $selectReportID10 = "SELECT cad.nombre_fantasia, COUNT(es.id) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.aviso_x_mora axm, finan_cli.envio_sms es, finan_cli.cadena cad WHERE axm.id = es.id_aviso_x_mora AND axm.id_credito = c.id AND c.id = cc.id_credito AND cc.id_sucursal = s.id AND cad.id = s.id_cadena AND cad.id = ? AND es.fecha BETWEEN ? AND ? GROUP BY cad.nombre_fantasia HAVING COUNT(es.id) IS NOT NULL";
+				
+			if ($stmt = $mysqli->prepare($selectReportID10)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_param('issi', $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+				else $stmt->bind_param('iss', $id_cadena_user, $fechaDesde, $fechaHasta);
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $cantidad_registros_sms_reporte);				
+				else $stmt->bind_result($nombre_cadena_reporte, $cantidad_registros_sms_reporte); 
+					
+				$totR = $stmt->num_rows;
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $selectReportID10o2 = "SELECT s.codigo, s.nombre, COUNT(tvc.id) FROM finan_cli.sucursal s, finan_cli.token_validacion_celular tvc, finan_cli.usuario u WHERE tvc.usuario = u.id AND u.id_sucursal = s.id AND s.id_cadena = ? AND tvc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING COUNT(tvc.id) IS NOT NULL";
+				else $selectReportID10o2 = "SELECT cad.nombre_fantasia, COUNT(tvc.id) FROM finan_cli.sucursal s, finan_cli.token_validacion_celular tvc, finan_cli.usuario u, finan_cli.cadena cad WHERE tvc.usuario = u.id AND u.id_sucursal = s.id AND cad.id = s.id_cadena AND cad.id = ? AND tvc.fecha BETWEEN ? AND ? GROUP BY cad.nombre_fantasia HAVING COUNT(tvc.id) IS NOT NULL";				
+				
+				if ($stmto2 = $mysqli->prepare($selectReportID10o2)) 
+				{
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmto2->bind_param('issi', $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+					else $stmto2->bind_param('iss', $id_cadena_user, $fechaDesde, $fechaHasta);
+					$stmto2->execute();    
+					$stmto2->store_result();
+
+					if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmto2->bind_result($codigo_sucursalo2_reporte, $nombre_sucursalo2_reporte, $cantidad_registros_smso2_reporte);				
+					else $stmto2->bind_result($nombre_cadenao2_reporte, $cantidad_registros_smso2_reporte); 
+						
+					$totRo2 = $stmto2->num_rows;
+					
+					if($totRo2 > 0)
+					{
+						$stmto2->fetch();
+							
+						$stmto2->free_result();
+						$stmto2->close();
+					}
+				}
+				else
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+					return;	
+				}
+				
+				if($totR == 0 && $totRo2 == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}
+
+		if($id_reporte_db == 11)
+		{
+			if(!empty($_GET["fechaDesde"]) && !empty($_GET["fechaHasta"]) && !empty($_GET["sucursal"])) 
+			{
+				$fechaDesde=htmlspecialchars($_GET["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_GET["fechaHasta"], ENT_QUOTES, 'UTF-8');
+				
+				$sucursal=htmlspecialchars($_GET["sucursal"], ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				$fechaDesde=htmlspecialchars($_POST["fechaDesde"], ENT_QUOTES, 'UTF-8');
+				$fechaHasta=htmlspecialchars($_POST["fechaHasta"], ENT_QUOTES, 'UTF-8');
+
+				$sucursal=htmlspecialchars($_POST["sucursal"], ENT_QUOTES, 'UTF-8');
+			}
+				
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $selectReportID11 = "SELECT s.codigo, s.nombre, COUNT(cef.id) FROM finan_cli.sucursal s, finan_cli.consulta_estado_financiero cef WHERE cef.id_cadena = s.id_cadena AND s.id_cadena = ? AND cef.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING COUNT(cef.id) IS NOT NULL";
+			else $selectReportID11 = "SELECT cad.nombre_fantasia, COUNT(cef.id) FROM finan_cli.consulta_estado_financiero cef, finan_cli.cadena cad WHERE cef.id_cadena = cad.id AND cad.id = ? AND cef.fecha BETWEEN ? AND ? GROUP BY cad.nombre_fantasia HAVING COUNT(cef.id) IS NOT NULL";
+				
+			if ($stmt = $mysqli->prepare($selectReportID11)) 
+			{
+				$fechaDesde = substr($fechaDesde, 6, 4).substr($fechaDesde, 3, 2).substr($fechaDesde, 0, 2).'000000';
+				$fechaHasta = substr($fechaHasta, 6, 4).substr($fechaHasta, 3, 2).substr($fechaHasta, 0, 2).'235959';
+				
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_param('issi', $id_cadena_user, $fechaDesde, $fechaHasta, $sucursal);
+				else $stmt->bind_param('iss', $id_cadena_user, $fechaDesde, $fechaHasta);
+				$stmt->execute();    
+				$stmt->store_result();
+
+				if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang'])) $stmt->bind_result($codigo_sucursal_reporte, $nombre_sucursal_reporte, $cantidad_consultas_ef_reporte);				
+				else $stmt->bind_result($nombre_cadena_reporte, $cantidad_consultas_ef_reporte); 
+					
+				$totR = $stmt->num_rows;
+
+				if($totR == 0)
+				{
+					echo translate('Msg_Report_PDF_Not_Data_View',$GLOBALS['lang']);
+					return;	
+				}					
+			}
+			else
+			{
+				echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+				return;	
+			}			
+		}		
+		
 		if(!empty($_POST["idReporte"]))
 		{
 			echo translate('Msg_Generate_Report_PDF_OK',$GLOBALS['lang']);
@@ -920,6 +1045,7 @@
 				{
 					$this->Cell(240,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '.$_GET["nombreTipoDocumento"].'  ||  '.translate('Lbl_Document_Client',$GLOBALS['lang']).': '.$_GET["documento2"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
 				}
+				if($_GET["idReporte"] == 10 || $_GET["idReporte"] == 11) $this->Cell(230,11,'  '.translate('Lbl_Date_Since_Report',$GLOBALS['lang']).': '.$_GET["fechaDesde"].'  ||  '.translate('Lbl_Date_Until_Report',$GLOBALS['lang']).': '.$_GET["fechaHasta"].'  ||  '.translate('Lbl_Tender_User',$GLOBALS['lang']).': '.$_GET["nombreSucursal"].'  ||  '.translate('Lbl_User_Print',$GLOBALS['lang']).': '.$_SESSION['username'],1,0,'L',True);
 				// Line break
 				$this->Ln(20);					
 			}
@@ -1123,6 +1249,188 @@
 			}
 		}
 		
+		if($id_reporte_db == 10)
+		{
+			$pdf->SetFillColor(17,58,154);
+			$pdf->SetTextColor(255,255,255);
+			
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']))
+			{				
+				$pdf->Cell(50,10,'CÓDIGO',1,0,'C',True);
+				$pdf->Cell(120,10,'NOMBRE',1,0, 'C',True);
+				$pdf->Cell(70,10,'CANTIDAD SMS',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{
+					$selectReportID10ADIC = "SELECT s.codigo, s.nombre, SUM(es.cantidad_reintentos), COUNT(es.id) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.aviso_x_mora axm, finan_cli.envio_sms es WHERE es.cantidad_reintentos <> 0 AND axm.id = es.id_aviso_x_mora AND axm.id_credito = c.id AND c.id = cc.id_credito AND cc.id_sucursal = s.id AND s.id_cadena = ? AND es.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING COUNT(es.id) IS NOT NULL AND SUM(es.cantidad_reintentos) IS NOT NULL";
+					if($stmt470 = $mysqli->prepare($selectReportID10ADIC))
+					{
+						$stmt470->bind_param('issi', $id_cadena_user, $fechaDesde, $fechaHasta, $codigo_sucursal_reporte);
+						$stmt470->execute();    
+						$stmt470->store_result();
+						
+						$totR470 = $stmt470->num_rows;
+
+						if($totR470 > 0)
+						{
+							$stmt470->bind_result($codigo_sucursal_control2_reporte, $nombre_sucursal_control2_reporte, $sumatoria_reintentos_sms_reporte, $cantidad_sms_control2_reporte);
+							$stmt470->fetch();
+							
+							$stmt470->free_result();
+							$stmt470->close();
+						}
+						else
+						{
+							$sumatoria_reintentos_sms_reporte = 0; 
+							$cantidad_sms_control2_reporte = 0;
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']).'ACA 2';
+						return;				
+					}
+					
+					$selectReportID10o2 = "SELECT s.codigo, s.nombre, COUNT(tvc.id) FROM finan_cli.sucursal s, finan_cli.token_validacion_celular tvc, finan_cli.usuario u WHERE tvc.usuario = u.id AND u.id_sucursal = s.id AND s.id_cadena = ? AND tvc.fecha BETWEEN ? AND ? AND s.codigo = ? GROUP BY s.codigo, s.nombre HAVING COUNT(tvc.id) IS NOT NULL";
+					if ($stmto2 = $mysqli->prepare($selectReportID10o2)) 
+					{
+						$stmto2->bind_param('issi', $id_cadena_user, $fechaDesde, $fechaHasta, $codigo_sucursal_reporte);
+						$stmto2->execute();    
+						$stmto2->store_result();
+
+						$stmto2->bind_result($codigo_sucursalo2_reporte, $nombre_sucursalo2_reporte, $cantidad_registros_smso2_reporte);				
+							
+						$totRo2 = $stmto2->num_rows;
+						
+						if($totRo2 > 0)
+						{
+							$stmto2->fetch();
+							
+							$cantidad_registros_sms_reporte = $cantidad_registros_sms_reporte + $cantidad_registros_smso2_reporte;
+							$stmto2->free_result();
+							$stmto2->close();
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+						return;	
+					}					
+					
+					$pdf->Ln();
+					$pdf->Cell(50,10,$codigo_sucursal_reporte,1,0,'C');
+					$pdf->Cell(120,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
+					$cantidadSMSFinal = $cantidad_registros_sms_reporte + $sumatoria_reintentos_sms_reporte;				
+					$pdf->Cell(70,10,$cantidadSMSFinal,1,0,'C');
+				}
+			}
+			else
+			{				
+				$pdf->Cell(110,10,'CADENA',1,0,'C',True);
+				$pdf->Cell(130,10,'CANTIDAD SMS',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{
+					$selectReportID10ADIC = "SELECT cad.nombre_fantasia, SUM(es.cantidad_reintentos), COUNT(es.id) FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.sucursal s, finan_cli.aviso_x_mora axm, finan_cli.envio_sms es, finan_cli.cadena cad WHERE es.cantidad_reintentos <> 0 AND axm.id = es.id_aviso_x_mora AND axm.id_credito = c.id AND c.id = cc.id_credito AND cc.id_sucursal = s.id AND cad.id = s.id_cadena AND s.id_cadena = ? AND es.fecha BETWEEN ? AND ? AND cad.nombre_fantasia = ? GROUP BY cad.nombre_fantasia HAVING COUNT(es.id) IS NOT NULL AND SUM(es.cantidad_reintentos) IS NOT NULL";
+					if($stmt470 = $mysqli->prepare($selectReportID10ADIC))
+					{
+						$stmt470->bind_param('isss', $id_cadena_user, $fechaDesde, $fechaHasta, $nombre_cadena_reporte);
+						$stmt470->execute();    
+						$stmt470->store_result();
+						
+						$totR470 = $stmt470->num_rows;
+						if($totR470 > 0)
+						{
+							$stmt470->bind_result($nombre_cadena_control2_reporte, $sumatoria_reintentos_sms_reporte, $cantidad_sms_control2_reporte);
+							$stmt470->fetch();
+							
+							$stmt470->free_result();
+							$stmt470->close();
+						}
+						else
+						{
+							$sumatoria_reintentos_sms_reporte = 0; 
+							$cantidad_sms_control2_reporte = 0;
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']).'ACA 1';
+						return;				
+					}					
+					
+					$selectReportID10o2 = "SELECT cad.nombre_fantasia, COUNT(tvc.id) FROM finan_cli.sucursal s, finan_cli.token_validacion_celular tvc, finan_cli.usuario u, finan_cli.cadena cad WHERE tvc.usuario = u.id AND u.id_sucursal = s.id AND cad.id = s.id_cadena AND cad.nombre_fantasia = ? AND tvc.fecha BETWEEN ? AND ? GROUP BY cad.nombre_fantasia HAVING COUNT(tvc.id) IS NOT NULL";				
+					if ($stmto2 = $mysqli->prepare($selectReportID10o2)) 
+					{
+						$stmto2->bind_param('sss', $nombre_cadena_reporte, $fechaDesde, $fechaHasta);
+						$stmto2->execute();    
+						$stmto2->store_result();
+
+						$stmto2->bind_result($nombre_cadenao2_reporte, $cantidad_registros_smso2_reporte); 
+							
+						$totRo2 = $stmto2->num_rows;
+						
+						if($totRo2 > 0)
+						{
+							$stmto2->fetch();
+							
+							$cantidad_registros_sms_reporte = $cantidad_registros_sms_reporte + $cantidad_registros_smso2_reporte;
+							$stmto2->free_result();
+							$stmto2->close();
+						}
+					}
+					else
+					{
+						echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
+						return;	
+					}
+					
+					$pdf->Ln();
+					$pdf->Cell(110,10,iconv('UTF-8', 'windows-1252', $nombre_cadena_reporte),1,0,'C');
+					$cantidadSMSFinal = $cantidad_registros_sms_reporte + $sumatoria_reintentos_sms_reporte;
+					$pdf->Cell(130,10,($cantidadSMSFinal),1,0,'C');
+				}			
+			
+			}
+		}
+		
+		if($id_reporte_db == 11)
+		{
+			$pdf->SetFillColor(17,58,154);
+			$pdf->SetTextColor(255,255,255);
+			
+			if($sucursal != translate('Lbl_All_Selection',$GLOBALS['lang']))
+			{				
+				$pdf->Cell(50,10,'CÓDIGO',1,0,'C',True);
+				$pdf->Cell(120,10,'NOMBRE',1,0, 'C',True);
+				$pdf->Cell(70,10,'CANTIDAD INFORMES',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{				
+					$pdf->Ln();
+					$pdf->Cell(50,10,$codigo_sucursal_reporte,1,0,'C');
+					$pdf->Cell(120,10,iconv('UTF-8', 'windows-1252', $nombre_sucursal_reporte),1,0,'C');
+					$pdf->Cell(70,10,$cantidad_consultas_ef_reporte,1,0,'C');
+				}
+			}
+			else
+			{				
+				$pdf->Cell(110,10,'CADENA',1,0,'C',True);
+				$pdf->Cell(130,10,'CANTIDAD INFORMES',1, 0,'C',True);
+				$pdf->SetTextColor(0,0,0);
+				
+				while($stmt->fetch()) 
+				{
+					$pdf->Ln();
+					$pdf->Cell(110,10,iconv('UTF-8', 'windows-1252', $nombre_cadena_reporte),1,0,'C');
+					$pdf->Cell(130,10,$cantidad_consultas_ef_reporte,1,0,'C');
+				}			
+			
+			}
+		}		
 		$stmt->free_result();
 		$stmt->close();
 		
