@@ -28,6 +28,34 @@ h1 {
     margin-left:50%;
 }
 
+#img_loader_2
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:50%;
+}
+
+#img_loader_3
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:13%;
+    margin-left:53%;
+}
+
 
 
 #mensajeError

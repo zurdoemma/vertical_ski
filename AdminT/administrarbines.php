@@ -54,6 +54,297 @@ include("./menu/menu.php");
 	<link rel="stylesheet" href="./css/fondo.op2.css">
 	<link rel="stylesheet" href="./css/estilos.op2.css">
 	
+	<script type="text/javascript">
+		function nuevoBin()
+		{
+			document.getElementById("btnNuevoBin").disabled = true;
+			var urlnb = "./acciones/nuevobin.php";
+			var tagnb = $("<div id='dialognewbin'></div>");
+			$('#img_loader_2').show();
+			
+			$.ajax({
+				url: urlnb,
+				method: "POST",
+				data: {},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_2').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					tagnb.html(dataresponse).dialog({
+					  show: "blind",
+					  hide: "explode",
+					  height: "auto",
+					  width: "auto",					  
+					  modal: true, 
+					  title: "<?php echo translate('Lbl_New_Bin',$GLOBALS['lang']);?>",
+					  autoResize:true,
+							close: function(){
+									tagnb.dialog('destroy').remove()
+							}
+					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					tagnb.dialog('open');
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_2').hide();
+				}
+			});
+			document.getElementById("btnNuevoBin").disabled = false;
+		}
+    </script>
+	
+	<script type="text/javascript">
+		function guardarNuevoBin(formularionb)
+		{
+			document.getElementById("btnCargarNB").disabled = true;
+			if($( "#binlengthni" ).val().length == 0)
+			{
+				$('#binlengthni').prop('title', '<?php echo translate('Msg_A_Bin_Length_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#binlengthni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#binlengthni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#binlengthni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#binlengthni" ).tooltip('destroy');
+			}			
+			
+			if($( "#binlengthni" ).val().length != 0)
+			{			
+				if (isNaN($( "#binlengthni" ).val()) || $( "#binlengthni" ).val() % 1 != 0)
+				{
+					$('#binlengthni').prop('title', '<?php echo translate('Msg_A_Bin_Length_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#binlengthni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#binlengthni" ).focus();
+					document.getElementById("btnCargarNB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#binlengthni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#binlengthni" ).tooltip('destroy');
+				}
+			}
+
+
+			if($( "#rangefrombinni" ).val().length == 0)
+			{
+				$('#rangefrombinni').prop('title', '<?php echo translate('Msg_A_Range_From_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#rangefrombinni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#rangefrombinni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#rangefrombinni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#rangefrombinni" ).tooltip('destroy');
+			}
+
+			if($( "#rangefrombinni" ).val().length != 0)
+			{			
+				if (isNaN($( "#rangefrombinni" ).val()) || $( "#rangefrombinni" ).val() % 1 != 0)
+				{
+					$('#rangefrombinni').prop('title', '<?php echo translate('Msg_A_Range_From_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#rangefrombinni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#rangefrombinni" ).focus();
+					document.getElementById("btnCargarNB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#rangefrombinni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#rangefrombinni" ).tooltip('destroy');
+				}
+			}			
+			
+			if($( "#rangetobinni" ).val().length == 0)
+			{
+				$('#rangetobinni').prop('title', '<?php echo translate('Msg_A_Range_To_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#rangetobinni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#rangetobinni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#rangetobinni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#rangetobinni" ).tooltip('destroy');
+			}
+
+			if($( "#rangetobinni" ).val().length != 0)
+			{			
+				if (isNaN($( "#rangetobinni" ).val()) || $( "#rangetobinni" ).val() % 1 != 0)
+				{
+					$('#rangetobinni').prop('title', '<?php echo translate('Msg_A_Range_To_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#rangetobinni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#rangetobinni" ).focus();
+					document.getElementById("btnCargarNB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#rangetobinni" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#rangetobinni" ).tooltip('destroy');
+				}
+			}
+
+			if($( "#rangetobinni" ).val().length <  $( "#binlengthni" ).val() || $( "#rangefrombinni" ).val().length < $( "#binlengthni" ).val())
+			{
+				$( "#binlengthni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Or_To_Must_Least_Length_Bin_Entered',$GLOBALS['lang']);?>");
+				return;
+			}			
+			
+			if($( "#rangetobinni" ).val() < $( "#rangefrombinni" ).val())
+			{
+				$( "#rangetobinni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Bin_Cant_be_older_To',$GLOBALS['lang']);?>");
+				return;
+			}
+			
+			if($( "#rangetobinni" ).val().length != $( "#rangefrombinni" ).val().length)
+			{
+				$( "#rangetobinni" ).focus();
+				document.getElementById("btnCargarNB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Must_Have_Same_Number_Of_Numbers',$GLOBALS['lang']);?>");
+				return;
+			}
+			
+			var urlggnu = "./acciones/guardarnuevobin.php";
+			$('#img_loader_3').show();
+			
+			$.ajax({
+				url: urlggnu,
+				method: "POST",
+				data: { idTarjeta: $( "#tarjetabinni" ).val(), largoBin: $( "#binlengthni" ).val(), rangoDesde: $( "#rangefrombinni" ).val(), rangoHasta: $( "#rangetobinni" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_3').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_New_Bin_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#dialognewbin').dialog('close');
+						$('#tableadminbint').bootstrapTable('load',JSON.parse(datTable));
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_3').hide();
+				}
+			});
+			document.getElementById("btnCargarNB").disabled = false;
+		}			
+	</script>	
+	
     <script type="text/javascript">
 		function mensaje_error(titulo, mensaje){
 			   $( "#errorDialog" ).dialog({
@@ -143,6 +434,7 @@ include("./menu/menu.php");
 				<button type="button" id="btnNuevoBin" class="btn" data-toggle="tooltip" data-placement="top" onclick="nuevoBin();" title="<?php echo translate('Lbl_New_Bin',$GLOBALS['lang']);?>" ><i class="far fa-plus-square"></i></button>&nbsp;&nbsp;<button type="button" id="btnImportarBines" class="btn" data-toggle="tooltip" data-placement="top" onclick="importarBines();" title="<?php echo translate('Lbl_Bines_Import',$GLOBALS['lang']);?>" ><i class="fas fa-file-import"></i></button>
 			</div>
 			<div id="img_loader" style="display:block;"></div>
+			<div id="img_loader_2"></div>
 			<div id="tablaadminbin" class="table-responsive" style="display:none;">
 				<table id="tableadminbint" data-classes="table table-hover table-condensed"
 				   data-striped="true" data-pagination="true" data-show-export="true" data-export-options='{"fileName": "<?php echo translate('File_Bines',$GLOBALS['lang']); ?>"}'
