@@ -56,6 +56,33 @@ h1 {
     margin-left:53%;
 }
 
+#img_loader_4
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando2.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:15px;
+    height:15px;
+    margin-top:-12px;
+    margin-left:-12px;
+}
+
+#img_loader_5
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:16%;
+    margin-left:76%;
+}
 
 
 #mensajeError

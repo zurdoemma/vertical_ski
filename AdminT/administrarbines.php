@@ -343,6 +343,329 @@ include("./menu/menu.php");
 			});
 			document.getElementById("btnCargarNB").disabled = false;
 		}			
+	</script>
+
+	<script type="text/javascript">
+		function modificarBin(binId)
+		{
+			document.getElementById("btnModificarBin"+binId).disabled = true;
+			var urlmb = "./acciones/modificarbin.php";
+			var tagmb = $("<div id='dialogmodifybin'></div>");
+			$('#img_loader_2').show();
+			
+			$.ajax({
+				url: urlmb,
+				method: "POST",
+				data: {idBin: binId},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_2').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					tagmb.html(dataresponse).dialog({
+					  show: "blind",
+					  hide: "explode",
+					  height: "auto",
+					  width: "auto",					  
+					  modal: true, 
+					  title: "<?php echo translate('Lbl_Modify_Bin',$GLOBALS['lang']);?>",
+					  autoResize:true,
+							close: function(){
+									tagmb.dialog('destroy').remove()
+							}
+					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					tagmb.dialog('open');
+					$( "#binlengthi" ).focus();
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_2').hide();
+				}
+			});
+			document.getElementById("btnModificarBin"+binId).disabled = false;
+		}
+    </script>	
+	
+	<script type="text/javascript">
+		function guardarModificacionBin(formulariomb, binId)
+		{
+			document.getElementById("btnCargarMB").disabled = true;
+			if($( "#binlengthi" ).val().length == 0)
+			{
+				$('#binlengthi').prop('title', '<?php echo translate('Msg_A_Bin_Length_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#binlengthi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#binlengthi" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#binlengthi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#binlengthi" ).tooltip('destroy');
+			}			
+			
+			if($( "#binlengthi" ).val().length != 0)
+			{			
+				if (isNaN($( "#binlengthi" ).val()) || $( "#binlengthi" ).val() % 1 != 0)
+				{
+					$('#binlengthi').prop('title', '<?php echo translate('Msg_A_Bin_Length_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#binlengthi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#binlengthi" ).focus();
+					document.getElementById("btnCargarMB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#binlengthi" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#binlengthi" ).tooltip('destroy');
+				}
+			}
+
+
+			if($( "#rangefrombini" ).val().length == 0)
+			{
+				$('#rangefrombini').prop('title', '<?php echo translate('Msg_A_Range_From_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#rangefrombini" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#rangefrombini" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#rangefrombini" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#rangefrombini" ).tooltip('destroy');
+			}
+
+			if($( "#rangefrombini" ).val().length != 0)
+			{			
+				if (isNaN($( "#rangefrombini" ).val()) || $( "#rangefrombini" ).val() % 1 != 0)
+				{
+					$('#rangefrombini').prop('title', '<?php echo translate('Msg_A_Range_From_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#rangefrombini" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#rangefrombini" ).focus();
+					document.getElementById("btnCargarMB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#rangefrombini" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#rangefrombini" ).tooltip('destroy');
+				}
+			}			
+			
+			if($( "#rangetobini" ).val().length == 0)
+			{
+				$('#rangetobini').prop('title', '<?php echo translate('Msg_A_Range_To_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#rangetobini" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#rangetobini" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#rangetobini" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#rangetobini" ).tooltip('destroy');
+			}
+
+			if($( "#rangetobini" ).val().length != 0)
+			{			
+				if (isNaN($( "#rangetobini" ).val()) || $( "#rangetobini" ).val() % 1 != 0)
+				{
+					$('#rangetobini').prop('title', '<?php echo translate('Msg_A_Range_To_Must_Enter_A_Whole',$GLOBALS['lang']);?>');					
+					$(function() {
+						$( "#rangetobini" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#rangetobini" ).focus();
+					document.getElementById("btnCargarMB").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#rangetobini" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#rangetobini" ).tooltip('destroy');
+				}
+			}
+
+			if($( "#rangetobini" ).val().length <  $( "#binlengthi" ).val() || $( "#rangefrombini" ).val().length < $( "#binlengthi" ).val())
+			{
+				$( "#binlengthi" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Or_To_Must_Least_Length_Bin_Entered',$GLOBALS['lang']);?>");
+				return;
+			}			
+			
+			if($( "#rangetobini" ).val() < $( "#rangefrombini" ).val())
+			{
+				$( "#rangetobini" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Bin_Cant_be_older_To',$GLOBALS['lang']);?>");
+				return;
+			}
+			
+			if($( "#rangetobini" ).val().length != $( "#rangefrombini" ).val().length)
+			{
+				$( "#rangetobini" ).focus();
+				document.getElementById("btnCargarMB").disabled = false;
+				mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>","<?php echo translate('Msg_Range_From_Must_Have_Same_Number_Of_Numbers',$GLOBALS['lang']);?>");
+				return;
+			}
+			
+			var urlggnu = "./acciones/guardarmodificacionbin.php";
+			$('#img_loader_3').show();
+			
+			$.ajax({
+				url: urlggnu,
+				method: "POST",
+				data: { idBin: binId, idTarjeta: $( "#tarjetabini" ).val(), largoBin: $( "#binlengthi" ).val(), rangoDesde: $( "#rangefrombini" ).val(), rangoHasta: $( "#rangetobini" ).val() },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_3').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Modify_Bin_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#dialogmodifybin').dialog('close');
+						$('#tableadminbint').bootstrapTable('load',JSON.parse(datTable));
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_3').hide();
+				}
+			});
+			document.getElementById("btnCargarMB").disabled = false;
+		}			
+	</script>
+	
+	<script type="text/javascript">
+		function borrar_bin(idBin)
+		{
+			var urlbb = "./acciones/borrarbin.php";
+			$('#img_loader_2').show();
+			
+			$.ajax({
+				url: urlbb,
+				method: "POST",
+				data: { idBin: idBin },
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_2').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Remove_Bin_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#tableadminbint').bootstrapTable('load',JSON.parse(datTable));
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_2').hide();
+				}
+			});	
+		}
 	</script>	
 	
     <script type="text/javascript">
@@ -402,7 +725,222 @@ include("./menu/menu.php");
 					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 					$( "#okDialog" ).html("<div id='mensajeOK'>"+mensaje+"</div>");
 		}
-    </script>	
+    </script>
+
+	<script type="text/javascript">
+		function confirmar_accion(titulo, mensaje, binId, rangoD, marcaT)
+		{
+			document.getElementById("borrarBin"+binId).disabled = true;
+			$( "#confirmDialog" ).dialog({
+						title:titulo,
+						show:"blind",
+						modal: true,
+						hide:"slide",
+						resizable: false,
+						height: "auto",
+						width: "auto",
+						buttons: {
+								"<?php echo translate('Lbl_Button_YES',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										
+										borrar_bin(binId);                                                      
+								},
+								"<?php echo translate('Lbl_Button_NO',$GLOBALS['lang']);?>": function () {
+										$("#confirmDialog").dialog('close');
+										$('#img_loader_2').hide();
+										document.getElementById("borrarBin"+binId).disabled = false;
+										return;
+								}
+						}
+				}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+				mensaje = mensaje.replace("%1", rangoD);
+				mensaje = mensaje.replace("%2", marcaT);
+				$( "#confirmDialog" ).html("<div id='confirmacionAccion'>"+mensaje+"?</div>");
+				$('#img_loader_2').hide();
+			document.getElementById("borrarBin"+binId).disabled = false;
+		}
+	</script>
+
+	<script type="text/javascript">
+		function importarBines()
+		{
+			document.getElementById("btnImportarBines").disabled = true;
+			var urlib = "./acciones/importarbines.php";
+			var tagib = $("<div id='dialogimportbins'></div>");
+			$('#img_loader_2').show();
+			
+			$.ajax({
+				url: urlib,
+				method: "POST",
+				data: {},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_2').hide();
+					
+					if(dataresponse.indexOf('<title><?php echo translate('Log In',$GLOBALS['lang']); ?></title>') != -1)
+					{
+						window.location.replace("./login.php?result_ok=3");
+					}
+					
+					tagib.html(dataresponse).dialog({
+					  show: "blind",
+					  hide: "explode",
+					  height: "auto",
+					  width: "auto",					  
+					  modal: true, 
+					  title: "<?php echo translate('Lbl_Import_Bins',$GLOBALS['lang']);?>",
+					  autoResize:true,
+							close: function(){
+									tagib.dialog('destroy').remove()
+							}
+					}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
+					tagib.dialog('open');
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_2').hide();
+				}
+			});
+			document.getElementById("btnImportarBines").disabled = false;
+		}
+    </script>
+
+	<script type="text/javascript">
+	function subirArchivoBines(formulariod, filec)
+	{			
+		document.getElementById("btnSubirBines").disabled = true;
+		if($( "#fileCM" ).val().length == 0)
+		{
+			$('#fileCM').prop('title', '<?php echo translate('Msg_A_File_Import_Bin_Must_Enter',$GLOBALS['lang']);?>');
+			$(function() {
+				$( "#fileCM" ).tooltip({
+				   position: {
+					  my: "center bottom",
+					  at: "center top-10",
+					  collision: "none"
+				   }
+				});
+			});
+			$( "#fileCM" ).focus();
+			document.getElementById("btnSubirBines").disabled = false;
+			return;
+		}
+		else 
+		{
+			$(function() {
+				$( "#fileCM" ).tooltip({
+				   position: {
+					  my: "center bottom",
+					  at: "center top-10",
+					  collision: "none"
+				   }
+				});
+			});				
+			$( "#fileCM" ).tooltip('destroy');
+		}		
+		
+		$('#img_loader_4').show();
+		extArray = new Array(".txt");
+		allowSubmit = false;
+		if (!filec)
+		{
+			document.getElementById("btnSubirBines").disabled = false;
+			$('#img_loader_4').hide();
+			return;
+		}
+		while (filec.indexOf("\\") != -1)
+		filec = filec.slice(filec.indexOf("\\") + 1);
+		ext = filec.slice(filec.indexOf(".")).toLowerCase();
+		for (var i = 0; i < extArray.length; i++) 
+		{
+			if (extArray[i] == ext) { allowSubmit = true; break; }
+		}
+		if (!allowSubmit) 
+		{
+			mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_Only_Files_With_Extension_Are_Allowed',$GLOBALS['lang']);?>: " +(extArray.join("  ")));		
+			$("#fileCM").focus();
+			document.getElementById("btnSubirBines").disabled = false;
+			$('#img_loader_4').hide();
+			return;
+		}
+		
+					
+		var fileu = formulariod.fileCM.files[0];
+		if (fileu.size > 2000000) 
+		{
+			mensaje_atencion("<?php echo translate('Lbl_Attention',$GLOBALS['lang']);?>","<?php echo translate('Msg_The_Selected_File_Cannot_Be_More_Than_2MB_In_Size',$GLOBALS['lang']);?>.");					
+			$("#fileCM").focus();
+			document.getElementById("btnSubirBines").disabled = false;
+			$('#img_loader_4').hide();
+			return;
+		}
+		
+		var fd = new FormData();
+		fd.append("uploadedfile", fileu);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'acciones/uploaderimportbines.php', true);
+		  
+		xhr.upload.onprogress = function(e) {
+			if (e.lengthComputable) {
+			  var percentComplete = (e.loaded / e.total) * 100;
+			  console.log(percentComplete + '% uploaded');
+			}
+		};
+		  
+		xhr.onload = function() {
+			if (this.status == 200) 
+			{
+				if(xhr.responseText.indexOf("<?php echo translate('Msg_File_Has_Been_Uploaded_Successfully_Press_Import_Button',$GLOBALS['lang']); ?>") >= 0)
+				{
+					mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>","<?php echo translate('Msg_File_Has_Been_Uploaded_Successfully_Press_Import_Button',$GLOBALS['lang']); ?>");						
+					$("#btnCIB").prop('disabled', false);
+				}
+				else
+				{
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",xhr.responseText);
+					$("#btnCIB").prop('disabled', true);
+				}
+				document.getElementById("btnSubirBines").disabled = false;
+				$('#img_loader_4').hide();
+				return;
+			};
+		};
+		xhr.send(fd);
+		document.getElementById("btnSubirBines").disabled = false;
+		$('#img_loader_4').hide();
+	}
+	</script>
+
+	<script type="text/javascript">
+		function ejecutarImportacionBines()
+		{
+			var urlbb = "./acciones/ejecutarimportacionbines.php";
+			$('#img_loader_4').show();
+			
+			$.ajax({
+				url: urlbb,
+				method: "POST",
+				data: {},
+				success: function(dataresponse, statustext, response){
+					$('#img_loader_4').hide();
+					
+					if(dataresponse.indexOf('<?php echo translate('Msg_Import_Bins_OK',$GLOBALS['lang']);?>') != -1)
+					{
+						var menR = dataresponse.substring(0,dataresponse.indexOf('=:=:=:'));
+						var datTable = dataresponse.substring(dataresponse.indexOf('=:=:=:')+6);
+						
+						$('#dialogimportbins').dialog('close');
+						$('#tableadminbint').bootstrapTable('load',JSON.parse(datTable));
+						mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
+					}
+					else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+				},
+				error: function(request, errorcode, errortext){
+					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
+					$('#img_loader_4').hide();
+				}
+			});	
+		}
+	</script>	
 </head>
 
 <body>
@@ -452,7 +990,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT b.bin_id, pm.payment_method_id, pm.payment_method_description, b.range_from, b.range_to, b.bin_length FROM tef.bines b, tef.paymentmethods pm  WHERE b.payment_method_id = pm.payment_method_id ORDER BY pm.payment_method_id, b.bin_length, b.range_from LIMIT 5000")) 
+							if ($stmt = $mysqli->prepare("SELECT b.bin_id, pm.payment_method_id, pm.payment_method_description, b.range_from, b.range_to, b.bin_length FROM tef.bines b, tef.paymentmethods pm  WHERE b.payment_method_id = pm.payment_method_id ORDER BY CAST(b.range_from AS INT) LIMIT 5000")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
@@ -469,7 +1007,7 @@ include("./menu/menu.php");
 									echo '<td>'.$range_to_bin.'</td>';
 									echo '<td>'.$bin_length.'</td>';
 									
-									echo '<td><button type="button" id="borrarBin'.$id_bin.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Bin',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Bin',$GLOBALS['lang']).'\',\''.$id_bin.'\')"><i class="far fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" id="btnModificarBin'.$id_bin.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Bin',$GLOBALS['lang']).'" onclick="modificarBin(\''.$id_bin.'\')"><i class="far fa-edit"></i></button></td>';
+									echo '<td><button type="button" id="borrarBin'.$id_bin.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Remove_Bin',$GLOBALS['lang']).'" onclick="confirmar_accion(\''.translate('Msg_Confirm_Action',$GLOBALS['lang']).'\', \''.translate('Msg_Confirm_Action_Remove_Bin',$GLOBALS['lang']).'\',\''.$id_bin.'\',\''.$range_from_bin.'\',\''.$name_payment_method.'\')"><i class="far fa-trash-alt"></i></button>&nbsp;&nbsp;<button type="button" id="btnModificarBin'.$id_bin.'" class="btn" data-toggle="tooltip" data-placement="top" title="'.translate('Msg_Modify_Bin',$GLOBALS['lang']).'" onclick="modificarBin(\''.$id_bin.'\')"><i class="far fa-edit"></i></button></td>';
 									echo '</tr>';
 								}
 							}

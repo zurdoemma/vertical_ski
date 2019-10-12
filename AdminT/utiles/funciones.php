@@ -38,4 +38,9 @@ function esc_url($url) {
     }
 }
 
+function grabarLog(&$fileLog, $mensaje)
+{
+	fprintf( $fileLog, "%s %s\n", date('Y/m/d H:i:s'), $mensaje);
+}
+
 ?>
