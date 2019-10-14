@@ -1012,6 +1012,39 @@ include("./menu/menu.php");
 				}
 			}
 			
+			if($( "#prefijotelefono2i" ).val().length != 0)
+			{
+				if (isNaN($( "#prefijotelefono2i" ).val()) || $( "#prefijotelefono2i" ).val() % 1 != 0)
+				{
+					$('#prefijotelefono2i').prop('title', '<?php echo translate('Msg_A_Pre_Number_Must_Enter_A_Whole2',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#prefijotelefono2i" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#prefijotelefono2i" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#prefijotelefono2i" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#prefijotelefono2i" ).tooltip('destroy');
+				}
+			}			
+			
 			if($( "#nrotelefonoi" ).val().length == 0)
 			{
 				$('#nrotelefonoi').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter',$GLOBALS['lang']);?>');
@@ -1061,6 +1094,38 @@ include("./menu/menu.php");
 				}
 			}			
 			
+			if($( "#nrotelefono2i" ).val().length != 0)
+			{
+				if (isNaN($( "#nrotelefono2i" ).val()) || $( "#nrotelefono2i" ).val() % 1 != 0)
+				{
+					$('#nrotelefono2i').prop('title', '<?php echo translate('Msg_A_Number_Must_Enter_A_Whole2',$GLOBALS['lang']);?>');
+					$(function() {
+						$( "#nrotelefono2i" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});
+					$( "#nrotelefono2i" ).focus();
+					document.getElementById("btnCargarNC").disabled = false;
+					return;
+				}
+				else
+				{
+					$(function() {
+						$( "#nrotelefono2i" ).tooltip({
+						   position: {
+							  my: "center bottom",
+							  at: "center top-10",
+							  collision: "none"
+						   }
+						});
+					});					
+					$( "#nrotelefono2i" ).tooltip('destroy');
+				}
+			}			
 			
 			if($( "#tipoclientni" ).val() != "<?php echo translate('Lbl_Type_Client_Headline',$GLOBALS['lang']);?>")
 			{
@@ -1917,7 +1982,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlnc,
 				method: "POST",
-				data: { tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: (($("#montomaximoclientni").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), tokenA: $('#tokenasi').val(), genero: $('#generoclientni').val(), tokenVC: $( "#tokenvcci" ).val(), tokenVECC: $('#tokenvecci').val()},
+				data: { tipoDocumentoTitular: $( "#tipodocumentoclientnbi" ).val(), documentoTitular: $( "#documentonbi" ).val(), tipoDocumento: $("#tipodocumentoclientni").val(), documento: $("#documentoni").val(), nombre: $("#nombreclientni").val(), apellido: $("#apellidoclientni").val(), fechaNacimiento: $("#fechanacimientoclientni").val(), cuitCuil: $("#cuitcuilclientni").val(), email: $("#emailclientni").val(), montoMaximo: (($("#montomaximoclientni").val().replace(/,/g,""))*100.00), perfilCredito: $("#perfilcreditoclientni").val(), observaciones: $("#observacionclientni").val(), calle: $( "#calleni" ).val(), nroCalle: $( "#nrocalleni" ).val(), provincia: $( "#domprovinciani" ).val(), localidad: $( "#domlocalidadni" ).val(), departamento: $( "#domdepartamentoni" ).val(), piso: $( "#domfloorni" ).val(), codigoPostal: $( "#zipcodeni" ).val(), entreCalle1: $( "#entrecalle1ni" ).val(), entreCalle2: $( "#entrecalle2ni" ).val(), prefijoTelefono: $( "#prefijotelefonoi" ).val(), nroTelefono: $( "#nrotelefonoi" ).val(), tipoTelefono: $( "#tipotelefonoi" ).val(), prefijoTelefono2: $( "#prefijotelefono2i" ).val(), nroTelefono2: $( "#nrotelefono2i" ).val(), tipoTelefono2: $( "#tipotelefono2i" ).val(), tokenA: $('#tokenasi').val(), genero: $('#generoclientni').val(), tokenVC: $( "#tokenvcci" ).val(), tokenVECC: $('#tokenvecci').val()},
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_12').hide();
 					

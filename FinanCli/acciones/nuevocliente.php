@@ -274,7 +274,7 @@
 		echo '              </div>';
 		echo '              <div id="mostrarTelefonoCargaN" style="display:none;"><hr />';
 		echo '				 <div class="form-group form-inline">';
-		echo '					 &nbsp;&nbsp;<label class="control-label" for="tipotelefono">'.translate('Lbl_Type_Phone2',$GLOBALS['lang']).':</label>';
+		echo '					 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipotelefono">'.translate('Lbl_Type_Phone2',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="tipotelefono">';
 		echo '						 <select class="form-control input-sm" name="tipotelefonoi" id="tipotelefonoi" style="width:190px;">';			 
 										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_telefono")) 
@@ -295,15 +295,54 @@
 										}
 		echo '						 </select>';
 		echo '					 </div>';
-		echo '					 &nbsp;&nbsp;<label class="control-label" for="prefijotelefono">'.translate('Lbl_Pre_Number_Phone',$GLOBALS['lang']).':</label>';
+		echo '					 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="prefijotelefono">'.translate('Lbl_Pre_Number_Phone',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="prefijotelefono">';
 		echo '						<input title="'.translate('Msg_A_Pre_Number_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="prefijotelefonoi" name="prefijotelefonoi" type="text" maxlength="4" />';
 		echo '					 </div>';							
-		echo '					 &nbsp;&nbsp;<label class="control-label" for="nrotelefono">'.translate('Lbl_Number_Phone',$GLOBALS['lang']).':</label>';
+		echo '					 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="nrotelefono">'.translate('Lbl_Number_Phone',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="nrotelefono">';
 		echo '						 <input title="'.translate('Msg_A_Number_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="nrotelefonoi" name="nrotelefonoi" type="text" maxlength="16" />';
 		echo '					 </div>';		
 		echo '				 </div>';
+		
+
+
+		echo '				 <div class="form-group form-inline">';
+		echo '					 &nbsp;&nbsp;<label class="control-label" for="tipotelefono2">'.translate('Lbl_Type_Phone3',$GLOBALS['lang']).':</label>';
+		echo '					 <div class="form-group" id="tipotelefono2">';
+		echo '						 <select class="form-control input-sm" name="tipotelefono2i" id="tipotelefono2i" style="width:190px;">';			 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_telefono")) 
+										{ 
+											$stmt->execute();    
+											$stmt->store_result();
+									 
+											$stmt->bind_result($id_tipo_telefono,$tipo_telefono);
+											while($stmt->fetch())
+											{
+												echo '<option value="'.$id_tipo_telefono.'">'.$tipo_telefono.'</option>';
+											}
+										}
+										else  
+										{
+											echo '<option value="99999">'.translate('Msg_Unknown_Error',$GLOBALS['lang']).'</option>';
+											return;			
+										}
+		echo '						 </select>';
+		echo '					 </div>';
+		echo '					 &nbsp;&nbsp;<label class="control-label" for="prefijotelefono2">'.translate('Lbl_Pre_Number_Phone2',$GLOBALS['lang']).':</label>';
+		echo '					 <div class="form-group" id="prefijotelefono2">';
+		echo '						<input title="'.translate('Msg_A_Pre_Number_Must_Enter2',$GLOBALS['lang']).'" class="form-control input-sm" id="prefijotelefono2i" name="prefijotelefono2i" type="text" maxlength="4" />';
+		echo '					 </div>';							
+		echo '					 &nbsp;&nbsp;<label class="control-label" for="nrotelefono2">'.translate('Lbl_Number_Phone2',$GLOBALS['lang']).':</label>';
+		echo '					 <div class="form-group" id="nrotelefono2">';
+		echo '						 <input title="'.translate('Msg_A_Number_Must_Enter2',$GLOBALS['lang']).'" class="form-control input-sm" id="nrotelefono2i" name="nrotelefono2i" type="text" maxlength="16" />';
+		echo '					 </div>';		
+		echo '				 </div>';		
+
+
+		
+		
+		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';
 		echo '					<div id="img_loader_12"></div>';		

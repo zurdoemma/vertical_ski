@@ -114,7 +114,14 @@ try
 			$proximoPago = str_replace("-","",$proximoPago);
 			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
 		}
-		else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');		
+		else 
+		{
+			$printer -> setJustification($justification[1]);
+			$printer -> setTextSize(1, 2);
+			$printer -> text(translate('Msg_Balance_Credit_OK',$GLOBALS['lang']));
+			$printer -> setTextSize(1, 1);
+			//$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');		
+		}
 		$printer -> feed(3);
 		$printer -> setJustification($justification[1]);
 		$printer -> text('-----------------------------');
@@ -208,7 +215,14 @@ try
 				$proximoPago = str_replace("-","",$proximoPago);
 				$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
 			}
-			else $printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');				
+			else 
+			{
+				$printer -> setJustification($justification[1]);
+				$printer -> setTextSize(1, 2);
+				$printer -> text(translate('Msg_Balance_Credit_OK',$GLOBALS['lang']));
+				$printer -> setTextSize(1, 1);
+				//$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': ---');		
+			}				
 			$printer -> feed(3);		
 		}		
 		$printer -> pulse();

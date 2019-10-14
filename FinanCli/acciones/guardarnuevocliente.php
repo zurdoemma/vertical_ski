@@ -62,6 +62,11 @@
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
 		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');
 		
+		$prefijoTelefono2=htmlspecialchars($_POST["prefijoTelefono2"], ENT_QUOTES, 'UTF-8');
+		$nroTelefono2=htmlspecialchars($_POST["nroTelefono2"], ENT_QUOTES, 'UTF-8');
+		$tipoTelefono2=htmlspecialchars($_POST["tipoTelefono2"], ENT_QUOTES, 'UTF-8');
+
+		
 		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 		{
 			if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'edad_permitida_cliente_adicional'"))
@@ -485,7 +490,7 @@
 				}
 								
 				$date_registro = date("YmdHis");					
-				$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo,preferido) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).",".$preferidoT.")";
+				$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).")";
 				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
@@ -507,6 +512,61 @@
 						$stmt->free_result();
 						$stmt->close();
 						return;						
+					}
+				}
+				
+				if(!empty($prefijoTelefono2) && !empty($nroTelefono2))
+				{
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}
+					else
+					{
+						$numTelFinI2 = $prefijoTelefono2.$nroTelefono2;
+						$cantPrefiFN2 = strlen($prefijoTelefono2);
+						$stmt10->bind_param('iii', $tipoTelefono2, $numTelFinI2, $cantPrefiFN2);
+						if(!$stmt10->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else $idTelefonoClient2 = $mysqli->insert_id;
+					}
+									
+					$date_registro = date("YmdHis");					
+					$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono2.",".$prefijoTelefono2.$nroTelefono2.",".strlen($prefijoTelefono2).")";
+					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					{
+						echo $mysqli->error;
+						$mysqli->rollback();
+						$mysqli->autocommit(TRUE);
+						$stmt->free_result();
+						$stmt->close();
+						return;
+					}
+					else
+					{
+						$motivo = 42;
+						$stmt->bind_param('ssis', $_SESSION['username'], $date_registro, $motivo, $valor_log_user);
+						if(!$stmt->execute())
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;						
+						}
 					}
 				}
 				
@@ -588,7 +648,34 @@
 							$stmt->close();
 							return;					
 						}					
-					}					
+					}
+
+					if(!empty($prefijoTelefono2) && !empty($nroTelefono2))
+					{
+						if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
+						{
+							echo $mysqli->error;
+							$mysqli->rollback();
+							$mysqli->autocommit(TRUE);
+							$stmt->free_result();
+							$stmt->close();
+							return;
+						}
+						else
+						{
+							$preferidoTelC2 = 0;
+							$stmt22->bind_param('isii', $tipoDocumento, $documento, $idTelefonoClient2, $preferidoTelC2);
+							if(!$stmt22->execute())
+							{	
+								echo $mysqli->error;
+								$mysqli->rollback();
+								$mysqli->autocommit(TRUE);
+								$stmt->free_result();
+								$stmt->close();
+								return;					
+							}					
+						}						
+					}						
 				}
 	
 				$date_registro = date("YmdHis");

@@ -125,7 +125,11 @@ try
 		$printer -> text(translate('Lbl_Amount_Pay_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoPagado/100.00), 2, ',', '.'));
 		$printer -> feed();
 		$printer -> setTextSize(1, 1);	
-		$printer -> text('********************************');		
+		$printer -> text('********************************');
+		$printer -> feed();
+		$printer -> setTextSize(1, 2);
+		$printer -> text(translate('Msg_Balance_Credit_OK',$GLOBALS['lang']));
+		$printer -> setTextSize(1, 1);		
 		$printer -> feed(3);
 		$printer -> setJustification($justification[1]);
 		$printer -> text('-----------------------------');
@@ -225,14 +229,18 @@ try
 			$printer -> feed();
 			$printer -> text(translate('Lbl_Amount_Diferential_Fee_Print_Credit',$GLOBALS['lang']).': $'.number_format(((($montoTotalCuotasOrig+$montoTotalIntereses)-$montoPagado)/100.00), 2, ',', '.'));		
 			$printer -> feed();			
-			$printer -> setJustification($justification[1]);
+			$printer -> setJustification($justification[1]);		
 			$printer -> text('********************************');
 			$printer -> feed();
 			$printer -> setTextSize(1, 2);	
 			$printer -> text(translate('Lbl_Amount_Pay_Print_Credit',$GLOBALS['lang']).': $'.number_format(($montoPagado/100.00), 2, ',', '.'));
 			$printer -> feed();
 			$printer -> setTextSize(1, 1);	
-			$printer -> text('********************************');			
+			$printer -> text('********************************');
+			$printer -> feed();
+			$printer -> setTextSize(1, 2);
+			$printer -> text(translate('Msg_Balance_Credit_OK',$GLOBALS['lang']));
+			$printer -> setTextSize(1, 1);			
 			$printer -> feed(3);		
 		}		
 		$printer -> pulse();

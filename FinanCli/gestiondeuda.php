@@ -1952,7 +1952,6 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function guardarCancelacionCuotaCredito(formularioccc, idCuotaCredito)
 		{			
-			document.getElementById("btnGuardarCCC").disabled = false;
 			var urlpcc = "./acciones/guardarcancelacioncuotacredito.php";
 			$('#img_loader_23').show();
 			
@@ -2003,14 +2002,23 @@ include("./menu/menu.php");
 						}
 						else
 						{
-							$('#btnPagoTotalCD').hide();
-							document.getElementById("btnPagoTotalCD").disabled = true;
-												
-							document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
-							$('#btnReimpresionPagoTotalCD').hide();
+							if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
+							{
+								$('#btnPagoTotalCD').hide();
+								document.getElementById("btnPagoTotalCD").disabled = true;
+							}
 							
-							document.getElementById("btnPDFPagoTotalCD").disabled = true;						
-							$('#btnPDFPagoTotalCD').hide();	
+							if(document.getElementById("btnReimpresionPagoTotalCD") != undefined && document.getElementById("btnReimpresionPagoTotalCD") != null)
+							{
+								document.getElementById("btnReimpresionPagoTotalCD").disabled = true;						
+								$('#btnReimpresionPagoTotalCD').hide();
+							}
+							
+							if(document.getElementById("btnPDFPagoTotalCD") != undefined && document.getElementById("btnPDFPagoTotalCD") != null)
+							{
+								document.getElementById("btnPDFPagoTotalCD").disabled = true;						
+								$('#btnPDFPagoTotalCD').hide();	
+							}
 							
 							if(document.getElementById("btnPagoSeleccionCD") != undefined && document.getElementById("btnPagoSeleccionCD") != null)
 							{
