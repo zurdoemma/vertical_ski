@@ -145,7 +145,72 @@
 						return;				
 					}
 					
-					if ($db_password == $password) 
+					$ingresoToken = 0;
+					if ($stmt351 = $mysqli->prepare("SELECT tas.fecha, tas.token, tas.duracion FROM finan_cli.token_autorizacion_supervisor tas WHERE tas.utilizado = 0 AND tas.fecha_utilizacion IS NULL AND tas.autorizado = ? AND tas.autorizante = ? ORDER BY tas.fecha DESC")) 
+					{
+						$stmt351->bind_param('ss', $_SESSION['username'], $usuarioSupervisor);
+						$stmt351->execute();    
+						$stmt351->store_result();
+				 
+						$totR351 = $stmt351->num_rows;
+						if($totR351 > 0)
+						{
+							$stmt351->bind_result($fecha_tas, $token_tas, $duracion_token_tas);
+							$stmt351->fetch();
+
+							$fechaObtDB = substr($fecha_tas, 0, 4).'-'.substr($fecha_tas, 4, 2).'-'.substr($fecha_tas, 6, 2).' '.substr($fecha_tas, 8, 2).':'.substr($fecha_tas, 10, 2).':'.substr($fecha_tas, 12, 2);
+							$fechaInfDB = new DateTime($fechaObtDB);
+							$fechaAct = new DateTime();
+							$difMinutos = $fechaAct->diff($fechaInfDB);
+							
+							if($difMinutos->i > $duracion_token_tas)
+							{
+								$ingresoToken = 0;
+							}
+							else
+							{
+								if($token_tas == $password)
+								{
+									$mysqli->autocommit(FALSE);
+									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+									
+									if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.token_autorizacion_supervisor SET fecha_utilizacion = ?, utilizado = ?, id_motivo = ? WHERE utilizado = 0 AND fecha_utilizacion IS NULL AND autorizado = ? AND autorizante = ?"))
+									{
+										echo $mysqli->error;
+										$mysqli->autocommit(TRUE);
+										$stmt->free_result();
+										$stmt->close();
+										return;
+									}
+									else
+									{
+										$date_registro = date("YmdHis");
+										$utilizadoT = 1;
+										
+										$stmt10->bind_param('siiss', $date_registro, $utilizadoT, $motivo, $_SESSION['username'], $usuarioSupervisor);
+										if(!$stmt10->execute())
+										{
+											echo $mysqli->error;
+											$mysqli->autocommit(TRUE);
+											$stmt->free_result();
+											$stmt->close();
+											return;						
+										}
+									}
+									
+									$mysqli->commit();
+									$mysqli->autocommit(TRUE);
+									$ingresoToken = 1;
+								}
+								else $ingresoToken = 0;
+							}
+							
+							$stmt351->free_result();
+							$stmt351->close();				
+						}
+					}
+					
+					if ($db_password == $password || $ingresoToken == 1) 
 					{
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);

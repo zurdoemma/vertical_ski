@@ -2020,7 +2020,7 @@ include("./menu/menu.php");
 	<div class="panel-group" style="padding-bottom:50px;">				
 		<div class="panel panel-default" style="margin-left:30px;margin-right:30px;">
 		  <div id="panel-title-header" class="panel-heading">
-			<h3 class="panel-title"><?php echo translate('Lbl_Bines',$GLOBALS['lang']); ?></h3>
+			<h3 class="panel-title"><?php echo translate('Lbl_Plans',$GLOBALS['lang']); ?></h3>
 		  </div>
 		  <div id="apDiv1" class="panel-body">
 			<div id="toolbar" style="margin-left:-98px; margin-top:-1px;">

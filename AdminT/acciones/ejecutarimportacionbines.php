@@ -1,5 +1,5 @@
 <?php 
-		set_time_limit(10);	  
+		//set_time_limit(10);	  
 		include ('../utiles/funciones.php');
 		require("../../parametrosbasedatosta.php");
 		$mysqli = new mysqli($serverName, $db_user, $db_password, $dbname);

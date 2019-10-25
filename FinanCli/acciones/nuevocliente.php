@@ -304,9 +304,6 @@
 		echo '						 <input title="'.translate('Msg_A_Number_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="nrotelefonoi" name="nrotelefonoi" type="text" maxlength="16" />';
 		echo '					 </div>';		
 		echo '				 </div>';
-		
-
-
 		echo '				 <div class="form-group form-inline">';
 		echo '					 &nbsp;&nbsp;<label class="control-label" for="tipotelefono2">'.translate('Lbl_Type_Phone3',$GLOBALS['lang']).':</label>';
 		echo '					 <div class="form-group" id="tipotelefono2">';
@@ -338,11 +335,6 @@
 		echo '						 <input title="'.translate('Msg_A_Number_Must_Enter2',$GLOBALS['lang']).'" class="form-control input-sm" id="nrotelefono2i" name="nrotelefono2i" type="text" maxlength="16" />';
 		echo '					 </div>';		
 		echo '				 </div>';		
-
-
-		
-		
-		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';
 		echo '					<div id="img_loader_12"></div>';		

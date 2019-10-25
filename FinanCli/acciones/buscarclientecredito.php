@@ -127,6 +127,34 @@
 			return;
 		}
 		
+		if(empty($id_titular_cliente_db)) $selectExisteDC = "SELECT cc.id FROM finan_cli.credito_cliente ccli, finan_cli.cuota_credito cc WHERE ccli.id_credito = cc.id_credito AND cc.estado = ? AND ccli.tipo_documento = ? AND ccli.documento = ?";
+		else $selectExisteDC = "SELECT cc.id FROM finan_cli.credito_cliente ccli, finan_cli.cuota_credito cc WHERE ccli.id_credito = cc.id_credito AND cc.estado = ? AND ccli.tipo_documento_adicional = ? AND ccli.documento_adicional = ?";
+		if ($stmt928 = $mysqli->prepare($selectExisteDC)) 
+		{
+			$estadoENM = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+			$stmt928->bind_param('sis', $estadoENM, $tipoDocumento, $documento);
+			$stmt928->execute();    
+			$stmt928->store_result();
+	 
+			$totR928 = $stmt928->num_rows;
+			if($totR928 > 0)
+			{
+				$stmt928->bind_result($id_cadena_user);
+				$stmt928->fetch();
+
+				echo translate('Msg_Client_Must_Regularize_His_Debt_To_Request_New_Credits',$GLOBALS['lang']);
+				return;
+				
+				$stmt928->free_result();
+				$stmt928->close();				
+			}	
+		}
+		else 
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;				
+		}
+		
 		if(empty($id_titular_cliente_db)) $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento = ? AND cc.documento = ? HAVING MAX(cc.fecha) IS NOT NULL";
 		else $selectCreditoC = "SELECT MAX(cc.fecha) FROM finan_cli.credito_cliente cc WHERE cc.tipo_documento_adicional = ? AND cc.documento_adicional = ? HAVING MAX(cc.fecha) IS NOT NULL";
 		if ($stmt702 = $mysqli->prepare($selectCreditoC)) 

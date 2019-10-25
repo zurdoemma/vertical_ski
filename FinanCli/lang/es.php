@@ -746,6 +746,17 @@
 		'Msg_Payment_Of_All_Fees_Included_In_The_Selection_Payment_Is_Canceled' => 'Se cancelará el pago de todas las cuotas incluidas en la seleccion',
 		'Msg_Action_Not_Allowed_User' => 'Acción no permitida para el usuario!!',
 		'Lbl_All_Selection' => 'Todas',
-		'Lbl_All_Selection2' => 'Todos'
+		'Lbl_All_Selection2' => 'Todos',
+		'Msg_Client_Must_Regularize_His_Debt_To_Request_New_Credits' => 'El cliente debe regularizar su deuda para solicitar nuevos créditos',
+		'Lbl_Generate_Token' => 'Generar Token',
+		'Lbl_Generate_Token2' => 'GenerarToken',
+		'Lbl_Data_Generate_Token' => 'Datos de Generación Token',
+		'Lbl_Authorize_User' => 'Usuario',
+		'Lbl_Expire_Token' => 'Duración',
+		'Lbl_Time_Minute' => 'Minutos',
+		'Lbl_Token_Generated' => 'Token Generado',
+		'Msg_User_Entered_Is_Invalid' => 'El usuario seleccionado es inválido',
+		'Msg_There_Is_Already_Current_Token_Generated_Selected_User' => 'Ya existe un token vigente generado para el usuario seleccionado!!',
+		'Lbl_Token' => 'Token'
 	);
 ?>
