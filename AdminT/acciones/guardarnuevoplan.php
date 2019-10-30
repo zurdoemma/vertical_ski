@@ -36,6 +36,9 @@
 		$maxExtraccionCashback=htmlspecialchars($_POST["maxExtraccionCashback"], ENT_QUOTES, 'UTF-8');
 		$montoDesde=htmlspecialchars($_POST["montoDesde"], ENT_QUOTES, 'UTF-8');
 		$montoHasta=htmlspecialchars($_POST["montoHasta"], ENT_QUOTES, 'UTF-8');
+		$planISO=htmlspecialchars($_POST["planISO"], ENT_QUOTES, 'UTF-8');
+		
+		if(empty($planISO)) $planISO = '0';
 		
 		if($idSucursal < 0 || $idTarjeta < 0 || $cuotaDesde < 0 || $cuotaHasta < 0 || $nodo < 0 || $porcentajeRecargo < 0 || $codigoDP < 0 || $minCompraCashback < 0 || $maxExtraccionCashback < 0 || $montoDesde < 0 || $montoHasta < 0)
 		{
@@ -136,7 +139,7 @@
 					$companyID = 1;
 					$operationMode = 57;
 					$currencyId = 1;
-					$hostFacilityTypeId = '0';
+					$hostFacilityTypeId = $planISO;
 					$offlineMaxAmount = 0.00;
 					$exclusiveOnlineMode = 'S';
 					$configVersion = 0;

@@ -755,13 +755,43 @@ include("./menu/menu.php");
 				return;
 			}
 			
+			if($( "#planisoni" ).val().length == 0)
+			{
+				$('#planisoni').prop('title', '<?php echo translate('Msg_A_ISO_Plan_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#planisoni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#planisoni" ).focus();
+				document.getElementById("btnCargarNP").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#planisoni" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#planisoni" ).tooltip('destroy');
+			}
+			
 			var urlggnp = "./acciones/guardarnuevoplan.php";
 			$('#img_loader_5').show();
 			
 			$.ajax({
 				url: urlggnp,
 				method: "POST",
-				data: { idSucursal: $( "#sucursalplanni" ).val(), idTarjeta: $( "#tarjetaplanni" ).val(), idPlan: $( "#planidni" ).val(), descripcionPlan: $( "#nameplanni" ).val(), cuotaDesde: $( "#cuotadesdeplanni" ).val(), cuotaHasta: $( "#cuotahastaplanni" ).val(), nroComercio: $( "#nrocomercioni" ).val(), nodo: $( "#nodoplanni" ).val(), porcentajeRecargo: (($( "#recargoplanni" ).val().replace(/,/g,""))*100.00), planEspecial: $( "#planespecialplanni" ).val(), codigoDP: $( "#codigoplandpni" ).val(), poolID: $( "#poolterminalsplanni" ).val(), soportaCashback: $( "#soportacashbackplanni" ).val(), minCompraCashback: (($( "#minimocompracashbackplanni" ).val().replace(/,/g,""))*100.00), maxExtraccionCashback: (($( "#maximoextraccioncashbackplanni" ).val().replace(/,/g,""))*100.00), montoDesde: (($( "#montodesdeplanni" ).val().replace(/,/g,""))*100.00), montoHasta: (($( "#montohastaplanni" ).val().replace(/,/g,""))*100.00) },
+				data: { idSucursal: $( "#sucursalplanni" ).val(), idTarjeta: $( "#tarjetaplanni" ).val(), idPlan: $( "#planidni" ).val(), descripcionPlan: $( "#nameplanni" ).val(), cuotaDesde: $( "#cuotadesdeplanni" ).val(), cuotaHasta: $( "#cuotahastaplanni" ).val(), nroComercio: $( "#nrocomercioni" ).val(), nodo: $( "#nodoplanni" ).val(), porcentajeRecargo: (($( "#recargoplanni" ).val().replace(/,/g,""))*100.00), planEspecial: $( "#planespecialplanni" ).val(), codigoDP: $( "#codigoplandpni" ).val(), poolID: $( "#poolterminalsplanni" ).val(), soportaCashback: $( "#soportacashbackplanni" ).val(), minCompraCashback: (($( "#minimocompracashbackplanni" ).val().replace(/,/g,""))*100.00), maxExtraccionCashback: (($( "#maximoextraccioncashbackplanni" ).val().replace(/,/g,""))*100.00), montoDesde: (($( "#montodesdeplanni" ).val().replace(/,/g,""))*100.00), montoHasta: (($( "#montohastaplanni" ).val().replace(/,/g,""))*100.00), planISO: $( "#planisoni" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
 					
@@ -1778,13 +1808,43 @@ include("./menu/menu.php");
 				return;
 			}
 			
+			if($( "#planisoi" ).val().length == 0)
+			{
+				$('#planisoi').prop('title', '<?php echo translate('Msg_A_ISO_Plan_Must_Enter',$GLOBALS['lang']);?>');
+				$(function() {
+					$( "#planisoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});
+				$( "#planisoi" ).focus();
+				document.getElementById("btnCargarMP").disabled = false;
+				return;
+			}
+			else 
+			{
+				$(function() {
+					$( "#planisoi" ).tooltip({
+					   position: {
+						  my: "center bottom",
+						  at: "center top-10",
+						  collision: "none"
+					   }
+					});
+				});				
+				$( "#planisoi" ).tooltip('destroy');
+			}			
+			
 			var urlggnp = "./acciones/guardarmodificacionplan.php";
 			$('#img_loader_5').show();
 			
 			$.ajax({
 				url: urlggnp,
 				method: "POST",
-				data: { idSucursal: $( "#sucursalplani" ).val(), idTarjeta: $( "#tarjetaplani" ).val(), idPlan: $( "#planidi" ).val(), descripcionPlan: $( "#nameplani" ).val(), cuotaDesde: $( "#cuotadesdeplani" ).val(), cuotaHasta: $( "#cuotahastaplani" ).val(), nroComercio: $( "#nrocomercioi" ).val(), nodo: $( "#nodoplani" ).val(), porcentajeRecargo: (($( "#recargoplani" ).val().replace(/,/g,""))*100.00), planEspecial: $( "#planespecialplani" ).val(), codigoDP: $( "#codigoplandpi" ).val(), poolID: $( "#poolterminalsplani" ).val(), soportaCashback: $( "#soportacashbackplani" ).val(), minCompraCashback: (($( "#minimocompracashbackplani" ).val().replace(/,/g,""))*100.00), maxExtraccionCashback: (($( "#maximoextraccioncashbackplani" ).val().replace(/,/g,""))*100.00), montoDesde: (($( "#montodesdeplani" ).val().replace(/,/g,""))*100.00), montoHasta: (($( "#montohastaplani" ).val().replace(/,/g,""))*100.00), planIDO: idPlan },
+				data: { idSucursal: $( "#sucursalplani" ).val(), idTarjeta: $( "#tarjetaplani" ).val(), idPlan: $( "#planidi" ).val(), descripcionPlan: $( "#nameplani" ).val(), cuotaDesde: $( "#cuotadesdeplani" ).val(), cuotaHasta: $( "#cuotahastaplani" ).val(), nroComercio: $( "#nrocomercioi" ).val(), nodo: $( "#nodoplani" ).val(), porcentajeRecargo: (($( "#recargoplani" ).val().replace(/,/g,""))*100.00), planEspecial: $( "#planespecialplani" ).val(), codigoDP: $( "#codigoplandpi" ).val(), poolID: $( "#poolterminalsplani" ).val(), soportaCashback: $( "#soportacashbackplani" ).val(), minCompraCashback: (($( "#minimocompracashbackplani" ).val().replace(/,/g,""))*100.00), maxExtraccionCashback: (($( "#maximoextraccioncashbackplani" ).val().replace(/,/g,""))*100.00), montoDesde: (($( "#montodesdeplani" ).val().replace(/,/g,""))*100.00), montoHasta: (($( "#montohastaplani" ).val().replace(/,/g,""))*100.00), planIDO: idPlan, planISO: $( "#planisoi" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_5').hide();
 					

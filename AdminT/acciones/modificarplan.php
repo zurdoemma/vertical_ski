@@ -25,13 +25,13 @@
 			return;
 		}
 		
-		if ($stmt = $mysqli->prepare("SELECT p.branch_id, p.payment_method_id, p.plan_id, p.facility_payments_from, p.facility_payments_to, p.plan_description, p.merchant_id, p.host_id, p.charge_percentage, p.category, p.foreign_identifier, p.cashback_allowed, p.cashback_min_buy_amount_allowed, p.cashback_max_amount_allowed, p.amount_from, p.amount_to FROM tef.plans p WHERE p.branch_id = ? AND p.payment_method_id = ? AND p.plan_id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT p.branch_id, p.payment_method_id, p.plan_id, p.facility_payments_from, p.facility_payments_to, p.plan_description, p.merchant_id, p.host_id, p.charge_percentage, p.category, p.foreign_identifier, p.cashback_allowed, p.cashback_min_buy_amount_allowed, p.cashback_max_amount_allowed, p.amount_from, p.amount_to, p.host_facility_type_id FROM tef.plans p WHERE p.branch_id = ? AND p.payment_method_id = ? AND p.plan_id = ?")) 
 		{
 			$stmt->bind_param('iis', $idPlanDB[0], $idPlanDB[1], $idPlanDB[2]);
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($branch_id_a, $payment_method_id_a, $plan_id_a, $facility_payments_from_a, $facility_payments_to_a, $plan_description_a, $merchant_id_a, $host_id_a, $charge_percentage_a, $category_a, $foreign_identifier_a, $cashback_allowed_a, $cashback_min_buy_amount_allowed_a, $cashback_max_amount_allowed_a, $amount_from_a, $amount_to_a);
+			$stmt->bind_result($branch_id_a, $payment_method_id_a, $plan_id_a, $facility_payments_from_a, $facility_payments_to_a, $plan_description_a, $merchant_id_a, $host_id_a, $charge_percentage_a, $category_a, $foreign_identifier_a, $cashback_allowed_a, $cashback_min_buy_amount_allowed_a, $cashback_max_amount_allowed_a, $amount_from_a, $amount_to_a, $codigo_plan_iso_a);
 			$totR = $stmt->num_rows;
 
 			if($totR > 0)
@@ -239,6 +239,10 @@
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="montohastaplan">'.translate('Lbl_Amount_To_Plan',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="montohastaplan">';
 		echo '						<input title="'.translate('Msg_A_Amount_To_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="montohastaplani" name="montohastaplani" type="text" maxlength="14" value="'.$amount_to_a.'" />';
+		echo '					</div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="planiso">'.translate('Lbl_ISO_Plan',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="planiso">';
+		echo '						<input title="'.translate('Msg_A_ISO_Plan_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="planisoi" name="planisoi" type="text" maxlength="1" value="'.$codigo_plan_iso_a.'" />';
 		echo '					</div>';		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';				

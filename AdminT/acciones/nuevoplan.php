@@ -189,6 +189,10 @@
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="montohastaplann">'.translate('Lbl_Amount_To_Plan',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="montohastaplann">';
 		echo '						<input title="'.translate('Msg_A_Amount_To_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="montohastaplanni" name="montohastaplanni" type="text" maxlength="14" />';
+		echo '					</div>';
+		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="planison">'.translate('Lbl_ISO_Plan',$GLOBALS['lang']).':</label>';
+		echo '					<div class="form-group" id="planison">';
+		echo '						<input title="'.translate('Msg_A_ISO_Plan_Must_Enter',$GLOBALS['lang']).'" class="form-control input-sm" id="planisoni" name="planisoni" type="text" maxlength="1" />';
 		echo '					</div>';		
 		echo '				</div>';		
 		echo '				<div class="form-group form-inline">';				

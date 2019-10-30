@@ -44,6 +44,9 @@
 		$maxExtraccionCashback=htmlspecialchars($_POST["maxExtraccionCashback"], ENT_QUOTES, 'UTF-8');
 		$montoDesde=htmlspecialchars($_POST["montoDesde"], ENT_QUOTES, 'UTF-8');
 		$montoHasta=htmlspecialchars($_POST["montoHasta"], ENT_QUOTES, 'UTF-8');
+		$planISO=htmlspecialchars($_POST["planISO"], ENT_QUOTES, 'UTF-8');
+		
+		if(empty($planISO)) $planISO = '0';		
 		
 		if($idSucursal < 0 || $idTarjeta < 0 || $cuotaDesde < 0 || $cuotaHasta < 0 || $nodo < 0 || $porcentajeRecargo < 0 || $codigoDP < 0 || $minCompraCashback < 0 || $maxExtraccionCashback < 0 || $montoDesde < 0 || $montoHasta < 0)
 		{
@@ -131,7 +134,7 @@
 			{	
 				$mysqli->autocommit(FALSE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE tef.plans SET branch_id = ?, payment_method_id = ?, plan_id = ?, host_facility_type_description = ?, facility_payments_from = ?, facility_payments_to = ?, plan_description = ?, merchant_id = ?, host_id = ?, charge_percentage = ?, category = ?, update_datetime = ?, foreign_identifier = ?, cashback_allowed = ?, cashback_min_buy_amount_allowed = ?, cashback_max_amount_allowed = ?, amount_from = ?, amount_to = ? WHERE plan_id = ? AND branch_id = ? AND payment_method_id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE tef.plans SET branch_id = ?, payment_method_id = ?, plan_id = ?, host_facility_type_description = ?, facility_payments_from = ?, facility_payments_to = ?, plan_description = ?, merchant_id = ?, host_id = ?, charge_percentage = ?, category = ?, update_datetime = ?, foreign_identifier = ?, cashback_allowed = ?, cashback_min_buy_amount_allowed = ?, cashback_max_amount_allowed = ?, amount_from = ?, amount_to = ?, host_facility_type_id = ? WHERE plan_id = ? AND branch_id = ? AND payment_method_id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -164,7 +167,7 @@
 					$montoDesde = ((double)$montoDesde)/100.00;
 					$montoHasta = ((double)$montoHasta)/100.00;
 					
-					$stmt10->bind_param('iissiissidisssddddsii', $idSucursal, $idTarjeta, $idPlan, $descripcionPlan, $cuotaDesde, $cuotaHasta, $descripcionPlan, $nroComercio, $nodo, $porcentajeRecargo, $planEspecial, $updateTimestamp, $codigoDP, $soportaCashback, $minCompraCashback, $maxExtraccionCashback, $montoDesde, $montoHasta, $idPlanDB[2], $idPlanDB[0], $idPlanDB[1]);
+					$stmt10->bind_param('iissiissidisssddddssii', $idSucursal, $idTarjeta, $idPlan, $descripcionPlan, $cuotaDesde, $cuotaHasta, $descripcionPlan, $nroComercio, $nodo, $porcentajeRecargo, $planEspecial, $updateTimestamp, $codigoDP, $soportaCashback, $minCompraCashback, $maxExtraccionCashback, $montoDesde, $montoHasta, $planISO, $idPlanDB[2], $idPlanDB[0], $idPlanDB[1]);
 					if(!$stmt10->execute())
 					{
 						echo $mysqli->error;
