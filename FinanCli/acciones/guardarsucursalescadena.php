@@ -25,7 +25,7 @@
 		$idCadenaT=htmlspecialchars($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 		$sucursales=htmlspecialchars($_POST["idSucursales"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $_SESSION['username']);
 			$stmt->execute();    
@@ -45,7 +45,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if($stmt = $mysqli->prepare("SELECT s.id, s.nombre, c.razon_social FROM finan_cli.sucursal s, finan_cli.cadena c WHERE c.id = s.id_cadena AND s.id_cadena = ?"))
+				if($stmt = $mysqli->prepare("SELECT s.id, s.nombre, c.razon_social FROM ".$db_name.".sucursal s, ".$db_name.".cadena c WHERE c.id = s.id_cadena AND s.id_cadena = ?"))
 				{
 					$stmt->bind_param('i', $idCadenaT);
 					$stmt->execute();    
@@ -57,9 +57,9 @@
 					{
 						$date_registro = date("YmdHis");
 						$date_registro2 = date("Y-m-d H:i:s");					
-						$valor_log_user = "UPDATE finan_cli.sucursal SET id_cadena = NULL WHERE id_sucursal = ".$id_sucursal_des.", name = ".$name_sucursal_des.", id_cadena = ".$idCadenaT.", name_cadena = ".$name_cadena_ad;
+						$valor_log_user = "UPDATE ".$db_name.".sucursal SET id_cadena = NULL WHERE id_sucursal = ".$id_sucursal_des.", name = ".$name_sucursal_des.", id_cadena = ".$idCadenaT.", name_cadena = ".$name_cadena_ad;
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -94,7 +94,7 @@
 					return;
 				}
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.sucursal SET id_cadena = NULL WHERE id_cadena = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".sucursal SET id_cadena = NULL WHERE id_cadena = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -118,7 +118,7 @@
 						
 					foreach ($idSucursales as $idSucuR) 
 					{
-						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.sucursal SET id_cadena = ? WHERE id = ?"))
+						if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".sucursal SET id_cadena = ? WHERE id = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -143,9 +143,9 @@
 						
 						$date_registro = date("YmdHis");
 						$date_registro2 = date("Y-m-d H:i:s");					
-						$valor_log_user = "UPDATE finan_cli.sucursal SET id_cadena = ".$idCadenaT." WHERE id_sucursal = ".$idSucuR;
+						$valor_log_user = "UPDATE ".$db_name.".sucursal SET id_cadena = ".$idCadenaT." WHERE id_sucursal = ".$idSucuR;
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();

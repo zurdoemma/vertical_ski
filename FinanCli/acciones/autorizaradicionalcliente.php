@@ -30,7 +30,7 @@
 		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
 		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');		
 
-		if($stmt4 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt4->bind_param('is', $tipoDocumento, $documento);
 			$stmt4->execute();    
@@ -53,7 +53,7 @@
 		$stmt4->free_result();
 		$stmt4->close();
 		
-		if($stmt = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'limite_adicionales_sin_supervisor'"))
+		if($stmt = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'limite_adicionales_sin_supervisor'"))
 		{
 			$stmt->execute();    
 			$stmt->store_result();
@@ -68,7 +68,7 @@
 			$stmt->bind_result($limite_adicional_sin_supervisor_db);
 			$stmt->fetch();
 			
-			if($stmt2 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'limite_clientes_adicionales'"))
+			if($stmt2 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'limite_clientes_adicionales'"))
 			{
 				$stmt2->execute();    
 				$stmt2->store_result();
@@ -84,7 +84,7 @@
 				$stmt2->bind_result($limite_adicionales_db);
 				$stmt2->fetch();
 
-				if($stmt3 = $mysqli->prepare("SELECT count(c.id_titular) FROM finan_cli.cliente c WHERE c.id_titular = (SELECT c2.id FROM finan_cli.cliente c2 WHERE c2.tipo_documento = ? AND c2.documento = ?)"))
+				if($stmt3 = $mysqli->prepare("SELECT count(c.id_titular) FROM ".$db_name.".cliente c WHERE c.id_titular = (SELECT c2.id FROM ".$db_name.".cliente c2 WHERE c2.tipo_documento = ? AND c2.documento = ?)"))
 				{
 					$stmt3->bind_param('is', $tipoDocumento, $documento);
 					$stmt3->execute();    
@@ -123,7 +123,7 @@
 					
 					if(!empty($tokenA))
 					{
-						if($stmt5 = $mysqli->prepare("SELECT tac.id FROM finan_cli.token_adicional_cuenta tac WHERE tac.token = ? AND tac.tipo_documento = ? AND tac.documento = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
+						if($stmt5 = $mysqli->prepare("SELECT tac.id FROM ".$db_name.".token_adicional_cuenta tac WHERE tac.token = ? AND tac.tipo_documento = ? AND tac.documento = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
 						{
 							$date_registro_a_s = date("Ymd")."%";
 							$stmt5->bind_param('sisss', $tokenA, $tipoDocumento, $documento, $documentoTitular, $date_registro_a_s);

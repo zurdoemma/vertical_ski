@@ -55,7 +55,7 @@
 			}
 		}		
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -84,7 +84,7 @@
 
 		if($id_perfil_usuario_logueado == 3)
 		{
-			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 			{
 				$stmt531->bind_param('s', $usuario);
 				$stmt531->execute();    
@@ -118,7 +118,7 @@
 			}
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -133,7 +133,7 @@
 			}
 			else
 			{
-				if($stmt3 = $mysqli->prepare("SELECT count(d.id) FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
+				if($stmt3 = $mysqli->prepare("SELECT count(d.id) FROM ".$db_name.".usuario u, ".$db_name.".domicilio d, ".$db_name.".provincia p, ".$db_name.".usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
 				{
 					$stmt3->bind_param('s', $usuario);
 					$stmt3->execute();    
@@ -142,7 +142,7 @@
 					$stmt3->bind_result($cantidad_domicilios);
 					$stmt3->fetch();
 					
-					if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+					if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 					{
 						$stmt2->execute();    
 						$stmt2->store_result();
@@ -181,7 +181,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -202,7 +202,7 @@
 					}
 					$idDomicilioI = $mysqli->insert_id;
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -228,9 +228,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
+				$valor_log_user = "INSERT INTO ".$db_name.".domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -257,7 +257,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
+				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal FROM ".$db_name.".usuario u, ".$db_name.".domicilio d, ".$db_name.".provincia p, ".$db_name.".usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
 				{
 					$stmt->bind_param('s', $usuario);
 					$stmt->execute();    

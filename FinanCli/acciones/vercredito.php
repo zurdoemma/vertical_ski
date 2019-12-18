@@ -24,7 +24,7 @@
 		
 		$idCredito=htmlspecialchars($_POST["idCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -52,7 +52,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_compra, cc.fecha, c.cantidad_cuotas, pc.id, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, cli.tipo_documento, cli.documento, t.numero, cc.tipo_documento_adicional, cc.documento_adicional, c.abona_primera_cuota, c.minimo_entrega FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.cliente_x_telefono cxt, finan_cli.telefono t WHERE cli.tipo_documento = cxt.tipo_documento AND cli.documento = cxt.documento AND cxt.id_telefono = t.id AND cxt.preferido = 1 AND pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_compra, cc.fecha, c.cantidad_cuotas, pc.id, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, cli.tipo_documento, cli.documento, t.numero, cc.tipo_documento_adicional, cc.documento_adicional, c.abona_primera_cuota, c.minimo_entrega FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".cliente_x_telefono cxt, ".$db_name.".telefono t WHERE cli.tipo_documento = cxt.tipo_documento AND cli.documento = cxt.documento AND cxt.id_telefono = t.id AND cxt.preferido = 1 AND pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCredito);
 			$stmt->execute();    
@@ -69,7 +69,7 @@
 			}					
 			
 			
-			if($stmt62 = $mysqli->prepare("SELECT cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+			if($stmt62 = $mysqli->prepare("SELECT cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 			{
 				$stmt62->bind_param('i', $idCredito);
 				$stmt62->execute();    
@@ -122,7 +122,7 @@
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocumentocreditclientvt">'.translate('Lbl_Type_Document_Credit_Headline2',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="tipodocumentocreditclientvt">';
 			echo '						<select class="form-control input-sm" name="tipodocumentocreditclientvti" id="tipodocumentocreditclientvti" style="width:190px;" disabled>';			 
-											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();
@@ -153,7 +153,7 @@
 			echo '					&nbsp;<label class="control-label" for="tipodocumentocreditclientv">'.translate('Lbl_Type_Document_Credit2',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="tipodocumentocreditclientv">';
 			echo '						<select class="form-control input-sm" name="tipodocumentocreditclientvi" id="tipodocumentocreditclientvi" style="width:190px;" disabled>';			 
-											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();
@@ -187,7 +187,7 @@
 			echo '					&nbsp;<label class="control-label" for="tipodocumentocreditclientv">'.translate('Lbl_Type_Document_Credit2',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="tipodocumentocreditclientv">';
 			echo '						<select class="form-control input-sm" name="tipodocumentocreditclientvi" id="tipodocumentocreditclientvi" style="width:190px;" disabled>';			 
-											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();
@@ -256,7 +256,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="plancreditclientv">'.translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditclientv">';
 		echo '						<select class="form-control input-sm" name="plancreditclientvi" id="plancreditclientvi" style="width:190px;" disabled >';			 
-										if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre FROM finan_cli.plan_credito pc, finan_cli.cadena c WHERE pc.id_cadena = c.id AND c.id = ?")) 
+										if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre FROM ".$db_name.".plan_credito pc, ".$db_name.".cadena c WHERE pc.id_cadena = c.id AND c.id = ?")) 
 										{ 
 											$stmt->bind_param('i', $id_cadena_usuario);
 											$stmt->execute();    

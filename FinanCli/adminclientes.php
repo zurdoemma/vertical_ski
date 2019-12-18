@@ -3276,7 +3276,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
+							if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
@@ -3296,7 +3296,7 @@ include("./menu/menu.php");
 									
 									if($type_account_client == translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']))
 									{
-										if ($stmt90 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_titular = ?")) 
+										if ($stmt90 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id_titular = ?")) 
 										{
 											$stmt90->bind_param('i', $id_client);
 											$stmt90->execute();   

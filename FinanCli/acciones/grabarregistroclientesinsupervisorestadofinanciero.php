@@ -33,8 +33,8 @@
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
-		else $insertECA = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
+		if(!empty($tipoDocumentoAdicional) && !empty($documentoAdicional)) $insertECA = "INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+		else $insertECA = "INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 		if(!$stmt10 = $mysqli->prepare($insertECA))
 		{
 			$mysqli->autocommit(TRUE);
@@ -57,7 +57,7 @@
 			
 			if($motivo == 37)
 			{
-				if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
+				if(!$stmt11 = $mysqli->prepare("UPDATE ".$db_name.".consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
 				{
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);

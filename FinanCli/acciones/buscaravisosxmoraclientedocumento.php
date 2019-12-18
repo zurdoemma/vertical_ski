@@ -24,7 +24,7 @@
 		
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -51,7 +51,7 @@
 			return;				
 		}		
 		
-		if($stmt62 = $mysqli->prepare("SELECT c.id_titular FROM finan_cli.cliente c, finan_cli.credito_cliente cc, finan_cli.aviso_x_mora axm WHERE cc.tipo_documento = c.tipo_documento AND cc.documento = c.documento AND axm.id_credito = cc.id_credito AND c.documento = ?"))
+		if($stmt62 = $mysqli->prepare("SELECT c.id_titular FROM ".$db_name.".cliente c, ".$db_name.".credito_cliente cc, ".$db_name.".aviso_x_mora axm WHERE cc.tipo_documento = c.tipo_documento AND cc.documento = c.documento AND axm.id_credito = cc.id_credito AND c.documento = ?"))
 		{
 			$stmt62->bind_param('s', $documento);
 			$stmt62->execute();    
@@ -66,7 +66,7 @@
 				
 				if(!empty($id_titular_cliente_db))
 				{
-					if($stmt63 = $mysqli->prepare("SELECT c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+					if($stmt63 = $mysqli->prepare("SELECT c.tipo_documento, c.documento FROM ".$db_name.".cliente c WHERE c.id = ?"))
 					{
 						$stmt63->bind_param('i', $id_titular_cliente_db);
 						$stmt63->execute();    
@@ -106,8 +106,8 @@
 			return;
 		}
 
-		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.aviso_x_mora axm, finan_cli.tipo_documento td, finan_cli.cuota_credito ccre, finan_cli.sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY axm.fecha DESC";
-		else $selecBDC = "SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.aviso_x_mora axm, finan_cli.tipo_documento td, finan_cli.cuota_credito ccre, finan_cli.sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.documento = ? ORDER BY axm.fecha DESC";
+		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".aviso_x_mora axm, ".$db_name.".tipo_documento td, ".$db_name.".cuota_credito ccre, ".$db_name.".sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY axm.fecha DESC";
+		else $selecBDC = "SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".aviso_x_mora axm, ".$db_name.".tipo_documento td, ".$db_name.".cuota_credito ccre, ".$db_name.".sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.documento = ? ORDER BY axm.fecha DESC";
 		if ($stmt = $mysqli->prepare($selecBDC)) 
 		{
 			if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_param('iiss', $id_cadena_user, $tipo_documento_titular, $documento_titular, $documento);

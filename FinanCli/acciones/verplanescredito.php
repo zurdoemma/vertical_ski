@@ -24,7 +24,7 @@
 		
 		$idPerfilCredito=htmlspecialchars($_POST["idPerfilCredito"], ENT_QUOTES, 'UTF-8');
 
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 		{
 			$stmt->bind_param('i', $idPerfilCredito);
 			$stmt->execute();    
@@ -40,7 +40,7 @@
 				return;
 			}
 
-			if($stmt2 = $mysqli->prepare("SELECT pc.id, pc.nombre FROM finan_cli.plan_credito pc, finan_cli.perfil_credito_x_plan pcxp WHERE pc.id = pcxp.id_plan_credito AND pcxp.id_perfil_credito = ?"))
+			if($stmt2 = $mysqli->prepare("SELECT pc.id, pc.nombre FROM ".$db_name.".plan_credito pc, ".$db_name.".perfil_credito_x_plan pcxp WHERE pc.id = pcxp.id_plan_credito AND pcxp.id_perfil_credito = ?"))
 			{
 				$stmt2->bind_param('i', $idPerfilCredito);
 				$stmt2->execute();    
@@ -54,7 +54,7 @@
 				return;				
 			}
 
-			if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre FROM finan_cli.plan_credito pc WHERE pc.id NOT IN (SELECT pc2.id FROM finan_cli.plan_credito pc2, finan_cli.perfil_credito_x_plan pcxp WHERE pc2.id = pcxp.id_plan_credito AND pcxp.id_perfil_credito = ?)"))
+			if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre FROM ".$db_name.".plan_credito pc WHERE pc.id NOT IN (SELECT pc2.id FROM ".$db_name.".plan_credito pc2, ".$db_name.".perfil_credito_x_plan pcxp WHERE pc2.id = pcxp.id_plan_credito AND pcxp.id_perfil_credito = ?)"))
 			{
 				$stmt3->bind_param('i', $idPerfilCredito);
 				$stmt3->execute();    

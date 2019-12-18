@@ -34,7 +34,7 @@
 			return;
 		}
 				
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -59,7 +59,7 @@
 			return;
 		}
 
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_minimo_perfil_credito'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_minimo_perfil_credito'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -84,7 +84,7 @@
 			return;
 		}		
 			
-		if($stmt2 = $mysqli->prepare("SELECT pc.id FROM finan_cli.perfil_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ?"))
+		if($stmt2 = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".perfil_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ?"))
 		{
 			$stmt2->bind_param('si', $nombre, $idPerfilCredito);
 			$stmt2->execute();    
@@ -99,7 +99,7 @@
 			}
 			else
 			{					
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 				{
 					$stmt->bind_param('i', $idPerfilCredito);
 					$stmt->execute();    
@@ -117,7 +117,7 @@
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.perfil_credito SET nombre = ?, descripcion = ?, monto_maximo = ? WHERE id = ?"))
+						if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".perfil_credito SET nombre = ?, descripcion = ?, monto_maximo = ? WHERE id = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);
@@ -142,9 +142,9 @@
 						$stmt->fetch();
 						$date_registro = date("YmdHis");
 						$date_registro2 = date("Y-m-d H:i:s");					
-						$valor_log_user = "ANTERIOR: UPDATE finan_cli.perfil_credito SET nombre = ".$name_perfil_credito_a.", descripcion = ".$descripcion_perfil_credito_a.", monto_maximo = ".$monto_maximo_perfil_credito_a." WHERE id = ".$id_perfil_credito_a." - NUEVO: UPDATE finan_cli.perfil_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", monto_maximo = ".$montoMaximo." WHERE id = ".$idPerfilCredito;
+						$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".perfil_credito SET nombre = ".$name_perfil_credito_a.", descripcion = ".$descripcion_perfil_credito_a.", monto_maximo = ".$monto_maximo_perfil_credito_a." WHERE id = ".$id_perfil_credito_a." - NUEVO: UPDATE ".$db_name.".perfil_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", monto_maximo = ".$montoMaximo." WHERE id = ".$idPerfilCredito;
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -171,7 +171,7 @@
 						$mysqli->commit();
 						$mysqli->autocommit(TRUE);
 						
-						if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc ORDER BY pc.id"))
+						if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM ".$db_name.".perfil_credito pc ORDER BY pc.id"))
 						{
 							$stmt->execute();    
 							$stmt->store_result();

@@ -24,7 +24,7 @@
 		
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento, c.nombres, c.apellidos, c.cuil_cuit, c.fecha_nacimiento, c.email, c.estado, c.observaciones, c.monto_maximo_credito, c.id_perfil_credito, c.id_genero, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento, c.nombres, c.apellidos, c.cuil_cuit, c.fecha_nacimiento, c.email, c.estado, c.observaciones, c.monto_maximo_credito, c.id_perfil_credito, c.id_genero, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -98,7 +98,7 @@
 				echo '					&nbsp;&nbsp;<label class="control-label" for="tipodocumentoclient">'.translate('Lbl_Type_Document_Client2',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="tipodocumentoclient">';
 				echo '						<select class="form-control input-sm" name="tipodocumentoclienti" id="tipodocumentoclienti" style="width:190px;">';			 
-												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 												{ 
 													$stmt10->execute();    
 													$stmt10->store_result();
@@ -167,7 +167,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="generoclient">'.translate('Lbl_Gender_Client',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="generoclient">';
 				echo '						<select class="form-control input-sm" name="generoclienti" id="generoclienti" style="width:190px;">';			 
-												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM finan_cli.genero")) 
+												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".genero")) 
 												{ 
 													$stmt10->execute();    
 													$stmt10->store_result();
@@ -201,7 +201,7 @@
 					echo '				&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilcreditoclient" id="labelperfilcreditoclient" name="labelperfilcreditoclient" >'.translate('Lbl_Profile_Credit_Client',$GLOBALS['lang']).':</label>';
 					echo '				<div class="form-group" id="perfilcreditoclient">';
 					echo '					<select class="form-control input-sm" name="perfilcreditoclienti" id="perfilcreditoclienti" style="width:190px;">';			 
-												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil_credito")) 
+												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".perfil_credito")) 
 												{ 
 													$stmt10->execute();    
 													$stmt10->store_result();
@@ -231,7 +231,7 @@
 					echo '				&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilcreditoclient" id="labelperfilcreditoclient" name="labelperfilcreditoclient" >'.translate('Lbl_Profile_Credit_Client',$GLOBALS['lang']).':</label>';
 					echo '				<div class="form-group" id="perfilcreditoclient">';
 					echo '					<select class="form-control input-sm" name="perfilcreditoclienti" id="perfilcreditoclienti" style="width:190px;">';			 
-												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil_credito")) 
+												if ($stmt10 = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".perfil_credito")) 
 												{ 
 													$stmt10->execute();    
 													$stmt10->store_result();

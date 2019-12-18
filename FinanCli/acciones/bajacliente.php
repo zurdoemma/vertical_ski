@@ -24,7 +24,7 @@
 		
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');	
 
-		if($stmt = $mysqli->prepare("SELECT id, estado, id_titular FROM finan_cli.cliente WHERE id = ?"))
+		if($stmt = $mysqli->prepare("SELECT id, estado, id_titular FROM ".$db_name.".cliente WHERE id = ?"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -44,7 +44,7 @@
 				
 				if(!empty($id_titular_cliente_db) && $state_client_db == translate('State_User_Disabled',$GLOBALS['lang']))
 				{
-					if($stmt10 = $mysqli->prepare("SELECT id, estado FROM finan_cli.cliente WHERE id = ?"))
+					if($stmt10 = $mysqli->prepare("SELECT id, estado FROM ".$db_name.".cliente WHERE id = ?"))
 					{
 						$stmt10->bind_param('i', $id_titular_cliente_db);
 						$stmt10->execute();    
@@ -82,21 +82,21 @@
 				$habOD = 0;
 				if($state_client_db == translate('State_User_Disabled',$GLOBALS['lang']))
 				{
-					$updateF = "UPDATE finan_cli.cliente SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id = '".$id_client_db."'";
+					$updateF = "UPDATE ".$db_name.".cliente SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id = '".$id_client_db."'";
 					$habOD = 1;
 					
 					if(empty($id_titular_cliente_db))
 					{
-						$updateFA = "UPDATE finan_cli.cliente SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id_titular = '".$id_client_db."'";
+						$updateFA = "UPDATE ".$db_name.".cliente SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id_titular = '".$id_client_db."'";
 					}
 				}
 				else 
 				{
-					$updateF = "UPDATE finan_cli.cliente SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id = '".$id_client_db."'";
+					$updateF = "UPDATE ".$db_name.".cliente SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id = '".$id_client_db."'";
 				
 					if(empty($id_titular_cliente_db))
 					{
-						$updateFA = "UPDATE finan_cli.cliente SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id_titular = '".$id_client_db."'";
+						$updateFA = "UPDATE ".$db_name.".cliente SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id_titular = '".$id_client_db."'";
 					}
 				}
 				if(!$mysqli->query($updateF))
@@ -135,9 +135,9 @@
 					
 					if(empty($id_titular_cliente_db)) 
 					{
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,46,?)";
+						$insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,46,?)";
 					}
-					else $insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,48,?)";
+					else $insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,48,?)";
 				}
 				else
 				{
@@ -148,9 +148,9 @@
 
 					if(empty($id_titular_cliente_db)) 
 					{
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,47,?)";
+						$insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,47,?)";
 					}
-					else $insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,49,?)";
+					else $insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,49,?)";
 				}
 
 				if(!$stmt = $mysqli->prepare($insertLEUF))
@@ -179,7 +179,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
+				if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
 				{
 					$stmt->execute();    
 					$stmt->store_result();
@@ -199,7 +199,7 @@
 						
 						if($type_account_client == translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']))
 						{
-							if ($stmt90 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_titular = ?")) 
+							if ($stmt90 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id_titular = ?")) 
 							{
 								$stmt90->bind_param('i', $id_client);
 								$stmt90->execute();   

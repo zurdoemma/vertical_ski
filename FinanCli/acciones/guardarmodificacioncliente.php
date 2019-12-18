@@ -43,7 +43,7 @@
 		$observaciones = !empty($observaciones) ? "$observaciones" : "---";
 		
 		
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'edad_permitida_cliente_titular'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'edad_permitida_cliente_titular'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -89,7 +89,7 @@
 			}
 		}
 		
-		if($stmt37 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento, c.nombres, c.apellidos, c.cuil_cuit, c.fecha_nacimiento, c.email, c.observaciones, c.monto_maximo_credito, c.id_perfil_credito, c.id_genero FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt37 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento, c.nombres, c.apellidos, c.cuil_cuit, c.fecha_nacimiento, c.email, c.observaciones, c.monto_maximo_credito, c.id_perfil_credito, c.id_genero FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt37->bind_param('i', $idCliente);
 			$stmt37->execute();    
@@ -126,7 +126,7 @@
 				return;
 			}
 			
-			if($stmt = $mysqli->prepare("SELECT tcc.id FROM finan_cli.token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ? AND tcc.validado = 1"))
+			if($stmt = $mysqli->prepare("SELECT tcc.id FROM ".$db_name.".token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ? AND tcc.validado = 1"))
 			{
 				$date_registro_a_s = date("Ymd")."%";
 				$stmt->bind_param('siss', $tokenCTC, $tipoDocumentoDB, $documentoDB, $date_registro_a_s);
@@ -148,7 +148,7 @@
 			}
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT ec.id FROM finan_cli.estado_cliente ec WHERE ec.tipo_documento = ? AND ec.documento = ? AND ec.fecha like ? AND ec.id_motivo IN (50,51,52)"))
+		if($stmt = $mysqli->prepare("SELECT ec.id FROM ".$db_name.".estado_cliente ec WHERE ec.tipo_documento = ? AND ec.documento = ? AND ec.fecha like ? AND ec.id_motivo IN (50,51,52)"))
 		{
 			$date_registro_a_s2 = date("Ymd")."%";
 			$stmt->bind_param('iss', $tipoDocumentoDB, $documentoDB, $date_registro_a_s2);
@@ -170,7 +170,7 @@
 		}		
 		
 		
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_credito_cliente'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_maximo_credito_cliente'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -198,7 +198,7 @@
 								
 		if($tipoCuentaCliente == translate('Lbl_Type_Client_Additional',$GLOBALS['lang']))
 		{
-			if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit, c.id_perfil_credito, c.monto_maximo_credito FROM finan_cli.cliente c WHERE c.id = ?"))
+			if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit, c.id_perfil_credito, c.monto_maximo_credito FROM ".$db_name.".cliente c WHERE c.id = ?"))
 			{
 				$stmt40->bind_param('i', $tipo_cuenta_cliente_db);
 				$stmt40->execute();    
@@ -221,7 +221,7 @@
 						return;
 					}
 					
-					if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+					if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 					{
 						$stmt41->bind_param('i', $idPerfilCreditoTitular);
 						$stmt41->execute();    
@@ -261,7 +261,7 @@
 		}
 		else
 		{
-			if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+			if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 			{
 				$stmt41->bind_param('i', $perfilCredito);
 				$stmt41->execute();    
@@ -293,7 +293,7 @@
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
 				
-		if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.cliente SET tipo_documento = ?, documento = ?, nombres = ?, apellidos = ?, cuil_cuit = ?, fecha_nacimiento = ?, email = ?, observaciones = ?, monto_maximo_credito = ?, id_perfil_credito = ?, id_genero = ? WHERE id = ?"))
+		if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".cliente SET tipo_documento = ?, documento = ?, nombres = ?, apellidos = ?, cuil_cuit = ?, fecha_nacimiento = ?, email = ?, observaciones = ?, monto_maximo_credito = ?, id_perfil_credito = ?, id_genero = ? WHERE id = ?"))
 		{
 			echo $mysqli->error;
 			$mysqli->rollback();
@@ -320,7 +320,7 @@
 			
 			if($tipoCuentaCliente != translate('Lbl_Type_Client_Additional',$GLOBALS['lang']) && $perfil_credito_cliente_db != $perfilCredito)
 			{
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.cliente SET id_perfil_credito = ? WHERE id_titular = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".cliente SET id_perfil_credito = ? WHERE id_titular = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -346,7 +346,7 @@
 			
 			if($tipoDocumento != $tipoDocumentoDB || $documento != $documentoDB)
 			{
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.cliente_x_domicilio SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_domicilio SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -369,7 +369,7 @@
 					}					
 				}
 				
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.cliente_x_telefono SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_telefono SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -392,7 +392,7 @@
 					}					
 				}
 				
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".consulta_estado_financiero SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -415,7 +415,7 @@
 					}					
 				}
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.credito_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".credito_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -438,7 +438,7 @@
 					}					
 				}				
 				
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.dato_laboral_x_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".dato_laboral_x_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -461,7 +461,7 @@
 					}					
 				}
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.estado_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".estado_cliente SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -484,7 +484,7 @@
 					}					
 				}
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.token_adicional_cuenta SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".token_adicional_cuenta SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -507,7 +507,7 @@
 					}					
 				}
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.token_adicional_cuenta SET tipo_documento_titular = ?, documento_titular = ? WHERE tipo_documento_titular = ? AND documento_titular = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".token_adicional_cuenta SET tipo_documento_titular = ?, documento_titular = ? WHERE tipo_documento_titular = ? AND documento_titular = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -530,7 +530,7 @@
 					}					
 				}
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.token_cambio_cuenta SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".token_cambio_cuenta SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -553,7 +553,7 @@
 					}					
 				}	
 
-				if(!$stmt21 = $mysqli->prepare("UPDATE finan_cli.token_validacion_celular SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
+				if(!$stmt21 = $mysqli->prepare("UPDATE ".$db_name.".token_validacion_celular SET tipo_documento = ?, documento = ? WHERE tipo_documento = ? AND documento = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -579,10 +579,10 @@
 		}
 
 		$date_registro = date("YmdHis");
-		if(!empty($idPerfilCreditoTitular)) $valor_log_user = "ANTERIOR: UPDATE finan_cli.cliente SET tipo_documento = ".$tipoDocumentoDB.", documento = ".$documentoDB.", nombres = ".$nombres_cliente_db.", apellidos = ".$apellidos_cliente_db.", cuil_cuit = ".$cuit_cuil_cliente_db.", fecha_nacimiento = ".$fecha_nacimiento_cliente_db.", email = ".$email_cliente_db.", observaciones = ".$observaciones_cliente_db.", monto_maximo_credito = ".$monto_maximo_credito_cliente_db.", id_perfil_credito = ".$perfil_credito_cliente_db.", id_genero = ".$genero_cliente_db." WHERE id = ".$idCliente." -- NUEVO: UPDATE finan_cli.cliente SET tipo_documento = ".$tipoDocumento.", documento = ".$documento.", nombres = ".$nombres.", apellidos = ".$apellidos.", cuil_cuit = ".$cuitCuil.", fecha_nacimiento = ".$fechaNacimiento.", email = ".str_replace('\'','',$email).", observaciones = ".str_replace('\'','',$observaciones).", monto_maximo_credito = ".$montoMaximo.", id_perfil_credito = ".$idPerfilCreditoTitular.", id_genero = ".$genero." WHERE id = ".$idCliente;
-		else $valor_log_user = "ANTERIOR: UPDATE finan_cli.cliente SET tipo_documento = ".$tipoDocumentoDB.", documento = ".$documentoDB.", nombres = ".$nombres_cliente_db.", apellidos = ".$apellidos_cliente_db.", cuil_cuit = ".$cuit_cuil_cliente_db.", fecha_nacimiento = ".$fecha_nacimiento_cliente_db.", email = ".$email_cliente_db.", observaciones = ".$observaciones_cliente_db.", monto_maximo_credito = ".$monto_maximo_credito_cliente_db.", id_perfil_credito = ".$perfil_credito_cliente_db.", id_genero = ".$genero_cliente_db." WHERE id = ".$idCliente." -- NUEVO: UPDATE finan_cli.cliente SET tipo_documento = ".$tipoDocumento.", documento = ".$documento.", nombres = ".$nombres.", apellidos = ".$apellidos.", cuil_cuit = ".$cuitCuil.", fecha_nacimiento = ".$fechaNacimiento.", email = ".str_replace('\'','',$email).", observaciones = ".str_replace('\'','',$observaciones).", monto_maximo_credito = ".$montoMaximo.", id_perfil_credito = ".$perfilCredito.", id_genero = ".$genero." WHERE id = ".$idCliente;
+		if(!empty($idPerfilCreditoTitular)) $valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cliente SET tipo_documento = ".$tipoDocumentoDB.", documento = ".$documentoDB.", nombres = ".$nombres_cliente_db.", apellidos = ".$apellidos_cliente_db.", cuil_cuit = ".$cuit_cuil_cliente_db.", fecha_nacimiento = ".$fecha_nacimiento_cliente_db.", email = ".$email_cliente_db.", observaciones = ".$observaciones_cliente_db.", monto_maximo_credito = ".$monto_maximo_credito_cliente_db.", id_perfil_credito = ".$perfil_credito_cliente_db.", id_genero = ".$genero_cliente_db." WHERE id = ".$idCliente." -- NUEVO: UPDATE ".$db_name.".cliente SET tipo_documento = ".$tipoDocumento.", documento = ".$documento.", nombres = ".$nombres.", apellidos = ".$apellidos.", cuil_cuit = ".$cuitCuil.", fecha_nacimiento = ".$fechaNacimiento.", email = ".str_replace('\'','',$email).", observaciones = ".str_replace('\'','',$observaciones).", monto_maximo_credito = ".$montoMaximo.", id_perfil_credito = ".$idPerfilCreditoTitular.", id_genero = ".$genero." WHERE id = ".$idCliente;
+		else $valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cliente SET tipo_documento = ".$tipoDocumentoDB.", documento = ".$documentoDB.", nombres = ".$nombres_cliente_db.", apellidos = ".$apellidos_cliente_db.", cuil_cuit = ".$cuit_cuil_cliente_db.", fecha_nacimiento = ".$fecha_nacimiento_cliente_db.", email = ".$email_cliente_db.", observaciones = ".$observaciones_cliente_db.", monto_maximo_credito = ".$monto_maximo_credito_cliente_db.", id_perfil_credito = ".$perfil_credito_cliente_db.", id_genero = ".$genero_cliente_db." WHERE id = ".$idCliente." -- NUEVO: UPDATE ".$db_name.".cliente SET tipo_documento = ".$tipoDocumento.", documento = ".$documento.", nombres = ".$nombres.", apellidos = ".$apellidos.", cuil_cuit = ".$cuitCuil.", fecha_nacimiento = ".$fechaNacimiento.", email = ".str_replace('\'','',$email).", observaciones = ".str_replace('\'','',$observaciones).", monto_maximo_credito = ".$montoMaximo.", id_perfil_credito = ".$perfilCredito.", id_genero = ".$genero." WHERE id = ".$idCliente;
 			
-		if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+		if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 		{
 			echo $mysqli->error;
 			$mysqli->rollback();
@@ -610,7 +610,7 @@
 		$mysqli->autocommit(TRUE);
 		
 		
-		if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
 		{
 			$stmt->execute();    
 			$stmt->store_result();
@@ -630,7 +630,7 @@
 				
 				if($type_account_client == translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']))
 				{
-					if ($stmt90 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_titular = ?")) 
+					if ($stmt90 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id_titular = ?")) 
 					{
 						$stmt90->bind_param('i', $id_client);
 						$stmt90->execute();   

@@ -32,7 +32,7 @@
 		$claveactu = htmlspecialchars($_POST["claveac"], ENT_QUOTES, 'UTF-8');
 		$nclaveu=htmlspecialchars($_POST["claveu"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, u.clave, u.salt FROM finan_cli.usuario u, finan_cli.tipo_documento td WHERE u.tipo_documento = td.id AND u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, u.clave, u.salt FROM ".$db_name.".usuario u, ".$db_name.".tipo_documento td WHERE u.tipo_documento = td.id AND u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -87,7 +87,7 @@
 					$saltu = $user_salt;
 				}
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.usuario SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, clave = ?, salt = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".usuario SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, clave = ?, salt = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -110,10 +110,10 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				if(empty($nclaveu)) $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email." WHERE id =".$usuario;
-				else $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", clave =".$clavefu.", salt =".$saltu." WHERE id =".$usuario;
+				if(empty($nclaveu)) $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE ".$db_name.".usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email." WHERE id =".$usuario;
+				else $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email." -- "."NUEVO: UPDATE ".$db_name.".usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", clave =".$clavefu.", salt =".$saltu." WHERE id =".$usuario;
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -140,7 +140,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT u.nombre, u.apellido, u.tipo_documento, u.documento, u.email FROM finan_cli.usuario u WHERE u.id like(?)"))
+				if($stmt = $mysqli->prepare("SELECT u.nombre, u.apellido, u.tipo_documento, u.documento, u.email FROM ".$db_name.".usuario u WHERE u.id like(?)"))
 				{
 					$stmt->bind_param('s', $usuario);
 					$stmt->execute();    

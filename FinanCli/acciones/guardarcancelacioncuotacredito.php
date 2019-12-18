@@ -25,7 +25,7 @@
 		$idCuotaCredito=htmlspecialchars($_POST["idCuotaCredito"], ENT_QUOTES, 'UTF-8');
 		$motivoCancelacion=htmlspecialchars($_POST["motivoCancelacion"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -52,7 +52,7 @@
 			return;				
 		}		
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -80,7 +80,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT cc.id, cc.monto_cuota_original, cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id = ? AND cc.estado = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT cc.id, cc.monto_cuota_original, cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id = ? AND cc.estado = ?")) 
 		{
 			$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 			$stmt->bind_param('is', $idCuotaCredito, $estContrCPagada);
@@ -108,7 +108,7 @@
 		}		
 		
 						
-		if($stmt = $mysqli->prepare("SELECT u.id_perfil FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id_perfil FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $_SESSION['username']);
 			$stmt->execute();    
@@ -129,7 +129,7 @@
 				
 				
 				$estadoFormaPagoCuota = "I";
-				if($stmt161 = $mysqli->prepare("SELECT pt.id_pago_total_credito FROM finan_cli.pago_total_credito_x_cuota pt WHERE pt.id_cuota_credito = ?"))
+				if($stmt161 = $mysqli->prepare("SELECT pt.id_pago_total_credito FROM ".$db_name.".pago_total_credito_x_cuota pt WHERE pt.id_cuota_credito = ?"))
 				{
 					$stmt161->bind_param('i', $idCuotaCredito);
 					$stmt161->execute();    
@@ -155,7 +155,7 @@
 				
 				if($estadoFormaPagoCuota == "I")
 				{
-					if($stmt162 = $mysqli->prepare("SELECT ps.id, c.id FROM finan_cli.pago_seleccion_cuotas_credito ps, finan_cli.cuota_credito cc, finan_cli.credito c WHERE ps.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ps.id_cuota_credito = ?"))
+					if($stmt162 = $mysqli->prepare("SELECT ps.id, c.id FROM ".$db_name.".pago_seleccion_cuotas_credito ps, ".$db_name.".cuota_credito cc, ".$db_name.".credito c WHERE ps.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ps.id_cuota_credito = ?"))
 					{
 						$stmt162->bind_param('i', $idCuotaCredito);
 						$stmt162->execute();    
@@ -181,7 +181,7 @@
 				
 				if($estadoFormaPagoCuota == "I")
 				{
-					if($stmt162 = $mysqli->prepare("SELECT pu.fecha_pago, pu.monto_pago, pu.usuario_registro_pago FROM finan_cli.cuota_credito pu WHERE pu.id = ? AND pu.fecha_pago IS NOT NULL AND pu.monto_pago IS NOT NULL AND pu.usuario_registro_pago IS NOT NULL"))
+					if($stmt162 = $mysqli->prepare("SELECT pu.fecha_pago, pu.monto_pago, pu.usuario_registro_pago FROM ".$db_name.".cuota_credito pu WHERE pu.id = ? AND pu.fecha_pago IS NOT NULL AND pu.monto_pago IS NOT NULL AND pu.usuario_registro_pago IS NOT NULL"))
 					{
 						$stmt162->bind_param('i', $idCuotaCredito);
 						$stmt162->execute();    
@@ -217,7 +217,7 @@
 				
 				if($estadoFormaPagoCuota == 'T')
 				{					
-					if($stmt163 = $mysqli->prepare("SELECT ptxc.id_cuota_credito, pt.fecha, pt.monto, pt.usuario, pt.supervisor, pt.token, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM finan_cli.pago_total_credito pt, finan_cli.pago_total_credito_x_cuota ptxc, finan_cli.cuota_credito cc, finan_cli.credito c WHERE ptxc.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ptxc.id_pago_total_credito = pt.id AND ptxc.id_pago_total_credito = ? AND cc.estado = ?"))
+					if($stmt163 = $mysqli->prepare("SELECT ptxc.id_cuota_credito, pt.fecha, pt.monto, pt.usuario, pt.supervisor, pt.token, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM ".$db_name.".pago_total_credito pt, ".$db_name.".pago_total_credito_x_cuota ptxc, ".$db_name.".cuota_credito cc, ".$db_name.".credito c WHERE ptxc.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ptxc.id_pago_total_credito = pt.id AND ptxc.id_pago_total_credito = ? AND cc.estado = ?"))
 					{
 						$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt163->bind_param('is', $id_pago_total_credito_db, $estContrCPagada);
@@ -234,7 +234,7 @@
 							
 							$posWhileR = 0;
 							
-							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
+							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = ?"))
 							{
 								$nombreValPara = 'cantidad_dias_x_mora';
 								$stmt39->bind_param('s', $nombreValPara);
@@ -281,7 +281,7 @@
 									$estSCENM = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 								}
 								
-								if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
+								if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -308,9 +308,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: UPDATE finan_cli.cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE finan_cli.cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE ".$db_name.".cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -334,7 +334,7 @@
 									}
 								}
 
-								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM finan_cli.pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
+								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM ".$db_name.".pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
 								{
 									$stmt164->bind_param('i', $id_cuota_credito_anular_pago_db);
 									$stmt164->execute();    
@@ -347,7 +347,7 @@
 										$stmt164->bind_result($id_pago_parcial_cuota_credito_db, $fecha_pago_parcial_cuota_credito_db, $monto_pago_parcial_cuota_credito_db, $usuario_pago_parcial_cuota_credito_db, $supervisor_pago_parcial_cuota_credito_db, $token_pago_parcial_cuota_credito_db);
 										$stmt164->fetch();
 										
-										if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
+										if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -372,9 +372,9 @@
 										}
 							
 										$date_registro = date("YmdHis");
-										$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+										$valor_log_user = "ANTERIOR: ".$db_name.".pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 											
-										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+										if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -408,7 +408,7 @@
 									return;
 								}
 								
-								if($stmt165 = $mysqli->prepare("SELECT ptcxc.id_pago_total_credito, ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								if($stmt165 = $mysqli->prepare("SELECT ptcxc.id_pago_total_credito, ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 								{
 									$stmt165->bind_param('i', $id_cuota_credito_anular_pago_db);
 									$stmt165->execute();    
@@ -421,7 +421,7 @@
 										$stmt165->bind_result($id_pago_total_credito_borrar_db, $id_cuota_credito_borrar_db);
 										$stmt165->fetch();
 										
-										if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
+										if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -446,9 +446,9 @@
 										}
 							
 										$date_registro = date("YmdHis");
-										$valor_log_user = "ANTERIOR: finan_cli.pago_total_credito_x_cuota SET id_pago_total_credito = ".$id_pago_total_credito_borrar_db.", id_cuota_credito = ".$id_cuota_credito_borrar_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+										$valor_log_user = "ANTERIOR: ".$db_name.".pago_total_credito_x_cuota SET id_pago_total_credito = ".$id_pago_total_credito_borrar_db.", id_cuota_credito = ".$id_cuota_credito_borrar_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE ".$db_name.".pago_total_credito_x_cuota WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 											
-										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+										if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -482,7 +482,7 @@
 									return;
 								}								
 
-								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
+								if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -512,7 +512,7 @@
 								$posWhileR++;
 							}
 							
-							if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_total_credito WHERE id_credito = ?"))
+							if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_total_credito WHERE id_credito = ?"))
 							{
 								echo $mysqli->error;
 								if($posWhileR != 0) $mysqli->rollback();
@@ -537,9 +537,9 @@
 							}
 				
 							$date_registro = date("YmdHis");
-							$valor_log_user = "ANTERIOR: finan_cli.pago_total_credito SET id = ".$id_pago_total_credito_borrar_db.", id_credito = ".$id_credito_anular_pago_db.", fecha = ".$fecha_pago_total_borrar_db.", monto = ".$monto_pago_total_borrar_db.", usuario = ".$usuario_pago_total_borrar_db.", supervisor = ".$supervisor_pago_total_borrar_db.", token = ".$token_pago_total_borrar_db." WHERE id_credito = ".$id_credito_anular_pago_db." -- DELETE finan_cli.pago_total_credito WHERE id_credito = ".$id_credito_anular_pago_db;
+							$valor_log_user = "ANTERIOR: ".$db_name.".pago_total_credito SET id = ".$id_pago_total_credito_borrar_db.", id_credito = ".$id_credito_anular_pago_db.", fecha = ".$fecha_pago_total_borrar_db.", monto = ".$monto_pago_total_borrar_db.", usuario = ".$usuario_pago_total_borrar_db.", supervisor = ".$supervisor_pago_total_borrar_db.", token = ".$token_pago_total_borrar_db." WHERE id_credito = ".$id_credito_anular_pago_db." -- DELETE ".$db_name.".pago_total_credito WHERE id_credito = ".$id_credito_anular_pago_db;
 								
-							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								if($posWhileR != 0) $mysqli->rollback();
@@ -563,7 +563,7 @@
 								}
 							}
 
-							if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+							if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								if($posWhileR != 0) $mysqli->rollback();
@@ -588,9 +588,9 @@
 							}
 				
 							$date_registro = date("YmdHis");
-							$valor_log_user = "ANTERIOR: finan_cli.credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE finan_cli.credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
+							$valor_log_user = "ANTERIOR: ".$db_name.".credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE ".$db_name.".credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
 								
-							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								if($posWhileR != 0) $mysqli->rollback();
@@ -632,7 +632,7 @@
 						return;						
 					}
 				
-					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 					{
 						$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt353->bind_param('is', $id_credito_anular_pago_db, $estadoPagadoControlCuo);
@@ -656,7 +656,7 @@
 						return;
 					}			
 					
-					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 					{
 						$stmt65->bind_param('i', $id_credito_anular_pago_db);
 						$stmt65->execute();    
@@ -673,7 +673,7 @@
 						return;
 					}
 					
-					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM finan_cli.credito c WHERE c.id = ?"))
+					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM ".$db_name.".credito c WHERE c.id = ?"))
 					{
 						$stmt68->bind_param('i', $id_credito_anular_pago_db);
 						$stmt68->execute();    
@@ -701,7 +701,7 @@
 						return;
 					}
 					
-					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 					{
 						$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 						$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -726,7 +726,7 @@
 						return;
 					}
 					
-					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 					{
 						$stmt62->bind_param('i', $id_credito_anular_pago_db);
 						$stmt62->execute();    
@@ -743,7 +743,7 @@
 							$posicion = 0;
 							while($stmt62->fetch())
 							{		
-								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 								{
 									$stmt67->bind_param('ii', $id_credito_anular_pago_db, $id_cuota_credito_db);
 									$stmt67->execute();    
@@ -764,7 +764,7 @@
 									return;
 								}
 
-								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 								{
 									$stmt66->bind_param('i', $id_cuota_credito_db);
 									$stmt66->execute();    
@@ -778,7 +778,7 @@
 									return;
 								}
 
-								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 								{
 									$stmt105->bind_param('i', $id_cuota_credito_db);
 									$stmt105->execute();    
@@ -992,7 +992,7 @@
 				
 				if($estadoFormaPagoCuota == 'S')
 				{					
-					if($stmt163 = $mysqli->prepare("SELECT pscc.id_cuota_credito, pscc.fecha, pscc.monto, pscc.usuario, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM finan_cli.pago_seleccion_cuotas_credito pscc, finan_cli.cuota_credito cc, finan_cli.credito c WHERE pscc.id_cuota_credito = cc.id AND cc.id_credito = c.id AND cc.id_credito = ? AND cc.estado = ?"))
+					if($stmt163 = $mysqli->prepare("SELECT pscc.id_cuota_credito, pscc.fecha, pscc.monto, pscc.usuario, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM ".$db_name.".pago_seleccion_cuotas_credito pscc, ".$db_name.".cuota_credito cc, ".$db_name.".credito c WHERE pscc.id_cuota_credito = cc.id AND cc.id_credito = c.id AND cc.id_credito = ? AND cc.estado = ?"))
 					{
 						$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt163->bind_param('is', $id_credito_pago_seleccion_cuotas_db, $estContrCPagada);
@@ -1009,7 +1009,7 @@
 							
 							$posWhileR = 0;
 							
-							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
+							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = ?"))
 							{
 								$nombreValPara = 'cantidad_dias_x_mora';
 								$stmt39->bind_param('s', $nombreValPara);
@@ -1056,7 +1056,7 @@
 									$estSCENM = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 								}
 								
-								if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
+								if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1083,9 +1083,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: UPDATE finan_cli.cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE finan_cli.cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE ".$db_name.".cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1109,7 +1109,7 @@
 									}
 								}
 
-								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM finan_cli.pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
+								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM ".$db_name.".pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
 								{
 									$stmt164->bind_param('i', $id_cuota_credito_anular_pago_db);
 									$stmt164->execute();    
@@ -1122,7 +1122,7 @@
 										$stmt164->bind_result($id_pago_parcial_cuota_credito_db, $fecha_pago_parcial_cuota_credito_db, $monto_pago_parcial_cuota_credito_db, $usuario_pago_parcial_cuota_credito_db, $supervisor_pago_parcial_cuota_credito_db, $token_pago_parcial_cuota_credito_db);
 										$stmt164->fetch();
 										
-										if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
+										if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -1147,9 +1147,9 @@
 										}
 							
 										$date_registro = date("YmdHis");
-										$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+										$valor_log_user = "ANTERIOR: ".$db_name.".pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 											
-										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+										if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -1183,7 +1183,7 @@
 									return;
 								}
 								
-								if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_seleccion_cuotas_credito WHERE id_cuota_credito = ?"))
+								if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_seleccion_cuotas_credito WHERE id_cuota_credito = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1208,9 +1208,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: finan_cli.pago_seleccion_cuotas_credito SET id_cuota_credito = ".$id_cuota_credito_borrar_db.", fecha = ".$fecha_pago_seleccion_borrar_db.", monto = ".$monto_pago_seleccion_borrar_db.", usuario = ".$usuario_pago_seleccion_borrar_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_seleccion_cuotas_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: ".$db_name.".pago_seleccion_cuotas_credito SET id_cuota_credito = ".$id_cuota_credito_borrar_db.", fecha = ".$fecha_pago_seleccion_borrar_db.", monto = ".$monto_pago_seleccion_borrar_db.", usuario = ".$usuario_pago_seleccion_borrar_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE ".$db_name.".pago_seleccion_cuotas_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1234,7 +1234,7 @@
 									}
 								}
 										
-								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
+								if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1266,7 +1266,7 @@
 							
 							if($estado_credito_pago_anular_db != translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']))
 							{
-								if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+								if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1291,9 +1291,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: finan_cli.credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE finan_cli.credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: ".$db_name.".credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE ".$db_name.".credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1336,7 +1336,7 @@
 						return;						
 					}
 				
-					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 					{
 						$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt353->bind_param('is', $id_credito_anular_pago_db, $estadoPagadoControlCuo);
@@ -1360,7 +1360,7 @@
 						return;
 					}			
 					
-					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 					{
 						$stmt65->bind_param('i', $id_credito_anular_pago_db);
 						$stmt65->execute();    
@@ -1377,7 +1377,7 @@
 						return;
 					}
 					
-					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM finan_cli.credito c WHERE c.id = ?"))
+					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM ".$db_name.".credito c WHERE c.id = ?"))
 					{
 						$stmt68->bind_param('i', $id_credito_anular_pago_db);
 						$stmt68->execute();    
@@ -1405,7 +1405,7 @@
 						return;
 					}
 					
-					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 					{
 						$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 						$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -1430,7 +1430,7 @@
 						return;
 					}
 					
-					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 					{
 						$stmt62->bind_param('i', $id_credito_anular_pago_db);
 						$stmt62->execute();    
@@ -1447,7 +1447,7 @@
 							$posicion = 0;
 							while($stmt62->fetch())
 							{		
-								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 								{
 									$stmt67->bind_param('ii', $id_credito_anular_pago_db, $id_cuota_credito_db);
 									$stmt67->execute();    
@@ -1468,7 +1468,7 @@
 									return;
 								}
 
-								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 								{
 									$stmt66->bind_param('i', $id_cuota_credito_db);
 									$stmt66->execute();    
@@ -1482,7 +1482,7 @@
 									return;
 								}
 
-								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 								{
 									$stmt105->bind_param('i', $id_cuota_credito_db);
 									$stmt105->execute();    
@@ -1696,7 +1696,7 @@
 				
 				if($estadoFormaPagoCuota == 'U')
 				{					
-					if($stmt163 = $mysqli->prepare("SELECT cc.id, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM finan_cli.cuota_credito cc, finan_cli.credito c WHERE cc.id_credito = c.id AND cc.id = ? AND cc.estado = ?"))
+					if($stmt163 = $mysqli->prepare("SELECT cc.id, cc.id_credito, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago, cc.monto_pago, cc.usuario_registro_pago, c.estado FROM ".$db_name.".cuota_credito cc, ".$db_name.".credito c WHERE cc.id_credito = c.id AND cc.id = ? AND cc.estado = ?"))
 					{
 						$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt163->bind_param('is', $idCuotaCredito, $estContrCPagada);
@@ -1713,7 +1713,7 @@
 							
 							$posWhileR = 0;
 							
-							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
+							if($stmt39 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = ?"))
 							{
 								$nombreValPara = 'cantidad_dias_x_mora';
 								$stmt39->bind_param('s', $nombreValPara);
@@ -1760,7 +1760,7 @@
 									$estSCENM = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 								}
 								
-								if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
+								if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ?, fecha_pago = ?, monto_pago = ?, usuario_registro_pago = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1787,9 +1787,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: UPDATE finan_cli.cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE finan_cli.cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cuota_credito SET estado = ".$estado_cuota_anular_pago_db.", fecha_pago = ".$fecha_pago_anular_db.", monto_pago = ".$monto_pago_anular_db.", usuario_registro_pago = ".$usuario_registro_pago_anular_db." WHERE id = ".$id_cuota_credito_anular_pago_db." -- NUEVO: UPDATE ".$db_name.".cuota_credito SET estado = ".$estSCENM.", fecha_pago = NULL, monto_pago = NULL, usuario_registro_pago = NULL WHERE id = ".$id_cuota_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1813,7 +1813,7 @@
 									}
 								}
 
-								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM finan_cli.pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
+								if($stmt164 = $mysqli->prepare("SELECT ppc.id, ppc.fecha, ppc.monto, ppc.usuario, ppc.supervisor, ppc.token FROM ".$db_name.".pago_parcial_cuota_credito ppc WHERE ppc.id_cuota_credito = ?"))
 								{
 									$stmt164->bind_param('i', $id_cuota_credito_anular_pago_db);
 									$stmt164->execute();    
@@ -1826,7 +1826,7 @@
 										$stmt164->bind_result($id_pago_parcial_cuota_credito_db, $fecha_pago_parcial_cuota_credito_db, $monto_pago_parcial_cuota_credito_db, $usuario_pago_parcial_cuota_credito_db, $supervisor_pago_parcial_cuota_credito_db, $token_pago_parcial_cuota_credito_db);
 										$stmt164->fetch();
 										
-										if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
+										if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ?"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -1851,9 +1851,9 @@
 										}
 							
 										$date_registro = date("YmdHis");
-										$valor_log_user = "ANTERIOR: finan_cli.pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE finan_cli.pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
+										$valor_log_user = "ANTERIOR: ".$db_name.".pago_parcial_cuota_credito SET id = ".$id_pago_parcial_cuota_credito_db.", fecha = ".$fecha_pago_parcial_cuota_credito_db.", monto = ".$monto_pago_parcial_cuota_credito_db.", usuario = ".$usuario_pago_parcial_cuota_credito_db.", supervisor = ".$supervisor_pago_parcial_cuota_credito_db.", token = ".$token_pago_parcial_cuota_credito_db." WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db." -- DELETE ".$db_name.".pago_parcial_cuota_credito WHERE id_cuota_credito = ".$id_cuota_credito_anular_pago_db;
 											
-										if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+										if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											if($posWhileR != 0) $mysqli->rollback();
@@ -1887,7 +1887,7 @@
 									return;
 								}
 																		
-								if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
+								if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_anulacion_cuota_credito(fecha,id_cuota_credito,usuario,token,comentario,forma_pago_original) VALUES (?,?,?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1919,7 +1919,7 @@
 							
 							if($estado_credito_pago_anular_db != translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']))
 							{
-								if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+								if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1944,9 +1944,9 @@
 								}
 					
 								$date_registro = date("YmdHis");
-								$valor_log_user = "ANTERIOR: finan_cli.credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE finan_cli.credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
+								$valor_log_user = "ANTERIOR: ".$db_name.".credito SET estado = ".$estado_credito_pago_anular_db." WHERE id = ".$id_credito_anular_pago_db." -- UPDATE ".$db_name.".credito SET estado = ".$estNewCred." WHERE id = ".$id_credito_anular_pago_db;
 									
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									if($posWhileR != 0) $mysqli->rollback();
@@ -1989,7 +1989,7 @@
 						return;						
 					}
 				
-					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+					if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 					{
 						$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 						$stmt353->bind_param('is', $id_credito_anular_pago_db, $estadoPagadoControlCuo);
@@ -2013,7 +2013,7 @@
 						return;
 					}			
 					
-					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+					if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 					{
 						$stmt65->bind_param('i', $id_credito_anular_pago_db);
 						$stmt65->execute();    
@@ -2030,7 +2030,7 @@
 						return;
 					}
 					
-					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM finan_cli.credito c WHERE c.id = ?"))
+					if($stmt68 = $mysqli->prepare("SELECT c.estado FROM ".$db_name.".credito c WHERE c.id = ?"))
 					{
 						$stmt68->bind_param('i', $id_credito_anular_pago_db);
 						$stmt68->execute();    
@@ -2058,7 +2058,7 @@
 						return;
 					}
 					
-					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+					if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 					{
 						$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 						$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -2083,7 +2083,7 @@
 						return;
 					}
 					
-					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+					if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 					{
 						$stmt62->bind_param('i', $id_credito_anular_pago_db);
 						$stmt62->execute();    
@@ -2100,7 +2100,7 @@
 							$posicion = 0;
 							while($stmt62->fetch())
 							{		
-								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+								if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 								{
 									$stmt67->bind_param('ii', $id_credito_anular_pago_db, $id_cuota_credito_db);
 									$stmt67->execute();    
@@ -2121,7 +2121,7 @@
 									return;
 								}
 
-								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+								if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 								{
 									$stmt66->bind_param('i', $id_cuota_credito_db);
 									$stmt66->execute();    
@@ -2135,7 +2135,7 @@
 									return;
 								}
 
-								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+								if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 								{
 									$stmt105->bind_param('i', $id_cuota_credito_db);
 									$stmt105->execute();    

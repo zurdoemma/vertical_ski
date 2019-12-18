@@ -189,7 +189,7 @@ include("./menu/menu.php");
 						  <div class="form-group" id="usuariont">
 								<select class="form-control input-sm" name="usuarionti" id="usuarionti" style="width:130px;">		 
 								<?php	
-										if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+										if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 										{
 											$stmt500->bind_param('s', $_SESSION['username']);
 											$stmt500->execute();    
@@ -216,7 +216,7 @@ include("./menu/menu.php");
 											return;				
 										}
 										
-										if ($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u, finan_cli.sucursal s WHERE s.id = u.id_sucursal AND s.id_cadena = ? AND u.id_perfil = 2 ORDER BY u.id")) 
+										if ($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE s.id = u.id_sucursal AND s.id_cadena = ? AND u.id_perfil = 2 ORDER BY u.id")) 
 										{ 
 											$stmt->bind_param('i', $id_cadena_user);
 											$stmt->execute();    
@@ -243,7 +243,7 @@ include("./menu/menu.php");
 						<div class="form-group" id="duraciontokenn">
 							<select class="form-control input-sm" name="duraciontokenni" id="duraciontokenni" style="width:110px;">		 
 								<?php											
-										if ($stmt = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre like 'duracion_token_%' ORDER BY valor")) 
+										if ($stmt = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre like 'duracion_token_%' ORDER BY valor")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();

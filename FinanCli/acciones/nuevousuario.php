@@ -50,7 +50,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocusern">'.translate('Lbl_Type_Document_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipodocusern">';
 		echo '						<select class="form-control input-sm" name="tipodocuserni" id="tipodocuserni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -81,7 +81,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfilusern">'.translate('Lbl_Perfil_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="perfilusern">';
 		echo '						<select class="form-control input-sm" name="perfiluserni" id="perfiluserni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".perfil")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -103,7 +103,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="sucursalusern">'.translate('Lbl_Tender_User',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="sucursalusern">';
 		echo '						<select class="form-control input-sm" name="sucursaluserni" id="sucursaluserni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.sucursal")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".sucursal")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -199,7 +199,7 @@
 		echo '					  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincia">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 		echo '					  <div class="form-group" id="domprovincia">';
 		echo '						  <select class="form-control input-sm" name="domprovinciai" id="domprovinciai" style="width:190px;">';			 
-										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 										  { 
 											  $stmt->execute();    
 											  $stmt->store_result();

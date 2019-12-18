@@ -32,7 +32,7 @@
 			return;
 		}
 				
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_maximo_perfil_credito'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -57,7 +57,7 @@
 			return;
 		}
 
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_minimo_perfil_credito'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_minimo_perfil_credito'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -82,7 +82,7 @@
 			return;
 		}		
 			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.perfil_credito pc WHERE pc.nombre LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".perfil_credito pc WHERE pc.nombre LIKE(?)"))
 		{
 			$stmt->bind_param('s', $nombre);
 			$stmt->execute();    
@@ -100,7 +100,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.perfil_credito(nombre,descripcion,monto_maximo) VALUES (?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".perfil_credito(nombre,descripcion,monto_maximo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -123,9 +123,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.perfil_credito(nombre,descripcion,monto_maximo) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$montoMaximo.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".perfil_credito(nombre,descripcion,monto_maximo) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$montoMaximo.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -152,7 +152,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc ORDER BY pc.id"))
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM ".$db_name.".perfil_credito pc ORDER BY pc.id"))
 				{
 					$stmt->execute();    
 					$stmt->store_result();

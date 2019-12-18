@@ -25,7 +25,7 @@
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT c.id, c.estado FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ? AND c.id_titular IS NULL"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.estado FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ? AND c.id_titular IS NULL"))
 		{
 			$stmt->bind_param('is', $tipoDocumento, $documento);
 			$stmt->execute();    

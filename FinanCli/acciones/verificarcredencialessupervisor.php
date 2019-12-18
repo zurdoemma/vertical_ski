@@ -30,7 +30,7 @@
 		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
 		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
 				
-		if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM finan_cli.usuario WHERE id = ? AND id_perfil IN (1,3) LIMIT 1")) 
+		if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM ".$db_name.".usuario WHERE id = ? AND id_perfil IN (1,3) LIMIT 1")) 
 		{
 			$stmt->bind_param('s', $usuarioSupervisor);  
 			$stmt->execute();   
@@ -56,7 +56,7 @@
 						return;
 					}
 					
-					if ($stmt702 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+					if ($stmt702 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 					{
 						$stmt702->bind_param('s', $_SESSION['username']);
 						$stmt702->execute();    
@@ -68,7 +68,7 @@
 							$stmt702->bind_result($id_cadena_user);
 							$stmt702->fetch();
 							
-							if ($stmt703 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							if ($stmt703 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
 								$stmt703->bind_param('s', $usuarioSupervisor);
 								$stmt703->execute();    
@@ -117,7 +117,7 @@
 					}
 		
 					$ingresoToken = 0;
-					if ($stmt351 = $mysqli->prepare("SELECT tas.fecha, tas.token, tas.duracion FROM finan_cli.token_autorizacion_supervisor tas WHERE tas.utilizado = 0 AND tas.fecha_utilizacion IS NULL AND tas.autorizado = ? AND tas.autorizante = ? ORDER BY tas.fecha DESC")) 
+					if ($stmt351 = $mysqli->prepare("SELECT tas.fecha, tas.token, tas.duracion FROM ".$db_name.".token_autorizacion_supervisor tas WHERE tas.utilizado = 0 AND tas.fecha_utilizacion IS NULL AND tas.autorizado = ? AND tas.autorizante = ? ORDER BY tas.fecha DESC")) 
 					{
 						$stmt351->bind_param('ss', $_SESSION['username'], $usuarioSupervisor);
 						$stmt351->execute();    
@@ -145,7 +145,7 @@
 									$mysqli->autocommit(FALSE);
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 									
-									if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.token_autorizacion_supervisor SET fecha_utilizacion = ?, utilizado = ?, id_motivo = ? WHERE utilizado = 0 AND fecha_utilizacion IS NULL AND autorizado = ? AND autorizante = ?"))
+									if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".token_autorizacion_supervisor SET fecha_utilizacion = ?, utilizado = ?, id_motivo = ? WHERE utilizado = 0 AND fecha_utilizacion IS NULL AND autorizado = ? AND autorizante = ?"))
 									{
 										echo $mysqli->error;
 										$mysqli->autocommit(TRUE);
@@ -186,7 +186,7 @@
 						$date_registro_a_s = date("YmdHis");						
 						$date_registro_a_s_b = date("Ymd")."%";
 						
-						if($stmt2 = $mysqli->prepare("SELECT tac.token FROM finan_cli.token_adicional_cuenta tac WHERE tac.tipo_documento = ? AND tac.documento = ? AND tac.tipo_documento_titular = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
+						if($stmt2 = $mysqli->prepare("SELECT tac.token FROM ".$db_name.".token_adicional_cuenta tac WHERE tac.tipo_documento = ? AND tac.documento = ? AND tac.tipo_documento_titular = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
 						{
 							$stmt2->bind_param('isiss', $tipoDocumento, $documento, $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s_b);
 							$stmt2->execute();    
@@ -220,7 +220,7 @@
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_adicional_cuenta(fecha,tipo_documento,documento,tipo_documento_titular,documento_titular,token,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?,?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_adicional_cuenta(fecha,tipo_documento,documento,tipo_documento_titular,documento_titular,token,usuario,usuario_supervisor) VALUES (?,?,?,?,?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);

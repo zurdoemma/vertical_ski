@@ -56,7 +56,7 @@
 			return;				
 		}	
 		
-		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.email, s.id_cadena, d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2  FROM finan_cli.sucursal s, finan_cli.domicilio d, finan_cli.provincia p WHERE s.id_domicilio = d.id AND d.id_provincia = p.id AND s.codigo = ?"))
+		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.email, s.id_cadena, d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2  FROM ".$db_name.".sucursal s, ".$db_name.".domicilio d, ".$db_name.".provincia p WHERE s.id_domicilio = d.id AND d.id_provincia = p.id AND s.codigo = ?"))
 		{
 			$stmt->bind_param('i', $codigo);
 			$stmt->execute();    
@@ -74,7 +74,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.domicilio SET calle = ?, nro_calle = ?, id_provincia = ?, localidad = ?, departamento = ?, piso = ?, codigo_postal = ?, entre_calle_1 = ?, entre_calle_2 = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".domicilio SET calle = ?, nro_calle = ?, id_provincia = ?, localidad = ?, departamento = ?, piso = ?, codigo_postal = ?, entre_calle_1 = ?, entre_calle_2 = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -100,9 +100,9 @@
 				
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "ANTERIOR: UPDATE finan_cli.domicilio SET calle = ".$calle_tender_a.", nro_calle = ".$nro_calle_tender_a.", provincia = ".$provincia_tender_a.", localidad = ".(!empty($localidad_ternder_a) ? "$localidad_ternder_a" : "---").", departamento = ".(!empty($departamento_tender_a) ? "$departamento_tender_a" : "---").", piso = ".(!empty($piso_tender_a) ? "$piso_tender_a" : "---").", codigo_postal = ".(!empty($codigo_postal_tender_a) ? "$codigo_postal_tender_a" : "---").", entre_calle_1 = ".(!empty($entre_calle1_tender_a) ? "$entre_calle1_tender_a" : "---").", entre_calle_2 = ".(!empty($entre_calle2_tender_a) ? "$entre_calle2_tender_a" : "---")." -- NUEVO: UPDATE finan_cli.domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2;
+				$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".domicilio SET calle = ".$calle_tender_a.", nro_calle = ".$nro_calle_tender_a.", provincia = ".$provincia_tender_a.", localidad = ".(!empty($localidad_ternder_a) ? "$localidad_ternder_a" : "---").", departamento = ".(!empty($departamento_tender_a) ? "$departamento_tender_a" : "---").", piso = ".(!empty($piso_tender_a) ? "$piso_tender_a" : "---").", codigo_postal = ".(!empty($codigo_postal_tender_a) ? "$codigo_postal_tender_a" : "---").", entre_calle_1 = ".(!empty($entre_calle1_tender_a) ? "$entre_calle1_tender_a" : "---").", entre_calle_2 = ".(!empty($entre_calle2_tender_a) ? "$entre_calle2_tender_a" : "---")." -- NUEVO: UPDATE ".$db_name.".domicilio SET calle = ".$calle.", nro_calle = ".$nroCalle.", provincia = ".$provincia.", localidad = ".$localidad.", departamento = ".$departamento.", piso = ".$piso.", codigo_postal = ".$codigoPostal.", entre_calle_1 = ".$entreCalle1.", entre_calle_2 = ".$entreCalle2;
 
-				if(!$stmt12 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt12 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -126,8 +126,8 @@
 					}
 				}				
 				
-				if($cadena == "NULL") $insertSucu = "UPDATE finan_cli.sucursal SET nombre = ?, codigo = ?, email = ?, id_domicilio = ?, id_cadena = NULL WHERE id = ?";
-				else $insertSucu = "UPDATE finan_cli.sucursal SET nombre = ?, codigo = ?, email = ?, id_cadena = ?, id_domicilio = ? WHERE id = ?";
+				if($cadena == "NULL") $insertSucu = "UPDATE ".$db_name.".sucursal SET nombre = ?, codigo = ?, email = ?, id_domicilio = ?, id_cadena = NULL WHERE id = ?";
+				else $insertSucu = "UPDATE ".$db_name.".sucursal SET nombre = ?, codigo = ?, email = ?, id_cadena = ?, id_domicilio = ? WHERE id = ?";
 				if(!$stmt10 = $mysqli->prepare($insertSucu))
 				{
 					echo $mysqli->error;
@@ -154,9 +154,9 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				$valor_log_user = "ANTERIOR: UPDATE finan_cli.sucursal SET id = ".$idSucursal.", nombre = ".$nombre_tender_a." codigo = ".$codigo_tender_a.", email = ".(!empty($email_tender_a) ? "$email_tender_a" : "---").", id_cadena = ".(!empty($cadena_tender_a) ? "$cadena_tender_a" : "---").", id_domicilio = ".$idDomicilio." -- NUEVO: UPDATE finan_cli.sucursal SET nombre = ".$nombre." codigo = ".$codigo.", email = ".$email.", id_cadena = ".$cadena.", id_domicilio = ".$idDomicilio;
+				$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".sucursal SET id = ".$idSucursal.", nombre = ".$nombre_tender_a." codigo = ".$codigo_tender_a.", email = ".(!empty($email_tender_a) ? "$email_tender_a" : "---").", id_cadena = ".(!empty($cadena_tender_a) ? "$cadena_tender_a" : "---").", id_domicilio = ".$idDomicilio." -- NUEVO: UPDATE ".$db_name.".sucursal SET nombre = ".$nombre." codigo = ".$codigo.", email = ".$email.", id_cadena = ".$cadena.", id_domicilio = ".$idDomicilio;
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -183,7 +183,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM finan_cli.cadena c, finan_cli.sucursal s  WHERE c.id = s.id_cadena UNION  SELECT s.id, s.codigo, s.nombre, '".translate('Lbl_Select_Chain_Tender_None',$GLOBALS['lang'])."' FROM finan_cli.sucursal s WHERE s.id_cadena IS NULL ORDER BY 2"))
+				if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM ".$db_name.".cadena c, ".$db_name.".sucursal s  WHERE c.id = s.id_cadena UNION  SELECT s.id, s.codigo, s.nombre, '".translate('Lbl_Select_Chain_Tender_None',$GLOBALS['lang'])."' FROM ".$db_name.".sucursal s WHERE s.id_cadena IS NULL ORDER BY 2"))
 				{
 					$stmt->execute();    
 					$stmt->store_result();

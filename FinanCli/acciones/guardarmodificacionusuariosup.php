@@ -51,7 +51,7 @@
 			return;				
 		}
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -78,7 +78,7 @@
 			return;				
 		}
 
-		if ($stmt501 = $mysqli->prepare("SELECT s.id FROM finan_cli.sucursal s WHERE s.id = ? AND s.id_cadena = ?")) 
+		if ($stmt501 = $mysqli->prepare("SELECT s.id FROM ".$db_name.".sucursal s WHERE s.id = ? AND s.id_cadena = ?")) 
 		{
 			$stmt501->bind_param('ii', $sucursal, $id_cadena_user);
 			$stmt501->execute();    
@@ -105,7 +105,7 @@
 			return;				
 		}		
 				
-		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, p.nombre, s.nombre, u.clave, u.salt FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, td.nombre, u.documento, u.email, p.nombre, s.nombre, u.clave, u.salt FROM ".$db_name.".usuario u, ".$db_name.".tipo_documento td, ".$db_name.".perfil p, ".$db_name.".sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -146,7 +146,7 @@
 					$saltu = $user_salt;
 				}
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.usuario SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, id_perfil = ?, id_sucursal = ?, clave = ?, salt = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".usuario SET nombre = ?, apellido = ?, tipo_documento = ?, documento = ?, email = ?, id_perfil = ?, id_sucursal = ?, clave = ?, salt = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -169,10 +169,10 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				if(empty($nclaveu)) $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email.", perfil = ".$user_perfil.", sucursal = ".$user_sucursal."  -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", id_perfil = ".$perfil.", id_sucursal = ".$sucursal." WHERE id =".$usuario;
-				else $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email.", perfil = ".$user_perfil.", sucursal = ".$user_sucursal."  -- "."NUEVO: UPDATE finan_cli.usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", id_perfil = ".$perfil.", id_sucursal = ".$sucursal.", clave =".$clavefu.", salt =".$saltu." WHERE id =".$usuario;
+				if(empty($nclaveu)) $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email.", perfil = ".$user_perfil.", sucursal = ".$user_sucursal."  -- "."NUEVO: UPDATE ".$db_name.".usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", id_perfil = ".$perfil.", id_sucursal = ".$sucursal." WHERE id =".$usuario;
+				else $valor_log_user = "ANTERIOR: id = ".$id_user.", nombre = ".$user_name.", apellido = ".$user_surname.", tipo_documento = ".$user_type_document.", documento = ".$user_document.", email = ".$user_email.", perfil = ".$user_perfil.", sucursal = ".$user_sucursal."  -- "."NUEVO: UPDATE ".$db_name.".usuario SET nombre = ".$nombre.", apellido = ".$apellido.", tipo_documento = ".$tipoDocumento.", documento = ".$documento.", email = ".$email.", id_perfil = ".$perfil.", id_sucursal = ".$sucursal.", clave =".$clavefu.", salt =".$saltu." WHERE id =".$usuario;
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -198,7 +198,7 @@
 				
 				if($perfil == 2)
 				{
-					if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+					if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM ".$db_name.".horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
 					{
 						$stmt401->bind_param('s', $usuario);
 						$stmt401->execute();    
@@ -230,7 +230,7 @@
 					
 					if($tieneHorarioLaboralDB == 1)
 					{
-						if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ?, horario_salida = ?, lunes = ?, martes = ?, miercoles = ?, jueves = ?, viernes = ?, sabado = ?, domingo = ?, cambio_dia = ? WHERE id_usuario = ?"))
+						if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".horario_laboral_x_usuario SET horario_ingreso = ?, horario_salida = ?, lunes = ?, martes = ?, miercoles = ?, jueves = ?, viernes = ?, sabado = ?, domingo = ?, cambio_dia = ? WHERE id_usuario = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -272,8 +272,8 @@
 						}
 								
 						$date_registro = date("YmdHis");
-						$valor_log_user = "ANTERIOR: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horario_ingreso_horario_laboral_a.", horario_salida = ".$horario_egreso_horario_laboral_a.", lunes = ".$lunes_horario_laboral_a.", martes = ".$martes_horario_laboral_a.", miercoles = ".$miercoles_horario_laboral_a.", jueves = ".$jueves_horario_laboral_a.", viernes = ".$viernes_horario_laboral_a.", sabado = ".$sabado_horario_laboral_a.", domingo = ".$domingo_horario_laboral_a.", cambio_dia = ".$cambio_dia_a." WHERE id_usuario = ".$usuario." -- "."NUEVO: UPDATE finan_cli.horario_laboral_x_usuario SET horario_ingreso = ".$horarioIngresDB.", horario_salida = ".$horarioEgresDB.", lunes = ".$trabLunesDB.", martes = ".$trabMartesDB.", miercoles = ".$trabMiercolesDB.", jueves = ".$trabJuevesDB.", viernes = ".$trabViernesDB.", sabado = ".$trabSabadoDB.", domingo = ".$trabDomingoDB.", cambio_dia = ".$cambDiaDB." WHERE id_usuario = ".$usuario;
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".horario_laboral_x_usuario SET horario_ingreso = ".$horario_ingreso_horario_laboral_a.", horario_salida = ".$horario_egreso_horario_laboral_a.", lunes = ".$lunes_horario_laboral_a.", martes = ".$martes_horario_laboral_a.", miercoles = ".$miercoles_horario_laboral_a.", jueves = ".$jueves_horario_laboral_a.", viernes = ".$viernes_horario_laboral_a.", sabado = ".$sabado_horario_laboral_a.", domingo = ".$domingo_horario_laboral_a.", cambio_dia = ".$cambio_dia_a." WHERE id_usuario = ".$usuario." -- "."NUEVO: UPDATE ".$db_name.".horario_laboral_x_usuario SET horario_ingreso = ".$horarioIngresDB.", horario_salida = ".$horarioEgresDB.", lunes = ".$trabLunesDB.", martes = ".$trabMartesDB.", miercoles = ".$trabMiercolesDB.", jueves = ".$trabJuevesDB.", viernes = ".$trabViernesDB.", sabado = ".$trabSabadoDB.", domingo = ".$trabDomingoDB.", cambio_dia = ".$cambDiaDB." WHERE id_usuario = ".$usuario;
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -299,7 +299,7 @@
 					}
 					else
 					{
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -341,8 +341,8 @@
 						}
 								
 						$date_registro = date("YmdHis");
-						$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						$valor_log_user = "INSERT INTO ".$db_name.".horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -371,7 +371,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND s.id_cadena = ?"))
+				if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM ".$db_name.".usuario u, ".$db_name.".tipo_documento td, ".$db_name.".perfil p, ".$db_name.".sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND s.id_cadena = ?"))
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

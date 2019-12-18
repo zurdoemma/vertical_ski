@@ -25,7 +25,7 @@
 		$idCredito=htmlspecialchars($_POST["idCredito"], ENT_QUOTES, 'UTF-8');
 		$idCuotaCredito=htmlspecialchars($_POST["idCuotaCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ? AND cc.id_credito = ? AND cc.estado IN (?,?)"))
+		if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM ".$db_name.".cuota_credito cc WHERE cc.id = ? AND cc.id_credito = ? AND cc.estado IN (?,?)"))
 		{
 			$estadoU = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estadoD = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -55,7 +55,7 @@
 			return;
 		}		
 		
-		if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+		if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 		{
 			$stmt64->bind_param('i', $idCuotaCredito);
 			$stmt64->execute();    

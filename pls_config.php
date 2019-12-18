@@ -2,6 +2,8 @@
 	define("SECURE", FALSE); 
 	setlocale(LC_ALL, 'es_ES');
 	$GLOBALS['lang'] = 'es';
+	$GLOBALS['url_sitio'] = 'https://10.147.26.26';
+	$GLOBALS['db_name_util'] = 'finan_cli';
 	$GLOBALS['time_expire_sesion'] = 18000;
 	$GLOBALS['token_envio_sms'] = '22bf063e3cee0344b294b9cd53257bc0892467b0552141d2669e921e8833b4ea';
 	$GLOBALS['url_envio_sms'] = 'https://apps.netelip.com/sms/api.php';	

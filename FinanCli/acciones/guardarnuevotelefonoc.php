@@ -36,7 +36,7 @@
 			return;
 		}
 					
-		if($stmt = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -57,7 +57,7 @@
 				$tipoDocumento = $client_tipo_documento;
 				$documento = $client_documento;
 				
-				if($stmt3 = $mysqli->prepare("SELECT count(t.id) FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id"))
+				if($stmt3 = $mysqli->prepare("SELECT count(t.id) FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id"))
 				{
 					$stmt3->bind_param('i', $idCliente);
 					$stmt3->execute();    
@@ -66,7 +66,7 @@
 					$stmt3->bind_result($cantidad_telefonos);
 					$stmt3->fetch();
 					
-					if($stmt4 = $mysqli->prepare("SELECT t.id FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.numero = ?"))
+					if($stmt4 = $mysqli->prepare("SELECT t.id FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.numero = ?"))
 					{
 						$numTelFinCo = $prefijoTelefono.$nroTelefono;
 						$stmt4->bind_param('ii', $idCliente, $numTelFinCo);
@@ -94,7 +94,7 @@
 					
 					$pasoValidacionSMS = 0;
 					
-					if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1 AND tvc.nro_telefono = ?"))
+					if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1 AND tvc.nro_telefono = ?"))
 					{
 						$date_registro_a_vcc = date("Ymd")."%";
 						$stmt2->bind_param('isssi', $tipoDocumento, $documento, $date_registro_a_vcc, $token, $numTelFinCo);
@@ -114,7 +114,7 @@
 						return;
 					}
 					
-					if($stmt4 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.nro_telefono = ?"))
+					if($stmt4 = $mysqli->prepare("SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.nro_telefono = ?"))
 					{
 						$motivoValidacionSMS = 54;
 						$motivoValidacionSMS2 = 55;
@@ -143,7 +143,7 @@
 					}
 					
 					
-					if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+					if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 					{
 						$stmt2->execute();    
 						$stmt2->store_result();
@@ -182,7 +182,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -205,7 +205,7 @@
 					}						
 					$idTelefonoG = $mysqli->insert_id;
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento,documento,id_telefono,preferido) VALUES (?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".cliente_x_telefono(tipo_documento,documento,id_telefono,preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -233,9 +233,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo,preferido) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).",".$preferido.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo,preferido) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).",".$preferido.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -261,7 +261,7 @@
 				
 				if($preferidoDB == 1)
 				{
-					if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cliente_x_telefono SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_telefono <> ?"))
+					if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_telefono SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_telefono <> ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -288,7 +288,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM finan_cli.telefono t, finan_cli.cliente c, finan_cli.tipo_telefono tt, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM ".$db_name.".telefono t, ".$db_name.".cliente c, ".$db_name.".tipo_telefono tt, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
 					$stmt->execute();

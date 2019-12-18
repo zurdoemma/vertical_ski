@@ -31,7 +31,7 @@ if($_GET['result_ok'] == 1)
 	$date_registro = date("YmdHis");
 	$date_registro2 = date("Y-m-d H:i:s");
 
-	if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+	if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 	{
 		printf("Error: %s\n", $mysqli->error);
 	}
@@ -60,7 +60,7 @@ if($_GET['expired_session'] == 200)
 	
 	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $GLOBALS['time_expire_sesion'])) 
 	{							
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 		{
 			printf("Error: %s\n", $mysqli->error);
 		}
@@ -133,7 +133,7 @@ if (verificar_usuario($mysqli))
 	$date_registro = date("YmdHis");
 	$date_registro2 = date("Y-m-d H:i:s");
 
-	if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+	if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 	{
 		printf("Error: %s\n", $mysqli->error);
 	}

@@ -31,7 +31,7 @@
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id, c.razon_social FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id, c.razon_social FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -58,7 +58,7 @@
 			return;				
 		}		
 		
-		if($stmt4 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt4->bind_param('is', $tipoDocumento, $documento);
 			$stmt4->execute();    
@@ -87,7 +87,7 @@
 			return;
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 0"))
+		if($stmt = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 0"))
 		{
 			$date_registro_a_vcc = date("Ymd")."%";
 			$stmt->bind_param('isss', $tipoDocumento, $documento, $date_registro_a_vcc, $tokenVCC);
@@ -108,7 +108,7 @@
 			return;
 		}
 
-		if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1"))
+		if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1"))
 		{
 			$date_registro_a_vcc = date("Ymd")."%";
 			$stmt2->bind_param('isss', $tipoDocumento, $documento, $date_registro_a_vcc, $tokenVCC);
@@ -141,7 +141,7 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
-			if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_validacion_celular(fecha,tipo_documento,documento,token,codigo,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
+			if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_validacion_celular(fecha,tipo_documento,documento,token,codigo,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);

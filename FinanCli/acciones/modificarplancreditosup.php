@@ -24,7 +24,7 @@
 		
 		$idPlanCredito=htmlspecialchars($_POST["idPlanCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -51,7 +51,7 @@
 			return;				
 		}
 		
-		if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM finan_cli.plan_credito pc WHERE pc.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM ".$db_name.".plan_credito pc WHERE pc.id = ?")) 
 		{
 			$stmt->bind_param('i', $idPlanCredito);
 			$stmt->execute();    // Ejecuta la consulta preparada.
@@ -88,7 +88,7 @@
 			echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodiferimientocuotasplancredit">'.translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="tipodiferimientocuotasplancredit">';
 			echo '						<select class="form-control input-sm" name="tipodiferimientocuotasplancrediti" id="tipodiferimientocuotasplancrediti" style="width:190px;">';			 
-											if ($stmt = $mysqli->prepare("SELECT id, valor FROM finan_cli.parametros WHERE nombre LIKE 'tipo_diferimiento_cuota_%'")) 
+											if ($stmt = $mysqli->prepare("SELECT id, valor FROM ".$db_name.".parametros WHERE nombre LIKE 'tipo_diferimiento_cuota_%'")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();
@@ -118,7 +118,7 @@
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenaplancredit">'.translate('Lbl_Chain_Credit_Plan',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="cadenaplancredit">';
 			echo '						<select class="form-control input-sm" name="cadenaplancrediti" id="cadenaplancrediti" style="width:190px;" disabled >';			 
-											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena WHERE id = ?")) 
+											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena WHERE id = ?")) 
 											{ 
 												$stmt->bind_param('i', $id_cadena_user);
 												$stmt->execute();    

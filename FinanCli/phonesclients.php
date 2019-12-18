@@ -8,7 +8,7 @@ if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activa
 if(empty(htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8'))){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
-if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
+if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
 {
 	$stmt2->execute();    
 	$stmt2->store_result();
@@ -19,7 +19,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	$stmt2->close();	
 }
 
-if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.cliente c, finan_cli.tipo_documento td WHERE c.id = ? AND td.id = c.tipo_documento"))
+if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td WHERE c.id = ? AND td.id = c.tipo_documento"))
 {
 	$stmt3->bind_param('i', $_GET['idCliente']);
 	$stmt3->execute();    
@@ -1328,7 +1328,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					</thead>
 					<tbody>
 						<?php
-							if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM finan_cli.telefono t, finan_cli.cliente c, finan_cli.tipo_telefono tt, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
+							if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM ".$db_name.".telefono t, ".$db_name.".cliente c, ".$db_name.".tipo_telefono tt, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
 							{
 								$clienteP = htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8');
 								$stmt->bind_param('i', $clienteP);

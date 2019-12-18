@@ -67,7 +67,7 @@
 			return;				
 		}		
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -94,7 +94,7 @@
 			return;				
 		}
 
-		if ($stmt501 = $mysqli->prepare("SELECT s.id FROM finan_cli.sucursal s WHERE s.id = ? AND s.id_cadena = ?")) 
+		if ($stmt501 = $mysqli->prepare("SELECT s.id FROM ".$db_name.".sucursal s WHERE s.id = ? AND s.id_cadena = ?")) 
 		{
 			$stmt501->bind_param('ii', $sucursal, $id_cadena_user);
 			$stmt501->execute();    
@@ -121,7 +121,7 @@
 			return;				
 		}		
 		
-		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -139,7 +139,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -163,9 +163,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
+				$valor_log_user = "INSERT INTO ".$db_name.".domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -198,7 +198,7 @@
 				$saltu = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
 				$clavefu = hash('sha512', $nclaveu . $saltu);	
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado,clave,salt) VALUES(?,?,?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado,clave,salt) VALUES(?,?,?,?,?,?,?,?,?,?,?)"))
 				{
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
@@ -219,7 +219,7 @@
 						return;						
 					}
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".usuario_x_domicilio(id_usuario,id_domicilio) VALUES (?,?)"))
 					{
 						$mysqli->rollback();
 						$mysqli->autocommit(TRUE);
@@ -243,9 +243,9 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				$valor_log_user = "INSERT INTO finan_cli.usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado) VALUES(".$usuario.",".$nombre.",".$apellido.",".$tipoDocumento.",".$documento.",".$email.",".$perfil.",".$sucursal.",".translate('State_User',$GLOBALS['lang']).")";
+				$valor_log_user = "INSERT INTO ".$db_name.".usuario (id,nombre,apellido,tipo_documento,documento,email,id_perfil,id_sucursal,estado) VALUES(".$usuario.",".$nombre.",".$apellido.",".$tipoDocumento.",".$documento.",".$email.",".$perfil.",".$sucursal.",".translate('State_User',$GLOBALS['lang']).")";
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -271,7 +271,7 @@
 				
 				if($perfil == 2)
 				{				
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (?,?,?,?,?,?,?,?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -313,8 +313,8 @@
 					}
 							
 					$date_registro = date("YmdHis");
-					$valor_log_user = "INSERT INTO finan_cli.horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					$valor_log_user = "INSERT INTO ".$db_name.".horario_laboral_x_usuario (id_usuario,horario_ingreso,horario_salida,lunes,martes,miercoles,jueves,viernes,sabado,domingo,cambio_dia) VALUES (".$usuario.",".$horarioIngresDB.",".$horarioEgresDB.",".$trabLunesDB.",".$trabMartesDB.",".$trabMiercolesDB.",".$trabJuevesDB.",".$trabViernesDB.",".$trabSabadoDB.",".$trabDomingoDB.",".$cambDiaDB.")";
+					if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -342,7 +342,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND s.id_cadena = ?"))
+				if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM ".$db_name.".usuario u, ".$db_name.".tipo_documento td, ".$db_name.".perfil p, ".$db_name.".sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id AND s.id_cadena = ?"))
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

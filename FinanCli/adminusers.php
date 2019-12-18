@@ -1380,7 +1380,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado   FROM finan_cli.usuario u, finan_cli.perfil p, finan_cli.sucursal s WHERE  u.id_perfil = p.id AND u.id_sucursal = s.id ORDER BY id")) 
+							if ($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado   FROM ".$db_name.".usuario u, ".$db_name.".perfil p, ".$db_name.".sucursal s WHERE  u.id_perfil = p.id AND u.id_sucursal = s.id ORDER BY id")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();

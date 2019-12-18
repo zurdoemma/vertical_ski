@@ -41,7 +41,7 @@
 			return;
 		}	
 		
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE ut.id_usuario = u.id AND ut.id_telefono = t.id AND u.id LIKE(?) AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM ".$db_name.".usuario u, ".$db_name.".telefono t, ".$db_name.".usuario_x_telefono ut WHERE ut.id_usuario = u.id AND ut.id_telefono = t.id AND u.id LIKE(?) AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);
 			$stmt->execute();    
@@ -59,7 +59,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -86,9 +86,9 @@
 				$date_registro2 = date("Y-m-d H:i:s");
 				$stmt->bind_result($id_telefono_user, $user_tipo_telefono, $user_numero_telefono, $user_digitos_prefijo);				
 				$stmt->fetch();
-				$valor_log_user = "ANTERIOR: id = ".$id_telefono_user.", tipo_telefono = ".$user_tipo_telefono.", numero = ".$user_numero_telefono.", digitos_prefijo = ".$user_digitos_prefijo."  -- "."NUEVO: UPDATE finan_cli.telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono)." WHERE id =".$idTelefono;
+				$valor_log_user = "ANTERIOR: id = ".$id_telefono_user.", tipo_telefono = ".$user_tipo_telefono.", numero = ".$user_numero_telefono.", digitos_prefijo = ".$user_digitos_prefijo."  -- "."NUEVO: UPDATE ".$db_name.".telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono)." WHERE id =".$idTelefono;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -115,7 +115,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM finan_cli.telefono t, finan_cli.usuario u, finan_cli.tipo_telefono tt, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM ".$db_name.".telefono t, ".$db_name.".usuario u, ".$db_name.".tipo_telefono tt, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('s', $usuario);
 					$stmt->execute();    

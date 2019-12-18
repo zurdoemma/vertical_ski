@@ -24,7 +24,7 @@
 		
 		$idInteresXMora=htmlspecialchars ($_POST["idInteresXMora"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
 		{
 			$stmt->bind_param('i', $idInteresXMora);
 			$stmt->execute();    
@@ -46,7 +46,7 @@
 				
 				$stmt->bind_result($id_interes_x_mora_a, $cantidad_dias_interes_x_mora_a, $interes_x_mora_a, $plan_credito_interes_x_mora_a);	
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.interes_x_mora WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".interes_x_mora WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -72,9 +72,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.interes_x_mora --> id: ".$id_interes_x_mora_a." - Cantidad Dias: ".$cantidad_dias_interes_x_mora_a." - Interes: ".$interes_x_mora_a." - Plan Credito = ".$plan_credito_interes_x_mora_a." WHERE id = ".$idInteresXMora;
+				$valor_log_user = "DELETE ".$db_name.".interes_x_mora --> id: ".$id_interes_x_mora_a." - Cantidad Dias: ".$cantidad_dias_interes_x_mora_a." - Interes: ".$interes_x_mora_a." - Plan Credito = ".$plan_credito_interes_x_mora_a." WHERE id = ".$idInteresXMora;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -101,7 +101,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 				{
 					$stmt->execute();    
 					$stmt->store_result();

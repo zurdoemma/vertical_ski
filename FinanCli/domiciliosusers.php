@@ -8,7 +8,7 @@ if (!verificar_permisos_supervisor()){header('Location:./sinautorizacion.php?act
 if(empty(htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8'))){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
-if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 {
 	$stmt2->execute();    
 	$stmt2->store_result();
@@ -661,7 +661,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					</thead>
 					<tbody>
 						<?php
-							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.domicilio d, finan_cli.usuario u, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE u.id LIKE(?) AND p.id = d.id_provincia AND ud.id_usuario = u.id AND ud.id_domicilio = d.id")) 
+							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM ".$db_name.".domicilio d, ".$db_name.".usuario u, ".$db_name.".provincia p, ".$db_name.".usuario_x_domicilio ud WHERE u.id LIKE(?) AND p.id = d.id_provincia AND ud.id_usuario = u.id AND ud.id_domicilio = d.id")) 
 							{
 								$usuarioP = htmlspecialchars($_GET['usuario'], ENT_QUOTES, 'UTF-8');
 								$stmt->bind_param('s', $usuarioP);

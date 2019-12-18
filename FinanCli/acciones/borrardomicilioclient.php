@@ -27,7 +27,7 @@
 		
 		
 				
-		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.cliente_x_domicilio cd, finan_cli.provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio AND d.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM ".$db_name.".cliente c, ".$db_name.".domicilio d, ".$db_name.".cliente_x_domicilio cd, ".$db_name.".provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio AND d.id = ?"))
 		{
 			$stmt->bind_param('ii', $idCliente, $idDomicilio);
 			$stmt->execute();    
@@ -53,7 +53,7 @@
 					return;
 				}
 				
-				if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.cliente_x_domicilio cd, finan_cli.provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio"))
+				if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido, c.tipo_documento, c.documento FROM ".$db_name.".cliente c, ".$db_name.".domicilio d, ".$db_name.".cliente_x_domicilio cd, ".$db_name.".provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio"))
 				$stmt2->bind_param('i', $idCliente);
 				$stmt2->execute();    
 				$stmt2->store_result();
@@ -72,7 +72,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.cliente_x_domicilio WHERE tipo_documento = ? AND documento = ? AND id_domicilio = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".cliente_x_domicilio WHERE tipo_documento = ? AND documento = ? AND id_domicilio = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -92,7 +92,7 @@
 						return;
 					}
 					
-					if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.domicilio WHERE id = ?"))
+					if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".domicilio WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -119,9 +119,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "DELETE finan_cli.domicilio --> id: ".$id_domicilio_client." - Calle: ".$client_dom_calle." - Nro. Calle: ".$client_dom_nro_calle." - Provincia: ".$client_dom_provincia." - Localidad: ".$client_dom_localidad." - Departamento: ".(!empty($client_dom_departamento) ? "$client_dom_departamento" : "---")." - Piso: ".(!empty($client_dom_piso) ? "$client_dom_piso" : "---")." - Codigo Postal: ".(!empty($client_dom_codigo_postal) ? "$client_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($client_entre_calle_1) ? "$client_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($client_entre_calle_2) ? "$client_entre_calle_2" : "---");
+				$valor_log_user = "DELETE ".$db_name.".domicilio --> id: ".$id_domicilio_client." - Calle: ".$client_dom_calle." - Nro. Calle: ".$client_dom_nro_calle." - Provincia: ".$client_dom_provincia." - Localidad: ".$client_dom_localidad." - Departamento: ".(!empty($client_dom_departamento) ? "$client_dom_departamento" : "---")." - Piso: ".(!empty($client_dom_piso) ? "$client_dom_piso" : "---")." - Codigo Postal: ".(!empty($client_dom_codigo_postal) ? "$client_dom_codigo_postal" : "---")." - Entre Calle 1: ".(!empty($client_entre_calle_1) ? "$client_entre_calle_1" : "---")." - Entre Calle 2: ".(!empty($client_entre_calle_2) ? "$client_entre_calle_2" : "---");
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -148,7 +148,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.domicilio d, finan_cli.cliente c, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
+				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM ".$db_name.".domicilio d, ".$db_name.".cliente c, ".$db_name.".provincia p, ".$db_name.".cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
 					$stmt->execute();    // Ejecuta la consulta preparada.

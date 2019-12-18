@@ -24,7 +24,7 @@
 		
 		$idCadena=htmlspecialchars($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 
-		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCadena);
 			$stmt->execute();    
@@ -40,7 +40,7 @@
 				return;
 			}
 
-			if($stmt2 = $mysqli->prepare("SELECT s.id, s.nombre FROM finan_cli.cadena c, finan_cli.sucursal s WHERE s.id_cadena = c.id AND c.id = ?"))
+			if($stmt2 = $mysqli->prepare("SELECT s.id, s.nombre FROM ".$db_name.".cadena c, ".$db_name.".sucursal s WHERE s.id_cadena = c.id AND c.id = ?"))
 			{
 				$stmt2->bind_param('i', $idCadena);
 				$stmt2->execute();    
@@ -54,7 +54,7 @@
 				return;				
 			}
 
-			if($stmt3 = $mysqli->prepare("SELECT s.id, s.nombre FROM finan_cli.sucursal s WHERE s.id NOT IN (SELECT s2.id FROM finan_cli.cadena c2, finan_cli.sucursal s2 WHERE s2.id_cadena = c2.id AND c2.id = ?)"))
+			if($stmt3 = $mysqli->prepare("SELECT s.id, s.nombre FROM ".$db_name.".sucursal s WHERE s.id NOT IN (SELECT s2.id FROM ".$db_name.".cadena c2, ".$db_name.".sucursal s2 WHERE s2.id_cadena = c2.id AND c2.id = ?)"))
 			{
 				$stmt3->bind_param('i', $idCadena);
 				$stmt3->execute();    

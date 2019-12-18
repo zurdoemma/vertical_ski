@@ -25,7 +25,7 @@
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');	
 		$idTelefono=htmlspecialchars($_POST["id_telefono"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo, ct.preferido FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo, ct.preferido FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono AND t.id = ?"))
 		{
 			$stmt->bind_param('ii', $idCliente, $idTelefono);
 			$stmt->execute();    
@@ -70,7 +70,7 @@
 				echo '					<label class="control-label" for="tipotelefonom">'.translate('Lbl_Type_Phone',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="tipotelefonom">';
 				echo '						<select class="form-control input-sm" name="tipotelefonomi" id="tipotelefonomi" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_telefono")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_telefono")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();

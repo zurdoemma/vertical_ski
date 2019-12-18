@@ -24,7 +24,7 @@
 		
 		$idAvisoXMora=htmlspecialchars($_POST["idAvisoXMora"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt = $mysqli->prepare("SELECT e.fecha, t.numero, e.cantidad_reintentos, e.estado, e.comentario FROM finan_cli.envio_sms e, finan_cli.telefono t WHERE e.id_telefono = t.id AND e.id_aviso_x_mora = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT e.fecha, t.numero, e.cantidad_reintentos, e.estado, e.comentario FROM ".$db_name.".envio_sms e, ".$db_name.".telefono t WHERE e.id_telefono = t.id AND e.id_aviso_x_mora = ?")) 
 		{
 			$stmt->bind_param('i', $idAvisoXMora);
 			$stmt->execute();    

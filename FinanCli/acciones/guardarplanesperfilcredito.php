@@ -25,7 +25,7 @@
 		$idPerfilCredito=htmlspecialchars($_POST["idPerfilCredito"], ENT_QUOTES, 'UTF-8');
 		$planes=htmlspecialchars($_POST["idPlanes"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $_SESSION['username']);
 			$stmt->execute();    
@@ -45,7 +45,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if($stmt2 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, c.razon_social FROM finan_cli.perfil_credito_x_plan pcxp, finan_cli.plan_credito pc, finan_cli.cadena c WHERE c.id = pc.id_cadena AND pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = ?"))
+				if($stmt2 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, c.razon_social FROM ".$db_name.".perfil_credito_x_plan pcxp, ".$db_name.".plan_credito pc, ".$db_name.".cadena c WHERE c.id = pc.id_cadena AND pcxp.id_plan_credito = pc.id AND pcxp.id_perfil_credito = ?"))
 				{
 					$stmt2->bind_param('i', $idPerfilCredito);
 					$stmt2->execute();    
@@ -57,9 +57,9 @@
 					{
 						$date_registro = date("YmdHis");
 						$date_registro2 = date("Y-m-d H:i:s");					
-						$valor_log_user = "DELETE finan_cli.perfil_credito_x_plan WHERE id_plan_credito = ".$id_plan_credito_des." -- nombre = ".$nombre_plan_credito_des.", cantidad_cuotas = ".$cantidad_cuotas_plan_credito_des.", interes_fijo = ".$interes_fijo_plan_credito_des.", tipo_diferimiento_cuota = ".$diferimiento_cuota_plan_credito_des.", cadena = ".$cadena_plan_credito_des;
+						$valor_log_user = "DELETE ".$db_name.".perfil_credito_x_plan WHERE id_plan_credito = ".$id_plan_credito_des." -- nombre = ".$nombre_plan_credito_des.", cantidad_cuotas = ".$cantidad_cuotas_plan_credito_des.", interes_fijo = ".$interes_fijo_plan_credito_des.", tipo_diferimiento_cuota = ".$diferimiento_cuota_plan_credito_des.", cadena = ".$cadena_plan_credito_des;
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -97,7 +97,7 @@
 				$stmt2->free_result();
 				$stmt2->close();
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.perfil_credito_x_plan WHERE id_perfil_credito = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".perfil_credito_x_plan WHERE id_perfil_credito = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -121,7 +121,7 @@
 						
 					foreach ($idPlanes as $idPlanR) 
 					{
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.perfil_credito_x_plan (id_perfil_credito, id_plan_credito) VALUES (?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".perfil_credito_x_plan (id_perfil_credito, id_plan_credito) VALUES (?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -146,9 +146,9 @@
 						
 						$date_registro = date("YmdHis");
 						$date_registro2 = date("Y-m-d H:i:s");					
-						$valor_log_user = "INSERT INTO finan_cli.perfil_credito_x_plan (id_perfil_credito, id_plan_credito) VALUES (".$idPerfilCredito.",".$id_plan_credito.")";
+						$valor_log_user = "INSERT INTO ".$db_name.".perfil_credito_x_plan (id_perfil_credito, id_plan_credito) VALUES (".$idPerfilCredito.",".$id_plan_credito.")";
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();

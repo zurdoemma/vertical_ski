@@ -24,7 +24,7 @@
 		
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 
-		if($stmt = $mysqli->prepare("SELECT id, estado FROM finan_cli.usuario WHERE id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT id, estado FROM ".$db_name.".usuario WHERE id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -56,10 +56,10 @@
 					$habOD = 0;
 					if($state_user_db == translate('State_User_Disabled',$GLOBALS['lang']))
 					{
-						$updateF = "UPDATE finan_cli.usuario SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id = '".$id_user."'";
+						$updateF = "UPDATE ".$db_name.".usuario SET estado = '".translate('State_User',$GLOBALS['lang'])."' WHERE id = '".$id_user."'";
 						$habOD = 1;
 					}
-					else $updateF = "UPDATE finan_cli.usuario SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id = '".$id_user."'";
+					else $updateF = "UPDATE ".$db_name.".usuario SET estado = '".translate('State_User_Disabled',$GLOBALS['lang'])."' WHERE id = '".$id_user."'";
 						
 					if(!$mysqli->query($updateF))
 					{
@@ -81,7 +81,7 @@
 						$valor_log_user = str_replace("%2",$date_registro2,$valor_log_user);
 						$valor_log_user = str_replace("%3",$_SESSION['username'],$valor_log_user);
 						
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,3,?)";
+						$insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,3,?)";
 					}
 					else
 					{
@@ -90,7 +90,7 @@
 						$valor_log_user = str_replace("%2",$date_registro2,$valor_log_user);
 						$valor_log_user = str_replace("%3",$_SESSION['username'],$valor_log_user);	
 
-						$insertLEUF = "INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,9,?)";						
+						$insertLEUF = "INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,9,?)";						
 					}
 
 					if(!$stmt = $mysqli->prepare($insertLEUF))
@@ -119,7 +119,7 @@
 					$mysqli->commit();
 					$mysqli->autocommit(TRUE);
 					
-					if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM finan_cli.usuario u, finan_cli.tipo_documento td, finan_cli.perfil p, finan_cli.sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id"))
+					if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.documento, p.nombre, s.nombre, u.estado FROM ".$db_name.".usuario u, ".$db_name.".tipo_documento td, ".$db_name.".perfil p, ".$db_name.".sucursal s WHERE u.tipo_documento = td.id AND u.id_perfil = p.id AND u.id_sucursal = s.id"))
 					{
 						$stmt->execute();    
 						$stmt->store_result();

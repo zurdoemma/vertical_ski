@@ -28,7 +28,7 @@
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt44 = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND ct.id_telefono = t.id AND t.id = ?"))
+		if($stmt44 = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND ct.id_telefono = t.id AND t.id = ?"))
 		{
 			$stmt44->bind_param('ii', $idCliente, $idTelefono);
 			$stmt44->execute();    
@@ -57,7 +57,7 @@
 		$stmt44->free_result();
 		$stmt44->close();
 			
-		if($stmt4 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.nro_telefono = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ? AND e.nro_telefono = ?"))
 		{
 			$date_registro_a_s = date("Ymd")."%";
 			$telefonoFin = $prefijoTelefono.$nroTelefono;
@@ -87,7 +87,7 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
-			if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,nro_telefono,token) VALUES (?,?,?,?,?,?,?)"))
+			if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,nro_telefono,token) VALUES (?,?,?,?,?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);

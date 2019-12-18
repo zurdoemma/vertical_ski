@@ -37,7 +37,7 @@
 			return;
 		}
 				
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo, c.tipo_documento, c.documento, ct.preferido FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND c.id = ? AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo, c.tipo_documento, c.documento, ct.preferido FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND c.id = ? AND t.id = ?"))
 		{
 			$stmt->bind_param('ii', $idCliente, $idTelefono);
 			$stmt->execute();    
@@ -52,7 +52,7 @@
 			}
 			else
 			{
-				if($stmt4 = $mysqli->prepare("SELECT t.id FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.numero = ?"))
+				if($stmt4 = $mysqli->prepare("SELECT t.id FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.numero = ?"))
 				{
 					$numTelFinCo = $prefijoTelefono.$nroTelefono;
 					$stmt4->bind_param('ii', $idCliente, $numTelFinCo);
@@ -88,7 +88,7 @@
 				
 				$pasoValidacionSMS = 0;
 				
-				if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1 AND tvc.nro_telefono = ?"))
+				if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1 AND tvc.nro_telefono = ?"))
 				{
 					$date_registro_a_vcc = date("Ymd")."%";
 					$stmt2->bind_param('isssi', $tipoDocumento, $documento, $date_registro_a_vcc, $token, $numTelFinCo);
@@ -108,7 +108,7 @@
 					return;
 				}
 				
-				if($stmt4 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.nro_telefono = ?"))
+				if($stmt4 = $mysqli->prepare("SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.nro_telefono = ?"))
 				{
 					$motivoValidacionSMS = 56;
 					$motivoValidacionSMS2 = 57;
@@ -144,7 +144,7 @@
 				
 				if($totR == 1) $preferidoDB = 1;
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".telefono SET tipo_telefono = ?, numero = ?, digitos_prefijo = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -169,9 +169,9 @@
 	
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
-				$valor_log_user = "ANTERIOR: id = ".$id_telefono_client.", tipo_telefono = ".$client_tipo_telefono.", numero = ".$client_numero_telefono.", digitos_prefijo = ".$client_digitos_prefijo.", preferido = ".$client_preference_telefono."  -- "."NUEVO: UPDATE finan_cli.telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono).", preferido = ".$preferidoDB." WHERE id =".$idTelefono;
+				$valor_log_user = "ANTERIOR: id = ".$id_telefono_client.", tipo_telefono = ".$client_tipo_telefono.", numero = ".$client_numero_telefono.", digitos_prefijo = ".$client_digitos_prefijo.", preferido = ".$client_preference_telefono."  -- "."NUEVO: UPDATE ".$db_name.".telefono SET tipo_telefono = ".$tipoTelefono.", numero = ".$prefijoTelefono.$nroTelefono.", digitos_prefijo = ".strlen($prefijoTelefono).", preferido = ".$preferidoDB." WHERE id =".$idTelefono;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -195,7 +195,7 @@
 					}
 				}
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cliente_x_telefono SET preferido = ? WHERE tipo_documento = ? AND documento = ? AND id_telefono = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_telefono SET preferido = ? WHERE tipo_documento = ? AND documento = ? AND id_telefono = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -220,7 +220,7 @@
 				
 				if($preferidoDB == 1)
 				{
-					if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cliente_x_telefono SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_telefono <> ?"))
+					if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_telefono SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_telefono <> ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -247,7 +247,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM finan_cli.telefono t, finan_cli.cliente c, finan_cli.tipo_telefono tt, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM ".$db_name.".telefono t, ".$db_name.".cliente c, ".$db_name.".tipo_telefono tt, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
 					$stmt->execute();

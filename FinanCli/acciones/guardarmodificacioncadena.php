@@ -39,7 +39,7 @@
 			return;
 		}
 				
-		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCadena);
 			$stmt->execute();    
@@ -57,7 +57,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cadena SET razon_social = ?, cuit_cuil = ?, email = ?, telefono = ?, nombre_fantasia = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cadena SET razon_social = ?, cuit_cuil = ?, email = ?, telefono = ?, nombre_fantasia = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -80,9 +80,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "UPDATE finan_cli.cadena SET razon_social = ".$razonSocial.", cuit_cuil = ".$cuitCuil.", email = ".str_replace('\'','',$email).", telefono = ".str_replace('\'','',$telefono).", nombre_fantasia = ".$nombreFantasia;
+				$valor_log_user = "UPDATE ".$db_name.".cadena SET razon_social = ".$razonSocial.", cuit_cuil = ".$cuitCuil.", email = ".str_replace('\'','',$email).", telefono = ".str_replace('\'','',$telefono).", nombre_fantasia = ".$nombreFantasia;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -109,7 +109,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.nombre_fantasia FROM finan_cli.cadena c ORDER BY c.id"))
+				if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.nombre_fantasia FROM ".$db_name.".cadena c ORDER BY c.id"))
 				{
 					$stmt->execute();    
 					$stmt->store_result();

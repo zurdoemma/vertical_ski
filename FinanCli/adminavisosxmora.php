@@ -336,7 +336,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
 								$stmt500->bind_param('s', $_SESSION['username']);
 								$stmt500->execute();    
@@ -347,7 +347,7 @@ include("./menu/menu.php");
 								{
 									$stmt500->bind_result($id_cadena_user);
 									$stmt500->fetch();						
-									if ($stmt = $mysqli->prepare("SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.aviso_x_mora axm, finan_cli.tipo_documento td, finan_cli.cuota_credito ccre, finan_cli.sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY axm.fecha DESC LIMIT 50")) 
+									if ($stmt = $mysqli->prepare("SELECT axm.id, axm.fecha, td.nombre, cc.documento, axm.estado, axm.id_credito, ccre.numero_cuota FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".aviso_x_mora axm, ".$db_name.".tipo_documento td, ".$db_name.".cuota_credito ccre, ".$db_name.".sucursal suc WHERE c.id = cc.id_credito AND axm.id_credito = c.id AND cc.tipo_documento = td.id AND ccre.id_credito = c.id AND ccre.id = axm.id_cuota_credito AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY axm.fecha DESC LIMIT 50")) 
 									{
 										$stmt->bind_param('i', $id_cadena_user);
 										$stmt->execute();    // Ejecuta la consulta preparada.

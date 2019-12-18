@@ -25,7 +25,7 @@
 		
 		$idCredito=htmlspecialchars($_GET["idCredito"], ENT_QUOTES, 'UTF-8');		
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -53,7 +53,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento, c.monto_compra, cc.id_usuario, c.abona_primera_cuota, c.minimo_entrega FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, c.cantidad_cuotas, pc.nombre, cli.nombres, cli.apellidos, cli.id_titular, c.monto_credito_original, td.nombre, cli.documento, c.monto_compra, cc.id_usuario, c.abona_primera_cuota, c.minimo_entrega FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND c.id = ? AND c.estado IN (?,?)")) 
 		{
 			$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -72,7 +72,7 @@
 			}					
 			
 			
-			if($stmt62 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+			if($stmt62 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 			{
 				$stmt62->bind_param('iss', $idCredito, $estado_p_1, $estado_p_2);
 				$stmt62->execute();    
@@ -100,7 +100,7 @@
 				return;
 			}
 			
-			if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+			if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 			{
 				$stmt63->bind_param('i', $idCredito);
 				$stmt63->execute();    
@@ -142,7 +142,7 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-			if(!$stmt75 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+			if(!$stmt75 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);

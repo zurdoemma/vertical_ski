@@ -25,7 +25,7 @@
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 		$duracion=htmlspecialchars($_POST["duracion"], ENT_QUOTES, 'UTF-8');	
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id, u.salt FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id, u.salt FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -52,7 +52,7 @@
 			return;				
 		}
 		
-		if ($stmt50 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ? AND s.id_cadena = ?")) 
+		if ($stmt50 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ? AND s.id_cadena = ?")) 
 		{
 			$stmt50->bind_param('si', $usuario, $id_cadena_user);
 			$stmt50->execute();    
@@ -85,7 +85,7 @@
 			return;
 		}
 		
-		if ($stmt51 = $mysqli->prepare("SELECT tas.fecha, tas.token, tas.duracion FROM finan_cli.token_autorizacion_supervisor tas WHERE tas.utilizado = 0 AND tas.fecha_utilizacion IS NULL AND tas.autorizado = ? AND tas.autorizante = ? ORDER BY tas.fecha DESC")) 
+		if ($stmt51 = $mysqli->prepare("SELECT tas.fecha, tas.token, tas.duracion FROM ".$db_name.".token_autorizacion_supervisor tas WHERE tas.utilizado = 0 AND tas.fecha_utilizacion IS NULL AND tas.autorizado = ? AND tas.autorizante = ? ORDER BY tas.fecha DESC")) 
 		{
 			$stmt51->bind_param('ss', $usuario, $_SESSION['username']);
 			$stmt51->execute();    
@@ -107,7 +107,7 @@
 					$mysqli->autocommit(FALSE);
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (?,?,?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (?,?,?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->autocommit(TRUE);
@@ -135,9 +135,9 @@
 					}	
 
 					$date_registro = date("YmdHis");					
-					$valor_log_user = "INSERT INTO finan_cli.token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (".$_SESSION['username'].",".$usuario.",".$date_registro.",".$utilizadoT.",".$codigoGeneradoCod.",".$duracion.")";
+					$valor_log_user = "INSERT INTO ".$db_name.".token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (".$_SESSION['username'].",".$usuario.",".$date_registro.",".$utilizadoT.",".$codigoGeneradoCod.",".$duracion.")";
 
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -183,7 +183,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -211,9 +211,9 @@
 				}	
 
 				$date_registro = date("YmdHis");					
-				$valor_log_user = "INSERT INTO finan_cli.token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (".$_SESSION['username'].",".$usuario.",".$date_registro.",".$utilizadoT.",".$codigoGeneradoCod.",".$duracion.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".token_autorizacion_supervisor(autorizante,autorizado,fecha,utilizado,token,duracion) VALUES (".$_SESSION['username'].",".$usuario.",".$date_registro.",".$utilizadoT.",".$codigoGeneradoCod.",".$duracion.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();

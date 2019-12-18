@@ -24,7 +24,7 @@
 		
 		$idSucursal=htmlspecialchars ( $_POST["idSucursal"], ENT_QUOTES, 'UTF-8' );
 		
-		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.id_domicilio, s.email, s.id_cadena FROM finan_cli.sucursal s WHERE s.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.id_domicilio, s.email, s.id_cadena FROM ".$db_name.".sucursal s WHERE s.id = ?"))
 		{
 			$stmt->bind_param('i', $idSucursal);
 			$stmt->execute();    
@@ -34,7 +34,7 @@
 			$stmt->fetch();
 			
 			
-			if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, d.id_provincia, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.domicilio d WHERE d.id = ?"))
+			if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, d.id_provincia, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM ".$db_name.".domicilio d WHERE d.id = ?"))
 			{
 				$stmt2->bind_param('i', $domicilio_sucursal);
 				$stmt2->execute();    
@@ -77,7 +77,7 @@
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenatender">'.translate('Lbl_Chain_Tender',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="cadenatender">';
 			echo '						<select class="form-control input-sm" name="cadenatenderi" id="cadenatenderi" style="width:190px;">';			 
-											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena")) 
+											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();
@@ -121,7 +121,7 @@
 			echo '					  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincia">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 			echo '					  <div class="form-group" id="domprovincia">';
 			echo '						  <select class="form-control input-sm" name="domprovinciai" id="domprovinciai" style="width:190px;">';			 
-											  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+											  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 											  { 
 												  $stmt->execute();    
 												  $stmt->store_result();

@@ -22,7 +22,7 @@
 				return;
 		}
 
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -75,7 +75,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodiferimientocuotasplancreditn">'.translate('Lbl_Deferred_Installment_Credit_Plan',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipodiferimientocuotasplancreditn">';
 		echo '						<select class="form-control input-sm" name="tipodiferimientocuotasplancreditni" id="tipodiferimientocuotasplancreditni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, valor FROM finan_cli.parametros WHERE nombre LIKE 'tipo_diferimiento_cuota_%'")) 
+										if ($stmt = $mysqli->prepare("SELECT id, valor FROM ".$db_name.".parametros WHERE nombre LIKE 'tipo_diferimiento_cuota_%'")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -104,7 +104,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenaplancreditn">'.translate('Lbl_Chain_Credit_Plan',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="cadenaplancreditn">';
 		echo '						<select class="form-control input-sm" name="cadenaplancreditni" id="cadenaplancreditni" style="width:190px;" disabled>';			 
-										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena WHERE id = ?")) 
+										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena WHERE id = ?")) 
 										{ 
 											$stmt->bind_param('i', $id_cadena_user);
 											$stmt->execute();    

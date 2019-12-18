@@ -24,7 +24,7 @@
 		
 		$idCadena=htmlspecialchars ($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM finan_cli.cadena c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM ".$db_name.".cadena c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCadena);
 			$stmt->execute();    
@@ -41,7 +41,7 @@
 			}
 			else
 			{				
-				if($stmt2 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.sucursal s WHERE c.id = s.id_cadena AND c.id = ?"))
+				if($stmt2 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".sucursal s WHERE c.id = s.id_cadena AND c.id = ?"))
 				{
 					$stmt2->bind_param('i', $idCadena);
 					$stmt2->execute();    
@@ -68,7 +68,7 @@
 					return;	
 				}
 
-				if($stmt3 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.plan_credito pc WHERE c.id = pc.id_cadena AND c.id = ?"))
+				if($stmt3 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".plan_credito pc WHERE c.id = pc.id_cadena AND c.id = ?"))
 				{
 					$stmt3->bind_param('i', $idCadena);
 					$stmt3->execute();    
@@ -103,7 +103,7 @@
 				
 				$stmt->bind_result($id_cadena, $cadena_razon_social, $cadena_cuit_cuil, $cadena_email, $cadena_telefono, $cadena_nombre_fantasia);
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.cadena WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".cadena WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -129,9 +129,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.cadena --> id: ".$id_cadena." - Razon Social: ".$cadena_razon_social." - CUIT o CUIL: ".$cadena_cuit_cuil." - Email: ".$cadena_email." - Telefono: ".(!empty($cadena_telefono) ? "$cadena_telefono" : "---")." - Nombre de Fantasia: ".$cadena_nombre_fantasia;
+				$valor_log_user = "DELETE ".$db_name.".cadena --> id: ".$id_cadena." - Razon Social: ".$cadena_razon_social." - CUIT o CUIL: ".$cadena_cuit_cuil." - Email: ".$cadena_email." - Telefono: ".(!empty($cadena_telefono) ? "$cadena_telefono" : "---")." - Nombre de Fantasia: ".$cadena_nombre_fantasia;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -158,7 +158,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.nombre_fantasia FROM finan_cli.cadena c ORDER BY c.id"))
+				if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.nombre_fantasia FROM ".$db_name.".cadena c ORDER BY c.id"))
 				{
 					$stmt->execute();    
 					$stmt->store_result();

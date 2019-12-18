@@ -19,7 +19,7 @@
 			return;
 		}		
 
-		if ($stmt72 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
+		if ($stmt72 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = ?")) 
 		{
 			$nombreValPar = 'cantidad_horas_entre_procesos_auto';
 			$stmt72->bind_param('s', $nombreValPar);
@@ -48,7 +48,7 @@
 			return;
 		}		
 		
-		if ($stmt73 = $mysqli->prepare("SELECT id FROM finan_cli.parametros WHERE nombre = ? AND valor = ?")) 
+		if ($stmt73 = $mysqli->prepare("SELECT id FROM ".$db_name.".parametros WHERE nombre = ? AND valor = ?")) 
 		{
 			$nombreValPar = 'token_proceso_automatico';
 			$stmt73->bind_param('ss', $nombreValPar, $tokenProceso);
@@ -77,7 +77,7 @@
 			return;
 		}
 		
-		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 1 HAVING MAX(fecha) IS NOT NULL")) 
+		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM ".$db_name.".ejecucion_procesos_auto WHERE tipo = 1 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt74->execute();
 			$stmt74->store_result();
@@ -110,7 +110,7 @@
 			return;
 		}
 
-		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.control_ejecucion_procesos WHERE tipo_proceso = 1 HAVING MAX(fecha) IS NOT NULL")) 
+		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM ".$db_name.".control_ejecucion_procesos WHERE tipo_proceso = 1 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt174->execute();
 			$stmt174->store_result();
@@ -138,7 +138,7 @@
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 										
 					$date_registro = date("YmdHis");					
-					if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
+					if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->autocommit(TRUE);
@@ -169,7 +169,7 @@
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 									
 				$date_registro = date("YmdHis");					
-				if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
+				if(!$stmt20 = $mysqli->prepare("INSERT INTO ".$db_name.".control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -197,7 +197,7 @@
 			return;
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id, cad.razon_social FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.sucursal suc, finan_cli.cadena cad WHERE cc.id_credito = c.id AND suc.id_cadena = cad.id AND ccli.id_credito = c.id AND ccli.id_sucursal = suc.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
+		if($stmt = $mysqli->prepare("SELECT cc.id, cc.estado, cc.fecha_vencimiento, cc.numero_cuota, c.cantidad_cuotas, c.id_plan_credito, cc.monto_cuota_original, c.id, cad.razon_social FROM ".$db_name.".cuota_credito cc, ".$db_name.".credito c, ".$db_name.".credito_cliente ccli, ".$db_name.".sucursal suc, ".$db_name.".cadena cad WHERE cc.id_credito = c.id AND suc.id_cadena = cad.id AND ccli.id_credito = c.id AND ccli.id_sucursal = suc.id AND cc.estado IN (?,?) ORDER BY cc.fecha_vencimiento"))
 		{
 			$estadoEM = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
 			$estadoPEND = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
@@ -213,7 +213,7 @@
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 									
 				$date_registro = date("YmdHis");					
-				if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
+				if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -248,7 +248,7 @@
 				$pasoDiasVencidosCuota = 0;
 				while($stmt->fetch())
 				{
-					if($stmt262 = $mysqli->prepare("SELECT MAX(ixmcc.fecha) FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.id_cuota_credito = ? HAVING MAX(ixmcc.fecha) IS NOT NULL"))
+					if($stmt262 = $mysqli->prepare("SELECT MAX(ixmcc.fecha) FROM ".$db_name.".interes_x_mora_cuota_credito ixmcc WHERE ixmcc.id_cuota_credito = ? HAVING MAX(ixmcc.fecha) IS NOT NULL"))
 					{
 						$stmt262->bind_param('i', $id_cuota_credito_db);
 						$stmt262->execute();    
@@ -285,7 +285,7 @@
 					$fechaInfParaDENM = new DateTime($fechaParaDENM);
 					$difDiasParaDENM = $fechaAct->diff($fechaInfParaDENM);
 					
-					if($stmt39 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
+					if($stmt39 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = ?"))
 					{
 						$nombreValPara = 'cantidad_dias_x_mora';
 						$stmt39->bind_param('s', $nombreValPara);
@@ -327,7 +327,7 @@
 					if($fechaActNumber > $fechaVencimCuotaAc && $difDias->days >= $cantidad_dias_para_mora_db)
 					{
 						$pasoDiasVencidosCuota = 1;
-						if($stmt79 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = ?"))
+						if($stmt79 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = ?"))
 						{
 							$nombreValPara = 'cantidad_dias_cuota_incobrable';
 							$stmt79->bind_param('s', $nombreValPara);
@@ -364,7 +364,7 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id = ?"))
+							if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->autocommit(TRUE);
@@ -390,7 +390,7 @@
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 														
 									$date_registro = date("YmdHis");					
-									if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ?, estado = ? WHERE id_cuota_credito = ? AND estado IN (?,?)"))
+									if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ?, estado = ? WHERE id_cuota_credito = ? AND estado IN (?,?)"))
 									{
 										echo $mysqli->error;
 										$mysqli->autocommit(TRUE);
@@ -415,7 +415,7 @@
 										}
 									}
 									
-									if ($stmt132 = $mysqli->prepare("SELECT id FROM finan_cli.aviso_x_mora WHERE id_cuota_credito = ? AND estado IN (?,?)")) 
+									if ($stmt132 = $mysqli->prepare("SELECT id FROM ".$db_name.".aviso_x_mora WHERE id_cuota_credito = ? AND estado IN (?,?)")) 
 									{
 										$stmt132->bind_param('iss', $id_cuota_credito_db, $estadoPendiente, $estadoCreado);
 										$stmt132->execute(); 
@@ -429,7 +429,7 @@
 											while($stmt132->fetch())
 											{
 												$date_registro = date("YmdHis");					
-												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado IN (?,?,?)"))
+												if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado IN (?,?,?)"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -472,7 +472,7 @@
 							
 							if($esUltimaCuota == 1)
 							{
-								if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+								if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 								{
 									$stmt17->bind_param('i', $id_credito_db);
 									$stmt17->execute();    
@@ -517,7 +517,7 @@
 									return;
 								}
 				
-								if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+								if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 								{
 									echo $mysqli->error;
 									$mysqli->rollback();
@@ -536,9 +536,9 @@
 									}
 
 									$date_registro = date("YmdHis");				
-									$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoF." WHERE id = ".$id_credito_db;
+									$valor_log_user = "UPDATE ".$db_name.".credito SET estado = ".$estadoF." WHERE id = ".$id_credito_db;
 
-									if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+									if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 									{
 										echo $mysqli->error;
 										$mysqli->rollback();
@@ -570,7 +570,7 @@
 						}
 						else
 						{
-							if($stmt40 = $mysqli->prepare("SELECT ixm.interes, ixm.cantidad_dias, ixm.recurrente FROM finan_cli.interes_x_mora ixm WHERE ixm.id_plan_credito = ? AND ixm.cantidad_dias = ?"))
+							if($stmt40 = $mysqli->prepare("SELECT ixm.interes, ixm.cantidad_dias, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm WHERE ixm.id_plan_credito = ? AND ixm.cantidad_dias = ?"))
 							{
 								$stmt40->bind_param('ii', $id_plan_credito_db, $difDias->days);
 								$stmt40->execute();    
@@ -583,7 +583,7 @@
 									$stmt40->bind_result($interes_x_mora_db, $cantidad_dias_interes_x_mora_db, $es_recurrente_interes_x_mora_db);
 									while($stmt40->fetch())
 									{
-										if($stmt41 = $mysqli->prepare("SELECT ixmcc.id, ixmcc.fecha FROM finan_cli.interes_x_mora_cuota_credito ixmcc WHERE ixmcc.cantidad_dias_mora = ? AND ixmcc.id_cuota_credito = ?"))
+										if($stmt41 = $mysqli->prepare("SELECT ixmcc.id, ixmcc.fecha FROM ".$db_name.".interes_x_mora_cuota_credito ixmcc WHERE ixmcc.cantidad_dias_mora = ? AND ixmcc.id_cuota_credito = ?"))
 										{
 											$stmt41->bind_param('ii', $cantidad_dias_interes_x_mora_db, $id_cuota_credito_db);
 											$stmt41->execute();    
@@ -599,7 +599,7 @@
 												$mysqli->autocommit(FALSE);
 												$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																	
-												if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id = ?"))
+												if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->autocommit(TRUE);
@@ -630,7 +630,7 @@
 											{
 												$montoInteresAplicado = round((($monto_cuota_original_db*$interes_x_mora_db)/100));
 												
-												if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+												if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 												{
 													$stmt64->bind_param('i', $id_cuota_credito_db);
 													$stmt64->execute();    
@@ -656,7 +656,7 @@
 												$mysqli->autocommit(FALSE);
 												$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																	
-												if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id = ?"))
+												if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->autocommit(TRUE);
@@ -677,7 +677,7 @@
 													}
 												}
 												
-												if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.interes_x_mora_cuota_credito(fecha,id_cuota_credito,cantidad_dias_mora,interes_x_mora,id_plan_credito,cantidad_dias_en_mora,recurrente) VALUES (?,?,?,?,?,?,?)"))
+												if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".interes_x_mora_cuota_credito(fecha,id_cuota_credito,cantidad_dias_mora,interes_x_mora,id_plan_credito,cantidad_dias_en_mora,recurrente) VALUES (?,?,?,?,?,?,?)"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -701,7 +701,7 @@
 													}
 												}
 
-												if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.mora_cuota_credito(id_cuota_credito,fecha_interes,monto_interes,porcentaje_interes) VALUES (?,?,?,?)"))
+												if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".mora_cuota_credito(id_cuota_credito,fecha_interes,monto_interes,porcentaje_interes) VALUES (?,?,?,?)"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -725,7 +725,7 @@
 													}
 												}
 
-												if($stmt51 = $mysqli->prepare("SELECT axm.id, axm.mensaje FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ? AND axm.estado IN (?,?)"))
+												if($stmt51 = $mysqli->prepare("SELECT axm.id, axm.mensaje FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ? AND axm.estado IN (?,?)"))
 												{
 													$estadoAXMPend = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
 													$estadoAXMCread = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
@@ -740,7 +740,7 @@
 														$stmt51->bind_result($id_aviso_x_mora_db, $mensaje_aviso_x_mora_db);
 														$stmt51->fetch();
 														
-														if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET fecha_modificacion = ?, mensaje = ? WHERE id = ?"))
+														if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET fecha_modificacion = ?, mensaje = ? WHERE id = ?"))
 														{
 															echo $mysqli->error;
 															$mysqli->rollback();
@@ -769,8 +769,8 @@
 														}
 
 														$date_registro = date("YmdHis");				
-														$valor_log_user = "ANTERIOR: UPDATE finan_cli.aviso_x_mora SET mensaje = ".$mensaje_aviso_x_mora_db." WHERE id = ".$id_aviso_x_mora_db." -- NUEVO: UPDATE finan_cli.aviso_x_mora SET mensaje = ".$mensajeNuevo." WHERE id = ".$id_aviso_x_mora_db;
-														if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+														$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".aviso_x_mora SET mensaje = ".$mensaje_aviso_x_mora_db." WHERE id = ".$id_aviso_x_mora_db." -- NUEVO: UPDATE ".$db_name.".aviso_x_mora SET mensaje = ".$mensajeNuevo." WHERE id = ".$id_aviso_x_mora_db;
+														if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 														{
 															echo $mysqli->error;
 															$mysqli->rollback();
@@ -800,7 +800,7 @@
 													}
 													else
 													{
-														if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso) VALUES (?,?,?,?,?,?)"))
+														if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso) VALUES (?,?,?,?,?,?)"))
 														{
 															echo $mysqli->error;
 															$mysqli->rollback();
@@ -856,7 +856,7 @@
 									$mysqli->autocommit(FALSE);
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 														
-									if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id = ?"))
+									if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id = ?"))
 									{
 										echo $mysqli->error;
 										$mysqli->autocommit(TRUE);
@@ -880,7 +880,7 @@
 									$date_registro = date("YmdHis");				
 									$valor_log_user = str_replace("%1",$id_cuota_credito_db,translate('Msg_Credit_Plan_Does_Not_Have_Defined_Surcharge',$GLOBALS['lang']));
 									$valor_log_user = str_replace("%2",$cantidad_dias_para_mora_db,$valor_log_user);
-									if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+									if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 									{
 										echo $mysqli->error;
 										$mysqli->rollback();
@@ -923,7 +923,7 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 												
-							if(!$stmt2 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id = ?"))
+							if(!$stmt2 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->autocommit(TRUE);
@@ -945,8 +945,8 @@
 							}
 							
 							$date_registro = date("YmdHis");				
-							$valor_log_user = "ANTERIOR: UPDATE finan_cli.cuota_credito SET estado = ".$estado_cuota_credito_db." WHERE id = ".$id_cuota_credito_db." -- NUEVO: UPDATE finan_cli.cuota_credito SET estado = ".$estadoPEND." WHERE id = ".$id_cuota_credito_db;
-							if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".cuota_credito SET estado = ".$estado_cuota_credito_db." WHERE id = ".$id_cuota_credito_db." -- NUEVO: UPDATE ".$db_name.".cuota_credito SET estado = ".$estadoPEND." WHERE id = ".$id_cuota_credito_db;
+							if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -981,7 +981,7 @@
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 									
 				$date_registro = date("YmdHis");					
-				if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
+				if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);

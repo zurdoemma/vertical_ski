@@ -24,7 +24,7 @@
 		
 		$idInteresXMora=htmlspecialchars($_POST["idInteresXMora"], ENT_QUOTES, 'UTF-8');		
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -51,7 +51,7 @@
 			return;				
 		}
 		
-		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito, ixm.recurrente FROM finan_cli.interes_x_mora ixm WHERE ixm.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm WHERE ixm.id = ?")) 
 		{
 			$stmt->bind_param('i', $idInteresXMora);
 			$stmt->execute();    // Ejecuta la consulta preparada.
@@ -62,7 +62,7 @@
 			
 			$stmt->fetch();
 
-			if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
+			if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
 			{
 				$stmt501->bind_param('ii', $plan_credito_interes_x_mora, $id_cadena_user);
 				$stmt501->execute();    
@@ -112,7 +112,7 @@
 			echo '					<label class="control-label" for="plancreditointeresxmora">'.translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="plancreditointeresxmora">';
 			echo '						<select class="form-control input-sm" name="plancreditointeresxmorai" id="plancreditointeresxmorai" style="width:193px;">';			 
-											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito WHERE id_cadena = ?")) 
+											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".plan_credito WHERE id_cadena = ?")) 
 											{ 
 												$stmt->bind_param('i', $id_cadena_user);
 												$stmt->execute();    

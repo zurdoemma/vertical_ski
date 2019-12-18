@@ -946,7 +946,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+							if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 							{
 								$stmt500->bind_param('s', $_SESSION['username']);
 								$stmt500->execute();    
@@ -958,7 +958,7 @@ include("./menu/menu.php");
 									$stmt500->bind_result($id_cadena_user);
 									$stmt500->fetch();
 															
-									if ($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM finan_cli.cadena c, finan_cli.sucursal s  WHERE c.id = s.id_cadena AND c.id = ?")) 
+									if ($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, c.razon_social FROM ".$db_name.".cadena c, ".$db_name.".sucursal s  WHERE c.id = s.id_cadena AND c.id = ?")) 
 									{
 										$stmt->bind_param('i', $id_cadena_user);
 										$stmt->execute();    // Ejecuta la consulta preparada.

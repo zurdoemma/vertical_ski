@@ -42,7 +42,7 @@
 			return;
 		}		
 
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -75,7 +75,7 @@
 			return;				
 		}	
 			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id_cadena = ?"))
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id_cadena = ?"))
 		{
 			$stmt->bind_param('si', $nombre, $id_cadena_user);
 			$stmt->execute();    
@@ -90,7 +90,7 @@
 			}
 			else
 			{					
-				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'maxima_cantidad_cuotas_plan_credito'"))
+				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'maxima_cantidad_cuotas_plan_credito'"))
 				{
 					$stmt2->execute();    
 					$stmt2->store_result();
@@ -128,7 +128,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -151,9 +151,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.",".$minimoEntrega.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".plan_credito(nombre,descripcion,cantidad_cuotas,interes_fijo,id_tipo_diferimiento_cuota,id_cadena,minimo_entrega) VALUES (".$nombre.",".str_replace('\'','',$descripcion).",".$cantidadCuotas.",".$interesFijo.",".$tipoDiferimientoCuota.",".$cadena.",".$minimoEntrega.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -180,7 +180,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id AND c.id = ? ORDER BY pc.cantidad_cuotas")) 
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM ".$db_name.".plan_credito pc, ".$db_name.".cadena c, ".$db_name.".parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id AND c.id = ? ORDER BY pc.cantidad_cuotas")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

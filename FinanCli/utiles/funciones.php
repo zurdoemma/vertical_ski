@@ -110,7 +110,7 @@ function checkbrute($user_id, $mysqli) {
     // Obtiene el timestamp del tiempo actual.
     $now = time();
  
-	if ($stmt = $mysqli->prepare("SELECT id, valor FROM finan_cli.parametros WHERE id IN (1,2) ORDER BY id")) 
+	if ($stmt = $mysqli->prepare("SELECT id, valor FROM ".$GLOBALS['db_name_util'].".parametros WHERE id IN (1,2) ORDER BY id")) 
 	{
 		$stmt->execute();    // Ejecuta la consulta preparada.
 		$stmt->store_result();
@@ -132,7 +132,7 @@ function checkbrute($user_id, $mysqli) {
     $valid_attempts = $now - ($cantidad_horas_bloqueo * 60 * 60);
  
     if ($stmt = $mysqli->prepare("SELECT time 
-								  FROM finan_cli.login_attempts 
+								  FROM ".$GLOBALS['db_name_util'].".login_attempts 
 								  WHERE usuario = ? AND time > '$valid_attempts'")) 
     {
         $stmt->bind_param('s', $user_id);
@@ -159,7 +159,7 @@ function login($usuario, $password, $mysqli) {
 	$resultClave = -1;
 
 	// Usar declaraciones preparadas significa que la inyección de SQL no será posible.
-	if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM finan_cli.usuario WHERE id = ? LIMIT 1")) 
+	if ($stmt = $mysqli->prepare("SELECT id, clave, salt, id_perfil, estado  FROM ".$GLOBALS['db_name_util'].".usuario WHERE id = ? LIMIT 1")) 
 	{
 		$stmt->bind_param('s', $usuario);  // Une $usuario al parámetro.
 		$stmt->execute();    // Ejecuta la consulta preparada.
@@ -191,7 +191,7 @@ function login($usuario, $password, $mysqli) {
 				{
 					if($permiso == 2)
 					{
-						if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM finan_cli.horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
+						if ($stmt401 = $mysqli->prepare("SELECT hl.id_usuario, hl.horario_ingreso, hl.horario_salida, hl.lunes, hl.martes, hl.miercoles, hl.jueves, hl.viernes, hl.sabado, hl.domingo, hl.cambio_dia FROM ".$GLOBALS['db_name_util'].".horario_laboral_x_usuario hl WHERE hl.id_usuario = ?")) 
 						{
 							$stmt401->bind_param('s', $user_id);
 							$stmt401->execute();    
@@ -270,7 +270,7 @@ function login($usuario, $password, $mysqli) {
 					$date_registro = date("YmdHis");
 					$date_registro2 = date("Y-m-d H:i:s");
 
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$GLOBALS['db_name_util'].".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						printf("Error: %s\n", $mysqli->error);
 					}
@@ -294,7 +294,7 @@ function login($usuario, $password, $mysqli) {
 					// Se graba este intento en la base de datos.
 					$now = time();
 					$ip_con = $_SERVER['REMOTE_ADDR'];
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.login_attempts(usuario, time, ip_conexion) VALUES (?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$GLOBALS['db_name_util'].".login_attempts(usuario, time, ip_conexion) VALUES (?,?,?)"))
 					{
 						printf("Error: %s\n", $mysqli->error);
 					}
@@ -331,7 +331,7 @@ function login_check($mysqli) {
         // Obtiene la cadena de agente de usuario del usuario.
         $user_browser = $_SERVER['HTTP_USER_AGENT'];
  	
-        if ($stmt = $mysqli->prepare("SELECT clave, estado FROM finan_cli.usuario WHERE id = ? LIMIT 1")) 
+        if ($stmt = $mysqli->prepare("SELECT clave, estado FROM ".$GLOBALS['db_name_util'].".usuario WHERE id = ? LIMIT 1")) 
 		{
             // Une $username al parámetro.
             $stmt->bind_param('s', $username);
@@ -693,7 +693,7 @@ function consulta_estado_financiero_cliente($tipoDocumento, $documento, $cuitCui
 
 function obtenerFechaInicialCuotaCredito($id_tipo_diferimiento_cuota, $mysqlip) {
 	
- 	if ($stmt73 = $mysqlip->prepare("SELECT id, nombre FROM finan_cli.parametros WHERE id = ?")) 
+ 	if ($stmt73 = $mysqlip->prepare("SELECT id, nombre FROM ".$GLOBALS['db_name_util'].".parametros WHERE id = ?")) 
 	{
 		$stmt73->bind_param('i', $id_tipo_diferimiento_cuota);
 		$stmt73->execute();    // Ejecuta la consulta preparada.

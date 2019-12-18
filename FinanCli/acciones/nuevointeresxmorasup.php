@@ -22,7 +22,7 @@
 				return;
 		}
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -71,7 +71,7 @@
 		echo '					<label class="control-label" for="plancreditointeresxmoran">'.translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditointeresxmoran">';
 		echo '						<select class="form-control input-sm" name="plancreditointeresxmorani" id="plancreditointeresxmorani" style="width:193px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito WHERE id_cadena = ?")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".plan_credito WHERE id_cadena = ?")) 
 										{ 
 											$stmt->bind_param('i', $id_cadena_user);
 											$stmt->execute();    

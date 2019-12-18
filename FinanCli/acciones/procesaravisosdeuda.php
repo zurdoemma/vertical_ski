@@ -19,7 +19,7 @@
 			return;
 		}		
 
-		if ($stmt72 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
+		if ($stmt72 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = ?")) 
 		{
 			$nombreValPar = 'cantidad_horas_entre_procesos_auto';
 			$stmt72->bind_param('s', $nombreValPar);
@@ -48,7 +48,7 @@
 			return;
 		}		
 		
-		if ($stmt73 = $mysqli->prepare("SELECT id FROM finan_cli.parametros WHERE nombre = ? AND valor = ?")) 
+		if ($stmt73 = $mysqli->prepare("SELECT id FROM ".$db_name.".parametros WHERE nombre = ? AND valor = ?")) 
 		{
 			$nombreValPar = 'token_proceso_automatico';
 			$stmt73->bind_param('ss', $nombreValPar, $tokenProceso);
@@ -77,7 +77,7 @@
 			return;
 		}
 		
-		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.control_ejecucion_procesos WHERE tipo_proceso = 2 HAVING MAX(fecha) IS NOT NULL")) 
+		if ($stmt174 = $mysqli->prepare("SELECT MAX(fecha) FROM ".$db_name.".control_ejecucion_procesos WHERE tipo_proceso = 2 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt174->execute();
 			$stmt174->store_result();
@@ -105,7 +105,7 @@
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 										
 					$date_registro = date("YmdHis");					
-					if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
+					if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".control_ejecucion_procesos SET fecha = ? WHERE tipo_proceso = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->autocommit(TRUE);
@@ -136,7 +136,7 @@
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 									
 				$date_registro = date("YmdHis");					
-				if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
+				if(!$stmt20 = $mysqli->prepare("INSERT INTO ".$db_name.".control_ejecucion_procesos(fecha, tipo_proceso) VALUES(?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -164,7 +164,7 @@
 			return;
 		}		
 		
-		if ($stmt75 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
+		if ($stmt75 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = ?")) 
 		{
 			$nombreValPar = 'cantidad_dias_avisos_x_mora';
 			$stmt75->bind_param('s', $nombreValPar);
@@ -193,7 +193,7 @@
 			return;
 		}		
 		
-		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM finan_cli.ejecucion_procesos_auto WHERE tipo = 2 HAVING MAX(fecha) IS NOT NULL")) 
+		if ($stmt74 = $mysqli->prepare("SELECT MAX(fecha) FROM ".$db_name.".ejecucion_procesos_auto WHERE tipo = 2 HAVING MAX(fecha) IS NOT NULL")) 
 		{
 			$stmt74->execute();
 			$stmt74->store_result();
@@ -226,7 +226,7 @@
 			return;
 		}
 
-		if($stmt51 = $mysqli->prepare("SELECT axm.id, axm.mensaje, axm.id_cuota_credito, axm.estado, axm.id_tipo_aviso, axm.id_credito, axm.fecha, axm.fecha_modificacion FROM finan_cli.aviso_x_mora axm WHERE axm.estado IN (?,?) ORDER BY axm.fecha"))
+		if($stmt51 = $mysqli->prepare("SELECT axm.id, axm.mensaje, axm.id_cuota_credito, axm.estado, axm.id_tipo_aviso, axm.id_credito, axm.fecha, axm.fecha_modificacion FROM ".$db_name.".aviso_x_mora axm WHERE axm.estado IN (?,?) ORDER BY axm.fecha"))
 		{
 			$estadoAXMPend = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
 			$estadoAXMCread = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
@@ -241,7 +241,7 @@
 				$stmt51->bind_result($id_aviso_x_mora_db, $mensaje_aviso_x_mora_db, $id_cuota_credito_aviso_x_mora_db, $estado_aviso_x_mora_db, $id_tipo_aviso_x_mora_db, $id_credito_aviso_x_mora_db, $fecha_aviso_x_mora_control_db, $fecha_modificacion_aviso_x_mora_control_db);
 				while($stmt51->fetch())
 				{						
-					if($stmt152 = $mysqli->prepare("SELECT id, estado FROM finan_cli.cuota_credito WHERE id = ? AND estado IN (?,?,?)"))
+					if($stmt152 = $mysqli->prepare("SELECT id, estado FROM ".$db_name.".cuota_credito WHERE id = ? AND estado IN (?,?,?)"))
 					{
 						$estadoIncobrable = translate('Lbl_Status_Fee_Incobrable',$GLOBALS['lang']);
 						$estadoCondonada = translate('Lbl_Status_Fee_Condoned',$GLOBALS['lang']);
@@ -261,7 +261,7 @@
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 												
 							$date_registro = date("YmdHis");					
-							if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+							if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->autocommit(TRUE);
@@ -285,7 +285,7 @@
 							}
 							
 							$date_registro = date("YmdHis");					
-							if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado <> ?"))
+							if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado <> ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -340,7 +340,7 @@
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 											
 						$date_registro = date("YmdHis");					
-						if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+						if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);
@@ -364,7 +364,7 @@
 						}
 						
 						$date_registro = date("YmdHis");					
-						if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado <> ?"))
+						if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id_aviso_x_mora = ? AND estado <> ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -398,7 +398,7 @@
 					{
 						if($id_tipo_aviso_x_mora_db == 1)
 						{
-							if ($stmt30 = $mysqli->prepare("SELECT t.id, t.numero FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente_x_telefono cxt, finan_cli.telefono t WHERE c.id = cc.id_credito AND cc.tipo_documento = cxt.tipo_documento AND cc.documento = cxt.documento AND cxt.id_telefono = t.id AND c.id = ? AND cxt.preferido = ? AND t.tipo_telefono = ?")) 
+							if ($stmt30 = $mysqli->prepare("SELECT t.id, t.numero FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente_x_telefono cxt, ".$db_name.".telefono t WHERE c.id = cc.id_credito AND cc.tipo_documento = cxt.tipo_documento AND cc.documento = cxt.documento AND cxt.id_telefono = t.id AND c.id = ? AND cxt.preferido = ? AND t.tipo_telefono = ?")) 
 							{
 								$telPrefe = 1;
 								$tipoTelPre = 1;
@@ -428,7 +428,7 @@
 										$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 															
 										$date_registro = date("YmdHis");					
-										if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+										if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 										{
 											echo $mysqli->error;
 											$mysqli->autocommit(TRUE);
@@ -452,7 +452,7 @@
 										}
 										
 										$date_registro = date("YmdHis");					
-										if(!$stmt20 = $mysqli->prepare("INSERT finan_cli.envio_sms(id_aviso_x_mora,id_telefono,estado,comentario,codigo_respuesta,fecha,cantidad_reintentos,id_sms) VALUES(?,?,?,?,?,?,?,?)"))
+										if(!$stmt20 = $mysqli->prepare("INSERT ".$db_name.".envio_sms(id_aviso_x_mora,id_telefono,estado,comentario,codigo_respuesta,fecha,cantidad_reintentos,id_sms) VALUES(?,?,?,?,?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											$mysqli->rollback();
@@ -524,7 +524,7 @@
 										$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 															
 										$date_registro = date("YmdHis");					
-										if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+										if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 										{
 											echo $mysqli->error;
 											$mysqli->autocommit(TRUE);
@@ -548,7 +548,7 @@
 										}
 										
 										$date_registro = date("YmdHis");					
-										if(!$stmt20 = $mysqli->prepare("INSERT finan_cli.envio_sms(id_aviso_x_mora,id_telefono,estado,comentario,codigo_respuesta,fecha,cantidad_reintentos) VALUES(?,?,?,?,?,?,?)"))
+										if(!$stmt20 = $mysqli->prepare("INSERT ".$db_name.".envio_sms(id_aviso_x_mora,id_telefono,estado,comentario,codigo_respuesta,fecha,cantidad_reintentos) VALUES(?,?,?,?,?,?,?)"))
 										{
 											echo $mysqli->error;
 											$mysqli->rollback();
@@ -586,7 +586,7 @@
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 														
 									$date_registro = date("YmdHis");					
-									if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+									if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 									{
 										echo $mysqli->error;
 										$mysqli->autocommit(TRUE);
@@ -624,7 +624,7 @@
 					{
 						if($id_tipo_aviso_x_mora_db == 1)
 						{
-							if ($stmt77 = $mysqli->prepare("SELECT es.id, es.id_telefono, es.estado, es.codigo_respuesta, es.cantidad_reintentos, es.id_sms, t.numero FROM finan_cli.envio_sms es, finan_cli.telefono t WHERE es.id_telefono = t.id AND es.id_aviso_x_mora = ? AND es.estado IN (?,?,?)")) 
+							if ($stmt77 = $mysqli->prepare("SELECT es.id, es.id_telefono, es.estado, es.codigo_respuesta, es.cantidad_reintentos, es.id_sms, t.numero FROM ".$db_name.".envio_sms es, ".$db_name.".telefono t WHERE es.id_telefono = t.id AND es.id_aviso_x_mora = ? AND es.estado IN (?,?,?)")) 
 							{
 								$estadoError = translate('Lbl_State_Error_Default_Notice',$GLOBALS['lang']);
 								$estadoEnviado = translate('Lbl_State_Sended_Default_Notice',$GLOBALS['lang']);
@@ -640,7 +640,7 @@
 									$stmt77->bind_result($id_envio_sms_db, $id_telefono_envio_sms_db, $estado_envio_sms_db, $codigo_respuesta_envio_sms_db, $cantidad_reintentos_envio_sms_db, $id_sms_envio_service_db, $numero_telefono_envio_sms_db);
 									$stmt77->fetch();
 									
-									if ($stmt105 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = ?")) 
+									if ($stmt105 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = ?")) 
 									{
 										$nombreValPar = 'cantidad_reintentos_envio_sms';
 										$stmt105->bind_param('s', $nombreValPar);
@@ -680,7 +680,7 @@
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->autocommit(TRUE);
@@ -704,7 +704,7 @@
 											}
 											
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->rollback();
@@ -738,7 +738,7 @@
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->autocommit(TRUE);
@@ -761,7 +761,7 @@
 											}
 											
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->rollback();
@@ -795,7 +795,7 @@
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->autocommit(TRUE);
@@ -818,7 +818,7 @@
 											}
 											
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->rollback();
@@ -852,7 +852,7 @@
 											$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->autocommit(TRUE);
@@ -875,7 +875,7 @@
 											}
 											
 											$date_registro = date("YmdHis");					
-											if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+											if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 											{
 												echo $mysqli->error;
 												$mysqli->rollback();
@@ -929,7 +929,7 @@
 													$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																		
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->autocommit(TRUE);
@@ -953,7 +953,7 @@
 													}
 													
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->rollback();
@@ -1002,7 +1002,7 @@
 														$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																			
 														$date_registro = date("YmdHis");					
-														if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+														if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 														{
 															echo $mysqli->error;
 															$mysqli->autocommit(TRUE);
@@ -1026,7 +1026,7 @@
 														}
 														
 														$date_registro = date("YmdHis");					
-														if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
+														if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
 														{
 															echo $mysqli->error;
 															$mysqli->rollback();
@@ -1097,7 +1097,7 @@
 														$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																			
 														$date_registro = date("YmdHis");					
-														if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+														if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 														{
 															echo $mysqli->error;
 															$mysqli->autocommit(TRUE);
@@ -1120,7 +1120,7 @@
 														}
 														
 														$date_registro = date("YmdHis");					
-														if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
+														if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
 														{
 															echo $mysqli->error;
 															$mysqli->rollback();
@@ -1155,7 +1155,7 @@
 												$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																	
 												$date_registro = date("YmdHis");					
-												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+												if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->autocommit(TRUE);
@@ -1179,7 +1179,7 @@
 												}
 												
 												$date_registro = date("YmdHis");					
-												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+												if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -1225,7 +1225,7 @@
 												$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																	
 												$date_registro = date("YmdHis");					
-												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+												if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->autocommit(TRUE);
@@ -1249,7 +1249,7 @@
 												}
 												
 												$date_registro = date("YmdHis");					
-												if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1 WHERE id = ?"))
+												if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1 WHERE id = ?"))
 												{
 													echo $mysqli->error;
 													$mysqli->rollback();
@@ -1298,7 +1298,7 @@
 													$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																		
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->autocommit(TRUE);
@@ -1322,7 +1322,7 @@
 													}
 													
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->rollback();
@@ -1393,7 +1393,7 @@
 													$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 																		
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->autocommit(TRUE);
@@ -1416,7 +1416,7 @@
 													}
 													
 													$date_registro = date("YmdHis");					
-													if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
+													if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".envio_sms SET estado = ?, comentario = ?, fecha_modificacion = ?, cantidad_reintentos = cantidad_reintentos + 1, id_sms = ?, codigo_respuesta = ? WHERE id = ?"))
 													{
 														echo $mysqli->error;
 														$mysqli->rollback();
@@ -1456,7 +1456,7 @@
 									$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 														
 									$date_registro = date("YmdHis");					
-									if(!$stmt20 = $mysqli->prepare("UPDATE finan_cli.aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
+									if(!$stmt20 = $mysqli->prepare("UPDATE ".$db_name.".aviso_x_mora SET estado = ?, comentario = ?, fecha_modificacion = ? WHERE id = ?"))
 									{
 										echo $mysqli->error;
 										$mysqli->autocommit(TRUE);
@@ -1501,7 +1501,7 @@
 			return;
 		}		
 		
-		if ($stmt107 = $mysqli->prepare("SELECT axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.razon_social FROM finan_cli.aviso_x_mora axm, finan_cli.cuota_credito cc, finan_cli.credito_cliente ccli, finan_cli.sucursal suc, finan_cli.cadena cad WHERE axm.id_cuota_credito = cc.id AND ccli.id_sucursal = suc.id AND ccli.id_credito = cc.id_credito AND suc.id_cadena = cad.id AND axm.estado IN (?,?) AND cc.estado IN (?,?) AND axm.id = (SELECT MAX(axm2.id) FROM finan_cli.aviso_x_mora axm2 WHERE axm2.id_cuota_credito = axm.id_cuota_credito HAVING MAX(axm2.id) IS NOT NULL) GROUP BY axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.razon_social")) 
+		if ($stmt107 = $mysqli->prepare("SELECT axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.razon_social FROM ".$db_name.".aviso_x_mora axm, ".$db_name.".cuota_credito cc, ".$db_name.".credito_cliente ccli, ".$db_name.".sucursal suc, ".$db_name.".cadena cad WHERE axm.id_cuota_credito = cc.id AND ccli.id_sucursal = suc.id AND ccli.id_credito = cc.id_credito AND suc.id_cadena = cad.id AND axm.estado IN (?,?) AND cc.estado IN (?,?) AND axm.id = (SELECT MAX(axm2.id) FROM ".$db_name.".aviso_x_mora axm2 WHERE axm2.id_cuota_credito = axm.id_cuota_credito HAVING MAX(axm2.id) IS NOT NULL) GROUP BY axm.id, axm.id_credito, axm.id_cuota_credito, axm.fecha, axm.fecha_modificacion, axm.id_tipo_aviso, cc.numero_cuota, cc.monto_cuota_original, cad.razon_social")) 
 		{
 			$estadoError = translate('Lbl_State_Error_Default_Notice',$GLOBALS['lang']);
 			$estadoFinalizado = translate('Lbl_State_Finished_Default_Notice',$GLOBALS['lang']);
@@ -1518,7 +1518,7 @@
 				$stmt107->bind_result($id_revision_aviso_x_mora_db, $id_credito_revision_aviso_x_mora_db, $id_cuota_credito_revision_aviso_x_mora_db, $fecha_revision_aviso_x_mora_db, $fecha_modificacion_revision_aviso_x_mora_db, $id_tipo_aviso_revision_aviso_x_mora_db, $numero_cuota_revision_aviso_x_mora_db, $monto_cuota_original_revision_aviso_x_mora_db, $nombre_cadena_revision_aviso_x_mora_db);
 				while($stmt107->fetch())
 				{
-					if ($stmt117 = $mysqli->prepare("SELECT axm.id FROM finan_cli.aviso_x_mora axm WHERE axm.estado IN (?,?) AND axm.id_cuota_credito = ?")) 
+					if ($stmt117 = $mysqli->prepare("SELECT axm.id FROM ".$db_name.".aviso_x_mora axm WHERE axm.estado IN (?,?) AND axm.id_cuota_credito = ?")) 
 					{
 						$estadoCreado = translate('Lbl_State_Create_Default_Notice',$GLOBALS['lang']);
 						$estadoPendiente = translate('Lbl_State_Pending_Default_Notice',$GLOBALS['lang']);
@@ -1538,7 +1538,7 @@
 						}
 						else
 						{
-							if ($stmt118 = $mysqli->prepare("SELECT id FROM finan_cli.parametros WHERE nombre = ?")) 
+							if ($stmt118 = $mysqli->prepare("SELECT id FROM ".$db_name.".parametros WHERE nombre = ?")) 
 							{
 								$nombreValPar = 'cantidad_dias_reactivacion_avisos_x_mora';
 								$stmt118->bind_param('s', $nombreValPar);
@@ -1581,7 +1581,7 @@
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 													
 								$date_registro = date("YmdHis");					
-								if(!$stmt20 = $mysqli->prepare("INSERT INTO finan_cli.aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso,comentario) VALUES(?,?,?,?,?,?,?)"))
+								if(!$stmt20 = $mysqli->prepare("INSERT INTO ".$db_name.".aviso_x_mora(id_credito,fecha,estado,id_cuota_credito,mensaje,id_tipo_aviso,comentario) VALUES(?,?,?,?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									$mysqli->autocommit(TRUE);
@@ -1591,7 +1591,7 @@
 								}
 								else
 								{
-									if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+									if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 									{
 										$stmt64->bind_param('i', $id_cuota_credito_revision_aviso_x_mora_db);
 										$stmt64->execute();    
@@ -1659,7 +1659,7 @@
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
 			$date_registro = date("YmdHis");					
-			if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
+			if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);
@@ -1691,7 +1691,7 @@
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
 			$date_registro = date("YmdHis");					
-			if(!$stmt2 = $mysqli->prepare("INSERT INTO finan_cli.ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
+			if(!$stmt2 = $mysqli->prepare("INSERT INTO ".$db_name.".ejecucion_procesos_auto(fecha,comentario,tipo) VALUES (?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);

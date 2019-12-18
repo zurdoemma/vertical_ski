@@ -24,7 +24,7 @@
 		
 		$idPerfilCredito=htmlspecialchars ($_POST["idPerfilCredito"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 		{
 			$stmt->bind_param('i', $idPerfilCredito);
 			$stmt->execute();    
@@ -41,7 +41,7 @@
 			}
 			else
 			{				
-				if($stmt2 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_perfil_credito = ?"))
+				if($stmt2 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id_perfil_credito = ?"))
 				{
 					$stmt2->bind_param('i', $idPerfilCredito);
 					$stmt2->execute();    
@@ -68,7 +68,7 @@
 					return;	
 				}
 
-				if($stmt4 = $mysqli->prepare("SELECT pcp.id_perfil_credito FROM finan_cli.perfil_credito_x_plan pcp WHERE pcp.id_perfil_credito = ?"))
+				if($stmt4 = $mysqli->prepare("SELECT pcp.id_perfil_credito FROM ".$db_name.".perfil_credito_x_plan pcp WHERE pcp.id_perfil_credito = ?"))
 				{
 					$stmt4->bind_param('i', $idPerfilCredito);
 					$stmt4->execute();    
@@ -100,7 +100,7 @@
 				
 				$stmt->bind_result($id_perfil_credito, $nombre_perfil_credito, $descripcion_perfil_credito, $monto_maximo_perfil_credito);
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.perfil_credito WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".perfil_credito WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -126,9 +126,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.perfil_credito --> id: ".$id_perfil_credito." - Nombre: ".$nombre_perfil_credito." - Descripcion: ".$descripcion_perfil_credito." - Monto_Maximo: ".$monto_maximo_perfil_credito;
+				$valor_log_user = "DELETE ".$db_name.".perfil_credito --> id: ".$id_perfil_credito." - Nombre: ".$nombre_perfil_credito." - Descripcion: ".$descripcion_perfil_credito." - Monto_Maximo: ".$monto_maximo_perfil_credito;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -155,7 +155,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM finan_cli.perfil_credito pc ORDER BY pc.id"))
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.monto_maximo FROM ".$db_name.".perfil_credito pc ORDER BY pc.id"))
 				{
 					$stmt->execute();    
 					$stmt->store_result();

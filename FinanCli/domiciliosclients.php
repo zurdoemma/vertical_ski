@@ -8,7 +8,7 @@ if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activa
 if(empty(htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8'))){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
-if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 {
 	$stmt2->execute();    
 	$stmt2->store_result();
@@ -19,7 +19,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	$stmt2->close();
 }
 
-if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.cliente c, finan_cli.tipo_documento td WHERE c.id = ? AND td.id = c.tipo_documento"))
+if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td WHERE c.id = ? AND td.id = c.tipo_documento"))
 {
 	$stmt3->bind_param('i', $_GET['idCliente']);
 	$stmt3->execute();    
@@ -674,7 +674,7 @@ if($stmt3 = $mysqli->prepare("SELECT td.nombre, c.documento FROM finan_cli.clien
 					</thead>
 					<tbody>
 						<?php
-							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.domicilio d, finan_cli.cliente c, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
+							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM ".$db_name.".domicilio d, ".$db_name.".cliente c, ".$db_name.".provincia p, ".$db_name.".cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
 							{
 								$idClienteP = htmlspecialchars($_GET['idCliente'], ENT_QUOTES, 'UTF-8');
 								$stmt->bind_param('i', $idClienteP);

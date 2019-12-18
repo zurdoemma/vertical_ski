@@ -24,7 +24,7 @@
 		
 		$idCliente=htmlspecialchars ($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -41,7 +41,7 @@
 			}
 			else
 			{				
-				if($stmt2 = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id AND c.id_titular = ? ORDER BY c.documento"))
+				if($stmt2 = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td  WHERE c.tipo_documento = td.id AND c.id_titular = ? ORDER BY c.documento"))
 				{
 					$stmt2->bind_param('i', $idCliente);
 					$stmt2->execute();    

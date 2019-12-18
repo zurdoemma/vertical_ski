@@ -348,7 +348,7 @@ include("./menu/menu.php");
 					<div class="form-group" id="reportescreditsn">
 						<select class="form-control input-sm" name="reportescreditsni" id="reportescreditsni" style="width:310px;">		 
 							<?php 
-								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.reportes")) 
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".reportes")) 
 								{ 
 									$stmt->execute();    
 									$stmt->store_result();
@@ -392,7 +392,7 @@ include("./menu/menu.php");
 						&nbsp;&nbsp;<label class="control-label" for="sucursalsn"><?php echo translate('Lbl_Tender_User',$GLOBALS['lang']).': '; ?></label>
 						<select class="form-control input-sm" name="sucursalsni" id="sucursalsni" style="width:313px;">		 
 							<?php 
-								if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+								if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 								{
 									$stmt500->bind_param('s', $_SESSION['username']);
 									$stmt500->execute();    
@@ -419,7 +419,7 @@ include("./menu/menu.php");
 									return;				
 								}
 		
-								if ($stmt = $mysqli->prepare("SELECT codigo, nombre FROM finan_cli.sucursal WHERE id_cadena = ? ORDER BY nombre")) 
+								if ($stmt = $mysqli->prepare("SELECT codigo, nombre FROM ".$db_name.".sucursal WHERE id_cadena = ? ORDER BY nombre")) 
 								{ 
 									$stmt->bind_param('s', $id_cadena_user);
 									$stmt->execute();    
@@ -444,7 +444,7 @@ include("./menu/menu.php");
 						&nbsp;<label class="control-label" for="tipoplann"><?php echo translate('Lbl_Credit_Plan',$GLOBALS['lang']).': '; ?></label>
 						<select class="form-control input-sm" name="tipoplanni" id="tipoplanni" style="width:193px;">		 
 							<?php 		
-								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito WHERE id_cadena = ? ORDER BY nombre")) 
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".plan_credito WHERE id_cadena = ? ORDER BY nombre")) 
 								{ 
 									$stmt->bind_param('s', $id_cadena_user);
 									$stmt->execute();    
@@ -473,7 +473,7 @@ include("./menu/menu.php");
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocclientn"><?php echo translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '; ?></label>
 						<select class="form-control input-sm" name="tipodocclientni" id="tipodocclientni" style="width:193px;">		 
 							<?php 		
-								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento ORDER BY id")) 
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento ORDER BY id")) 
 								{ 
 									$stmt->bind_param('s', $id_cadena_user);
 									$stmt->execute();    
@@ -505,7 +505,7 @@ include("./menu/menu.php");
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocclientn2"><?php echo translate('Lbl_Type_Document_User',$GLOBALS['lang']).': '; ?></label>
 						<select class="form-control input-sm" name="tipodocclientn2i" id="tipodocclientn2i" style="width:313px;">		 
 							<?php 		
-								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento ORDER BY id")) 
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento ORDER BY id")) 
 								{ 
 									$stmt->bind_param('s', $id_cadena_user);
 									$stmt->execute();    

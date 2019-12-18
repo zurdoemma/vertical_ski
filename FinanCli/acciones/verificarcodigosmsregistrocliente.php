@@ -27,7 +27,7 @@
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
 				
-		if ($stmt = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.codigo = ?"))
+		if ($stmt = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.codigo = ?"))
 		{
 			$date_registro_a_vcc = date("Ymd")."%";
 			$stmt->bind_param('issss', $tipoDocumento, $documento, $date_registro_a_vcc, $token, $codigo); 
@@ -39,7 +39,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.token_validacion_celular SET validado = ? WHERE tipo_documento = ? AND documento = ? AND fecha like ? AND token = ? AND codigo = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".token_validacion_celular SET validado = ? WHERE tipo_documento = ? AND documento = ? AND fecha like ? AND token = ? AND codigo = ?"))
 				{
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();

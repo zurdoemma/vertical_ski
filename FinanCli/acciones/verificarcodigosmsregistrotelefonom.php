@@ -30,7 +30,7 @@
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');		
 		
-		if($stmt4 = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.id = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id, c.tipo_documento, c.documento FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id AND t.id = ?"))
 		{
 			$stmt4->bind_param('ii', $idCliente, $idTelefono);
 			$stmt4->execute();    
@@ -59,7 +59,7 @@
 		$stmt4->free_result();
 		$stmt4->close();
 				
-		if ($stmt = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.codigo = ? AND tvc.nro_telefono = ?"))
+		if ($stmt = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.codigo = ? AND tvc.nro_telefono = ?"))
 		{
 			$telefonoFin = $prefijoTelefono.$nroTelefono;
 			$date_registro_a_vcc = date("Ymd")."%";
@@ -72,7 +72,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.token_validacion_celular SET validado = ? WHERE tipo_documento = ? AND documento = ? AND fecha like ? AND token = ? AND codigo = ? AND nro_telefono = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".token_validacion_celular SET validado = ? WHERE tipo_documento = ? AND documento = ? AND fecha like ? AND token = ? AND codigo = ? AND nro_telefono = ?"))
 				{
 					$mysqli->autocommit(TRUE);
 					$stmt->free_result();

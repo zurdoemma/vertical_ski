@@ -25,7 +25,7 @@
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');
 		$idTelefono=htmlspecialchars($_POST["id_telefono"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if($stmt500 = $mysqli->prepare("SELECT c.id, u.id_perfil FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -54,7 +54,7 @@
 
 		if($id_perfil_usuario_logueado == 3)
 		{
-			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+			if ($stmt531 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 			{
 				$stmt531->bind_param('s', $usuario);
 				$stmt531->execute();    
@@ -88,7 +88,7 @@
 			}
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND u.id = ut.id_usuario AND t.id = ut.id_telefono AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero FROM ".$db_name.".usuario u, ".$db_name.".telefono t, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND u.id = ut.id_usuario AND t.id = ut.id_telefono AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);
 			$stmt->execute();    
@@ -110,7 +110,7 @@
 								
 				$stmt->bind_result($id_telefono_user, $user_tipo_telefono, $user_numero_telefono);
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.usuario_x_telefono WHERE id_usuario = ? AND id_telefono = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".usuario_x_telefono WHERE id_usuario = ? AND id_telefono = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -130,7 +130,7 @@
 						return;						
 					}
 					
-					if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.telefono WHERE id = ?"))
+					if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".telefono WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -156,9 +156,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.telefono --> id: ".$id_telefono_user." - Tipo Telefono: ".$user_tipo_telefono." - Nro. Telefono: ".$user_numero_telefono;
+				$valor_log_user = "DELETE ".$db_name.".telefono --> id: ".$id_telefono_user." - Tipo Telefono: ".$user_tipo_telefono." - Nro. Telefono: ".$user_numero_telefono;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -185,7 +185,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM finan_cli.telefono t, finan_cli.usuario u, finan_cli.tipo_telefono tt, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM ".$db_name.".telefono t, ".$db_name.".usuario u, ".$db_name.".tipo_telefono tt, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('s', $usuario);
 					$stmt->execute();    

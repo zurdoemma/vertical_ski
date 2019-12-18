@@ -27,6 +27,8 @@
 		$montoPago=htmlspecialchars($_POST["montoPago"], ENT_QUOTES, 'UTF-8');
 		$tokenVS=htmlspecialchars($_POST["tokenVS"], ENT_QUOTES, 'UTF-8');
 		
+		$montoPago = intval($montoPago);
+
 		if($montoPago < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
@@ -39,7 +41,7 @@
 			return;
 		}		
 		
-		if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original, c.monto_compra, c.cantidad_cuotas, ccli.documento, ccli.tipo_documento, cc.fecha_pago, cc.monto_pago  FROM finan_cli.cuota_credito cc, finan_cli.credito c, finan_cli.credito_cliente ccli WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND cc.id = ? AND cc.id_credito = ? AND cc.estado IN (?,?)"))
+		if($stmt63 = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original, c.monto_compra, c.cantidad_cuotas, ccli.documento, ccli.tipo_documento, cc.fecha_pago, cc.monto_pago  FROM ".$db_name.".cuota_credito cc, ".$db_name.".credito c, ".$db_name.".credito_cliente ccli WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND cc.id = ? AND cc.id_credito = ? AND cc.estado IN (?,?)"))
 		{
 			$estadoU = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 			$estadoD = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -81,7 +83,7 @@
 			return;
 		}		
 		
-		if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+		if($stmt64 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 		{
 			$stmt64->bind_param('i', $idCuotaCredito);
 			$stmt64->execute();    
@@ -117,7 +119,7 @@
 					
 		if(!empty($tokenVS))
 		{
-			if($stmt650 = $mysqli->prepare("SELECT tpc.validado, tpc.usuario_supervisor FROM finan_cli.token_pago_cuota tpc WHERE tpc.token = ? AND tpc.documento = ? AND tpc.tipo_documento = ? AND fecha LIKE ?"))
+			if($stmt650 = $mysqli->prepare("SELECT tpc.validado, tpc.usuario_supervisor FROM ".$db_name.".token_pago_cuota tpc WHERE tpc.token = ? AND tpc.documento = ? AND tpc.tipo_documento = ? AND fecha LIKE ?"))
 			{
 				$date_registro_a_c_db = date("Ymd").'%';
 				$stmt650->bind_param('ssis', $tokenVS, $documento_cliente_credito_db, $tipo_documento_cliente_credito_db, $date_registro_a_c_db);
@@ -180,7 +182,7 @@
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+						if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);
@@ -199,9 +201,9 @@
 							}
 
 							$date_registro = date("YmdHis");				
-							$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
+							$valor_log_user = "UPDATE ".$db_name.".cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
 
-							if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+							if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -228,7 +230,7 @@
 						
 						if($esUltimaCuota == 1)
 						{
-							if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+							if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 							{
 								$stmt17->bind_param('i', $idCredito);
 								$stmt17->execute();    
@@ -273,7 +275,7 @@
 								return;
 							}
 							
-							if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+							if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 							{
 								echo $mysqli->error;
 								$mysqli->rollback();
@@ -292,9 +294,9 @@
 								}
 
 								$date_registro = date("YmdHis");				
-								$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
+								$valor_log_user = "UPDATE ".$db_name.".credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
 
-								if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+								if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 								{
 									echo $mysqli->error;
 									$mysqli->rollback();
@@ -322,8 +324,8 @@
 						
 						if($montoPago < ($monto_cuota_original_db+$monto_interes_cuota_credito))
 						{
-							if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3) $insertPPCuotaC = "INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)";
-							else $insertPPCuotaC = "INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,supervisor,token) VALUES (?,?,?,?,?,?)";
+							if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3) $insertPPCuotaC = "INSERT INTO ".$db_name.".pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)";
+							else $insertPPCuotaC = "INSERT INTO ".$db_name.".pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,supervisor,token) VALUES (?,?,?,?,?,?)";
 							if(!$stmt = $mysqli->prepare($insertPPCuotaC))
 							{
 								echo $mysqli->error;
@@ -355,7 +357,7 @@
 						$mysqli->commit();
 						$mysqli->autocommit(TRUE);
 						
-						if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+						if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 						{
 							$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 							$stmt353->bind_param('is', $idCredito, $estadoPagadoControlCuo);
@@ -379,7 +381,7 @@
 							return;
 						}						
 						
-						if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+						if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 						{
 							$stmt65->bind_param('i', $idCredito);
 							$stmt65->execute();    
@@ -396,7 +398,7 @@
 							return;
 						}
 						
-						if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+						if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM ".$db_name.".credito c, ".$db_name.".credito_cliente ccli, ".$db_name.".cliente cli, ".$db_name.".cuota_credito cc, ".$db_name.".sucursal s, ".$db_name.".tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
 						{
 							$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
 							$stmt68->execute();    
@@ -424,7 +426,7 @@
 							return;
 						}
 						
-						if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+						if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 						{
 							$stmt62->bind_param('i', $idCredito);
 							$stmt62->execute();    
@@ -441,7 +443,7 @@
 								$posicion = 0;
 								while($stmt62->fetch())
 								{		
-									if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+									if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 									{
 										$stmt67->bind_param('ii', $idCredito, $id_cuota_credito_db);
 										$stmt67->execute();    
@@ -462,7 +464,7 @@
 										return;
 									}
 
-									if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+									if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 									{
 										$stmt66->bind_param('i', $id_cuota_credito_db);
 										$stmt66->execute();    
@@ -476,7 +478,7 @@
 										return;
 									}
 
-									if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+									if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 									{
 										$stmt105->bind_param('i', $id_cuota_credito_db);
 										$stmt105->execute();    
@@ -692,7 +694,7 @@
 						$stmt650->free_result();
 						$stmt650->close();
 												
-						if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+						if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 						{
 							$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 							$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -717,7 +719,7 @@
 							return;
 						}
 
-						if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+						if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 						{
 							$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
 							$stmt70->execute();    
@@ -775,7 +777,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt80 = $mysqli->prepare("INSERT INTO finan_cli.token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
+				if(!$stmt80 = $mysqli->prepare("INSERT INTO ".$db_name.".token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -797,7 +799,7 @@
 					}		
 				}
 				
-				if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+				if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -818,9 +820,9 @@
 					}
 
 					$date_registro = date("YmdHis");				
-					$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
+					$valor_log_user = "UPDATE ".$db_name.".cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
 
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -847,7 +849,7 @@
 				
 				if($esUltimaCuota == 1)
 				{
-					if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+					if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 					{
 						$stmt17->bind_param('i', $idCredito);
 						$stmt17->execute();    
@@ -892,7 +894,7 @@
 						return;
 					}
 							
-					if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+					if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -911,9 +913,9 @@
 						}
 
 						$date_registro = date("YmdHis");				
-						$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
+						$valor_log_user = "UPDATE ".$db_name.".credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
 
-						if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+						if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -939,7 +941,7 @@
 					}						
 				}
 				
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".pago_parcial_cuota_credito(id_cuota_credito,fecha,monto,usuario,token) VALUES (?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -968,7 +970,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+				if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 				{
 					$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 					$stmt353->bind_param('is', $idCredito, $estadoPagadoControlCuo);
@@ -992,7 +994,7 @@
 					return;
 				}				
 				
-				if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+				if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 				{
 					$stmt65->bind_param('i', $idCredito);
 					$stmt65->execute();    
@@ -1009,7 +1011,7 @@
 					return;
 				}
 				
-				if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+				if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM ".$db_name.".credito c, ".$db_name.".credito_cliente ccli, ".$db_name.".cliente cli, ".$db_name.".cuota_credito cc, ".$db_name.".sucursal s, ".$db_name.".tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
 				{
 					$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
 					$stmt68->execute();    
@@ -1037,7 +1039,7 @@
 					return;
 				}
 						
-				if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+				if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 				{
 					$stmt62->bind_param('i', $idCredito);
 					$stmt62->execute();    
@@ -1054,7 +1056,7 @@
 						$posicion = 0;
 						while($stmt62->fetch())
 						{		
-							if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+							if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 							{
 								$stmt67->bind_param('ii', $idCredito, $id_cuota_credito_db);
 								$stmt67->execute();    
@@ -1075,7 +1077,7 @@
 								return;
 							}
 
-							if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+							if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 							{
 								$stmt66->bind_param('i', $id_cuota_credito_db);
 								$stmt66->execute();    
@@ -1089,7 +1091,7 @@
 								return;
 							}
 
-							if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+							if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 							{
 								$stmt105->bind_param('i', $id_cuota_credito_db);
 								$stmt105->execute();    
@@ -1296,7 +1298,7 @@
 					return;
 				}
 								
-				if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+				if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 				{
 					$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 					$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -1321,7 +1323,7 @@
 					return;
 				}
 
-				if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+				if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 				{
 					$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
 					$stmt70->execute();    
@@ -1356,7 +1358,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt43 = $mysqli->prepare("INSERT INTO finan_cli.token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
+				if(!$stmt43 = $mysqli->prepare("INSERT INTO ".$db_name.".token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -1425,7 +1427,7 @@
 			$mysqli->autocommit(FALSE);
 			$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 			
-			if(!$stmt80 = $mysqli->prepare("INSERT INTO finan_cli.token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
+			if(!$stmt80 = $mysqli->prepare("INSERT INTO ".$db_name.".token_pago_cuota(fecha,tipo_documento,documento,id_motivo,token,usuario,validado) VALUES (?,?,?,?,?,?,?)"))
 			{
 				echo $mysqli->error;
 				$mysqli->autocommit(TRUE);
@@ -1447,7 +1449,7 @@
 				}		
 			}
 			
-			if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
+			if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET fecha_pago = ?, monto_pago = ?, estado = ?, usuario_registro_pago = ? WHERE id = ?"))
 			{
 				echo $mysqli->error;
 				$mysqli->rollback();
@@ -1468,9 +1470,9 @@
 				}
 
 				$date_registro = date("YmdHis");				
-				$valor_log_user = "UPDATE finan_cli.cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
+				$valor_log_user = "UPDATE ".$db_name.".cuota_credito SET fecha_pago = ".$date_registro_a_fpcc_db.", monto_pago = ".$montoPago.", estado = ".$estadoP." WHERE id = ".$idCuotaCredito;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -1497,7 +1499,7 @@
 			
 			if($esUltimaCuota == 1)
 			{
-				if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+				if($stmt17 = $mysqli->prepare("SELECT cc.estado FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 				{
 					$stmt17->bind_param('i', $idCredito);
 					$stmt17->execute();    
@@ -1542,7 +1544,7 @@
 					return;
 				}
 				
-				if(!$stmt43 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+				if(!$stmt43 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -1561,9 +1563,9 @@
 					}
 
 					$date_registro = date("YmdHis");				
-					$valor_log_user = "UPDATE finan_cli.credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
+					$valor_log_user = "UPDATE ".$db_name.".credito SET estado = ".$estadoF." WHERE id = ".$idCredito;
 
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -1592,7 +1594,7 @@
 			$mysqli->commit();
 			$mysqli->autocommit(TRUE);
 			
-			if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
+			if($stmt353 = $mysqli->prepare("SELECT MAX(cc.numero_cuota) FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado = ? HAVING MAX(cc.numero_cuota) IS NOT NULL"))
 			{
 				$estadoPagadoControlCuo = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 				$stmt353->bind_param('is', $idCredito, $estadoPagadoControlCuo);
@@ -1616,7 +1618,7 @@
 				return;
 			}			
 			
-			if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM finan_cli.pago_total_credito ptc WHERE ptc.id_credito = ?"))
+			if($stmt65 = $mysqli->prepare("SELECT ptc.id FROM ".$db_name.".pago_total_credito ptc WHERE ptc.id_credito = ?"))
 			{
 				$stmt65->bind_param('i', $idCredito);
 				$stmt65->execute();    
@@ -1633,7 +1635,7 @@
 				return;
 			}
 			
-			if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM finan_cli.credito c, finan_cli.credito_cliente ccli, finan_cli.cliente cli, finan_cli.cuota_credito cc, finan_cli.sucursal s, finan_cli.tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
+			if($stmt68 = $mysqli->prepare("SELECT c.estado, cli.id_titular, cli.nombres, cli.apellidos, s.nombre, cc.numero_cuota, cc.usuario_registro_pago, td.nombre, cli.documento, cc.monto_cuota_original FROM ".$db_name.".credito c, ".$db_name.".credito_cliente ccli, ".$db_name.".cliente cli, ".$db_name.".cuota_credito cc, ".$db_name.".sucursal s, ".$db_name.".tipo_documento td WHERE c.id = ccli.id_credito AND c.id = cc.id_credito AND ccli.tipo_documento = cli.tipo_documento AND ccli.documento = cli.documento AND ccli.id_sucursal = s.id AND cli.tipo_documento = td.id AND c.id = ? AND cc.id = ?"))
 			{
 				$stmt68->bind_param('ii', $idCredito, $idCuotaCredito);
 				$stmt68->execute();    
@@ -1661,7 +1663,7 @@
 				return;
 			}
 						
-			if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
+			if($stmt62 = $mysqli->prepare("SELECT cc.id, cc.numero_cuota, cc.fecha_vencimiento, cc.monto_cuota_original, cc.estado, cc.fecha_pago FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? ORDER BY cc.numero_cuota"))
 			{
 				$stmt62->bind_param('i', $idCredito);
 				$stmt62->execute();    
@@ -1678,7 +1680,7 @@
 					$posicion = 0;
 					while($stmt62->fetch())
 					{		
-						if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+						if($stmt67 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 						{
 							$stmt67->bind_param('ii', $idCredito, $id_cuota_credito_db);
 							$stmt67->execute();    
@@ -1699,7 +1701,7 @@
 							return;
 						}
 
-						if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM finan_cli.pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
+						if($stmt66 = $mysqli->prepare("SELECT ptcxc.id_cuota_credito FROM ".$db_name.".pago_total_credito_x_cuota ptcxc WHERE ptcxc.id_cuota_credito = ?"))
 						{
 							$stmt66->bind_param('i', $id_cuota_credito_db);
 							$stmt66->execute();    
@@ -1713,7 +1715,7 @@
 							return;
 						}
 
-						if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM finan_cli.aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
+						if($stmt105 = $mysqli->prepare("SELECT axm.id_cuota_credito FROM ".$db_name.".aviso_x_mora axm WHERE axm.id_cuota_credito = ?"))
 						{
 							$stmt105->bind_param('i', $id_cuota_credito_db);
 							$stmt105->execute();    
@@ -1928,7 +1930,7 @@
 				return;
 			}
 			
-			if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM finan_cli.cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+			if($stmt69 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
 			{
 				$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
 				$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
@@ -1953,7 +1955,7 @@
 				return;
 			}
 
-			if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
+			if($stmt70 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id_credito = ? AND cc.id = ?"))
 			{
 				$stmt70->bind_param('ii', $idCredito, $idCuotaCredito);
 				$stmt70->execute();    

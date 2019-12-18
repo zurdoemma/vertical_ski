@@ -32,7 +32,7 @@
 		
 		if ($cusuario == 0)
 		{
-			if($stmt = $mysqli->prepare("SELECT id, clave FROM finan_cli.usuario WHERE id LIKE(?)"))
+			if($stmt = $mysqli->prepare("SELECT id, clave FROM ".$db_name.".usuario WHERE id LIKE(?)"))
 		    {
 				$stmt->bind_param('s', $usuario);
 				$stmt->execute();    

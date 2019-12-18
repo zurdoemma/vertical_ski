@@ -7,7 +7,7 @@ if (!verificar_usuario($mysqli)){header('Location:./login.php');return;}
 if (!verificar_permisos_usuario()){header('Location:./sinautorizacion.php?activauto=1');return;}
 include("./menu/menu.php");
 
-if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 {
 	$stmt2->execute();    
 	$stmt2->store_result();
@@ -18,7 +18,7 @@ if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 	$stmt2->close();
 }
 
-if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
+if($stmt3 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
 {
 	$stmt3->execute();    
 	$stmt3->store_result();
@@ -1488,7 +1488,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 				<div id="img_loader_6"></div>
 				<form id="formulariomu" role="form">
 				<?php
-					if($stmt = $mysqli->prepare("SELECT u.nombre, u.apellido, u.tipo_documento, u.documento, u.email FROM finan_cli.usuario u WHERE id LIKE(?)"))
+					if($stmt = $mysqli->prepare("SELECT u.nombre, u.apellido, u.tipo_documento, u.documento, u.email FROM ".$db_name.".usuario u WHERE id LIKE(?)"))
 					{
 						$stmt->bind_param('s', $_SESSION['username']);
 						$stmt->execute();    
@@ -1512,7 +1512,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 						<div class="form-group" id="tipodocuser">
 							<select class="form-control input-sm" name="tipodocuseri" id="tipodocuseri" style="width:168px;">		 
 							<?php
-								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+								if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 									{ 
 										$stmt->execute();    
 										$stmt->store_result();
@@ -1597,7 +1597,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					</thead>
 					<tbody>
 						<?php
-							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.domicilio d, finan_cli.usuario u, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE u.id LIKE(?) AND p.id = d.id_provincia AND ud.id_usuario = u.id AND ud.id_domicilio = d.id")) 
+							if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM ".$db_name.".domicilio d, ".$db_name.".usuario u, ".$db_name.".provincia p, ".$db_name.".usuario_x_domicilio ud WHERE u.id LIKE(?) AND p.id = d.id_provincia AND ud.id_usuario = u.id AND ud.id_domicilio = d.id")) 
 							{
 								$stmt->bind_param('s', $_SESSION['username']);
 								$stmt->execute();    // Ejecuta la consulta preparada.
@@ -1654,7 +1654,7 @@ if($stmt3 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombr
 					</thead>
 					<tbody>
 						<?php
-							if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM finan_cli.telefono t, finan_cli.usuario u, finan_cli.tipo_telefono tt, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
+							if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM ".$db_name.".telefono t, ".$db_name.".usuario u, ".$db_name.".tipo_telefono tt, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
 							{
 								$stmt->bind_param('s', $_SESSION['username']);
 								$stmt->execute();    // Ejecuta la consulta preparada.

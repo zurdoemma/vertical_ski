@@ -40,7 +40,7 @@
 			return;
 		}
 			
-		if($stmt = $mysqli->prepare("SELECT u.id FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -55,7 +55,7 @@
 			}
 			else
 			{
-				if($stmt3 = $mysqli->prepare("SELECT count(t.id) FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id"))
+				if($stmt3 = $mysqli->prepare("SELECT count(t.id) FROM ".$db_name.".usuario u, ".$db_name.".telefono t, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id"))
 				{
 					$stmt3->bind_param('s', $usuario);
 					$stmt3->execute();    
@@ -64,7 +64,7 @@
 					$stmt3->bind_result($cantidad_telefonos);
 					$stmt3->fetch();
 					
-					if($stmt4 = $mysqli->prepare("SELECT t.id FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id AND t.numero = ?"))
+					if($stmt4 = $mysqli->prepare("SELECT t.id FROM ".$db_name.".usuario u, ".$db_name.".telefono t, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND ut.id_usuario = u.id AND ut.id_telefono = t.id AND t.numero = ?"))
 					{
 						$numTelFinCo = $prefijoTelefono.$nroTelefono;
 						$stmt4->bind_param('si', $usuario, $numTelFinCo);
@@ -90,7 +90,7 @@
 						return;							
 					}					
 					
-					if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+					if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 					{
 						$stmt2->execute();    
 						$stmt2->store_result();
@@ -129,7 +129,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -152,7 +152,7 @@
 					}						
 					$idTelefonoG = $mysqli->insert_id;
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.usuario_x_telefono(id_usuario,id_telefono) VALUES (?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".usuario_x_telefono(id_usuario,id_telefono) VALUES (?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -178,9 +178,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).")";
+				$valor_log_user = "INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -207,7 +207,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM finan_cli.telefono t, finan_cli.usuario u, finan_cli.tipo_telefono tt, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero FROM ".$db_name.".telefono t, ".$db_name.".usuario u, ".$db_name.".tipo_telefono tt, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND tt.id = t.tipo_telefono AND ut.id_usuario = u.id AND ut.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('s', $usuario);
 					$stmt->execute();    

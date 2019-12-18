@@ -24,7 +24,7 @@
 		
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');	
 		
-		if($stmt = $mysqli->prepare("SELECT count(t.id) FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id"))
+		if($stmt = $mysqli->prepare("SELECT count(t.id) FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -33,7 +33,7 @@
 			$stmt->bind_result($cantidad_telefonos);
 			$stmt->fetch();
 			
-			if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
+			if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_telefonos_x_usuario_cliente'"))
 			{
 				$stmt2->execute();    
 				$stmt2->store_result();
@@ -90,7 +90,7 @@
 		echo '					<label class="control-label" for="tipotelefono">'.translate('Lbl_Type_Phone',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="tipotelefono">';
 		echo '						<select class="form-control input-sm" name="tipotelefonoi" id="tipotelefonoi" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_telefono")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_telefono")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();

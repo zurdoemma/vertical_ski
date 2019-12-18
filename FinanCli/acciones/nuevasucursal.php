@@ -48,7 +48,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenatendern">'.translate('Lbl_Chain_Tender',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="cadenatendern">';
 		echo '						<select class="form-control input-sm" name="cadenatenderni" id="cadenatenderni" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena")) 
+										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();
@@ -87,7 +87,7 @@
 		echo '					  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincian">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 		echo '					  <div class="form-group" id="domprovincian">';
 		echo '						  <select class="form-control input-sm" name="domprovinciani" id="domprovinciani" style="width:190px;">';			 
-										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 										  { 
 											  $stmt->execute();    
 											  $stmt->store_result();

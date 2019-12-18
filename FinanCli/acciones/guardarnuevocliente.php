@@ -69,7 +69,7 @@
 		
 		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 		{
-			if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'edad_permitida_cliente_adicional'"))
+			if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'edad_permitida_cliente_adicional'"))
 			{
 				$stmt41->execute();    
 				$stmt41->store_result();
@@ -101,7 +101,7 @@
 		}
 		else
 		{
-			if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'edad_permitida_cliente_titular'"))
+			if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'edad_permitida_cliente_titular'"))
 			{
 				$stmt41->execute();    
 				$stmt41->store_result();
@@ -147,7 +147,7 @@
 			}
 		}
 		
-		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'monto_maximo_credito_cliente'"))
+		if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'monto_maximo_credito_cliente'"))
 		{
 			$stmt41->execute();    
 			$stmt41->store_result();
@@ -172,7 +172,7 @@
 			return;
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt->bind_param('is', $tipoDocumento, $documento);
 			$stmt->execute();    
@@ -189,7 +189,7 @@
 			{				
 				if(!empty($tokenA))
 				{
-					if($stmt = $mysqli->prepare("SELECT tac.id FROM finan_cli.token_adicional_cuenta tac WHERE tac.token = ? AND tac.tipo_documento = ? AND tac.documento = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
+					if($stmt = $mysqli->prepare("SELECT tac.id FROM ".$db_name.".token_adicional_cuenta tac WHERE tac.token = ? AND tac.tipo_documento = ? AND tac.documento = ? AND tac.documento_titular = ? AND tac.fecha like ?"))
 					{
 						$date_registro_a_s = date("Ymd")."%";
 						$stmt->bind_param('sisss', $tokenA, $tipoDocumento, $documento, $documentoTitular, $date_registro_a_s);
@@ -217,7 +217,7 @@
 				
 				
 
-				if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM finan_cli.token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1"))
+				if($stmt2 = $mysqli->prepare("SELECT tvc.id FROM ".$db_name.".token_validacion_celular tvc WHERE tvc.tipo_documento = ? AND tvc.documento = ? AND tvc.fecha like ? AND tvc.token = ? AND tvc.validado = 1"))
 				{
 					$date_registro_a_vcc = date("Ymd")."%";
 					$stmt2->bind_param('isss', $tipoDocumento, $documento, $date_registro_a_vcc, $tokenVC);
@@ -237,7 +237,7 @@
 					return;
 				}
 				
-				if($stmt4 = $mysqli->prepare("SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ?"))
+				if($stmt4 = $mysqli->prepare("SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo = ?"))
 				{
 					$motivoValidacionSMS = 36;
 					$date_registro_a_s = date("Ymd")."%";
@@ -267,7 +267,7 @@
 						
 				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 				{
-					if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit, c.id_perfil_credito, c.monto_maximo_credito FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+					if($stmt40 = $mysqli->prepare("SELECT c.id, c.cuil_cuit, c.id_perfil_credito, c.monto_maximo_credito FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 					{
 						$stmt40->bind_param('is', $tipoDocumentoTitular, $documentoTitular);
 						$stmt40->execute();    
@@ -290,7 +290,7 @@
 								return;
 							}
 							
-							if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+							if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 							{
 								$stmt41->bind_param('i', $idPerfilCreditoTitular);
 								$stmt41->execute();    
@@ -330,7 +330,7 @@
 				}
 				else
 				{
-					if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM finan_cli.perfil_credito pc WHERE pc.id = ?"))
+					if($stmt41 = $mysqli->prepare("SELECT pc.monto_maximo FROM ".$db_name.".perfil_credito pc WHERE pc.id = ?"))
 					{
 						$stmt41->bind_param('i', $perfilCredito);
 						$stmt41->execute();    
@@ -358,7 +358,7 @@
 					}					
 				}
 		
-				if($stmt = $mysqli->prepare("SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1"))
+				if($stmt = $mysqli->prepare("SELECT cef.id FROM ".$db_name.".consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1"))
 				{
 					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt->bind_param('issi', $tipoDocumentoTitular, $documentoTitular, $tokenVECC, $cuitCuilTitular);
 					else $stmt->bind_param('issi', $tipoDocumento, $documento, $tokenVECC, $cuitCuil);
@@ -378,8 +378,8 @@
 					return;
 				}
 				
-				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectEFCCIni = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
-				else $selectEFCCIni = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
+				if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectEFCCIni = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+				else $selectEFCCIni = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
 				if($stmt41 = $mysqli->prepare($selectEFCCIni))
 				{
 					$motivoValidacionECC = 37;
@@ -413,7 +413,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -436,9 +436,9 @@
 				}	
 
 				$date_registro = date("YmdHis");				
-				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2,preferido) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).",".$preferidoD.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2,preferido) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).",".$preferidoD.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -463,7 +463,7 @@
 				}				
 								
 
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -490,8 +490,8 @@
 				}
 								
 				$date_registro = date("YmdHis");					
-				$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).")";
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				$valor_log_user = "INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono.",".$prefijoTelefono.$nroTelefono.",".strlen($prefijoTelefono).")";
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -517,7 +517,7 @@
 				
 				if(!empty($prefijoTelefono2) && !empty($nroTelefono2))
 				{
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -544,8 +544,8 @@
 					}
 									
 					$date_registro = date("YmdHis");					
-					$valor_log_user = "INSERT INTO finan_cli.telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono2.",".$prefijoTelefono2.$nroTelefono2.",".strlen($prefijoTelefono2).")";
-					if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+					$valor_log_user = "INSERT INTO ".$db_name.".telefono(tipo_telefono,numero,digitos_prefijo) VALUES (".$tipoTelefono2.",".$prefijoTelefono2.$nroTelefono2.",".strlen($prefijoTelefono2).")";
+					if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -570,8 +570,8 @@
 					}
 				}
 				
-				if(empty($idClienteTitular) || $idClienteTitular == 0) $sqlInserClient = "INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-				else $sqlInserClient = "INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				if(empty($idClienteTitular) || $idClienteTitular == 0) $sqlInserClient = "INSERT INTO ".$db_name.".cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				else $sqlInserClient = "INSERT INTO ".$db_name.".cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				if(!$stmt20 = $mysqli->prepare($sqlInserClient))
 				{
 					echo $mysqli->error;
@@ -602,7 +602,7 @@
 						return;						
 					}
 					
-					if(!$stmt21 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_domicilio(tipo_documento, documento, id_domicilio, preferido) VALUES (?,?,?,?)"))
+					if(!$stmt21 = $mysqli->prepare("INSERT INTO ".$db_name.".cliente_x_domicilio(tipo_documento, documento, id_domicilio, preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -626,7 +626,7 @@
 						}					
 					}
 					
-					if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
+					if(!$stmt22 = $mysqli->prepare("INSERT INTO ".$db_name.".cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -652,7 +652,7 @@
 
 					if(!empty($prefijoTelefono2) && !empty($nroTelefono2))
 					{
-						if(!$stmt22 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
+						if(!$stmt22 = $mysqli->prepare("INSERT INTO ".$db_name.".cliente_x_telefono(tipo_documento, documento, id_telefono, preferido) VALUES (?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->rollback();
@@ -679,9 +679,9 @@
 				}
 	
 				$date_registro = date("YmdHis");
-				$valor_log_user = "INSERT INTO finan_cli.cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(".$tipoDocumento.",".$documento.",".$nombres.",".$apellidos.",".$cuitCuil.",".$fechaNacimiento.",".str_replace('\'','',$email).",".$date_registro_alta_cliente.",".$estado_cliente_ini.",".$idClienteTitular.",".str_replace('\'','',$observaciones).",".$montoMaximo.",".$perfilCredito.",".$genero.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".cliente (tipo_documento,documento,nombres,apellidos,cuil_cuit,fecha_nacimiento,email,fecha_alta,estado,id_titular,observaciones,monto_maximo_credito,id_perfil_credito,id_genero) VALUES(".$tipoDocumento.",".$documento.",".$nombres.",".$apellidos.",".$cuitCuil.",".$fechaNacimiento.",".str_replace('\'','',$email).",".$date_registro_alta_cliente.",".$estado_cliente_ini.",".$idClienteTitular.",".str_replace('\'','',$observaciones).",".$montoMaximo.",".$perfilCredito.",".$genero.")";
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -709,7 +709,7 @@
 				$mysqli->autocommit(TRUE);
 				
 				
-				if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM finan_cli.cliente c, finan_cli.tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
+				if ($stmt = $mysqli->prepare("SELECT c.id, td.nombre, c.documento, c.nombres, c.apellidos, c.estado, CASE WHEN c.id_titular IS NOT NULL THEN '".translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang'])."' ELSE '".translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang'])."' END AS tipoCuenta FROM ".$db_name.".cliente c, ".$db_name.".tipo_documento td  WHERE c.tipo_documento = td.id ORDER BY c.documento")) 
 				{
 					$stmt->execute();    
 					$stmt->store_result();
@@ -729,7 +729,7 @@
 						
 						if($type_account_client == translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']))
 						{
-							if ($stmt90 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.id_titular = ?")) 
+							if ($stmt90 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.id_titular = ?")) 
 							{
 								$stmt90->bind_param('i', $id_client);
 								$stmt90->execute();   

@@ -25,7 +25,7 @@
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 		$idTelefono=htmlspecialchars($_POST["idTelefono"], ENT_QUOTES, 'UTF-8');
 				
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, c.tipo_documento, c.documento, ct.preferido  FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, c.tipo_documento, c.documento, ct.preferido  FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono AND t.id = ?"))
 		{
 			$stmt->bind_param('ii', $idCliente, $idTelefono);
 			$stmt->execute();    
@@ -51,7 +51,7 @@
 					return;
 				}
 				
-				if($stmt2 = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, c.tipo_documento, c.documento, ct.preferido  FROM finan_cli.cliente c, finan_cli.telefono t, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono"))
+				if($stmt2 = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, c.tipo_documento, c.documento, ct.preferido  FROM ".$db_name.".cliente c, ".$db_name.".telefono t, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND c.tipo_documento = ct.tipo_documento AND c.documento = ct.documento AND t.id = ct.id_telefono"))
 				{
 					$stmt2->bind_param('i', $idCliente);
 					$stmt2->execute();    
@@ -77,7 +77,7 @@
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.cliente_x_telefono WHERE tipo_documento = ? AND documento = ? AND id_telefono = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".cliente_x_telefono WHERE tipo_documento = ? AND documento = ? AND id_telefono = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -97,7 +97,7 @@
 						return;						
 					}
 					
-					if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.telefono WHERE id = ?"))
+					if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".telefono WHERE id = ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -122,9 +122,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "DELETE finan_cli.telefono --> id: ".$id_telefono_client." - Tipo Telefono: ".$client_tipo_telefono." - Nro. Telefono: ".$client_numero_telefono. " - Preferido: ".$client_preference;
+				$valor_log_user = "DELETE ".$db_name.".telefono --> id: ".$id_telefono_client." - Tipo Telefono: ".$client_tipo_telefono." - Nro. Telefono: ".$client_numero_telefono. " - Preferido: ".$client_preference;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -151,7 +151,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM finan_cli.telefono t, finan_cli.cliente c, finan_cli.tipo_telefono tt, finan_cli.cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
+				if($stmt = $mysqli->prepare("SELECT t.id, tt.nombre, t.numero, ct.preferido FROM ".$db_name.".telefono t, ".$db_name.".cliente c, ".$db_name.".tipo_telefono tt, ".$db_name.".cliente_x_telefono ct WHERE c.id = ? AND tt.id = t.tipo_telefono AND ct.tipo_documento = c.tipo_documento AND ct.documento = c.documento AND ct.id_telefono = t.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
 					$stmt->execute();

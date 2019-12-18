@@ -56,7 +56,7 @@
 			}
 		}		
 		
-		if($stmt = $mysqli->prepare("SELECT c.id, c.documento, c.tipo_documento FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.documento, c.tipo_documento FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCliente);
 			$stmt->execute();    
@@ -74,7 +74,7 @@
 				$stmt->bind_result($id_cliente_db, $documento_cliente_db, $tipo_documento_cliente_db);
 				$stmt->fetch();
 				
-				if($stmt3 = $mysqli->prepare("SELECT count(d.id) FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE d.id_provincia = p.id AND c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND cd.id_domicilio = d.id"))
+				if($stmt3 = $mysqli->prepare("SELECT count(d.id) FROM ".$db_name.".cliente c, ".$db_name.".domicilio d, ".$db_name.".provincia p, ".$db_name.".cliente_x_domicilio cd WHERE d.id_provincia = p.id AND c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND cd.id_domicilio = d.id"))
 				{
 					$stmt3->bind_param('i', $idCliente);
 					$stmt3->execute();    
@@ -83,7 +83,7 @@
 					$stmt3->bind_result($cantidad_domicilios);
 					$stmt3->fetch();
 					
-					if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+					if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 					{
 						$stmt2->execute();    
 						$stmt2->store_result();
@@ -122,7 +122,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".domicilio(calle,nro_calle,id_provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (?,?,?,?,?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -143,7 +143,7 @@
 					}
 					$idDomicilioI = $mysqli->insert_id;
 					
-					if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.cliente_x_domicilio(tipo_documento, documento, id_domicilio, preferido) VALUES (?,?,?,?)"))
+					if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".cliente_x_domicilio(tipo_documento, documento, id_domicilio, preferido) VALUES (?,?,?,?)"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -171,9 +171,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).") - preferido = ".$preferidoDB;
+				$valor_log_user = "INSERT INTO ".$db_name.".domicilio(calle,nro_calle,provincia,localidad,departamento,piso,codigo_postal,entre_calle_1,entre_calle_2) VALUES (".$calle.",".$nroCalle.",".$provincia.",".$localidad.",".str_replace('\'','',$departamento).",".$piso.",".str_replace('\'','',$codigoPostal).",".str_replace('\'','',$entreCalle1).",".str_replace('\'','',$entreCalle2).") - preferido = ".$preferidoDB;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -199,7 +199,7 @@
 				
 				if($preferidoDB == 1)
 				{
-					if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cliente_x_domicilio SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_domicilio <> ?"))
+					if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cliente_x_domicilio SET preferido = 0 WHERE tipo_documento = ? AND documento = ? AND id_domicilio <> ?"))
 					{
 						echo $mysqli->error;
 						$mysqli->rollback();
@@ -226,7 +226,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.domicilio d, finan_cli.cliente c, finan_cli.provincia p, finan_cli.cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
+				if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.nombre, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM ".$db_name.".domicilio d, ".$db_name.".cliente c, ".$db_name.".provincia p, ".$db_name.".cliente_x_domicilio cd WHERE c.id = ? AND cd.tipo_documento = c.tipo_documento AND cd.documento = c.documento AND p.id = d.id_provincia AND cd.id_domicilio = d.id")) 
 				{
 					$stmt->bind_param('i', $idCliente);
 					$stmt->execute();    // Ejecuta la consulta preparada.

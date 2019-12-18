@@ -24,7 +24,7 @@
 		
 		$idAvisoXMora=htmlspecialchars($_POST["idAvisoXMora"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt = $mysqli->prepare("SELECT axm.fecha, cli.nombres, cli.apellidos, c.id, ccre.numero_cuota, ccre.id, axm.estado, axm.comentario, axm.mensaje FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.cuota_credito ccre, finan_cli.aviso_x_mora axm WHERE axm.id_credito = c.id AND c.id = ccre.id_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND axm.id_cuota_credito = ccre.id AND axm.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT axm.fecha, cli.nombres, cli.apellidos, c.id, ccre.numero_cuota, ccre.id, axm.estado, axm.comentario, axm.mensaje FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".cuota_credito ccre, ".$db_name.".aviso_x_mora axm WHERE axm.id_credito = c.id AND c.id = ccre.id_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND axm.id_cuota_credito = ccre.id AND axm.id = ?")) 
 		{
 			$stmt->bind_param('i', $idAvisoXMora);
 			$stmt->execute();    
@@ -41,7 +41,7 @@
 			}					
 			
 			$stmt->fetch();
-			if($stmt62 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ?"))
+			if($stmt62 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM ".$db_name.".cuota_credito cc WHERE cc.id = ?"))
 			{
 				$stmt62->bind_param('i', $id_cuota_credito_default_notice);
 				$stmt62->execute();    
@@ -79,7 +79,7 @@
 		}
 		
 		$montoIntereses = 0;
-		if($stmt63 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id = ?"))
+		if($stmt63 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id = ?"))
 		{
 			$stmt63->bind_param('i', $id_cuota_credito_default_notice);
 			$stmt63->execute();    

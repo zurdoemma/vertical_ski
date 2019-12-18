@@ -25,7 +25,7 @@
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');	
 		$idDomicilio=htmlspecialchars($_POST["id_domicilio"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM finan_cli.cliente c, finan_cli.domicilio d, finan_cli.cliente_x_domicilio cd, finan_cli.provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio AND d.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2, cd.preferido FROM ".$db_name.".cliente c, ".$db_name.".domicilio d, ".$db_name.".cliente_x_domicilio cd, ".$db_name.".provincia p WHERE d.id_provincia = p.id AND c.id = ? AND c.tipo_documento = cd.tipo_documento AND c.documento = cd.documento AND d.id = cd.id_domicilio AND d.id = ?"))
 		{
 			$stmt->bind_param('ii', $idCliente, $idDomicilio);
 			$stmt->execute();    
@@ -64,7 +64,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovinciam">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="domprovinciam">';
 				echo '						<select class="form-control input-sm" name="domprovinciai" id="domprovinciami" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();

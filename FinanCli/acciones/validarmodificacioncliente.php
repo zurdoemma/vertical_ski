@@ -26,7 +26,7 @@
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 		$tipoCuenta=htmlspecialchars($_POST["tipoCuenta"], ENT_QUOTES, 'UTF-8');
 
-		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt4->bind_param('i', $idCliente);
 			$stmt4->execute();    
@@ -65,7 +65,7 @@
 			
 			if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
 			{
-				if($stmt = $mysqli->prepare("SELECT tcc.id FROM finan_cli.token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ? AND tcc.validado = 1"))
+				if($stmt = $mysqli->prepare("SELECT tcc.id FROM ".$db_name.".token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ? AND tcc.validado = 1"))
 				{
 					$date_registro_a_s = date("Ymd")."%";
 					$stmt->bind_param('siss', $tokenCTC, $tipoDocumento, $documento, $date_registro_a_s);
@@ -84,7 +84,7 @@
 						$mysqli->autocommit(FALSE);
 						$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 						
-						if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_cambio_cuenta(fecha,documento,tipo_documento,token,usuario,validado) VALUES (?,?,?,?,?,?)"))
+						if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_cambio_cuenta(fecha,documento,tipo_documento,token,usuario,validado) VALUES (?,?,?,?,?,?)"))
 						{
 							echo $mysqli->error;
 							$mysqli->autocommit(TRUE);
@@ -129,7 +129,7 @@
 			
 			if(!empty($tokenCTC))
 			{
-				if($stmt5 = $mysqli->prepare("SELECT tcc.id, tcc.validado FROM finan_cli.token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ?"))
+				if($stmt5 = $mysqli->prepare("SELECT tcc.id, tcc.validado FROM ".$db_name.".token_cambio_cuenta tcc WHERE tcc.token = ? AND tcc.tipo_documento = ? AND tcc.documento = ? AND tcc.fecha like ?"))
 				{
 					$date_registro_a_s = date("Ymd")."%";
 					$stmt5->bind_param('siss', $tokenCTC, $tipoDocumento, $documento, $date_registro_a_s);

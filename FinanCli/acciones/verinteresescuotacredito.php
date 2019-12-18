@@ -26,7 +26,7 @@
 		
 	
 
-		if ($stmt = $mysqli->prepare("SELECT cc.fecha_vencimiento, cc.numero_cuota, cc.monto_cuota_original  FROM finan_cli.cuota_credito cc WHERE cc.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT cc.fecha_vencimiento, cc.numero_cuota, cc.monto_cuota_original  FROM ".$db_name.".cuota_credito cc WHERE cc.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCuotaCredito);
 			$stmt->execute();    
@@ -52,7 +52,7 @@
 			return;	
 		}
 				
-		if($stmt63 = $mysqli->prepare("SELECT mcc.monto_interes, mcc.fecha_interes FROM finan_cli.mora_cuota_credito mcc, finan_cli.cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id = ?"))
+		if($stmt63 = $mysqli->prepare("SELECT mcc.monto_interes, mcc.fecha_interes FROM ".$db_name.".mora_cuota_credito mcc, ".$db_name.".cuota_credito cc WHERE mcc.id_cuota_credito = cc.id AND cc.id = ?"))
 		{
 			$stmt63->bind_param('i', $idCuotaCredito);
 			$stmt63->execute();    

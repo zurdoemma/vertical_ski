@@ -24,7 +24,7 @@
 		
 		$idInteresXMora=htmlspecialchars($_POST["idInteresXMora"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito, ixm.recurrente FROM finan_cli.interes_x_mora ixm WHERE ixm.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, ixm.id_plan_credito, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm WHERE ixm.id = ?")) 
 		{
 			$stmt->bind_param('i', $idInteresXMora);
 			$stmt->execute();    // Ejecuta la consulta preparada.
@@ -58,7 +58,7 @@
 			echo '					<label class="control-label" for="plancreditointeresxmora">'.translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="plancreditointeresxmora">';
 			echo '						<select class="form-control input-sm" name="plancreditointeresxmorai" id="plancreditointeresxmorai" style="width:193px;">';			 
-											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito")) 
+											if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".plan_credito")) 
 											{ 
 												$stmt->execute();    
 												$stmt->store_result();

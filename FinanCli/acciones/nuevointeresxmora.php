@@ -44,7 +44,7 @@
 		echo '					<label class="control-label" for="plancreditointeresxmoran">'.translate('Lbl_Credit_Plan_Interest_For_Late_Payment',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="plancreditointeresxmoran">';
 		echo '						<select class="form-control input-sm" name="plancreditointeresxmorani" id="plancreditointeresxmorani" style="width:193px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.plan_credito")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".plan_credito")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();

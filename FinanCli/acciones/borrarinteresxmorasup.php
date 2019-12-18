@@ -24,7 +24,7 @@
 		
 		$idInteresXMora=htmlspecialchars ($_POST["idInteresXMora"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -51,7 +51,7 @@
 			return;				
 		}
 
-		if($stmt502 = $mysqli->prepare("SELECT pc.id FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
+		if($stmt502 = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
 		{
 			$stmt502->bind_param('i', $idInteresXMora);
 			$stmt502->execute();    
@@ -79,7 +79,7 @@
 			return;				
 		}		
 		
-		if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
+		if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
 		{
 			$stmt501->bind_param('ii', $id_plan_credito_control, $id_cadena_user);
 			$stmt501->execute();    
@@ -106,7 +106,7 @@
 			return;				
 		}		
 		
-		if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito AND ixm.id = ?"))
 		{
 			$stmt->bind_param('i', $idInteresXMora);
 			$stmt->execute();    
@@ -128,7 +128,7 @@
 				
 				$stmt->bind_result($id_interes_x_mora_a, $cantidad_dias_interes_x_mora_a, $interes_x_mora_a, $plan_credito_interes_x_mora_a);	
 				
-				if(!$stmt10 = $mysqli->prepare("DELETE FROM finan_cli.interes_x_mora WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("DELETE FROM ".$db_name.".interes_x_mora WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -154,9 +154,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
 				$stmt->fetch();
-				$valor_log_user = "DELETE finan_cli.interes_x_mora --> id: ".$id_interes_x_mora_a." - Cantidad Dias: ".$cantidad_dias_interes_x_mora_a." - Interes: ".$interes_x_mora_a." - Plan Credito = ".$plan_credito_interes_x_mora_a." WHERE id = ".$idInteresXMora;
+				$valor_log_user = "DELETE ".$db_name.".interes_x_mora --> id: ".$id_interes_x_mora_a." - Cantidad Dias: ".$cantidad_dias_interes_x_mora_a." - Interes: ".$interes_x_mora_a." - Plan Credito = ".$plan_credito_interes_x_mora_a." WHERE id = ".$idInteresXMora;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -183,7 +183,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

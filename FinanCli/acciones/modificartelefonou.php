@@ -31,7 +31,7 @@
 			return;						
 		}		
 		
-		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM finan_cli.usuario u, finan_cli.telefono t, finan_cli.usuario_x_telefono ut WHERE u.id LIKE(?) AND u.id = ut.id_usuario AND t.id = ut.id_telefono AND t.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT t.id, t.tipo_telefono, t.numero, t.digitos_prefijo FROM ".$db_name.".usuario u, ".$db_name.".telefono t, ".$db_name.".usuario_x_telefono ut WHERE u.id LIKE(?) AND u.id = ut.id_usuario AND t.id = ut.id_telefono AND t.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idTelefono);
 			$stmt->execute();    
@@ -63,7 +63,7 @@
 				echo '					<label class="control-label" for="tipotelefonom">'.translate('Lbl_Type_Phone',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="tipotelefonom">';
 				echo '						<select class="form-control input-sm" name="tipotelefonomi" id="tipotelefonomi" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_telefono")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_telefono")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();

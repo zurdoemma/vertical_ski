@@ -22,7 +22,7 @@
 				return;
 		}
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -75,7 +75,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenatendern">'.translate('Lbl_Chain_Tender',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="cadenatendern">';
 		echo '						<select class="form-control input-sm" name="cadenatenderni" id="cadenatenderni" style="width:190px;" disabled>';			 
-										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena WHERE id = ?")) 
+										if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena WHERE id = ?")) 
 										{ 
 											$stmt->bind_param('i', $id_cadena_user);
 											$stmt->execute();    
@@ -114,7 +114,7 @@
 		echo '					  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincian">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 		echo '					  <div class="form-group" id="domprovincian">';
 		echo '						  <select class="form-control input-sm" name="domprovinciani" id="domprovinciani" style="width:190px;">';			 
-										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+										  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 										  { 
 											  $stmt->execute();    
 											  $stmt->store_result();

@@ -24,7 +24,7 @@
 		
 		$idCuotaCredito=htmlspecialchars($_POST["idCuotaCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -52,7 +52,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM finan_cli.cuota_credito cc WHERE cc.id = ? AND cc.estado = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT cc.numero_cuota, cc.monto_cuota_original FROM ".$db_name.".cuota_credito cc WHERE cc.id = ? AND cc.estado = ?")) 
 		{
 			$estContrCPagada = translate('Lbl_Status_Fee_Paid',$GLOBALS['lang']);
 			$stmt->bind_param('is', $idCuotaCredito, $estContrCPagada);
@@ -80,7 +80,7 @@
 			return;	
 		}
 		
-		if($stmt63 = $mysqli->prepare("SELECT id_pago_total_credito FROM finan_cli.pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
+		if($stmt63 = $mysqli->prepare("SELECT id_pago_total_credito FROM ".$db_name.".pago_total_credito_x_cuota WHERE id_cuota_credito = ?"))
 		{
 			$stmt63->bind_param('i', $idCuotaCredito);
 			$stmt63->execute();    
@@ -103,7 +103,7 @@
 			return;
 		}
 		
-		if($stmt64 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM finan_cli.pago_total_credito_x_cuota ptxc, finan_cli.pago_total_credito pt, finan_cli.cuota_credito cc WHERE pt.id = ptxc.id_pago_total_credito AND pt.id_credito = cc.id_credito AND ptxc.id_cuota_credito = ?"))
+		if($stmt64 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM ".$db_name.".pago_total_credito_x_cuota ptxc, ".$db_name.".pago_total_credito pt, ".$db_name.".cuota_credito cc WHERE pt.id = ptxc.id_pago_total_credito AND pt.id_credito = cc.id_credito AND ptxc.id_cuota_credito = ?"))
 		{
 			$stmt64->bind_param('i', $idCuotaCredito);
 			$stmt64->execute();    
@@ -129,7 +129,7 @@
 			return;
 		}		
 		
-		if($stmt162 = $mysqli->prepare("SELECT ps.id, c.id FROM finan_cli.pago_seleccion_cuotas_credito ps, finan_cli.cuota_credito cc, finan_cli.credito c WHERE ps.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ps.id_cuota_credito = ?"))
+		if($stmt162 = $mysqli->prepare("SELECT ps.id, c.id FROM ".$db_name.".pago_seleccion_cuotas_credito ps, ".$db_name.".cuota_credito cc, ".$db_name.".credito c WHERE ps.id_cuota_credito = cc.id AND cc.id_credito = c.id AND ps.id_cuota_credito = ?"))
 		{
 			$stmt162->bind_param('i', $idCuotaCredito);
 			$stmt162->execute();    
@@ -154,7 +154,7 @@
 		
 		if($totR162 > 0)
 		{
-			if($stmt164 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM finan_cli.cuota_credito cc, finan_cli.pago_seleccion_cuotas_credito pscc WHERE cc.id = pscc.id_cuota_credito AND cc.id_credito = ?"))
+			if($stmt164 = $mysqli->prepare("SELECT cc.monto_cuota_original FROM ".$db_name.".cuota_credito cc, ".$db_name.".pago_seleccion_cuotas_credito pscc WHERE cc.id = pscc.id_cuota_credito AND cc.id_credito = ?"))
 			{
 				$stmt164->bind_param('i', $id_credito_pago_seleccion_db);
 				$stmt164->execute();    

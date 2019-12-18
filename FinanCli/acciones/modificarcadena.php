@@ -24,7 +24,7 @@
 		
 		$idCadena=htmlspecialchars($_POST["idCadena"], ENT_QUOTES, 'UTF-8');
 
-		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM finan_cli.cadena c WHERE c.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT c.id, c.razon_social, c.cuit_cuil, c.email, c.telefono, c.nombre_fantasia FROM ".$db_name.".cadena c WHERE c.id = ?"))
 		{
 			$stmt->bind_param('i', $idCadena);
 			$stmt->execute();    

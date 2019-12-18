@@ -44,7 +44,7 @@
 			return;
 		}
 			
-		if($stmt = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ? AND pc.id_cadena = ?"))
+		if($stmt = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".plan_credito pc WHERE pc.nombre LIKE(?) AND pc.id <> ? AND pc.id_cadena = ?"))
 		{
 			$stmt->bind_param('sii', $nombre, $idPlanCredito, $cadena);
 			$stmt->execute();    
@@ -59,7 +59,7 @@
 			}
 			else
 			{					
-				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'maxima_cantidad_cuotas_plan_credito'"))
+				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'maxima_cantidad_cuotas_plan_credito'"))
 				{
 					$stmt2->execute();    
 					$stmt2->store_result();
@@ -94,7 +94,7 @@
 				$stmt2->free_result();
 				$stmt2->close();
 				
-				if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM finan_cli.plan_credito pc WHERE pc.id = ?"))
+				if($stmt3 = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, pc.id_tipo_diferimiento_cuota, pc.id_cadena, pc.minimo_entrega FROM ".$db_name.".plan_credito pc WHERE pc.id = ?"))
 				{
 					$stmt3->bind_param('i', $idPlanCredito);
 					$stmt3->execute();    
@@ -112,7 +112,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.plan_credito SET nombre = ?, descripcion = ?, cantidad_cuotas = ?, interes_fijo = ?, id_tipo_diferimiento_cuota = ?, id_cadena = ?, minimo_entrega = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".plan_credito SET nombre = ?, descripcion = ?, cantidad_cuotas = ?, interes_fijo = ?, id_tipo_diferimiento_cuota = ?, id_cadena = ?, minimo_entrega = ? WHERE id = ?"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -136,9 +136,9 @@
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");
 				$stmt3->fetch();					
-				$valor_log_user = "NUEVO: UPDATE finan_cli.plan_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", cantidad_cuotas = ".$cantidadCuotas.", interes_fijo = ".$interesFijo.", id_tipo_diferimiento_cuota = ".$tipoDiferimientoCuota.", id_cadena = ".$cadena.", minimo_entrega = ".$minimoEntrega." WHERE id = ".$idPlanCredito." -- ANTERIOR: UPDATE finan_cli.plan_credito SET nombre = ".$name_credit_plan_a.", descripcion = ".$description_credit_plan_a.", cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a.", interes_fijo = ".$interes_fijo_credit_plan_a.", id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a.", id_cadena = ".$cadena_credit_plan_a.", minimo_entrega = ".$minimo_entrega_credit_plan_a." WHERE id = ".$idPlanCredito;
+				$valor_log_user = "NUEVO: UPDATE ".$db_name.".plan_credito SET nombre = ".$nombre.", descripcion = ".$descripcion.", cantidad_cuotas = ".$cantidadCuotas.", interes_fijo = ".$interesFijo.", id_tipo_diferimiento_cuota = ".$tipoDiferimientoCuota.", id_cadena = ".$cadena.", minimo_entrega = ".$minimoEntrega." WHERE id = ".$idPlanCredito." -- ANTERIOR: UPDATE ".$db_name.".plan_credito SET nombre = ".$name_credit_plan_a.", descripcion = ".$description_credit_plan_a.", cantidad_cuotas = ".$cantidad_cuotas_credit_plan_a.", interes_fijo = ".$interes_fijo_credit_plan_a.", id_tipo_diferimiento_cuota = ".$diferimiento_cuota_credit_plan_a.", id_cadena = ".$cadena_credit_plan_a.", minimo_entrega = ".$minimo_entrega_credit_plan_a." WHERE id = ".$idPlanCredito;
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -168,7 +168,7 @@
 				$stmt3->free_result();
 				$stmt3->close();				
 				
-				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM finan_cli.plan_credito pc, finan_cli.cadena c, finan_cli.parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id ORDER BY pc.cantidad_cuotas")) 
+				if($stmt = $mysqli->prepare("SELECT pc.id, pc.nombre, pc.descripcion, pc.cantidad_cuotas, pc.interes_fijo, par.valor, c.razon_social FROM ".$db_name.".plan_credito pc, ".$db_name.".cadena c, ".$db_name.".parametros par WHERE pc.id_cadena = c.id AND pc.id_tipo_diferimiento_cuota = par.id ORDER BY pc.cantidad_cuotas")) 
 				{
 					$stmt->execute();    
 					$stmt->store_result();

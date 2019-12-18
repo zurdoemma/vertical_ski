@@ -24,7 +24,7 @@
 		
 		$idSucursal=htmlspecialchars ( $_POST["idSucursal"], ENT_QUOTES, 'UTF-8' );
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -51,7 +51,7 @@
 			return;				
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.id_domicilio, s.email, s.id_cadena FROM finan_cli.sucursal s WHERE s.id = ? AND s.id_cadena = ?"))
+		if($stmt = $mysqli->prepare("SELECT s.id, s.codigo, s.nombre, s.id_domicilio, s.email, s.id_cadena FROM ".$db_name.".sucursal s WHERE s.id = ? AND s.id_cadena = ?"))
 		{
 			$stmt->bind_param('ii', $idSucursal, $id_cadena_user);
 			$stmt->execute();    
@@ -61,7 +61,7 @@
 			$stmt->fetch();
 			
 			
-			if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, d.id_provincia, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.domicilio d WHERE d.id = ?"))
+			if($stmt2 = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, d.id_provincia, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM ".$db_name.".domicilio d WHERE d.id = ?"))
 			{
 				$stmt2->bind_param('i', $domicilio_sucursal);
 				$stmt2->execute();    
@@ -104,7 +104,7 @@
 			echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="cadenatender">'.translate('Lbl_Chain_Tender',$GLOBALS['lang']).':</label>';
 			echo '					<div class="form-group" id="cadenatender">';
 			echo '						<select class="form-control input-sm" name="cadenatenderi" id="cadenatenderi" style="width:190px;" disabled >';			 
-											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM finan_cli.cadena WHERE id = ?")) 
+											if ($stmt = $mysqli->prepare("SELECT id, razon_social FROM ".$db_name.".cadena WHERE id = ?")) 
 											{ 
 												$stmt->bind_param('i', $id_cadena_user);
 												$stmt->execute();    
@@ -147,7 +147,7 @@
 			echo '					  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincia">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 			echo '					  <div class="form-group" id="domprovincia">';
 			echo '						  <select class="form-control input-sm" name="domprovinciai" id="domprovinciai" style="width:190px;">';			 
-											  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+											  if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 											  { 
 												  $stmt->execute();    
 												  $stmt->store_result();

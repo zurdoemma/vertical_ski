@@ -30,7 +30,7 @@
 			return;						
 		}
 
-		if($stmt = $mysqli->prepare("SELECT count(d.id) FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.provincia p, finan_cli.usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
+		if($stmt = $mysqli->prepare("SELECT count(d.id) FROM ".$db_name.".usuario u, ".$db_name.".domicilio d, ".$db_name.".provincia p, ".$db_name.".usuario_x_domicilio ud WHERE d.id_provincia = p.id AND u.id LIKE(?) AND ud.id_usuario = u.id AND ud.id_domicilio = d.id"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -39,7 +39,7 @@
 			$stmt->bind_result($cantidad_domicilios);
 			$stmt->fetch();
 			
-			if($stmt2 = $mysqli->prepare("SELECT valor FROM finan_cli.parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
+			if($stmt2 = $mysqli->prepare("SELECT valor FROM ".$db_name.".parametros WHERE nombre = 'cantidad_domicilios_x_usuario_cliente'"))
 			{
 				$stmt2->execute();    
 				$stmt2->store_result();
@@ -92,7 +92,7 @@
 		echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovincia">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 		echo '					<div class="form-group" id="domprovincia">';
 		echo '						<select class="form-control input-sm" name="domprovinciai" id="domprovinciai" style="width:190px;">';			 
-										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+										if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 										{ 
 											$stmt->execute();    
 											$stmt->store_result();

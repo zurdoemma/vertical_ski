@@ -24,7 +24,7 @@
 		
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 
-		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.tipo_documento, u.documento, u.email, u.id_perfil, u.id_sucursal, u.clave  FROM finan_cli.usuario u WHERE id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id, u.nombre, u.apellido, u.tipo_documento, u.documento, u.email, u.id_perfil, u.id_sucursal, u.clave  FROM ".$db_name.".usuario u WHERE id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $usuario);
 			$stmt->execute();    
@@ -68,7 +68,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="tipodocuser">'.translate('Lbl_Type_Document_User',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="tipodocuser">';
 				echo '						<select class="form-control input-sm" name="tipodocuseri" id="tipodocuseri" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.tipo_documento")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".tipo_documento")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();
@@ -108,7 +108,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="perfiluser">'.translate('Lbl_Perfil_User',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="perfiluser">';
 				echo '						<select class="form-control input-sm" name="perfiluseri" id="perfiluseri" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.perfil")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".perfil")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();
@@ -133,7 +133,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="sucursaluser">'.translate('Lbl_Tender_User',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="sucursaluser">';
 				echo '						<select class="form-control input-sm" name="sucursaluseri" id="sucursaluseri" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.sucursal")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".sucursal")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();
@@ -172,7 +172,7 @@
 				echo '				</div>';
 				if($user_perfil == 2)
 				{
-					if ($stmt59 = $mysqli->prepare("SELECT horario_ingreso, horario_salida, lunes, martes, miercoles, jueves, viernes, sabado, domingo, cambio_dia FROM finan_cli.horario_laboral_x_usuario WHERE id_usuario = ?")) 
+					if ($stmt59 = $mysqli->prepare("SELECT horario_ingreso, horario_salida, lunes, martes, miercoles, jueves, viernes, sabado, domingo, cambio_dia FROM ".$db_name.".horario_laboral_x_usuario WHERE id_usuario = ?")) 
 					{ 
 						$stmt59->bind_param('s', $usuario);
 						$stmt59->execute();    

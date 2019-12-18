@@ -39,7 +39,7 @@
 		}
 		else $esRecurrente = 0; 
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -66,7 +66,7 @@
 			return;				
 		}
 
-		if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM finan_cli.plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
+		if ($stmt501 = $mysqli->prepare("SELECT pc.id FROM ".$db_name.".plan_credito pc WHERE pc.id = ? AND pc.id_cadena = ?")) 
 		{
 			$stmt501->bind_param('ii', $planCredito, $id_cadena_user);
 			$stmt501->execute();    
@@ -93,7 +93,7 @@
 			return;				
 		}		
 		
-		if($stmt = $mysqli->prepare("SELECT ixm.id FROM finan_cli.interes_x_mora ixm WHERE ixm.cantidad_dias = ? AND ixm.id_plan_credito = ?"))
+		if($stmt = $mysqli->prepare("SELECT ixm.id FROM ".$db_name.".interes_x_mora ixm WHERE ixm.cantidad_dias = ? AND ixm.id_plan_credito = ?"))
 		{
 			$stmt->bind_param('ii', $cantidadDias, $planCredito);
 			$stmt->execute();    
@@ -108,7 +108,7 @@
 			}
 			else
 			{					
-				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'maxima_cantidad_dias_interes_x_mora'"))
+				if($stmt2 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'maxima_cantidad_dias_interes_x_mora'"))
 				{
 					$stmt2->execute();    
 					$stmt2->store_result();
@@ -143,7 +143,7 @@
 				$stmt2->free_result();
 				$stmt2->close();
 				
-				if($stmt3 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'maximo_interes_x_mora'"))
+				if($stmt3 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'maximo_interes_x_mora'"))
 				{
 					$stmt3->execute();    
 					$stmt3->store_result();
@@ -181,7 +181,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.interes_x_mora(cantidad_dias,interes,id_plan_credito,recurrente) VALUES (?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".interes_x_mora(cantidad_dias,interes,id_plan_credito,recurrente) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -204,9 +204,9 @@
 
 				$date_registro = date("YmdHis");
 				$date_registro2 = date("Y-m-d H:i:s");					
-				$valor_log_user = "INSERT INTO finan_cli.interes_x_mora(cantidad_dias,interes,id_plan_credito) VALUES (".$cantidadDias.",".$interesXMora.",".$planCredito.",".$esRecurrente.")";
+				$valor_log_user = "INSERT INTO ".$db_name.".interes_x_mora(cantidad_dias,interes,id_plan_credito) VALUES (".$cantidadDias.",".$interesXMora.",".$planCredito.",".$esRecurrente.")";
 
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -233,7 +233,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM finan_cli.interes_x_mora ixm, finan_cli.plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
+				if($stmt = $mysqli->prepare("SELECT ixm.id, ixm.cantidad_dias, ixm.interes, pc.nombre, ixm.recurrente FROM ".$db_name.".interes_x_mora ixm, ".$db_name.".plan_credito pc WHERE pc.id = ixm.id_plan_credito AND pc.id_cadena = ? ORDER BY pc.cantidad_cuotas, ixm.cantidad_dias")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

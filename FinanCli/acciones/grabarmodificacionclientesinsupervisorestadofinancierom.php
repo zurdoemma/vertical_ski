@@ -27,7 +27,7 @@
 		$idCliente=htmlspecialchars($_POST["idCliente"], ENT_QUOTES, 'UTF-8');
 		
 		
-		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento FROM finan_cli.cliente c WHERE c.id = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id, c.id_titular, c.tipo_documento, c.documento FROM ".$db_name.".cliente c WHERE c.id = ?"))
 		{
 			$stmt4->bind_param('i', $idCliente);
 			$stmt4->execute();    
@@ -56,7 +56,7 @@
 		$mysqli->autocommit(FALSE);
 		$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 		
-		if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)"))
+		if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)"))
 		{
 			$mysqli->autocommit(TRUE);
 			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
@@ -75,7 +75,7 @@
 				return;						
 			}
 			
-			if(!$stmt11 = $mysqli->prepare("UPDATE finan_cli.consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
+			if(!$stmt11 = $mysqli->prepare("UPDATE ".$db_name.".consulta_estado_financiero SET validado = 1 WHERE tipo_documento = ? AND documento = ? AND token = ? AND validado = 0"))
 			{
 				$mysqli->rollback();
 				$mysqli->autocommit(TRUE);

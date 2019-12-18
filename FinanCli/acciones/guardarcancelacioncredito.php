@@ -25,7 +25,7 @@
 		$idCredito=htmlspecialchars($_POST["idCredito"], ENT_QUOTES, 'UTF-8');
 		$motivoCancelacion=htmlspecialchars($_POST["motivoCancelacion"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -52,7 +52,7 @@
 			return;				
 		}		
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -80,7 +80,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_credito_original, c.estado FROM finan_cli.credito c WHERE c.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_credito_original, c.estado FROM ".$db_name.".credito c WHERE c.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCredito);
 			$stmt->execute();    
@@ -108,7 +108,7 @@
 		}		
 		
 						
-		if($stmt = $mysqli->prepare("SELECT u.id_perfil FROM finan_cli.usuario u WHERE u.id LIKE(?)"))
+		if($stmt = $mysqli->prepare("SELECT u.id_perfil FROM ".$db_name.".usuario u WHERE u.id LIKE(?)"))
 		{
 			$stmt->bind_param('s', $_SESSION['username']);
 			$stmt->execute();    
@@ -130,7 +130,7 @@
 				$mysqli->autocommit(FALSE);
 				$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 				
-				if(!$stmt10 = $mysqli->prepare("INSERT INTO finan_cli.token_anulacion_credito(fecha,id_credito,usuario,token,comentario) VALUES (?,?,?,?,?)"))
+				if(!$stmt10 = $mysqli->prepare("INSERT INTO ".$db_name.".token_anulacion_credito(fecha,id_credito,usuario,token,comentario) VALUES (?,?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->autocommit(TRUE);
@@ -154,7 +154,7 @@
 					}
 				}	
 				
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.credito SET estado = ? WHERE id = ?"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".credito SET estado = ? WHERE id = ?"))
 				{
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
@@ -177,9 +177,9 @@
 				}
 	
 				$date_registro = date("YmdHis");
-				$valor_log_user = "ANTERIOR: UPDATE finan_cli.credito SET estado = ".$estado_credit_client_a." WHERE id = ".$idCredito." -- NUEVO: UPDATE finan_cli.credito SET estado = ".$estCanc." WHERE id = ".$idCredito;
+				$valor_log_user = "ANTERIOR: UPDATE ".$db_name.".credito SET estado = ".$estado_credit_client_a." WHERE id = ".$idCredito." -- NUEVO: UPDATE ".$db_name.".credito SET estado = ".$estCanc." WHERE id = ".$idCredito;
 					
-				if(!$stmt = $mysqli->prepare("INSERT INTO finan_cli.log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
+				if(!$stmt = $mysqli->prepare("INSERT INTO ".$db_name.".log_usuario(id_usuario,fecha,id_motivo,valor) VALUES (?,?,?,?)"))
 				{
 					echo $mysqli->error;
 					$mysqli->rollback();
@@ -203,7 +203,7 @@
 					}
 				}
 
-				if(!$stmt10 = $mysqli->prepare("UPDATE finan_cli.cuota_credito SET estado = ? WHERE id_credito = ? AND estado IN (?,?)"))
+				if(!$stmt10 = $mysqli->prepare("UPDATE ".$db_name.".cuota_credito SET estado = ? WHERE id_credito = ? AND estado IN (?,?)"))
 				{
 					$mysqli->rollback();
 					$mysqli->autocommit(TRUE);
@@ -230,7 +230,7 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM finan_cli.credito c, finan_cli.credito_cliente cc, finan_cli.cliente cli, finan_cli.plan_credito pc, finan_cli.tipo_documento td, finan_cli.sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 10")) 
+				if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 10")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    

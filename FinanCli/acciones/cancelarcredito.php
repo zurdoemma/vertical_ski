@@ -24,7 +24,7 @@
 		
 		$idCredito=htmlspecialchars($_POST["idCredito"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
+		if($stmt61 = $mysqli->prepare("SELECT s.id_cadena, s.id, s.nombre FROM ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND u.id = ?"))
 		{
 			$stmt61->bind_param('s', $_SESSION['username']);
 			$stmt61->execute();    
@@ -52,7 +52,7 @@
 			return;
 		}		
 
-		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_credito_original FROM finan_cli.credito c WHERE c.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT c.id, c.monto_credito_original FROM ".$db_name.".credito c WHERE c.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCredito);
 			$stmt->execute();    

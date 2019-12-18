@@ -26,7 +26,7 @@
 		
 	
 
-		if ($stmt = $mysqli->prepare("SELECT cc.fecha_vencimiento, cc.numero_cuota, cc.monto_cuota_original  FROM finan_cli.cuota_credito cc WHERE cc.id = ?")) 
+		if ($stmt = $mysqli->prepare("SELECT cc.fecha_vencimiento, cc.numero_cuota, cc.monto_cuota_original  FROM ".$db_name.".cuota_credito cc WHERE cc.id = ?")) 
 		{
 			$stmt->bind_param('i', $idCuotaCredito);
 			$stmt->execute();    
@@ -52,7 +52,7 @@
 			return;	
 		}
 				
-		if($stmt63 = $mysqli->prepare("SELECT axm.fecha, ta.nombre, axm.estado, axm.mensaje FROM finan_cli.aviso_x_mora axm, finan_cli.tipo_aviso ta WHERE ta.id = axm.id_tipo_aviso AND axm.id_cuota_credito = ?"))
+		if($stmt63 = $mysqli->prepare("SELECT axm.fecha, ta.nombre, axm.estado, axm.mensaje FROM ".$db_name.".aviso_x_mora axm, ".$db_name.".tipo_aviso ta WHERE ta.id = axm.id_tipo_aviso AND axm.id_cuota_credito = ?"))
 		{
 			$stmt63->bind_param('i', $idCuotaCredito);
 			$stmt63->execute();    
@@ -76,7 +76,7 @@
 			return;
 		}
 
-		if($stmt65 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM finan_cli.mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
+		if($stmt65 = $mysqli->prepare("SELECT SUM(mcc.monto_interes) FROM ".$db_name.".mora_cuota_credito mcc WHERE mcc.id_cuota_credito = ?"))
 		{
 			$stmt65->bind_param('i', $idCuotaCredito);
 			$stmt65->execute();    

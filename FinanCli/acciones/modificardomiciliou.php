@@ -25,7 +25,7 @@
 		$usuario=htmlspecialchars($_POST["usuario"], ENT_QUOTES, 'UTF-8');	
 		$idDomicilio=htmlspecialchars($_POST["id_domicilio"], ENT_QUOTES, 'UTF-8');
 		
-		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM finan_cli.usuario u, finan_cli.domicilio d, finan_cli.usuario_x_domicilio ud, finan_cli.provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio AND d.id = ?"))
+		if($stmt = $mysqli->prepare("SELECT d.id, d.calle, d.nro_calle, p.id, d.localidad, d.departamento, d.piso, d.codigo_postal, d.entre_calle_1, d.entre_calle_2 FROM ".$db_name.".usuario u, ".$db_name.".domicilio d, ".$db_name.".usuario_x_domicilio ud, ".$db_name.".provincia p WHERE d.id_provincia = p.id AND u.id LIKE(?) AND u.id = ud.id_usuario AND d.id = ud.id_domicilio AND d.id = ?"))
 		{
 			$stmt->bind_param('si', $usuario, $idDomicilio);
 			$stmt->execute();    
@@ -70,7 +70,7 @@
 				echo '					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="domprovinciam">'.translate('Lbl_State',$GLOBALS['lang']).':</label>';
 				echo '					<div class="form-group" id="domprovinciam">';
 				echo '						<select class="form-control input-sm" name="domprovinciai" id="domprovinciami" style="width:190px;">';			 
-												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM finan_cli.provincia")) 
+												if ($stmt = $mysqli->prepare("SELECT id, nombre FROM ".$db_name.".provincia")) 
 												{ 
 													$stmt->execute();    
 													$stmt->store_result();

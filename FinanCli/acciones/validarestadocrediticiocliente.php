@@ -32,7 +32,7 @@
 		$genero=htmlspecialchars($_POST["genero"], ENT_QUOTES, 'UTF-8');
 		$motivo=htmlspecialchars($_POST["motivo"], ENT_QUOTES, 'UTF-8');
 		
-		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM finan_cli.cadena c, finan_cli.usuario u, finan_cli.sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
+		if ($stmt500 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{
 			$stmt500->bind_param('s', $_SESSION['username']);
 			$stmt500->execute();    
@@ -59,7 +59,7 @@
 			return;				
 		}		
 		
-		if($stmt4 = $mysqli->prepare("SELECT c.id FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+		if($stmt4 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{
 			$stmt4->bind_param('is', $tipoDocumento, $documento);
 			$stmt4->execute();    
@@ -84,7 +84,7 @@
 
 		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular))
 		{
-			if($stmt40 = $mysqli->prepare("SELECT c.cuil_cuit, c.id_genero FROM finan_cli.cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
+			if($stmt40 = $mysqli->prepare("SELECT c.cuil_cuit, c.id_genero FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 			{
 				$stmt40->bind_param('is', $tipoDocumentoTitular, $documentoTitular);
 				$stmt40->execute();    
@@ -113,8 +113,8 @@
 			}
 		}			
 		
-		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $consEFCAyT = "SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND  cef.tipo_documento_adicional = ? AND cef.documento_adicional = ? AND cef.validado = 1";
-		else $consEFCAyT = "SELECT cef.id FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1";
+		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $consEFCAyT = "SELECT cef.id FROM ".$db_name.".consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND  cef.tipo_documento_adicional = ? AND cef.documento_adicional = ? AND cef.validado = 1";
+		else $consEFCAyT = "SELECT cef.id FROM ".$db_name.".consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1";
 		if($stmt = $mysqli->prepare($consEFCAyT))
 		{
 			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt->bind_param('issiis', $tipoDocumentoTitular, $documentoTitular, $tokenVECC, $cuitCuilTitular, $tipoDocumento, $documento);
@@ -142,7 +142,7 @@
 			$stmt40->close();
 		}
 		
-		if($stmt = $mysqli->prepare("SELECT cef.id, cef.fecha, cef.resultado_xml, cef.token, cef.validado FROM finan_cli.consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.cuit_cuil = ? ORDER BY cef.fecha DESC"))
+		if($stmt = $mysqli->prepare("SELECT cef.id, cef.fecha, cef.resultado_xml, cef.token, cef.validado FROM ".$db_name.".consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.cuit_cuil = ? ORDER BY cef.fecha DESC"))
 		{
 			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt->bind_param('isi', $tipoDocumentoTitular, $documentoTitular, $cuit_cuil_titular);
 			else $stmt->bind_param('isi', $tipoDocumento, $documento, $cuitCuil);
@@ -153,7 +153,7 @@
 
 			if($totR > 0)
 			{
-				if($stmt41 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'cantidad_días_consulta_db_estado_financiero_clientes'"))
+				if($stmt41 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'cantidad_días_consulta_db_estado_financiero_clientes'"))
 				{
 					$stmt41->execute();    
 					$stmt41->store_result();
@@ -190,8 +190,8 @@
 								$mysqli->autocommit(FALSE);
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-								else $insertEFCDB = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB = "INSERT INTO ".$db_name.".consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+								else $insertEFCDB = "INSERT INTO ".$db_name.".consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
 								if(!$stmt10 = $mysqli->prepare($insertEFCDB))
 								{
 									$mysqli->autocommit(TRUE);
@@ -253,8 +253,8 @@
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 					
 					
-					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-					else $insertEFCDB2 = "INSERT INTO finan_cli.consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
+					if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertEFCDB2 = "INSERT INTO ".$db_name.".consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,tipo_documento_adicional,documento_adicional,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+					else $insertEFCDB2 = "INSERT INTO ".$db_name.".consulta_estado_financiero(tipo_documento,documento,fecha,resultado_xml,usuario,cuit_cuil,token,validado,id_cadena) VALUES (?,?,?,?,?,?,?,?,?)";
 					if(!$stmt10 = $mysqli->prepare($insertEFCDB2))
 					{
 						echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
@@ -300,7 +300,7 @@
 		if(!empty($resultado_finan_cli_final))
 		{			
 			$estado_activa_supervisor = 0;
-			if($stmt42 = $mysqli->prepare("SELECT p.valor FROM finan_cli.parametros p WHERE p.nombre = 'validar_estado_financiero_clientes_supervisor'"))
+			if($stmt42 = $mysqli->prepare("SELECT p.valor FROM ".$db_name.".parametros p WHERE p.nombre = 'validar_estado_financiero_clientes_supervisor'"))
 			{
 				$stmt42->execute();    
 				$stmt42->store_result();
@@ -319,8 +319,8 @@
 							$mysqli->autocommit(FALSE);
 							$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 							
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
-							else $insertECCOP = "INSERT INTO finan_cli.estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
+							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $insertECCOP = "INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,tipo_documento_adicional,documento_adicional,token) VALUES (?,?,?,?,?,?,?,?)";
+							else $insertECCOP = "INSERT INTO ".$db_name.".estado_cliente(fecha,tipo_documento,documento,id_motivo,usuario,token) VALUES (?,?,?,?,?,?)";
 							if(!$stmt43 = $mysqli->prepare($insertECCOP))
 							{
 								echo $mysqli->error;
@@ -576,8 +576,8 @@
 						}
 						else
 						{
-							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
-							else $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
+							if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+							else $selectECCEF = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
 							if($stmt44 = $mysqli->prepare($selectECCEF))
 							{
 								$date_registro_c_ecef = date("Ymd")."%";
@@ -1308,8 +1308,8 @@
 							}
 							else
 							{
-								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
-								else $selectECCEF = "SELECT e.id FROM finan_cli.estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
+								if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectECCEF = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+								else $selectECCEF = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
 								if($stmt44 = $mysqli->prepare($selectECCEF))
 								{
 									$date_registro_c_ecef = date("Ymd")."%";
