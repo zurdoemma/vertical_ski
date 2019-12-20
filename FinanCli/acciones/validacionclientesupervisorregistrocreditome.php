@@ -27,6 +27,10 @@
 		$tokenVC=htmlspecialchars($_POST["token2"], ENT_QUOTES, 'UTF-8');
 		$token3=htmlspecialchars($_POST["token3"], ENT_QUOTES, 'UTF-8');
 		
+		$montoCompra=htmlspecialchars($_POST["montoCompra"], ENT_QUOTES, 'UTF-8');
+		$montoMaximoCompra=htmlspecialchars($_POST["montoMaximoCompra"], ENT_QUOTES, 'UTF-8');		
+		$planCredito=htmlspecialchars($_POST["planCredito"], ENT_QUOTES, 'UTF-8');
+		
 		if(empty($token)) $token = 'n';
 				
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
@@ -257,8 +261,8 @@
 				else $consEFCAyT = "SELECT cef.id FROM ".$db_name.".consulta_estado_financiero cef WHERE cef.tipo_documento = ? AND cef.documento = ? AND cef.token = ? AND cef.cuit_cuil = ? AND cef.validado = 1";
 				if($stmt = $mysqli->prepare($consEFCAyT))
 				{
-					if(!empty($id_cliente_titular_db)) $stmt->bind_param('issiis', $tipoDocumentoTitular, $documentoTitular, $tokenVECC, $cuitCuilTitular, $tipoDocumento, $documento);
-					else $stmt->bind_param('issi', $tipoDocumento, $documento, $tokenVECC, $cuitCuil);
+					if(!empty($id_cliente_titular_db)) $stmt->bind_param('issiis', $tipoDocumentoTitular, $documentoTitular, $tokenVC, $cuitCuilTitular, $tipoDocumento, $documento);
+					else $stmt->bind_param('issi', $tipoDocumento, $documento, $tokenVC, $cuitCuil);
 					$stmt->execute();    
 					$stmt->store_result();
 					
@@ -266,23 +270,25 @@
 
 					if($totR > 0)
 					{
-						if(empty($tokenVS)) $selectVCS = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?)";
-						else $selectVCS = "SELECT e.id, e.token FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?) AND e.token = ?";
+						if(empty($tokenVS)) $selectVCS = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?,?)";
+						else $selectVCS = "SELECT e.id, e.token FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?,?) AND e.token = ?";
+						
 						if($stmt51 = $mysqli->prepare($selectVCS))
 						{
 							$date_registro_a_s = date("Ymd")."%";
 							$motivo = 58;
 							$motivo2 = 59;
 							$motivo3 = 60;
+							$motivo4 = 64;
 							if(empty($id_cliente_titular_db)) 
 							{
-								if(empty($tokenVS)) $stmt51->bind_param('issiii', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3);
-								else $stmt51->bind_param('issiiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3, $tokenVS);
+								if(empty($tokenVS)) $stmt51->bind_param('issiiii', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4);
+								else $stmt51->bind_param('issiiiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4, $token3);
 							}
 							else
 							{ 
-								if(empty($tokenVS)) $stmt51->bind_param('issiii', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3);
-								else $stmt51->bind_param('issiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $tokenVS);
+								if(empty($tokenVS)) $stmt51->bind_param('issiiii', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4);
+								else $stmt51->bind_param('issiiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4, $token3);
 							}
 							$stmt51->execute();    
 							$stmt51->store_result();
@@ -312,22 +318,23 @@
 			else
 			{
 				//if(empty($tokenVS)) $selectVCS = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?)";
-				$selectVCS = "SELECT e.id, e.token FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?) AND e.token = ?";
+				$selectVCS = "SELECT e.id, e.token FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?,?,?) AND e.token = ?";
 				if($stmt51 = $mysqli->prepare($selectVCS))
 				{
 					$date_registro_a_s = date("Ymd")."%";
 					$motivo = 58;
 					$motivo2 = 59;
 					$motivo3 = 60;
+					$motivo4 = 64;
 					if(empty($id_cliente_titular_db)) 
 					{
 						//if(empty($tokenVS)) $stmt51->bind_param('issiii', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3);
-						$stmt51->bind_param('issiiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3, $tokenVS);
+						$stmt51->bind_param('issiiiis', $tipoDocumento, $documento, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4, $token3);
 					}
 					else
 					{ 
 						//if(empty($tokenVS)) $stmt51->bind_param('issiii', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3);
-						$stmt51->bind_param('issiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $tokenVS);
+						$stmt51->bind_param('issiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $token3);
 					}
 					$stmt51->execute();    
 					$stmt51->store_result();
@@ -350,7 +357,7 @@
 
 			if($paso_validacion_estado_financiero == 0)
 			{
-				echo translate('Msg_Not_Validated_Status_Credit_Client',$GLOBALS['lang']).$tipoDocumento.'-'.$documento.'-'.$date_registro_a_s.'-'.$motivo.'-'.$motivo2.'-'.$motivo3.'-'.$tokenVECC;
+				echo translate('Msg_Not_Validated_Status_Credit_Client',$GLOBALS['lang']).$tipoDocumento.'-'.$documento.'-'.$date_registro_a_s.'-'.$motivo.'-'.$motivo2.'-'.$motivo3.'-'.$token3;
 				return;
 			}
 			

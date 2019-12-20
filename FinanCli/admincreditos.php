@@ -1289,7 +1289,7 @@ include("./menu/menu.php");
 			$.ajax({
 				url: urlvcsrcme,
 				method: "POST",
-				data: { motivo: motivo, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
+				data: { motivo: motivo, tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val() },
 				success: function(dataresponse, statustext, response){
 					$('#img_loader_16').hide();
 					
@@ -1651,7 +1651,7 @@ include("./menu/menu.php");
 						$('#dialogautorizacionregistrocreditoclienteme').dialog('destroy').remove();
 						$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
 						$( "#documentoclientcreditni" ).prop( "disabled", true );
-													
+						
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
 						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
 						dataresponse = dataresponse.replace(datTable+"=:=:","");

@@ -319,7 +319,7 @@
 				return;
 			}			
 		}
-
+		
 		if($paso_validacion_estado_financiero == 0)
 		{
 			echo translate('Msg_Not_Validated_Status_Credit_Client',$GLOBALS['lang']).$tipoDocumento.'-'.$documento.'-'.$date_registro_a_s.'-'.$motivo.'-'.$motivo2.'-'.$motivo3.'-'.$tokenVECC;

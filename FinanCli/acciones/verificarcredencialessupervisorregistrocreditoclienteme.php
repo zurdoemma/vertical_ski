@@ -662,7 +662,7 @@
 				}
 			}
 			
-			echo translate('Msg_Supervisor_OK',$GLOBALS['lang']).'=::=::'.json_encode($array).'=:=:'.$minimo_entrega.'=::=::=::'.$montoTotalCredito.'=:::=:::'.$tokenVSEC;
+			echo translate('Msg_Supervisor_OK',$GLOBALS['lang']).'=::=::'.json_encode($array).'=:=:'.$minimo_entrega_plan_credito_s_db.'=::=::=::'.$montoTotalCredito.'=:::=:::'.$tokenVSEC;
 		}
 		else
 		{
