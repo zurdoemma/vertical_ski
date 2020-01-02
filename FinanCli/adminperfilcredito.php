@@ -131,7 +131,7 @@ include("./menu/menu.php");
 	<script type="text/javascript">
 		function verPlanesCredito(perfilCredito, nombre)
 		{
-			document.getElementById("verPlanesCredito").disabled = true;
+			document.getElementById("verPlanesCreditoV").disabled = true;
 			var urlmtc = "./acciones/verplanescredito.php";
 			var tagmtc = $("<div id='dialogmodcreditplanxprofile'></div>");
 			$('#img_loader_10').show();
@@ -180,7 +180,7 @@ include("./menu/menu.php");
 					$('#img_loader_10').hide();
 				}
 			});
-			document.getElementById("verPlanesCredito").disabled = false;
+			document.getElementById("verPlanesCreditoV").disabled = false;
 		}
     </script>
 	

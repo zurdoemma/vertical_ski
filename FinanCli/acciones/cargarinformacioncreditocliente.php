@@ -35,6 +35,8 @@
 		$validacionEC=htmlspecialchars($_POST["validacionEC"], ENT_QUOTES, 'UTF-8');
 		$validacionPrimeraCuota=htmlspecialchars($_POST["validacionPrimeraCuota"], ENT_QUOTES, 'UTF-8');
 		
+		$seEstaValidandoPC=htmlspecialchars($_POST["datoLlamM"], ENT_QUOTES, 'UTF-8');
+		
 		if($montoCompra < 0)
 		{
 			echo translate('Negative_Numbers_Are_Not_Allowed',$GLOBALS['lang']);
@@ -414,8 +416,9 @@
 			if($stmt44 = $mysqli->prepare($selectVCS))
 			{
 				$date_registro_a_s_44 = date("Ymd")."%";
-				if(empty($id_cliente_titular_db)) $stmt44->bind_param('issis', $tipoDocumento, $documento, $date_registro_a_s_44, $motivo, $token3);
-				else $stmt44->bind_param('issis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s_44, $motivo, $token3);
+				$motivo4 = 64;
+				if(empty($id_cliente_titular_db)) $stmt44->bind_param('issis', $tipoDocumento, $documento, $date_registro_a_s_44, $motivo4, $token3);
+				else $stmt44->bind_param('issis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s_44, $motivo4, $token3);
 				$stmt44->execute();    
 				$stmt44->store_result();
 				

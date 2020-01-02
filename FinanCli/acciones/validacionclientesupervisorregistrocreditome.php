@@ -334,7 +334,7 @@
 					else
 					{ 
 						//if(empty($tokenVS)) $stmt51->bind_param('issiii', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3);
-						$stmt51->bind_param('issiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $token3);
+						$stmt51->bind_param('issiiiis', $tipo_documento_cliente_titular_db, $documento_cliente_titular_db, $date_registro_a_s, $motivo, $motivo2, $motivo3, $motivo4, $token3);
 					}
 					$stmt51->execute();    
 					$stmt51->store_result();
@@ -357,7 +357,7 @@
 
 			if($paso_validacion_estado_financiero == 0)
 			{
-				echo translate('Msg_Not_Validated_Status_Credit_Client',$GLOBALS['lang']).$tipoDocumento.'-'.$documento.'-'.$date_registro_a_s.'-'.$motivo.'-'.$motivo2.'-'.$motivo3.'-'.$token3;
+				echo translate('Msg_Not_Validated_Status_Credit_Client',$GLOBALS['lang']).$tipo_documento_cliente_titular_db.'-'.$documento_cliente_titular_db.'-'.$date_registro_a_s.'-'.$motivo.'-'.$motivo2.'-'.$motivo3.'-'.$token3;
 				return;
 			}
 			

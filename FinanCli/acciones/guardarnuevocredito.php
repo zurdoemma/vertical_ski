@@ -790,7 +790,10 @@
 			
 			$fecha_cre_pi = date("d-m-Y H:i:s");
 			$montoInteresF = $montoTotalCredito-$montoCompra;
-			$datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$pagaPrimeraCuota.'|'.$minimoEntrega; 
+			if($pagaPrimeraCuota == 1 && $cantidad_cuotas_plan_credito_s_db > 1) $datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[1]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$pagaPrimeraCuota.'|'.$minimoEntrega; 
+			else if($pagaPrimeraCuota == 1 && $cantidad_cuotas_plan_credito_s_db == 1) $datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'||'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$pagaPrimeraCuota.'|'.$minimoEntrega; 
+			else $datosDeImpresion = $idCreditoCliente.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$array[0]['fechavencimiento'].'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$pagaPrimeraCuota.'|'.$minimoEntrega; 
+			
 			echo translate('Msg_New_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion.'=::=::=::'.json_encode($arrayC);
 			return;
 		}

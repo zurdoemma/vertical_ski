@@ -124,7 +124,7 @@ include("./menu/menu.php");
 					$('#montocompraclientcreditni').keypress(function(event){
 						var keycode = (event.keyCode ? event.keyCode : event.which);
 						if(keycode == '13'){
-							cargarInfoCredito(); 
+							cargarInfoCredito(0); 
 						}
 					});
 
@@ -137,9 +137,9 @@ include("./menu/menu.php");
 							{
 								var montoCompraNum = (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00);
 								if(this.checked) $( "#montocompraclientcreditni" ).val((montoCompraNum + montoMinimoEntNum)/100);
-								cargarInfoCredito();
+								cargarInfoCredito(1);
 							}
-							else if(montoMinimoEntNum == 0) cargarInfoCredito();
+							else if(montoMinimoEntNum == 0) cargarInfoCredito(1);
 						}
 					});					
 					
@@ -385,6 +385,9 @@ include("./menu/menu.php");
 									$( "#montocompraclientcreditni" ).val("");
 									$( "#minimoentregaclientcreditn" ).hide();
 									$( "#btnCargarNC" ).prop( "disabled", true );
+									
+									$( "#validarpagoprimeracuotani" ).prop('checked', false);
+									$( "#validarpagoprimeracuotani" ).prop( "disabled", true );									
 								}
 								else
 								{
@@ -477,7 +480,10 @@ include("./menu/menu.php");
 								$( "#minimoentregaclientcreditn" ).hide();
 								$( "#btnCargarNC" ).prop( "disabled", true );
 								
-								tagvcc.dialog('open');							
+								tagvcc.dialog('open');
+
+								$( "#validarpagoprimeracuotani" ).prop('checked', false);
+								$( "#validarpagoprimeracuotani" ).prop( "disabled", true );								
 							}
 							else if(dataresponse.indexOf('<?php echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']); ?>') != -1) 
 							{
@@ -503,7 +509,10 @@ include("./menu/menu.php");
 								$( "#montomaximoclientcreditni" ).val("");
 								$( "#montocompraclientcreditni" ).val("");
 								$( "#minimoentregaclientcreditn" ).hide();
-								$( "#btnCargarNC" ).prop( "disabled", true );								
+								$( "#btnCargarNC" ).prop( "disabled", true );
+
+								$( "#validarpagoprimeracuotani" ).prop('checked', false);
+								$( "#validarpagoprimeracuotani" ).prop( "disabled", true );								
 							}
 						},
 						error: function(request, errorcode, errortext){
@@ -647,6 +656,9 @@ include("./menu/menu.php");
 							$( "#montocompraclientcreditni" ).val("");
 							$( "#minimoentregaclientcreditn" ).hide();	
 							$( "#btnCargarNC" ).prop( "disabled", true );
+							
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );							
 						}
 						else
 						{
@@ -762,6 +774,9 @@ include("./menu/menu.php");
 							$( "#montocompraclientcreditni" ).val("");
 							$( "#minimoentregaclientcreditn" ).hide();
 							$( "#btnCargarNC" ).prop( "disabled", true );
+							
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );							
 						}
 						else
 						{
@@ -816,7 +831,7 @@ include("./menu/menu.php");
     </script>
 	
 	<script type="text/javascript">
-		function cargarInfoCredito()
+		function cargarInfoCredito(datLlam)
 		{
 			if($( "#montocompraclientcreditni" ).val().length != 0)
 			{
@@ -826,7 +841,7 @@ include("./menu/menu.php");
 				$.ajax({
 					url: urlbcc,
 					method: "POST",
-					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val(), validacionPrimeraCuota: $('#validarpagoprimeracuotani').is(":checked") },
+					data: { token: $("#tokenvalidsupcrei").val(), token2: $("#tokenveccrediti").val(), token3: $("#tokenvalidexcesomi").val(), tipoDocumento: $("#tipodocumentocreditclientni").val(), documento: $("#documentoclientcreditni").val(), montoMaximoCompra: (($( "#montomaximoclientcreditni" ).val().replace(/,/g,""))*100.00), montoCompra: (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00), planCredito: $( "#plancreditclientni" ).val(), validacionEC: $( "#validarstatuscreditclientecreni" ).val(), validacionPrimeraCuota: $('#validarpagoprimeracuotani').is(":checked"), datoLlamM: datLlam },
 					success: function(dataresponse, statustext, response){
 						$('#img_loader_16').hide();
 						
@@ -885,12 +900,17 @@ include("./menu/menu.php");
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Max_Amount_Credit_Client_Exceeded',$GLOBALS['lang']);?>') != -1)
 						{
 							$( "#minimoentregaclientcreditn" ).hide();
-							confirmar_accion_validar_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded',$GLOBALS['lang']);?>", 64);
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );	
+							confirmar_accion_validar_credito_cliente("<?php echo translate('Lbl_Confirmation_Action_Register_Client',$GLOBALS['lang']);?>", "<?php echo translate('Msg_Be_Sure_To_Register_Credit_With_Max_Amount_Exceeded',$GLOBALS['lang']);?>", 64);					
 						}
 						else 
 						{
 							$( "#minimoentregaclientcreditn" ).hide();
-							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);							
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );							
 						}
 					},
 					error: function(request, errorcode, errortext){
@@ -1210,7 +1230,11 @@ include("./menu/menu.php");
 							$( "#montomaximoclientcreditni" ).val("");
 							$( "#montocompraclientcreditni" ).val("");
 							$( "#minimoentregaclientcreditn" ).hide();
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );
 							$( "#btnCargarNC" ).prop( "disabled", true );
+							
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );							
 						}
 						else
 						{
@@ -1268,8 +1292,12 @@ include("./menu/menu.php");
 						$( "#telefonoclientcreditni" ).val("");
 						$( "#montomaximoclientcreditni" ).val("");
 						$( "#montocompraclientcreditni" ).val("");	
-						$( "#minimoentregaclientcreditn" ).hide();	
+						$( "#minimoentregaclientcreditn" ).hide();
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", true );						
 						$( "#btnCargarNC" ).prop( "disabled", true );
+						
+						$( "#validarpagoprimeracuotani" ).prop('checked', false);
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", true );						
 					}
 				},
 				error: function(request, errorcode, errortext){
@@ -1317,11 +1345,15 @@ include("./menu/menu.php");
 								}
 						}).prev(".ui-dialog-titlebar").css("background","#D6D4D3");
 						tagarccme.dialog('open');
+						
+						$( "#validarpagoprimeracuotani" ).prop('checked', false);
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", true );						
 					}
 					else if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 					{
 						$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
 						$( "#documentoclientcreditni" ).prop( "disabled", true );
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", false );
 													
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>"+"=::=::","");
 						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
@@ -1343,8 +1375,21 @@ include("./menu/menu.php");
 						if(minimoEnt != 0)
 						{
 							$( "#minimoentregaclientcreditn" ).show();
+							
 							$( "#minimoentregaclientcreditni" ).val((($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*(minimoEnt/100.00)).toFixed(2));
-							$('#minimoentregaclientcreditni').maskNumber();						
+							$('#minimoentregaclientcreditni').maskNumber();
+							var montoCompraNum = (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00);
+							var minimoEntregaNum = (($( "#minimoentregaclientcreditni" ).val().replace(/,/g,""))*100.00);
+
+							if($('#validarpagoprimeracuotani').is(":checked"))
+							{
+								$('#minimoentregaclientcreditni').val("0");
+								//$('#montocompraclientcreditni').val(((montoCompraNum + minimoEntregaNum)/100.00).toFixed(2));
+							}
+							else
+							{
+								$('#montocompraclientcreditni').val((((montoCompraNum - minimoEntregaNum)/100.00)).toFixed(2));
+							}						
 						}
 						else 
 						{
@@ -1360,12 +1405,18 @@ include("./menu/menu.php");
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 						$( "#montocompraclientcreditni" ).focus();
 						$( "#minimoentregaclientcreditn" ).hide();
+						
+						$( "#validarpagoprimeracuotani" ).prop('checked', false);
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", true );						
 					}
 				},
 				error: function(request, errorcode, errortext){
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$( "#minimoentregaclientcreditn" ).hide();
 					$('#img_loader_16').hide();
+					
+					$( "#validarpagoprimeracuotani" ).prop('checked', false);
+					$( "#validarpagoprimeracuotani" ).prop( "disabled", true );					
 				}
 			});			
 		}	
@@ -1493,6 +1544,9 @@ include("./menu/menu.php");
 							$( "#montocompraclientcreditni" ).val("");
 							$( "#minimoentregaclientcreditn" ).hide();
 							$( "#btnCargarNC" ).prop( "disabled", true );
+							
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );							
 						}
 						else
 						{
@@ -1651,6 +1705,7 @@ include("./menu/menu.php");
 						$('#dialogautorizacionregistrocreditoclienteme').dialog('destroy').remove();
 						$( "#tipodocumentocreditclientni" ).prop( "disabled", true );
 						$( "#documentoclientcreditni" ).prop( "disabled", true );
+						$( "#validarpagoprimeracuotani" ).prop( "disabled", false );
 						
 						dataresponse = dataresponse.replace("<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']); ?>"+"=::=::","");
 						var datTable = dataresponse.substring(0, dataresponse.indexOf('=:=:'));
@@ -1673,8 +1728,21 @@ include("./menu/menu.php");
 						if(minimoEnt != 0)
 						{
 							$( "#minimoentregaclientcreditn" ).show();
+							
 							$( "#minimoentregaclientcreditni" ).val((($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*(minimoEnt/100.00)).toFixed(2));
-							$('#minimoentregaclientcreditni').maskNumber();						
+							$('#minimoentregaclientcreditni').maskNumber();
+							var montoCompraNum = (($( "#montocompraclientcreditni" ).val().replace(/,/g,""))*100.00);
+							var minimoEntregaNum = (($( "#minimoentregaclientcreditni" ).val().replace(/,/g,""))*100.00);
+
+							if($('#validarpagoprimeracuotani').is(":checked"))
+							{
+								$('#minimoentregaclientcreditni').val("0");
+								//$('#montocompraclientcreditni').val(((montoCompraNum + minimoEntregaNum)/100.00).toFixed(2));
+							}
+							else
+							{
+								$('#montocompraclientcreditni').val((((montoCompraNum - minimoEntregaNum)/100.00)).toFixed(2));
+							}						
 						}
 						else 
 						{
@@ -1691,12 +1759,17 @@ include("./menu/menu.php");
 							$( "#minimoentregaclientcreditn" ).hide();
 							$('#usuariosupervisorn20i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );
 						}
 						else 
 						{
 							$( "#minimoentregaclientcreditn" ).hide();
 							$('#usuariosupervisorn20i').focus();
 							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+							
+							$( "#validarpagoprimeracuotani" ).prop('checked', false);
+							$( "#validarpagoprimeracuotani" ).prop( "disabled", true );
 						}					
 					}
 					
@@ -1706,6 +1779,9 @@ include("./menu/menu.php");
 					$( "#minimoentregaclientcreditn" ).hide();
 					mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
 					$('#img_loader_13').hide();
+					
+					$( "#validarpagoprimeracuotani" ).prop('checked', false);
+					$( "#validarpagoprimeracuotani" ).prop( "disabled", true );
 				}
 			});
 			document.getElementById("btnValidarS40").disabled = false;

@@ -601,6 +601,17 @@
 				return;
 			}
 			
+			if(!empty($minimo_entrega_plan_credito_s_db) && $minimo_entrega_plan_credito_s_db > 0)
+			{
+				$montoMinimoEntregaC = round(($montoCompra/100.00) * ($minimo_entrega_plan_credito_s_db/100.00),2);
+				$montoMinimoEntregaC = ($montoMinimoEntregaC * 100);
+				if($montoMinimoEntregaC > $montoCompra)
+				{
+					echo translate('Msg_Unknown_Error',$GLOBALS['lang']).' - ME';
+					return;
+				}
+				$montoCompra = $montoCompra - $montoMinimoEntregaC;
+			}
 			$montoTotalCredito = $montoCompra + (round($montoCompra * ($interes_fijo_plan_credito_s_db/100.00),0));
 		
 			
