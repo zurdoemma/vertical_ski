@@ -10,8 +10,8 @@
 	$GLOBALS['url_status_envio_sms'] = 'https://apps.netelip.com/sms/status.php';	
 	$GLOBALS['path_certificado_envio_sms'] = 'C:\wamp\cacert.pem';
 	$GLOBALS['url_consulta_estado_financiero'] = 'https://www.pypdatos.com.ar/PypAPI/rest/serviciospyp/persona/';	
-	$GLOBALS['usuario_servicio_consulta_estado_financiero'] = 'wslibert';
-	$GLOBALS['clave_servicio_consulta_estado_financiero'] = 'edf444';	
+	$GLOBALS['usuario_servicio_consulta_estado_financiero'] = 'wsarale';
+	$GLOBALS['clave_servicio_consulta_estado_financiero'] = 'ljhimh69';	
 	$GLOBALS['imprimir_nuevo_credito'] = 'http://localhost/FinanCli/acciones/imprimir/imprimirNuevoCredito.php';
 	$GLOBALS['imprimir_pago_cuota_credito'] = 'http://localhost/FinanCli/acciones/imprimir/imprimirPagoCuotaCredito.php';
 	$GLOBALS['imprimir_seleccion_pago_cuotas_credito'] = 'http://localhost/FinanCli/acciones/imprimir/imprimirPagoCuotasCredito.php';

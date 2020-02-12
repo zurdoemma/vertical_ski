@@ -300,6 +300,7 @@ include("./menu/menu.php");
 						var datTable = dataresponse.substring(0,dataresponse.indexOf('=::=::=::'));
 						dataresponse = dataresponse.replace(datTable+"=::=::=::","");
 						
+
 						$('#tableadmincreditst').bootstrapTable('load',JSON.parse(datTable));
 						$('#titulocreditoscliente').html('<?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?>'+': '+dataresponse);						
 						//mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);

@@ -93,16 +93,21 @@
 				$stmt->fetch();
 				
 				$estado_fin_cli = new SimpleXMLElement($resultado_xml_estado_financiero_cliente);
-				foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFCAC) 
+				foreach ($estado_fin_cli->ExistenciaFisicaEntidad_[0]->row as $recEFCAC) 
 				{
-					$camposAutoC = $recEFCAC->t_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.$recEFCAC->cdi.'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
+					$camposAutoC = $recEFCAC->tipo_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion).'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
 					break;
 				}
-				foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+				
+				if(!empty($estado_fin_cli->EMAILS[0]))
 				{
-					$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
-					break;
+					foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+					{
+						$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
+						break;
+					}
 				}
+				else $camposAutoC = $camposAutoC.'|s-d';
 				
 				echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']).'=:=:=:'.$camposAutoC.'=::=::=::'.$tokenVECC;
 				return;
@@ -147,16 +152,21 @@
 						if($cantidad_dias_est_financiero_db > $difDias->days)
 						{
 							$estado_fin_cli = new SimpleXMLElement($resultado_xml_estado_financiero_cliente_db);
-							foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFCAC) 
+							foreach ($estado_fin_cli->ExistenciaFisicaEntidad_[0]->row as $recEFCAC) 
 							{
-								$camposAutoC = $recEFCAC->t_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.$recEFCAC->cdi.'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
+								$camposAutoC = $recEFCAC->tipo_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion).'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
 								break;
 							}
-							foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+							
+							if(!empty($estado_fin_cli->EMAILS[0]))
 							{
-								$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
-								break;
+								foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+								{
+									$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
+									break;
+								}
 							}
+							else $camposAutoC = $camposAutoC.'|s-d';
 							
 							echo translate('Msg_Auto_Complete_Data_Client_OK',$GLOBALS['lang']).'=:=:=:'.$camposAutoC.'=::=::=::'.$token_estado_financiero_cliente_db;
 							return;
@@ -170,17 +180,23 @@
 								$resultado_finan_cli_final = str_replace(translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']), "", $resultado_finan_cli_final);
 								
 								$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-								foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFCAC) 
+								foreach ($estado_fin_cli->ExistenciaFisicaEntidad_[0]->row as $recEFCAC) 
 								{
-									$camposAutoC = $recEFCAC->t_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.$recEFCAC->cdi.'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
-									$cuitCuil = $recEFCAC->cdi;
+									$camposAutoC = $recEFCAC->tipo_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion).'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
+									$cuitCuil = str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion);
 									break;
 								}
-								foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+								
+								if(!empty($estado_fin_cli->EMAILS[0]))
 								{
-									$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
-									break;
-								}								
+									foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+									{
+										$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
+										break;
+									}
+								}
+								else $camposAutoC = $camposAutoC.'|s-d';
+								
 								$mysqli->autocommit(FALSE);
 								$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 								
@@ -244,17 +260,22 @@
 					$resultado_finan_cli_final = str_replace(translate('Msg_Financial_Statement_Was_Consulted_Successfully',$GLOBALS['lang']), "", $resultado_finan_cli_final);
 					
 					$estado_fin_cli = new SimpleXMLElement($resultado_finan_cli_final);
-					foreach ($estado_fin_cli->Existencia_Fisica_Resu[0]->row as $recEFCAC) 
+					foreach ($estado_fin_cli->ExistenciaFisicaEntidad_[0]->row as $recEFCAC) 
 					{
-						$camposAutoC = $recEFCAC->t_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.$recEFCAC->cdi.'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
-						$cuitCuil = $recEFCAC->cdi;
+						$camposAutoC = $recEFCAC->tipo_docu.'|'.$recEFCAC->ape_nom.'|'.$recEFCAC->fecha_nacimiento.'|'.str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion).'|'.$recEFCAC->direc_calle.'|'.$recEFCAC->provincia.'|'.$recEFCAC->localidad.'|'.$recEFCAC->codigo_postal;
+						$cuitCuil = str_replace('-','',$recEFCAC->cdi_codigo_de_identificacion);
 						break;
 					}
-					foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+					
+					if(!empty($estado_fin_cli->EMAILS[0]))
 					{
-						$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
-						break;
+						foreach ($estado_fin_cli->EMAILS[0]->row as $recEMAILSAC) 
+						{
+							$camposAutoC = $camposAutoC.'|'.$recEMAILSAC->email;
+							break;
+						}
 					}
+					else $camposAutoC = $camposAutoC.'|s-d';
 					
 					$mysqli->autocommit(FALSE);
 					$mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
@@ -277,10 +298,10 @@
 						$stmt10->bind_param('issssisii', $tipoDocumento, $documento, $date_registro_cef_db, $resultado_finan_cli_final, $_SESSION['username'], $cuitCuil, $tokenECF, $validadoECF, $id_cadena_user);
 						if(!$stmt10->execute())
 						{
+							echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 							$mysqli->autocommit(TRUE);
 							$stmt->free_result();
 							$stmt->close();
-							echo translate('Msg_Credit_Status_Client_Not_Validated',$GLOBALS['lang']);
 							return;						
 						}
 						
