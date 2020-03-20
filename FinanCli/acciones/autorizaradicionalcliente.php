@@ -28,7 +28,36 @@
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');	
 
 		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
-		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');		
+		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
+
+		$selectEFCCIni = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+		if($stmt41 = $mysqli->prepare($selectEFCCIni))
+		{
+			$motivoValidacionECC = 37;
+			$motivoValidacionECC2 = 38;
+			$date_registro_a_s = date("Ymd")."%";
+			$stmt41->bind_param('issiiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2, $tipoDocumento, $documento);
+			$stmt41->execute();    
+			$stmt41->store_result();
+			
+			$totR41 = $stmt41->num_rows;
+
+			if($totR41 > 0)
+			{
+				$pasoValidacionEstadoCrediticio++;
+			}			
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+
+		if($pasoValidacionEstadoCrediticio == 0)
+		{
+			echo translate('The_Client_Credit_Status_Was_Not_Correctly_Validated',$GLOBALS['lang']);
+			return;
+		}		
 
 		if($stmt4 = $mysqli->prepare("SELECT c.id FROM ".$db_name.".cliente c WHERE c.tipo_documento = ? AND c.documento = ?"))
 		{

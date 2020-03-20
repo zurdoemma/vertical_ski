@@ -23,13 +23,44 @@
 		}
 		
 		$tokenVCC=htmlspecialchars($_POST["tokenVCC"], ENT_QUOTES, 'UTF-8');
+		$tipoDocumentoTitular=htmlspecialchars($_POST["tipoDocumentoTitular"], ENT_QUOTES, 'UTF-8');
 		$documentoTitular=htmlspecialchars($_POST["documentoTitular"], ENT_QUOTES, 'UTF-8');
 		$tipoDocumento=htmlspecialchars($_POST["tipoDocumento"], ENT_QUOTES, 'UTF-8');
 		$documento=htmlspecialchars($_POST["documento"], ENT_QUOTES, 'UTF-8');
-		$tokenVCC=htmlspecialchars($_POST["tokenVCC"], ENT_QUOTES, 'UTF-8');
 		$tipoTelefono=htmlspecialchars($_POST["tipoTelefono"], ENT_QUOTES, 'UTF-8');		
 		$prefijoTelefono=htmlspecialchars($_POST["prefijoTelefono"], ENT_QUOTES, 'UTF-8');
 		$nroTelefono=htmlspecialchars($_POST["nroTelefono"], ENT_QUOTES, 'UTF-8');
+		
+		if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $selectEFCCIni = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?) AND e.tipo_documento_adicional = ? AND e.documento_adicional = ?";
+		else $selectEFCCIni = "SELECT e.id FROM ".$db_name.".estado_cliente e WHERE e.tipo_documento = ? AND e.documento = ? AND e.fecha like ? AND e.id_motivo IN (?,?)";
+		if($stmt41 = $mysqli->prepare($selectEFCCIni))
+		{
+			$motivoValidacionECC = 37;
+			$motivoValidacionECC2 = 38;
+			$date_registro_a_s = date("Ymd")."%";
+			if(!empty($tipoDocumentoTitular) && !empty($documentoTitular)) $stmt41->bind_param('issiiis', $tipoDocumentoTitular, $documentoTitular, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2, $tipoDocumento, $documento);
+			else $stmt41->bind_param('issii', $tipoDocumento, $documento, $date_registro_a_s, $motivoValidacionECC, $motivoValidacionECC2);
+			$stmt41->execute();    
+			$stmt41->store_result();
+			
+			$totR41 = $stmt41->num_rows;
+
+			if($totR41 > 0)
+			{
+				$pasoValidacionEstadoCrediticio++;
+			}			
+		}
+		else
+		{
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			return;
+		}
+
+		if($pasoValidacionEstadoCrediticio == 0)
+		{
+			echo translate('The_Client_Credit_Status_Was_Not_Correctly_Validated',$GLOBALS['lang']);
+			return;
+		}		
 		
 		if ($stmt500 = $mysqli->prepare("SELECT c.id, c.razon_social FROM ".$db_name.".cadena c, ".$db_name.".usuario u, ".$db_name.".sucursal s WHERE u.id_sucursal = s.id AND s.id_cadena = c.id AND u.id = ?")) 
 		{

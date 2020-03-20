@@ -360,10 +360,16 @@ include("./menu/menu.php");
 								if(datosAutoComp[6] != undefined && datosAutoComp[6] != null) $("#domlocalidadni").val(datosAutoComp[6].toUpperCase());
 								if(datosAutoComp[7] != undefined && datosAutoComp[7] != null) $("#zipcodeni").val(datosAutoComp[7].toUpperCase());
 								if(datosAutoComp[8] != undefined && datosAutoComp[8] != null) $("#emailclientni").val(datosAutoComp[8].toLowerCase());
+								guardarNuevoClienteUC();
 							}
 						}
-						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
-							
+						else 
+						{
+							mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
+
+							if(dataresponse.indexOf('<?php echo translate('Msg_Client_Exist',$GLOBALS['lang']); ?>') != -1) return;
+							else guardarNuevoClienteUC();
+						}
 					},
 					error: function(request, errorcode, errortext){
 						mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",errorcode + ' - '+errortext);
@@ -1155,7 +1161,8 @@ include("./menu/menu.php");
 						
 						if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 						{
-							guardarNuevoClienteUC();
+							if($("#tokenvecci").val().length == 0) guardarNuevoClienteUC();
+							else guardarNuevoClienteUC2();
 							document.getElementById("btnCargarNC").disabled = false;
 							return;
 						}
@@ -1193,7 +1200,8 @@ include("./menu/menu.php");
 			}
 			else
 			{
-				guardarNuevoClienteUC();
+				if($("#tokenvecci").val().length == 0) guardarNuevoClienteUC();
+				else guardarNuevoClienteUC2();
 				document.getElementById("btnCargarNC").disabled = false;
 				return;				
 			}
@@ -1296,7 +1304,8 @@ include("./menu/menu.php");
 						
 						$('#tokenasi').val(tokenR);
 						$('#dialogautorizacionadicional').dialog('destroy').remove();
-						guardarNuevoClienteUC();
+						if($("#tokenvecci").val().length == 0) guardarNuevoClienteUC();
+						else guardarNuevoClienteUC2();
 						document.getElementById("btnValidarS").disabled = false;
 						return;
 					}
@@ -1326,7 +1335,7 @@ include("./menu/menu.php");
     </script>
 
 	<script type="text/javascript">
-		function guardarNuevoClienteUC()
+		function guardarNuevoClienteUC2()
 		{
 			if($('#validarclienteni').is(":checked"))
 			{
@@ -1378,7 +1387,7 @@ include("./menu/menu.php");
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Mobile_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
 						{
-							guardarNuevoClienteUC2();
+							guardarNuevoClienteFinal();
 						}
 						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 							
@@ -1448,7 +1457,7 @@ include("./menu/menu.php");
 					if(dataresponse.indexOf('<?php echo translate('Msg_SMS_Code_Validated_OK',$GLOBALS['lang']);?>') != -1)
 					{
 						$('#dialogvalidacioncelularcliente').dialog('destroy').remove();
-						guardarNuevoClienteUC2();
+						guardarNuevoClienteFinal();
 					}
 					else
 					{
@@ -1468,7 +1477,7 @@ include("./menu/menu.php");
     </script>	
 
 	<script type="text/javascript">
-		function guardarNuevoClienteUC2()
+		function guardarNuevoClienteUC()
 		{
 			if($('#validarstatuscreditclienteni').is(":checked"))
 			{
@@ -1531,7 +1540,7 @@ include("./menu/menu.php");
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
 						{
-							guardarNuevoClienteFinal();
+							return;
 						}
 						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 							
@@ -1579,7 +1588,8 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 					{
-						if(motivo != 37) guardarNuevoClienteUC2();
+						if(motivo != 36 && motivo != 37) guardarNuevoClienteUC2();
+						else if(motivo == 37) return;
 						else guardarNuevoClienteFinal();
 					}
 					else
@@ -1721,10 +1731,15 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
-						if(motivo != 37) 
+						if(motivo != 36 && motivo != 37) 
 						{
 							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
 							guardarNuevoClienteUC2();
+						}
+						else if(motivo == 37) 
+						{
+							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
+							return;
 						}
 						else 
 						{
@@ -1874,16 +1889,8 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
-						if(motivo != 37) 
-						{
-							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
-							guardarNuevoClienteUC2();
-						}
-						else 
-						{
-							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
-							guardarNuevoClienteFinal();
-						}
+						$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
+						return;
 					}
 					else
 					{
@@ -1951,10 +1958,15 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Not_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
-						if(motivo != 37) 
+						if(motivo != 36 && motivo != 37) 
 						{
 							$('#dialogvalidacionestadocrediticiocliente').dialog('destroy').remove();
 							guardarNuevoClienteUC2();
+						}
+						else if(motivo == 37) 
+						{
+							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
+							return;
 						}
 						else 
 						{
