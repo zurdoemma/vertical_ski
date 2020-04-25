@@ -230,25 +230,47 @@
 				$mysqli->commit();
 				$mysqli->autocommit(TRUE);
 				
-				if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 10")) 
+				if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, cli.nombres, cli.apellidos, c.monto_compra, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 10")) 
 				{
 					$stmt->bind_param('i', $id_cadena_user);
 					$stmt->execute();    
 					$stmt->store_result();
 			 
-					$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);
+					$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $names_credit_client, $surnames_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);
 										
 					
 					$arrayC[0] = array();
 					$posicion = 0;
 					while($stmt->fetch())
 					{
+						if($stmt690 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+						{
+							$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
+							$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+							$stmt690->bind_param('iss', $id_credit_client, $estado_p_1, $estado_p_2);
+							$stmt690->execute();    
+							$stmt690->store_result();
+							
+							$totR690 = $stmt690->num_rows;
+
+							if($totR690 > 0)
+							{
+								$stmt690->bind_result($fecha_vencimiento_cuota_db_res_n);
+								$stmt690->fetch();
+												
+								$stmt690->free_result();
+								$stmt690->close();
+							}
+						}
+											
 						$arrayC[$posicion]['fecha'] = substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4);
 						$arrayC[$posicion]['tipodocumento'] = $type_documento_credit_client;
 						$arrayC[$posicion]['documento'] = $document_credit_client;
+						$arrayC[$posicion]['nombres'] = $names_credit_client;
+						$arrayC[$posicion]['apellidos'] = $surnames_credit_client;						
 						$arrayC[$posicion]['monto'] = '$'.round(($amount_credit_client/100.00),2);
 						$arrayC[$posicion]['plancredito'] = $name_credit_plan_client;
-						$arrayC[$posicion]['cuotas'] = $fees_credit_client;
+						$arrayC[$posicion]['cuotas'] = $totR690;
 						$arrayC[$posicion]['estado'] = $state_credit_client;
 						
 						if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)

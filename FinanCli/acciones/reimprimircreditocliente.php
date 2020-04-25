@@ -169,7 +169,9 @@
 			else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);			
 			
 			$montoInteresF = $montoTotalCredito-$montoCompra;
-			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fecha_vencimiento_cuota_db.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$usuario_otorga_credito.'|'.$pagaPrimeraCuota.'|'.$minimo_entrega_credito; 
+			if(!empty($fecha_vencimiento_cuota_db)) $fechaYCantidadCuotas = $fecha_vencimiento_cuota_db.':'.$totR62;
+			else $fechaYCantidadCuotas = '';			
+			$datosDeImpresion = $idCredito.'|'.$fecha_cre_pi.'|'.$nombre_sucursal_usuario.'|'.$cantidad_cuotas_plan_credito_s_db.'|'.$fechaYCantidadCuotas.'|'.$nombre_plan_credito_s_db.'|'.$nombres_cliente_db.' '.$apellidos_cliente_db.'|'.$tipo_cuenta_texto_cliente.'|'.$montoTotalCredito.'|'.$nombre_tipo_documento_cliente_db.'|'.$documento.'|'.$cuotas_credito_plan_s.'|'.$montoCompra.'|'.$montoInteresF.'|'.$usuario_otorga_credito.'|'.$pagaPrimeraCuota.'|'.$minimo_entrega_credito; 
 			echo translate('Msg_Reprint_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$datosDeImpresion;
 			$stmt->free_result();
 			$stmt->close();

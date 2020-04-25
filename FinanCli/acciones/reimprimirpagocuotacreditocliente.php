@@ -137,6 +137,8 @@
 		$mysqli->commit();
 		$mysqli->autocommit(TRUE);		
 		
-		echo translate('Msg_Reprint_Pay_Fee_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$fecha_pago_cuota_db_res.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$monto_pago_cuota_db_res.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res;
+		if(!empty($fecha_vencimiento_cuota_db_res)) $fechaYCantidadCuotas = $fecha_vencimiento_cuota_db_res.':'.$totR69;
+		else $fechaYCantidadCuotas = '';		
+		echo translate('Msg_Reprint_Pay_Fee_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.$fecha_pago_cuota_db_res.'|'.$idCredito.'|'.$numero_cuota_db_res.'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$usuario_registro_pago_cuota_db_res.'|'.$monto_pago_cuota_db_res.'|'.$fechaYCantidadCuotas.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$monto_cuota_original_db_res.'|'.$monto_interes_cuota_credito_db_res;
 		return;
 ?>

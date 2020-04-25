@@ -112,7 +112,10 @@ try
 		if(!empty($proximoPago))
 		{
 			$proximoPago = str_replace("-","",$proximoPago);
-			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+			$cuotasPendP = explode(":",$proximoPago);
+			$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($cuotasPendP[0],6,2).'/'.substr($cuotasPendP[0],4,2).'/'.substr($cuotasPendP[0],0,4));
+			$printer -> feed();
+			$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.$cuotasPendP[1]);
 		}
 		else 
 		{
@@ -213,7 +216,10 @@ try
 			if(!empty($proximoPago))
 			{
 				$proximoPago = str_replace("-","",$proximoPago);
-				$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($proximoPago,6,2).'/'.substr($proximoPago,4,2).'/'.substr($proximoPago,0,4));
+				$cuotasPendP = explode(":",$proximoPago);
+				$printer -> text(translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang']).': '.substr($cuotasPendP[0],6,2).'/'.substr($cuotasPendP[0],4,2).'/'.substr($cuotasPendP[0],0,4));
+				$printer -> feed();
+				$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.$cuotasPendP[1]);
 			}
 			else 
 			{

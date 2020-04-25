@@ -703,6 +703,8 @@
 		if(empty($id_titular_cliente_db_res)) $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Holder',$GLOBALS['lang']);
 		else $tipo_cuenta_texto_cliente = translate('Lbl_Type_Account_Client_Additional',$GLOBALS['lang']);	
 		
-		echo translate('Msg_Pay_Fees_Credit_Selection_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.count($nrosCuotasCreditoControl).'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$_SESSION['username'].'|'.$montoPagoFinal.'|'.$fecha_vencimiento_cuota_db_res.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$datosCuotasPagadas.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
+		if(!empty($fecha_vencimiento_cuota_db_res)) $fechaYCantidadCuotas = $fecha_vencimiento_cuota_db_res.':'.$totR69;
+		else $fechaYCantidadCuotas = '';		
+		echo translate('Msg_Pay_Fees_Credit_Selection_OK',$GLOBALS['lang']).'=:=:='.$estado_credito_db_res.'=::=::='.$date_registro_a_fpcc_db.'|'.$idCredito.'|'.count($nrosCuotasCreditoControl).'|'.$tipo_cuenta_texto_cliente.'|'.$nombres_cliente_db_res.' '.$apellidos_cliente_db_res.'|'.$nombre_sucursal_db_res.'|'.$_SESSION['username'].'|'.$montoPagoFinal.'|'.$fechaYCantidadCuotas.'|'.$tipo_documento_cliente_db_res.'|'.$documento_cliente_db_res.'|'.$datosCuotasPagadas.'=:::=:::='.json_encode($array).'=::::=::::='.$totR69;
 		return;
 ?>

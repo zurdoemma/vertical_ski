@@ -219,18 +219,23 @@
 		$pdf->SetFont('Helvetica','B',8);	
 		$pdf->Text(10,110,'*******************************************');			
 		$pdf->Ln();
-		if(!empty($fecha_vencimiento_cuota_db_res)) $pdf->Text(5,115,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db_res,6,2).'/'.substr($fecha_vencimiento_cuota_db_res,4,2).'/'.substr($fecha_vencimiento_cuota_db_res,0,4));		
+		if(!empty($fecha_vencimiento_cuota_db_res)) 
+		{
+			$pdf->Text(5,115,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db_res,6,2).'/'.substr($fecha_vencimiento_cuota_db_res,4,2).'/'.substr($fecha_vencimiento_cuota_db_res,0,4));		
+		    $pdf->Ln();
+			$pdf->Text(5,120,iconv('UTF-8', 'windows-1252', translate('Msg_Fee_Pending',$GLOBALS['lang'])).': '.$totR69);			
+		}
 		else $pdf->Text(5,115,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': ---');		
 		$pdf->Ln(2);
-		$pdf->Text(5,130,'        --------------------------------------------');
+		$pdf->Text(5,135,'        --------------------------------------------');
 		$pdf->Ln();	
-		$pdf->Text(28,135,translate('Lbl_Sign_Print_Credit',$GLOBALS['lang']));
+		$pdf->Text(28,140,translate('Lbl_Sign_Print_Credit',$GLOBALS['lang']));
 		$pdf->Ln(2);
-		$pdf->Text(5,150,'        --------------------------------------------');
+		$pdf->Text(5,155,'        --------------------------------------------');
 		$pdf->Ln();	
-		$pdf->Text(25,155,iconv('UTF-8', 'windows-1252', translate('Lbl_Clarification_Print_Credit',$GLOBALS['lang'])));	
+		$pdf->Text(25,160,iconv('UTF-8', 'windows-1252', translate('Lbl_Clarification_Print_Credit',$GLOBALS['lang'])));	
 		$pdf->Ln();
-		$pdf->Text(22,160,$tipo_documento_cliente_db_res.': '.$documento_cliente_db_res);	
+		$pdf->Text(22,165,$tipo_documento_cliente_db_res.': '.$documento_cliente_db_res);	
 		
 		$pdf->Output();
 	

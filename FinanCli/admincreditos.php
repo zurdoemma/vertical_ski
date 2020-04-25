@@ -300,7 +300,6 @@ include("./menu/menu.php");
 						var datTable = dataresponse.substring(0,dataresponse.indexOf('=::=::=::'));
 						dataresponse = dataresponse.replace(datTable+"=::=::=::","");
 						
-
 						$('#tableadmincreditst').bootstrapTable('load',JSON.parse(datTable));
 						$('#titulocreditoscliente').html('<?php echo translate('Lbl_Credits_Clients',$GLOBALS['lang']); ?>'+': '+dataresponse);						
 						//mensaje_ok("<?php echo translate('Lbl_Result',$GLOBALS['lang']);?>",menR);
@@ -2033,10 +2032,12 @@ include("./menu/menu.php");
 							<th class="col-xs-1 text-center" data-field="fecha" data-sortable="true"><?php echo translate('Lbl_Date_Credit',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="tipodocumento" data-sortable="true"><?php echo translate('Lbl_Type_Document_Credit',$GLOBALS['lang']);?></th>
 							<th class="col-xs-1 text-center" data-field="documento" data-sortable="true"><?php echo translate('Lbl_Document_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="nombres" data-sortable="true"><?php echo translate('Lbl_Names_Client',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="apellidos" data-sortable="true"><?php echo translate('Lbl_Surnames_Client',$GLOBALS['lang']);?></th>							
 							<th class="col-xs-1 text-center" data-field="monto" data-sortable="true"><?php echo translate('Lbl_Amount_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="plancredito" data-sortable="true"><?php echo translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-1 text-center" data-field="cuotas"><?php echo translate('Lbl_Fees_Credit',$GLOBALS['lang']);?></th>
-							<th class="col-xs-2 text-center" data-field="estado" data-sortable="true"><?php echo translate('Lbl_State_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="plancredito" data-sortable="true"><?php echo translate('Lbl_Name_Plan_Credit',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="cuotas"><?php echo translate('Msg_Fee_Pending',$GLOBALS['lang']);?></th>
+							<th class="col-xs-1 text-center" data-field="estado" data-sortable="true"><?php echo translate('Lbl_State_Credit',$GLOBALS['lang']);?></th>
 							<th class="col-xs-2 text-center" data-field="acciones"><?php echo translate('Lbl_Actions_Credit',$GLOBALS['lang']);?></th>
 						</tr>						
 					</thead>
@@ -2053,24 +2054,46 @@ include("./menu/menu.php");
 								{
 									$stmt500->bind_result($id_cadena_user);
 									$stmt500->fetch();
-									if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 50")) 
+									if ($stmt = $mysqli->prepare("SELECT c.id, cc.fecha, td.nombre, cc.documento, cli.nombres, cli.apellidos, c.monto_compra, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? ORDER BY cc.fecha DESC LIMIT 50")) 
 									{
 										$stmt->bind_param('i', $id_cadena_user);
 										$stmt->execute();    // Ejecuta la consulta preparada.
 										$stmt->store_result();
 								 
 										// Obtiene las variables del resultado.
-										$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);
+										$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $names_credit_client, $surnames_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);
 										
 										while($stmt->fetch())
 										{		
+											if($stmt690 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+											{
+												$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
+												$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+												$stmt690->bind_param('iss', $id_credit_client, $estado_p_1, $estado_p_2);
+												$stmt690->execute();    
+												$stmt690->store_result();
+												
+												$totR690 = $stmt690->num_rows;
+
+												if($totR690 > 0)
+												{
+													$stmt690->bind_result($fecha_vencimiento_cuota_db_res_n);
+													$stmt690->fetch();
+																	
+													$stmt690->free_result();
+													$stmt690->close();
+												}
+											}
+											
 											echo '<tr>';
 											echo '<td>'.substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4).'</td>';
 											echo '<td>'.$type_documento_credit_client.'</td>';
 											echo '<td>'.$document_credit_client.'</td>';
+											echo '<td>'.$names_credit_client.'</td>';
+											echo '<td>'.$surnames_credit_client.'</td>';
 											echo '<td>$'.round(($amount_credit_client/100.00),2).'</td>';
 											echo '<td>'.$name_credit_plan_client.'</td>';
-											echo '<td>'.$fees_credit_client.'</td>';
+											echo '<td>'.$totR690.'</td>';
 											echo '<td>'.$state_credit_client.'</td>';
 											
 											if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)

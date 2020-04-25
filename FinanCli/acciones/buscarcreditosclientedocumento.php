@@ -93,11 +93,33 @@
 				
 				$stmt62->free_result();
 				$stmt62->close();
+				$variosRes = 0;
 			}
 			else 
 			{
-				echo translate('Msg_Without_Credit_Client',$GLOBALS['lang']).'=::=::=::'.$documento;
-				return;
+				if($stmt64 = $mysqli->prepare("SELECT c.tipo_documento, c.documento FROM ".$db_name.".cliente c WHERE c.id_titular IS NULL AND (c.nombres LIKE ? OR c.apellidos LIKE ?)"))
+				{
+					$documentoBusc = '%'.$documento.'%';
+					$stmt64->bind_param('ss', $documentoBusc, $documentoBusc);
+					$stmt64->execute();    
+					$stmt64->store_result();
+					
+					$totR64 = $stmt64->num_rows;
+
+					if($totR64 > 0)
+					{							
+						$stmt64->bind_result($tipo_documento_titular, $documento_titular);
+						$variosRes = 1;
+						
+						$stmt64->free_result();
+						$stmt64->close();				
+					}
+				}
+				else
+				{
+					echo translate('Msg_Without_Credit_Client',$GLOBALS['lang']).'=::=::=::'.$documento;
+					return;
+				}				
 			}
 		}
 		else
@@ -106,16 +128,24 @@
 			return;
 		}
 
-		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento_adicional, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento_adicional = cli.tipo_documento AND cc.documento_adicional = cli.documento AND cc.tipo_documento_adicional = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
-		else $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, c.monto_credito_original, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cli.documento = ? ORDER BY cc.fecha DESC";
+		if(!empty($tipo_documento_titular) && !empty($documento_titular)) $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento_adicional, cli.nombres, cli.apellidos, c.monto_compra, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento_adicional = cli.tipo_documento AND cc.documento_adicional = cli.documento AND cc.tipo_documento_adicional = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cc.tipo_documento = ? AND cc.documento = ? AND cc.documento_adicional = ? ORDER BY cc.fecha DESC";
+		else if($variosRes == 0)
+		{
+			$selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, cli.nombres, cli.apellidos, c.monto_compra, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND cli.documento = ? ORDER BY cc.fecha DESC";
+		}
+		else $selecBDC = "SELECT c.id, cc.fecha, td.nombre, cc.documento, cli.nombres, cli.apellidos, c.monto_compra, pc.nombre, c.cantidad_cuotas, c.estado FROM ".$db_name.".credito c, ".$db_name.".credito_cliente cc, ".$db_name.".cliente cli, ".$db_name.".plan_credito pc, ".$db_name.".tipo_documento td, ".$db_name.".sucursal suc WHERE pc.id = c.id_plan_credito AND c.id = cc.id_credito AND cc.tipo_documento = cli.tipo_documento AND cc.documento = cli.documento AND cc.tipo_documento = td.id AND cc.id_sucursal = suc.id AND suc.id_cadena = ? AND (cli.nombres LIKE ? OR cli.apellidos LIKE ?) AND cli.id_titular IS NULL ORDER BY cc.fecha DESC";
 		if ($stmt = $mysqli->prepare($selecBDC)) 
 		{
 			if(!empty($tipo_documento_titular) && !empty($documento_titular)) $stmt->bind_param('iiss', $id_cadena_user, $tipo_documento_titular, $documento_titular, $documento);
-			else $stmt->bind_param('is', $id_cadena_user, $documento);
+			else if($variosRes == 0)
+			{
+				$stmt->bind_param('is', $id_cadena_user, $documento);
+			}
+			else $stmt->bind_param('iss', $id_cadena_user, $documentoBusc, $documentoBusc);
 			$stmt->execute();    
 			$stmt->store_result();
 	 
-			$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
+			$stmt->bind_result($id_credit_client, $date_credit_client, $type_documento_credit_client, $document_credit_client, $names_credit_client, $surnames_credit_client, $amount_credit_client, $name_credit_plan_client, $fees_credit_client, $state_credit_client);			
 			
 			$totR = $stmt->num_rows;
 
@@ -129,12 +159,35 @@
 			$posicion = 0;
 			while($stmt->fetch())
 			{							
+				if($stmt690 = $mysqli->prepare("SELECT cc.fecha_vencimiento FROM ".$db_name.".cuota_credito cc WHERE cc.id_credito = ? AND cc.estado IN (?,?) ORDER BY cc.numero_cuota"))
+				{
+					$estado_p_1 = translate('Lbl_Status_Fee_Pending',$GLOBALS['lang']);
+					$estado_p_2 = translate('Lbl_Status_Fee_In_Mora',$GLOBALS['lang']);
+					$stmt690->bind_param('iss', $id_credit_client, $estado_p_1, $estado_p_2);
+					$stmt690->execute();    
+					$stmt690->store_result();
+					
+					$totR690 = $stmt690->num_rows;
+
+					if($totR690 > 0)
+					{
+						$stmt690->bind_result($fecha_vencimiento_cuota_db_res_n);
+						$stmt690->fetch();
+										
+						$stmt690->free_result();
+						$stmt690->close();
+					}
+				}
+											
 				$arrayC[$posicion]['fecha'] = substr($date_credit_client,6,2).'/'.substr($date_credit_client,4,2).'/'.substr($date_credit_client,0,4);
 				$arrayC[$posicion]['tipodocumento'] = $type_documento_credit_client;
 				$arrayC[$posicion]['documento'] = $document_credit_client;
+				$arrayC[$posicion]['nombres'] = $names_credit_client;
+				$arrayC[$posicion]['apellidos'] = $surnames_credit_client;
+				$arrayC[$posicion]['documento'] = $document_credit_client;
 				$arrayC[$posicion]['monto'] = '$'.round(($amount_credit_client/100.00),2);
 				$arrayC[$posicion]['plancredito'] = $name_credit_plan_client;
-				$arrayC[$posicion]['cuotas'] = $fees_credit_client;
+				$arrayC[$posicion]['cuotas'] = $totR690;
 				$arrayC[$posicion]['estado'] = $state_credit_client;
 								
 				if($_SESSION["permisos"] == 1 || $_SESSION["permisos"] == 3)
@@ -150,13 +203,13 @@
 				}
 				$posicion++;
 			}
-			
+
 			echo translate('Msg_Search_Credit_Client_OK',$GLOBALS['lang']).'=:=:=:'.json_encode($arrayC).'=::=::=::'.$documento;
 			return;
 		}
 		else 
 		{
-			echo translate('Msg_Unknown_Error',$GLOBALS['lang']);
+			echo translate('Msg_Unknown_Error',$GLOBALS['lang']).$mysqli->error;
 			return;	
 		}
 

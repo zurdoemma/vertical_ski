@@ -44,6 +44,7 @@
 		'Lbl_Amount_Interest_Fee_Print_Credit' => 'Interés',
 		'Msg_The_Selection_Fees_Pay_Was_Printed_Correctly' => 'El comprobante de pago se imprimió correctamente!!',
 		'Msg_First_Fee_Paid' => 'Primera Cuota ABONADA',
+		'Msg_Fee_Pending' => 'Cuotas Pendientes',		
 		'Lbl_Minimum_Delivery' => 'Mínimo Entrega',
         'Msg_Balance_Credit_OK' => 'CRÉDITO SALDADO'		
 	);

@@ -123,8 +123,18 @@ try
 		if($pagaPrimeraCuota == 1)
 		{			
 			$printer -> text(translate('Msg_First_Fee_Paid',$GLOBALS['lang']).'.');
-			$printer -> feed();		
-		}		
+			$printer -> feed();
+			if((count($cuotasArr) - 1) > 0)
+			{
+				$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.(count($cuotasArr)-1));
+				$printer -> feed();
+			}				
+		}
+		else 
+		{
+			$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.count($cuotasArr));
+			$printer -> feed();
+		}
 		$printer -> setJustification($justification[0]);
 		$printer -> setTextSize(1, 1);
 		$printer -> text('-------------------------------');
@@ -245,6 +255,21 @@ try
 				else $printer -> text('   '.$datosCuotX[0].'    '.substr($datosCuotX[1],6,2).'/'.substr($datosCuotX[1],4,2).'/'.substr($datosCuotX[1],0,4).'    $'.number_format(($datosCuotX[2]/100.00), 2, ',', '.'));
 			}
 			$printer -> feed();
+			if($pagaPrimeraCuota == 1)
+			{			
+				$printer -> text(translate('Msg_First_Fee_Paid',$GLOBALS['lang']).'.');
+				$printer -> feed();
+				if((count($cuotasArr) - 1) > 0)
+				{
+					$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.(count($cuotasArr)-1));
+					$printer -> feed();
+				}				
+			}
+			else 
+			{
+				$printer -> text(translate('Msg_Fee_Pending',$GLOBALS['lang']).': '.count($cuotasArr));
+				$printer -> feed();
+			}			
 			$printer -> setJustification($justification[0]);
 			$printer -> setTextSize(1, 1);		
 			$printer -> text('-------------------------------');

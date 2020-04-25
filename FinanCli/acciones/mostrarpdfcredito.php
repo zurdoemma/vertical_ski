@@ -247,19 +247,25 @@
 			$pdf->Text(5,80,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']).': '.$cantidad_cuotas_plan_credito_s_db);
 			$pdf->Ln();	
 			$fecha_cre_pi = str_replace("-","",$fecha_cre_pi);
-			if(!empty($fecha_vencimiento_cuota_db)) $pdf->Text(5,85,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4));
+			if(!empty($fecha_vencimiento_cuota_db))
+			{				
+				$pdf->Text(5,85,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': '.substr($fecha_vencimiento_cuota_db,6,2).'/'.substr($fecha_vencimiento_cuota_db,4,2).'/'.substr($fecha_vencimiento_cuota_db,0,4));
+				$pdf->Ln();
+				if($abona_primera_cuota_cliente == 1) $pdf->Text(5,90,iconv('UTF-8', 'windows-1252', translate('Msg_Fee_Pending',$GLOBALS['lang'])).': '.($totR63-1));
+				else $pdf->Text(5,90,iconv('UTF-8', 'windows-1252', translate('Msg_Fee_Pending',$GLOBALS['lang'])).': '.$totR63);
+			}
 			else $pdf->Text(5,85,iconv('UTF-8', 'windows-1252', translate('Lbl_Next_Paid_Print_Credit',$GLOBALS['lang'])).': ---');
 			$pdf->Ln();			
-			$pdf->Text(5,90,'--------------------------------------------------------------');
+			$pdf->Text(5,95,'--------------------------------------------------------------');
 			$pdf->Ln();		
 			$pdf->SetFont('Helvetica','B',10);
-			$pdf->Text(27,95,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
-			$pdf->Ln(85);
+			$pdf->Text(27,100,translate('Lbl_Fees_Print_Credit',$GLOBALS['lang']));
+			$pdf->Ln(90);
 			$pdf->SetLeftMargin(12);			
 			$pdf->SetFont('Helvetica','B',8);
 			
 			$cuotasArr = explode(":",$cuotas_credito_plan_s);
-			$posicionYC = 112;
+			$posicionYC = 117;
 			for ($i = 0; $i < count($cuotasArr); $i++) 
 			{
 				$pdf->Ln();
