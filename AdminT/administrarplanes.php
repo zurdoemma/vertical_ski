@@ -2110,7 +2110,7 @@ include("./menu/menu.php");
 					</thead>
 					<tbody>
 						<?php
-							if ($stmt = $mysqli->prepare("SELECT p.branch_id, pm.payment_method_id, pm.payment_method_description, p.plan_id, p.plan_description, p.merchant_id, p.facility_payments_from, n.host_name, p.charge_percentage, p.cashback_allowed FROM tef.plans p, tef.paymentmethods pm, tef.hosts n  WHERE p.payment_method_id = pm.payment_method_id AND p.host_id = n.host_id ORDER BY p.branch_id, p.payment_method_id, p.plan_id, p.facility_payments_from LIMIT 5000")) 
+							if ($stmt = $mysqli->prepare("SELECT p.branch_id, pm.payment_method_id, pm.payment_method_description, p.plan_id, p.plan_description, p.merchant_id, p.facility_payments_from, n.host_name, p.charge_percentage, p.cashback_allowed FROM tef.plans p, tef.paymentmethods pm, tef.hosts n  WHERE p.payment_method_id = pm.payment_method_id AND pm.host_id = n.host_id ORDER BY p.branch_id, p.payment_method_id, p.plan_id, p.facility_payments_from LIMIT 5000")) 
 							{
 								$stmt->execute();    // Ejecuta la consulta preparada.
 								$stmt->store_result();
