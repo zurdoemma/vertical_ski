@@ -1540,7 +1540,7 @@ include("./menu/menu.php");
 						}
 						else if(dataresponse.indexOf('<?php echo translate('Msg_Validation_Credit_Status_Client_Is_Not_Necessary',$GLOBALS['lang']); ?>') != -1) 
 						{
-							return;
+							guardarNuevoClienteUC2();
 						}
 						else mensaje_error("<?php echo translate('Lbl_Error',$GLOBALS['lang']);?>",dataresponse);
 							
@@ -1588,8 +1588,7 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_It_Is_Not_Necessary_To_Authorize',$GLOBALS['lang']); ?>') != -1)
 					{
-						if(motivo != 36 && motivo != 37) guardarNuevoClienteUC2();
-						else if(motivo == 37) return;
+						if(motivo != 36 || motivo == 37) guardarNuevoClienteUC2();
 						else guardarNuevoClienteFinal();
 					}
 					else
@@ -1731,15 +1730,10 @@ include("./menu/menu.php");
 					
 					if(dataresponse.indexOf('<?php echo translate('Msg_Supervisor_OK',$GLOBALS['lang']);?>') != -1)
 					{
-						if(motivo != 36 && motivo != 37) 
+						if(motivo != 36 || motivo == 37) 
 						{
 							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
 							guardarNuevoClienteUC2();
-						}
-						else if(motivo == 37) 
-						{
-							$('#dialogautorizacionregistrocliente').dialog('destroy').remove();
-							return;
 						}
 						else 
 						{
