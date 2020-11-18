@@ -1,0 +1,501 @@
+body {
+    background: #456;
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+    left: 0;
+    line-height: 200px;
+    margin-top: -100px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+    color:white;
+}
+
+#img_loader
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:50%;
+}
+
+#img_loader_2
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:33px;
+    margin-left:88%;
+}
+
+#img_loader_3
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:125px;
+    margin-left:65%;
+}
+
+#img_loader_4
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:125px;
+    margin-left:65%;
+}
+
+#img_loader_5
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:85px;
+    margin-left:85%;
+}
+
+#img_loader_6
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:68px;
+    margin-left:89%;
+}
+
+#img_loader_7
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:40px;
+    margin-left:71%;
+}
+
+#img_loader_8
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:50%;
+}
+
+
+#img_loader_9
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:85px;
+    margin-left:70%;
+}
+
+#img_loader_10
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:287px;
+    margin-left:46%;
+}
+
+#img_loader_11
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:157px;
+    margin-left:55%;
+}
+
+#img_loader_12
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:55%;
+}
+
+#img_loader_13
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:47%;
+}
+
+
+#img_loader_14
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top: -10px;
+    margin-left:47%;
+}
+
+#img_loader_15
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:160px;
+    margin-left:56%;
+}
+
+#img_loader_16
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:0%;
+    margin-left:0%;
+}
+
+#img_loader_17
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando2.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:15px;
+    height:15px;
+    margin-top:-12px;
+    margin-left:-12px;
+}
+
+#img_loader_18
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:12%;
+    margin-left:52%;
+}
+
+#img_loader_19
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:5%;
+    margin-left:54%;
+}
+
+#img_loader_20
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:212px;
+    margin-left:55%;
+}
+
+#img_loader_21
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:252px;
+    margin-left:55%;
+}
+
+#img_loader_22
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:80px;
+    margin-left:57%;
+}
+
+#img_loader_23
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando2.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:15px;
+    height:15px;
+    margin-top:-12px;
+    margin-left:-12px;
+}
+
+#img_loader_24
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:77%;
+}
+
+#img_loader_25
+{
+    z-index:89;
+    position:absolute;
+    display:none;
+    background-image: url("../images/cargando.gif");
+    background-size:100%;
+    background-repeat:no-repeat;
+    width:55px;
+    height:55px;
+    margin-top:-15px;
+    margin-left:60%;
+}
+
+#mensajeError
+{
+    background-image: url("../images/errorDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#mensajeAtencion
+{
+    background-image: url("../images/informationDialog.png");
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#mensajeOK
+{
+    background-image: url("../images/okDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+#confirmacionAccion
+{
+    background-image: url("../images/alertDialog.png");	
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+    line-height:30px;	
+}
+
+.ui-tooltip-content::after, .ui-tooltip-content::before {
+	content: "";
+	position: absolute;
+	border-style: solid;
+	display: block;
+	left: 40%;
+}
+.ui-tooltip-content::before {
+	bottom: -10px;
+	border-color: #AAA transparent;
+	border-width: 10px 10px 0;
+}
+.ui-tooltip-content::after {
+	bottom: -7px;
+	border-color: white transparent;
+	border-width: 10px 10px 0;
+}
+
+#panel-title-header
+{
+     background: #0259A1; 
+     color:white;
+}
+
+.dropdown-menu .border-top
+{
+   border-top: 2px dotted #ccc;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 25px;
+  margin-top: 7px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(23px);
+  -ms-transform: translateX(23px);
+  transform: translateX(23px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 16px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
